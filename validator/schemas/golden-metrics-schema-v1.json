@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema",
+  "$id": "golden-metrics-schema-v1",
+  "type": "object",
+  "title": "Golden Metrics schema",
+  "description": "The contents of each golden metric.",
+  "minProperties": 1,
+  "examples": [
+    {
+      "memoryUsage": {
+        "title": "What the user is seeing (unit)",
+        "displayAsValue": false,
+        "query": {
+          "select": "average(host.memoryUsagePercent)",
+          "from": "Metric",
+          "where": "",
+          "facet": "entity.name",
+          "eventId": "entity.guid"
+        }
+      }
+    }
+  ],
+  "additionalProperties": {
+    "type": "object",
+    "required": [
+      "title",
+      "query"
+    ],
+    "properties": {
+      "title": {
+        "$id": "#/properties/title",
+        "type": "string",
+        "title": "The title of the visualization",
+        "examples": [
+          "What the user is seeing (unit)"
+        ]
+      },
+      "displayAsValue": {
+        "$id": "#/properties/displayAsValue",
+        "type": "boolean",
+        "title": "The displayAsValue flag.",
+        "description": "Defines whether the query returns a value or a timeseries.",
+        "default": false,
+        "examples": [
+          false
+        ]
+      },
+      "query": {
+        "$id": "#/properties/query",
+        "type": "object",
+        "title": "The query schema",
+        "description": "Information about the query to get the golden metric.",
+        "examples": [
+          {
+            "select": "average(host.memoryUsagePercent)",
+            "from": "Metric",
+            "where": "",
+            "facet": "entity.name",
+            "eventId": "entity.guid"
+          }
+        ],
+        "required": [
+          "select"
+        ],
+        "properties": {
+          "select": {
+            "$id": "#/properties/query/properties/select",
+            "type": "string",
+            "examples": [
+              "average(host.memoryUsagePercent)"
+            ]
+          },
+          "from": {
+            "$id": "#/properties/query/properties/from",
+            "type": "string",
+            "examples": [
+              "Metric"
+            ]
+          },
+          "where": {
+            "$id": "#/properties/query/properties/where",
+            "type": "string",
+            "examples": [
+              "condition is true"
+            ]
+          },
+          "facet": {
+            "$id": "#/properties/query/properties/facet",
+            "type": "string",
+            "examples": [
+              "entity.name"
+            ]
+          },
+          "eventId": {
+            "$id": "#/properties/query/properties/eventId",
+            "type": "string",
+            "examples": [
+              "entity.guid"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

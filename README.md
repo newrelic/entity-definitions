@@ -83,7 +83,9 @@ dashboardTemplate: ./<dashboardName>.json
 Some validations are automatically executed whenever there is a contribution via pull request, to verify that the provided definition meets the basic requirements:
 
 * The definition files are not malformed, incorrect or missing mandatory fields. 
-* The id cannot be extracted from an attribute with the same name for two different Domain-Types, unless conditions are set to differentiate them, so that the conditions from one entity are not a superset of the other. 
+* The *identifier* cannot be extracted from an attribute with the same name for two different Domain-Types, unless conditions are set to differentiate them, so that the conditions from one entity are not a superset of the other. 
+
+You can read more about the current validations [here](/validator/README.md).
 
 ## Support
 

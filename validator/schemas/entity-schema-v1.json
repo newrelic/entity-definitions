@@ -1,0 +1,328 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema",
+  "$id": "entity-schema-v1",
+  "type": "object",
+  "title": "Entity synthesis schema",
+  "description": "Schema used to verify that a given entity yaml is valid",
+  "default": {},
+  "examples": [
+    {
+      "domain": "DomainName",
+      "type": "TypeName",
+      "name": "EntityName",
+      "identifier": "12345",
+      "conditions": [
+        {
+          "attribute": "attributeName",
+          "value": "value"
+        },
+        {
+          "attribute": "attributeName",
+          "prefix": "value"
+        }
+      ],
+      "dashboardTemplate": "url@github.com",
+      "tags": [
+        "attributeName",
+        "attributeName2"
+      ],
+      "compositeMetrics": {
+        "goldenMetrics": [
+          {
+            "metricName": "metricName",
+            "title": "What the user is seeing (unit)",
+            "displayAsValue": false,
+            "query": {
+              "select": "average(metricAttribute)",
+              "from": "Metric",
+              "where": "",
+              "facet": "entity.guid",
+              "eventId": "entity.guid",
+              "eventObjectId": "ENTITY_GUIDS"
+            }
+          }
+        ],
+        "summaryMetrics": [
+          {
+            "metricName": "metricName",
+            "title": "What the user is seeing (unit)",
+            "query": {
+              "select": "sum(metricAttribute)",
+              "from": "Metric",
+              "where": "",
+              "facet": "entity.guid",
+              "eventObjectId": "ENTITY_GUIDS"
+            }
+          }
+        ]
+      },
+      "goldenTags": [
+        "nrTagName",
+        "nrTagName2"
+      ]
+    }
+  ],
+  "required": [
+    "domain",
+    "type",
+    "name",
+    "identifier"
+  ],
+  "properties": {
+    "domain": {
+      "$id": "#/properties/domain",
+      "type": "string",
+      "title": "The entity domain",
+      "description": "Information used to synthesize the entity domain",
+      "examples": [
+        "DomainName"
+      ]
+    },
+    "type": {
+      "$id": "#/properties/type",
+      "type": "string",
+      "title": "The entity type",
+      "description": "Information used to synthesize the entity type",
+      "examples": [
+        "TypeName"
+      ]
+    },
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "The entity name",
+      "description": "Information used to synthesize the entity name",
+      "examples": [
+        "EntityName"
+      ]
+    },
+    "identifier": {
+      "$id": "#/properties/identifier",
+      "type": "string",
+      "title": "The entity id",
+      "description": "Information used to synthesize the entity id",
+      "examples": [
+        "12345"
+      ]
+    },
+    "conditions": {
+      "$id": "#/properties/conditions",
+      "type": "array",
+      "title": "Conditions for the entity to be synthesized",
+      "description": "Allows to specify that an attribute's value needs to match a specific value or have a specific prefix.",
+      "examples": [
+        [
+          {
+            "attribute": "attributeName",
+            "value": "value"
+          },
+          {
+            "attribute": "attributeName",
+            "prefix": "value"
+          }
+        ]
+      ],
+      "additionalItems": true,
+      "items": {
+        "$id": "#/properties/conditions/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/conditions/items/anyOf/0",
+            "type": "object",
+            "title": "Match attribute value",
+            "description": "An attribute's value needs to match the provided one",
+            "examples": [
+              {
+                "attribute": "attributeName",
+                "value": "value"
+              }
+            ],
+            "required": [
+              "attribute",
+              "value"
+            ],
+            "properties": {
+              "attribute": {
+                "$id": "#/properties/conditions/items/anyOf/0/properties/attribute",
+                "type": "string",
+                "title": "The attribute name",
+                "examples": [
+                  "attributeName"
+                ]
+              },
+              "value": {
+                "$id": "#/properties/conditions/items/anyOf/0/properties/value",
+                "type": "string",
+                "title": "The expected value",
+                "examples": [
+                  "value"
+                ]
+              }
+            }
+          },
+          {
+            "$id": "#/properties/conditions/items/anyOf/1",
+            "type": "object",
+            "title": "Match attribute value's prefix",
+            "description": "An attribute's value prefix needs to match the provided one",
+            "examples": [
+              {
+                "attribute": "attributeName",
+                "prefix": "value"
+              }
+            ],
+            "required": [
+              "attribute",
+              "prefix"
+            ],
+            "properties": {
+              "attribute": {
+                "$id": "#/properties/conditions/items/anyOf/1/properties/attribute",
+                "type": "string",
+                "title": "The attribute name",
+                "examples": [
+                  "attributeName"
+                ]
+              },
+              "prefix": {
+                "$id": "#/properties/conditions/items/anyOf/1/properties/prefix",
+                "type": "string",
+                "title": "The expected prefix",
+                "examples": [
+                  "value"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "dashboardTemplate": {
+      "$id": "#/properties/dashboardTemplate",
+      "type": "string",
+      "title": "The dashboardTemplate schema",
+      "description": "Template of the dashboard to generate",
+      "examples": [
+        "url@github.com"
+      ]
+    },
+    "compositeMetrics": {
+      "$id": "#/properties/compositeMetrics",
+      "type": "object",
+      "title": "Composite metrics related to the entity.",
+      "description": "Composite metrics such as the goldenMetrics and summaryMetrics.",
+      "examples": [
+        {
+          "goldenMetrics": [
+            {
+              "metricName": "memoryUsage",
+              "title": "What the user is seeing (unit)",
+              "displayAsValue": false,
+              "query": {
+                "select": "average(host.memoryUsagePercent)",
+                "from": "Metric",
+                "where": "",
+                "facet": "entity.name",
+                "eventId": "entity.guid",
+                "eventObjectId": "ENTITY_GUIDS"
+              }
+            }
+          ],
+          "summaryMetrics": [
+            {
+              "metricName": "volumeRead",
+              "title": "What the user is seeing (unit)",
+              "query": {
+                "select": "sum(`provider.volumeReadOps.Sum`)",
+                "from": "Metric",
+                "where": "",
+                "facet": "entity.guid",
+                "eventObjectId": "ENTITY_GUIDS"
+              }
+            }
+          ]
+        }
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "goldenMetrics"
+          ]
+        },
+        {
+          "required": [
+            "summaryMetrics"
+          ]
+        }
+      ],
+      "properties": {
+        "goldenMetrics": {
+          "$id": "#/properties/compositeMetrics/properties/goldenMetrics",
+          "type": "string",
+          "title": "The reference to the golden metrics file",
+          "description": "The reference to the golden metrics file",
+          "examples": [
+            "./domain-type-golden_metrics.yml"
+          ]
+        },
+        "summaryMetrics": {
+          "$id": "#/properties/compositeMetrics/properties/summaryMetrics",
+          "type": "string",
+          "title": "The reference to the summary metrics file",
+          "description": "The reference to the summary metrics file",
+          "examples": [
+            "./domain-type-summary_metrics.yml"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "tags": {
+      "$id": "#/properties/tags",
+      "type": "array",
+      "title": "An array of tags.",
+      "description": "Tags associated to the entity that can be extracted from the metrics information received.",
+      "examples": [
+        [
+          "attributeName",
+          "attributeName2"
+        ]
+      ],
+      "additionalItems": false,
+      "items": {
+        "$id": "#/properties/tags/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/tags/items/anyOf/0",
+            "type": "string",
+            "title": "Reference to a tag extracted from metrics"
+          }
+        ]
+      }
+    },
+    "goldenTags": {
+      "$id": "#/properties/goldenTags",
+      "type": "array",
+      "title": "An array of goldenTags",
+      "description": "The golden tags associated to the entity. They must be existing NewRelic tags, which are comprised by tags extracted from the metric and defined here and tags injected by NewRelic.",
+      "examples": [
+        [
+          "nrTagName",
+          "nrTagName2"
+        ]
+      ],
+      "additionalItems": false,
+      "items": {
+        "$id": "#/properties/goldenTags/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/goldenTags/items/anyOf/0",
+            "type": "string",
+            "title": "Reference to a NewRelic tag"
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}
