@@ -27,6 +27,7 @@ Some examples are APPLICATION, HOST or CONTAINER.
  entity will not be synthesized if the value extracted from the metrics is considered invalid:
   - `/[\x20-\x7E]{1,28}/`.
   - 1 to 28 standard ascii characters, excluding control chars (codes: 32-126).
+  - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
 - The definition needs to provide enough information to differentiate this entity
  from others. It cannot be a subset nor a superset of any existing definition. If the names of
   your telemetry attributes are too generic you can define conditions on the value of the field (e.g. `prefix: "eks"`).
