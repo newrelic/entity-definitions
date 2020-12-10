@@ -20,13 +20,13 @@ so your PR will get merged faster, and you can start enjoying your shiny new ent
 We use the `domain`, `type` and `identifier` to assign each entity a Global Unique Identifier (GUID).
 - The `domain` must be a value matching `/[A-Z][A-Z0-9_]{2,7}/`. This field is mostly relevant internally for NR. 
 Use EXT by default, although we may advise to use a different value in some cases.                
-- The `type` must be a value matching `/[A-Z][A-Z0-9_]{2,19}/`. This field is meant to identify the type of entity. 
+- The `type` must be a value matching `/[A-Z][A-Z0-9_]{2,11}/`. This field is meant to identify the type of entity. 
 Some examples are APPLICATION, HOST or CONTAINER.  
 - The `identifier` must be assigned a parameter that is unique within the domain and type (e.g
 . cluster ID, host ID, etc). Keep in mind that the value has the following restrictions and that the
  entity will not be synthesized if the value extracted from the metrics is considered invalid:
-  - `/[\x20-\x7E]{1,28}/`.
-  - 1 to 28 standard ascii characters, excluding control chars (codes: 32-126).
+  - `/[\x20-\x7E]{1,36}/`.
+  - 1 to 36 standard ascii characters, excluding control chars (codes: 32-126).
   - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
 - The definition needs to provide enough information to differentiate this entity
  from others. It cannot be a subset nor a superset of any existing definition. If the names of
