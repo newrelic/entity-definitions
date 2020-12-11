@@ -33,11 +33,13 @@ const RULES = [
     {
         name: 'Entities with the same id and conditions must have the same domain and type',
         apply: def => {
-            if (ENTITY.has(def.identifier) && hasSameConditions(ENTITY.get(def.identifier), def) && hasDifferentDomainType(ENTITY.get(def.identifier), def)) {
-                throw `Same entity ID criteria ${def.identifier} and conditions assigned to different domain types.`
-            }
+            if(def.identifier != undefined) {
+                if (ENTITY.has(def.identifier) && hasSameConditions(ENTITY.get(def.identifier), def) && hasDifferentDomainType(ENTITY.get(def.identifier), def)) {
+                    throw `Same entity ID criteria ${def.identifier} and conditions assigned to different domain types.`
+                }
 
-            ENTITY.set(def.identifier, def)
+                ENTITY.set(def.identifier, def)
+            }
         }
     }
 ]

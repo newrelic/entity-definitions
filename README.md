@@ -16,7 +16,7 @@ so your PR will get merged faster, and you can start enjoying your shiny new ent
 
 - Each entity definition file must live inside its own folder and both must follow the filename format explained below. 
 - The definition MUST be a valid YAML file.
-- The definition must contain at least the following fields: `domain`, `type`, `name`, and `identifier`. 
+- The definition must contain at least the top-level fields `domain` and `type`, along with the fields `name` and `identifier`, located under `synthesis`. 
 We use the `domain`, `type` and `identifier` to assign each entity a Global Unique Identifier (GUID).
 - The `domain` must be a value matching `/[A-Z][A-Z0-9_]{2,7}/`. This field is mostly relevant internally for NR. 
 Use EXT by default, although we may advise to use a different value in some cases.                
@@ -27,6 +27,7 @@ Some examples are APPLICATION, HOST or CONTAINER.
  entity will not be synthesized if the value extracted from the metrics is considered invalid:
   - `/[\x20-\x7E]{1,36}/`.
   - 1 to 36 standard ascii characters, excluding control chars (codes: 32-126).
+  - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
 - The definition needs to provide enough information to differentiate this entity
  from others. It cannot be a subset nor a superset of any existing definition. If the names of
   your telemetry attributes are too generic you can define conditions on the value of the field (e.g. `prefix: "eks"`).
