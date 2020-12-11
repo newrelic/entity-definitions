@@ -16,8 +16,9 @@ async function getFiles(dir) {
 
 module.exports = {
     async getAllDefinitions() {
-        var files = await getFiles(DEFINITIONS_DIR)
-        return files.map((filename) => {
+        const files = await getFiles(DEFINITIONS_DIR)
+        const definitionFiles = files.filter(file => file.includes('definition.yml'))
+        return definitionFiles.map((filename) => {
                 return yaml.safeLoad(fs.readFileSync(filename, 'utf8'));
             }
         )
