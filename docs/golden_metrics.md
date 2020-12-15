@@ -47,5 +47,6 @@ memoryUsage:
 | from |   No    | `Metric` | Choose where your metric gathers the information from |
 | where |   No    | empty string | In the case you need a more granular WHERE clause added into the query you can use this field. e.g. `provider='Alb'` |
 | facet |   No    | `entity.name` | Which field to use when doing a FACET. This field will be used when displaying the metric for several entities |
-| eventId |   No    | `entity.guid` | This defines which field is used in the WHERE clause. We recommend to use the default, `entity.guid` which is generated automatically as part of the entity synthesis. |
+| eventId |   No    | `entity.guid` | The event attribute used to filter the entity. We recommend to use the default `entity.guid` which is generated automatically as part of the entity synthesis. |
+
 

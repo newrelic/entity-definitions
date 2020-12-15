@@ -1,33 +1,45 @@
-# -- Mandatory fields --
+#  [mandatory] The domain of an entity, default to EXT unless otherwise indicated by the maintainers.
 domain: DOMAIN
+# [mandatory] The type of an entity. Must be unique within its domain, but may be duplicated between domains.
 type: TYPE
 
+# Entity definitions without this section are synthesized based on rules defined elsewhere.
 synthesis:
-  # -- Mandatory fields --
+  # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
   name: attributeNameA
+  # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique,
+  # it can be the same field used for the name or not.
   identifier: attributeNameA
 
-  # -- Optional fields --
-
-  # set to true if the identifier is expected to be longer than 28 characters, defaults to false
+  # Set to true if the identifier is expected to be longer than our maximum allowed characters (see README guidelines), defaults to false
   encodeIdentifierInGUID: false
 
+  # Conditions that must be met for this entity to be synthesized.
+  # Can be added if the attribute used for the identifier is too generic to differentiate this entity from others
   conditions:
+    # The attribute’s value must match the provided value
     - attribute: attributeNameA
       value: value
+    # The attribute’s value must have the expected prefix
     - attribute: attributeNameB
       prefix: val
 
+  # Tags associated with the entity that can be extracted from the telemetry attributes.
   tags:
     - attributeNameB
     - attributeNameC
 
-  dashboardTemplate: dashboardUrl
+  # Template that can be used to generate a dashboard for the entity.
+  dashboardTemplate: dashboard.json
 
+  # Reference to the golden and/or summary metrics associated with the entity (if any).
   compositeMetrics:
     goldenMetrics: ./domain-type-golden_metrics.yml
     summaryMetrics: ./domain-type-summary_metrics.yml
 
+  # The golden tags associated with the entity. They must be existing NewRelic tags which includes:
+  #   - Tags extracted from telemetry attributes and defined here in the `tags` section.
+  #   - Tags added to the entity through other means.
   goldenTags:
     - tagNameA
     - tagNameB
