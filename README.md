@@ -81,7 +81,7 @@ Composite metrics are those deemed important by you and used by NewRelic to prov
 - Summary metrics: Data related to entities that describes how certain parameters are behaving based on the available telemetry. Some examples of good summary metrics are an aggregated form of Throughput, CPU usage and Memory usage to be shown in, for example, a Table. See the [summary metrics](docs/summary_metrics.md) documentation to know more.  
 - Golden metrics: These are metrics that are deemed the most important for the given entity and are used, for example, in its 'overview' page. See the [golden metrics](docs/golden_metrics.md) documentation to know more.  
 
-#### Dashboard template
+#### Dashboard templates
 
 You can create a dashboard with the NewRelic interface and export it to JSON format:
 
@@ -90,9 +90,11 @@ You can create a dashboard with the NewRelic interface and export it to JSON for
 Then you can just copy it to a file within your entity type's folder, modify it if needed and refer to it from the definition.yml:
 
 ```yaml
-dashboardTemplate: ./<dashboardName>.json
+dashboardTemplates: 
+ - ./<dashboardName>.json
 ```
 
+Note that you can define more than one dashboard under the `dashboardTemplates` field. 
 
 ## Testing and validation
 

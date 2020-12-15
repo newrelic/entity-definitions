@@ -20,45 +20,6 @@
             "attribute": "attributeName",
             "prefix": "value"
           }
-        ],
-        "dashboardTemplate": "url@github.com",
-        "tags": [
-          "attributeName",
-          "attributeName2"
-        ],
-        "compositeMetrics": {
-          "goldenMetrics": [
-            {
-              "metricName": "metricName",
-              "title": "What the user is seeing (unit)",
-              "displayAsValue": false,
-              "query": {
-                "select": "average(metricAttribute)",
-                "from": "Metric",
-                "where": "",
-                "facet": "entity.guid",
-                "eventId": "entity.guid",
-                "eventObjectId": "ENTITY_GUIDS"
-              }
-            }
-          ],
-          "summaryMetrics": [
-            {
-              "metricName": "metricName",
-              "title": "What the user is seeing (unit)",
-              "query": {
-                "select": "sum(metricAttribute)",
-                "from": "Metric",
-                "where": "",
-                "facet": "entity.guid",
-                "eventObjectId": "ENTITY_GUIDS"
-              }
-            }
-          ]
-        },
-        "goldenTags": [
-          "nrTagName",
-          "nrTagName2"
         ]
       }
     }
@@ -96,56 +57,7 @@
       "examples": [
         {
           "name": "EntityName",
-          "identifier": "12345",
-          "conditions": [
-            {
-              "attribute": "attributeName",
-              "value": "value"
-            },
-            {
-              "attribute": "attributeName",
-              "prefix": "value"
-            }
-          ],
-          "dashboardTemplate": "url@github.com",
-          "tags": [
-            "attributeName",
-            "attributeName2"
-          ],
-          "compositeMetrics": {
-            "goldenMetrics": [
-              {
-                "metricName": "metricName",
-                "title": "What the user is seeing (unit)",
-                "displayAsValue": false,
-                "query": {
-                  "select": "average(metricAttribute)",
-                  "from": "Metric",
-                  "where": "",
-                  "facet": "entity.guid",
-                  "eventId": "entity.guid",
-                  "eventObjectId": "ENTITY_GUIDS"
-                }
-              }
-            ],
-            "summaryMetrics": [
-              {
-                "metricName": "metricName",
-                "title": "What the user is seeing (unit)",
-                "query": {
-                  "select": "sum(metricAttribute)",
-                  "from": "Metric",
-                  "where": "",
-                  "facet": "entity.guid",
-                  "eventObjectId": "ENTITY_GUIDS"
-                }
-              }
-            ]
-          },
-          "goldenTags": [
-            "nrTagName",
-            "nrTagName2"
-          ]
+          "identifier": "12345"
         }
       ],
       "required": [
@@ -270,13 +182,14 @@
             ]
           }
         },
-        "dashboardTemplate": {
-          "$id": "#/properties/dashboardTemplate",
-          "type": "string",
-          "title": "The dashboardTemplate schema",
-          "description": "Template of the dashboard to generate",
+        "dashboardTemplates": {
+          "$id": "#/properties/dashboardTemplates",
+          "type": "array",
+          "description": "An array dashboard templates",
           "examples": [
-            "url@github.com"
+            [
+              "url@github.com"
+            ]
           ]
         },
         "compositeMetrics": {
@@ -284,38 +197,6 @@
           "type": "object",
           "title": "Composite metrics related to the entity.",
           "description": "Composite metrics such as the goldenMetrics and summaryMetrics.",
-          "examples": [
-            {
-              "goldenMetrics": [
-                {
-                  "metricName": "memoryUsage",
-                  "title": "What the user is seeing (unit)",
-                  "displayAsValue": false,
-                  "query": {
-                    "select": "average(host.memoryUsagePercent)",
-                    "from": "Metric",
-                    "where": "",
-                    "facet": "entity.name",
-                    "eventId": "entity.guid",
-                    "eventObjectId": "ENTITY_GUIDS"
-                  }
-                }
-              ],
-              "summaryMetrics": [
-                {
-                  "metricName": "volumeRead",
-                  "title": "What the user is seeing (unit)",
-                  "query": {
-                    "select": "sum(`provider.volumeReadOps.Sum`)",
-                    "from": "Metric",
-                    "where": "",
-                    "facet": "entity.guid",
-                    "eventObjectId": "ENTITY_GUIDS"
-                  }
-                }
-              ]
-            }
-          ],
           "anyOf": [
             {
               "required": [
@@ -331,20 +212,22 @@
           "properties": {
             "goldenMetrics": {
               "$id": "#/properties/compositeMetrics/properties/goldenMetrics",
-              "type": "string",
-              "title": "The reference to the golden metrics file",
-              "description": "The reference to the golden metrics file",
+              "type": "array",
+              "description": "Array of relative paths golden metrics files",
               "examples": [
-                "./domain-type-golden_metrics.yml"
+                [
+                  "./domain-type-golden_metrics.yml"
+                ]
               ]
             },
             "summaryMetrics": {
               "$id": "#/properties/compositeMetrics/properties/summaryMetrics",
-              "type": "string",
-              "title": "The reference to the summary metrics file",
-              "description": "The reference to the summary metrics file",
+              "type": "array",
+              "description": "Array of relative paths to summary metrics file",
               "examples": [
-                "./domain-type-summary_metrics.yml"
+                [
+                  "./domain-type-summary_metrics.yml"
+                ]
               ]
             }
           },
