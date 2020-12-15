@@ -75,7 +75,7 @@ You can create a dashboard with the NewRelic interface and export it to JSON for
 Then you can just copy it to a file within your entity type's folder, modify it if needed and refer to it from the definition.yml:
 
 ```yaml
-dashboardTemplate: ./<dashboardName>.json
+dashboardTemplates: ./<dashboardName>.json
 ```
 
 
