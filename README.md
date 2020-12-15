@@ -61,10 +61,10 @@ For more concrete examples, you can take a look at the files located on the [def
 
 #### Tags
 
-The `tags` field accepts and array of metric's attributes that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
+The `tags` field accepts an array of metric's attributes that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
 During synthesis, the tags will be created using the attribute name as key and its value as the tag value. 
 
-If some of the tags' attributes are not present on the telemetry message received, the entity will still be synthesized with the available ones (if any).
+If some of the tags' attributes are not present on the telemetry message received, the entity will still be synthesized with the available tags (if any).
 
 #### Golden tags
 
