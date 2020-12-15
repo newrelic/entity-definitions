@@ -51,13 +51,28 @@ They must be placed inside the same folder as the entity definition and must be 
 
 ### Schema definition
 
-When creating a new entity definition you may use the following files as blueprints:
+When creating a new entity definition you may use the following files as a guide:
 
 - Entity definition: [entity definition example](./docs/example-entity-definition.yml)
 - Golden metrics definition: [golden metrics definition example](./docs/example-entity-golden_metrics.yml)
 - Summary metrics definition: [summary metrics definition example](./docs/example-entity-summary_metrics.yml)
 
 For more concrete examples, you can take a look at the files located on the [definitions](./definitions) folder. 
+
+#### Tags
+
+The `tags` field accepts an array of metric's attributes that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
+During synthesis, the tags will be created using the attribute name as key and its value as the tag value. 
+
+If some of the tags' attributes are not present on the telemetry message received, the entity will still be synthesized with the available tags (if any).
+
+#### Golden tags
+
+The `goldenTags` field accepts an array of tag-keys which are considered the most important for the entity's DOMAIN and TYPE, 
+so that they can be highlighted in the different NewRelic visualizations as important metadata for the entity. 
+
+The `goldenTags` may be a subset of those defined in the `tags` field, but they can also be added to the entity after synthesis, 
+so we trust the criteria of the contributor of the definition to select the tags they need as the domain expert. 
 
 #### Composite metrics
 
