@@ -1,0 +1,25 @@
+throughput:
+  title: Throughput
+  query:
+    select: count(newrelic.timeslice.value)
+    where: metricTimesliceName in ('HttpDispatcher', 'OtherTransaction/all')
+    facet: appName
+    eventObjectId: DOMAIN_IDS
+    eventId: appId
+errorRate:
+  title: Error rate
+  query:
+    select: filter(count(newrelic.timeslice.value), where metricTimesliceName = 'Errors/all')
+      / (filter(count(newrelic.timeslice.value), where metricTimesliceName in ('HttpDispatcher',
+      'OtherTransaction/all'))) * 100
+    facet: appName
+    eventObjectId: DOMAIN_IDS
+    eventId: appId
+responseTimeMs:
+  title: Response time (ms)
+  query:
+    select: average(newrelic.timeslice.value)
+    where: metricTimesliceName in ('HttpDispatcher', 'OtherTransaction/all')
+    facet: appName
+    eventObjectId: DOMAIN_IDS
+    eventId: appId
