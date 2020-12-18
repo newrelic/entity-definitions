@@ -17,43 +17,10 @@ synthesis:
 dashboardTemplates: 
   - ./dashboard.json
 
-  compositeMetrics:
-    goldenMetrics:
-      - tinyproxyRequestsTotal:
-          title: Requests (requests)
-          query:
-            select: sum(tinyproxy_requests_total)
-      - tinyproxyConnectionsOpen:
-          title: Opened connections (connections per second)
-          query:
-            select: rate(max(tinyproxy_connections_open)-min(tinyproxy_connections_open), 1 second)
-      - tinyproxyConnectionsBadTotal:
-          title: Bad connections (connections)
-          query:
-            select: sum(tinyproxy_connections_bad_total)
-
-    summaryMetrics:
-      - tinyproxyRequestsTotal:
-          title: Requests (requests)
-          unit: COUNT
-          query:
-            select: sum(tinyproxy_requests_total)
-            from: Metric
-            eventId: entity.guid
-      - tinyproxyConnectionsOpen:
-          title: Opened connections (connections per second)
-          unit: OPERATIONS_PER_SECOND
-          query:
-            select: rate(max(tinyproxy_connections_open)-min(tinyproxy_connections_open), 1 second)
-            from: Metric
-            eventId: entity.guid
-      - tinyproxyConnectionsBadTotal:
-          title: Bad connections (connections)
-          unit: COUNT
-          query:
-            select: sum(tinyproxy_connections_bad_total)
-            from: Metric
-            eventId: entity.guid
-
-  goldenTags:
-    - instrumentation.name
+compositeMetrics:
+   goldenMetrics:
+      - ./golden_metrics.yml
+   summaryMetrics:
+      - ./summary_metrics.yml
+goldenTags:
+   - instrumentation.name
