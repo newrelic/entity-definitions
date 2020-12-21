@@ -1,0 +1,31 @@
+throughput:
+  title: Throughput
+  unit: COUNT
+  query:
+    from: Span
+    select: count(*)
+    where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+    eventId: entity.guid
+    # For metrics:
+    # from: Metric
+    # select: count(*)
+    # where: (http.server.duration IS NOT NULL OR grpc.server.duration IS NOT NULL)
+errorRate:
+  title: Error rate
+  unit: COUNT
+  query:
+    from: Span
+    select: filter(count(*), where error.message IS NOT NULL) / count(*)
+    eventId: entity.guid
+responseTimeMs:
+  title: Response time (ms)
+  unit: SECONDS
+  query:
+    from: Span
+    select: average(duration.ms)
+    where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+    eventId: entity.guid
+    # For metrics:
+    # from: Metric
+    # select: average(%.server.duration)
+    # where: (http.server.duration IS NOT NULL OR grpc.server.duration IS NOT NULL)
