@@ -1,0 +1,20 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+incoming:
+  query:
+    eventId: entityGuid
+    select: sum(`provider.incomingBytes.Sum`)
+    from: QueueSample
+  unit: BYTES
+  title: Incoming
+delivered:
+  query:
+    eventId: entityGuid
+    select: sum(`provider.deliveryToElasticsearchBytes.Sum`) + sum(`provider.deliveryToS3Bytes.Sum`)
+      + sum(`provider.deliveryToRedshiftBytes.Sum`)
+    from: QueueSample
+  unit: BYTES
+  title: Delivered
