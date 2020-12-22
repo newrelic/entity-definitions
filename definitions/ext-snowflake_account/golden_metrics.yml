@@ -1,0 +1,75 @@
+warehouseCount:
+  title: "How many virtual warehouses in your Snowflake account"
+  query:
+    select: uniqueCount(NAME)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.billing'"
+    eventId: entity.guid
+  displayAsValue: false
+databaseCount:
+  title: "How many databases in your Snowflake account"
+  query:
+    select: uniqueCount(DATABASE_NAME)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.database_storage'"
+    eventId: entity.guid
+  displayAsValue: false
+# TODO: we need to FACET by NAME (warehouse)
+creditsUsed:
+  title: "Credits Used"
+  query:
+    select: average(CREDITS_USED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.billing'"
+    eventId: entity.guid
+  displayAsValue: false
+storageUsage:
+  title: "Storage Usage"
+  query:
+    select: average(FAILSAFE_BYTES), average(STAGE_BYTES), average(STORAGE_BYTES)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.storage_usage'"
+    eventId: entity.guid
+  displayAsValue: false
+pipeUsage:
+  title: "Snowpipe Usage"
+  query:
+    select: average(CREDITS_USED_AVERAGE), average(BYTES_INSERTED_AVERAGE), average(FILES_INSERTED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.pipe_usage'"
+    eventId: entity.guid
+  displayAsValue: false
+replicationUsage:
+  title: "Replication Usage"
+  query:
+    select: average(CREDITS_USED_AVERAGE), average(BYTES_TRANSFERRED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.replication_usage'"
+    eventId: entity.guid
+  displayAsValue: false
+loginHistory:
+  title: "Login History"
+  query:
+    select: filter(count(*), WHERE IS_SUCCESS = 'NO') as 'Failed Logins', filter(count(*), WHERE IS_SUCCESS = 'YES') as 'Successful Logins'
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.login_history'"
+    eventId: entity.guid
+  displayAsValue: false
+automaticClustering:
+  title: "Automatic Clustering Usage"
+  query:
+    select: average(CREDITS_USED_AVERAGE), average(BYTES_RECLUSTERED_AVERAGE), average(ROWS_RECLUSTERED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.automatic_clustering'"
+    eventId: entity.guid
+  displayAsValue: false
+# TODO: we need to FACET here by source cloud, target cloud
+dataTransfer:
+  title: "Data Transfer Usage"
+  query:
+    select: average(BYTES_TRANSFERRED_AVERAGE)
+    from: SnowflakeAccount
+    where: "metric_type = 'snowflake.data_transfer'"
+    eventId: entity.guid
+  displayAsValue: false
+
