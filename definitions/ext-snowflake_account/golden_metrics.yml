@@ -14,13 +14,13 @@ databaseCount:
     where: "metric_type = 'snowflake.database_storage'"
     eventId: entity.guid
   displayAsValue: false
-# TODO: we need to FACET by NAME (warehouse)
 creditsUsed:
   title: "Credits Used"
   query:
     select: average(CREDITS_USED_AVERAGE)
     from: SnowflakeAccount
     where: "metric_type = 'snowflake.billing'"
+    facet: NAME
     eventId: entity.guid
   displayAsValue: false
 storageUsage:
@@ -70,6 +70,7 @@ dataTransfer:
     select: average(BYTES_TRANSFERRED_AVERAGE)
     from: SnowflakeAccount
     where: "metric_type = 'snowflake.data_transfer'"
+    facet: source_cloud, target_cloud
     eventId: entity.guid
   displayAsValue: false
 
