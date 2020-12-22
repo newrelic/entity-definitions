@@ -1,0 +1,26 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+requests:
+  query:
+    eventId: entityGuid
+    select: sum(`provider.getRequests.Sum`) + sum(`provider.putRequests.Sum`) + sum(`provider.headRequests.Sum`)
+    from: DatastoreSample
+  unit: COUNT
+  title: Requests
+errors:
+  query:
+    eventId: entityGuid
+    select: sum(`provider.error4xxErrors.Sum`) + sum(`provider.error5xxErrors.Sum`)
+    from: DatastoreSample
+  unit: COUNT
+  title: Errors
+latency:
+  query:
+    eventId: entityGuid
+    select: (average(`provider.totalRequestLatency.Average`)) / 1000
+    from: DatastoreSample
+  unit: SECONDS
+  title: Latency

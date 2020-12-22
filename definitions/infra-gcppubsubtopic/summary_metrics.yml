@@ -1,0 +1,19 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: GCP Account
+  unit: STRING
+sendMessageRequests:
+  query:
+    eventId: entityGuid
+    select: (rate(sum(`topic.SendMessageOperation`), 1 minute)) / 60
+    from: GcpPubSubTopicSample
+  unit: MESSAGES_PER_SECOND
+  title: Send rate
+byteCost:
+  query:
+    eventId: entityGuid
+    select: sum(`topic.NumUnackedMessagesByRegion`)
+    from: GcpPubSubTopicSample
+  unit: COUNT
+  title: Unacknowledged messages

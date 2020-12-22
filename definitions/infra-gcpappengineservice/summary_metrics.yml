@@ -1,0 +1,27 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: GCP Account
+  unit: STRING
+Service responses:
+  query:
+    eventId: entityGuid
+    select: sum(`server.Responses`)
+    from: GcpAppEngineServiceSample
+  unit: COUNT
+  title: Service responses
+errorRate:
+  query:
+    eventId: entityGuid
+    select: filter(sum(`server.Responses`), WHERE response_code NOT LIKE '2%') * 100
+      / sum(`server.Responses`)
+    from: GcpAppEngineServiceSample
+  unit: PERCENTAGE
+  title: Error rate
+latency:
+  query:
+    eventId: entityGuid
+    select: (average(`server.ResponseLatenciesMilliseconds`)) / 1000
+    from: GcpAppEngineServiceSample
+  unit: SECONDS
+  title: Latency
