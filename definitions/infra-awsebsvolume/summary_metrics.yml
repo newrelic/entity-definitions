@@ -1,0 +1,28 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+operations:
+  query:
+    eventId: entityGuid
+    select: sum(`provider.volumeReadOps.Sum`) + sum(`provider.volumeWriteOps.Sum`)
+    from: BlockDeviceSample
+  unit: COUNT
+  title: Operations
+readTime:
+  query:
+    eventId: entityGuid
+    select: (average(`provider.volumeTotalReadTime.Sum` / `provider.volumeReadOps.Sum`)
+      * 1000) / 1000
+    from: BlockDeviceSample
+  unit: SECONDS
+  title: Read time
+writeTime:
+  query:
+    eventId: entityGuid
+    select: (average(`provider.volumeTotalWriteTime.Sum` / `provider.volumeWriteOps.Sum`)
+      * 1000) / 1000
+    from: BlockDeviceSample
+  unit: SECONDS
+  title: Write time
