@@ -30,7 +30,7 @@ Some examples are APPLICATION, HOST or CONTAINER.
   - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
 - The definition needs to provide enough information to differentiate this entity
  from others. It cannot be a subset nor a superset of any existing definition. If the names of
-  your telemetry attributes are too generic you can define conditions on the value of the field (e.g. `prefix: "eks"`).
+  your telemetry attributes are too generic you can define conditions on the value of the field (e.g. `prefix: "eks"`). The entity will be synthesized if at least one of the specified conditions is met. 
 - If you are creating a definition for a `domain` and `type` that already exists we'll need to
  understand your use case, so please provide an explanation in your PR or get in touch with us to discuss it. 
 - If you are adding composite metrics' files for an entity definition they must be placed inside the same folder and follow the filename format.
