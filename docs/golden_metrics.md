@@ -6,7 +6,8 @@ We allow a maximum of 10 metrics per entityType.
 
 ## Defining golden metrics
 
-Golden metrics are defined in a map where each key is a camel-case name that defines the intention of the metric: 
+Golden metrics are defined in a map where each key should be unique. The allowed characters are `[a-zA-Z0-9_]` with a maximum of 100 characters.
+This key defines the intention of the metric:
 
 ```yaml
 memoryUsage:
