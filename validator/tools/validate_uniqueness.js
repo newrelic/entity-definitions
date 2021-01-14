@@ -12,7 +12,7 @@ function hasConflictingConditions(entity1, entity2){
     let e1conditions = entity1.synthesis.conditions || []
     let e2conditions = entity2.synthesis.conditions || []
 
-    if(e1conditions.length === 0 || e1conditions.length === 0){
+    if(e1conditions.length === 0 || e2conditions.length === 0){
         return true
     }
 
