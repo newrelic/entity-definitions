@@ -28,7 +28,7 @@ const RULES = [
                 const identifier = def.synthesis.identifier
 
                 if (ENTITY.has(identifier) && hasConflictingConditions(ENTITY.get(identifier), def) && hasDifferentDomainType(ENTITY.get(identifier), def)) {
-                    throw `Same entity ID criteria ${identifier} and conditions assigned to different domain types.`
+                    throw `Same entity ID criteria ${identifier} with conflicting conditions assigned to different domain types.`
                 }
 
                 ENTITY.set(identifier, def)
