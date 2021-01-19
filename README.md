@@ -30,7 +30,7 @@ Some examples are APPLICATION, HOST or CONTAINER.
   - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
 - The definition needs to provide enough information to differentiate this entity
   from others. It cannot be a subset nor a superset of any existing definition. 
-- If the names of your telemetry attributes are too generic you can define a condition on an attribute that needs to be met for the entity to be synthesized. 
+- If the names of your telemetry attributes are too generic, you can define a condition to match on the value of an attribute. 
   For more information on our supported conditions please refer to the [conditions](#conditions) section. 
 - If you are creating a definition for a `domain` and `type` that already exists we'll need to
  understand your use case, so please provide an explanation in your PR or get in touch with us to discuss it. 
