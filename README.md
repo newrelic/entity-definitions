@@ -29,7 +29,7 @@ Some examples are APPLICATION, HOST or CONTAINER.
   - 1 to 36 standard ascii characters, excluding control chars (codes: 32-126).
   - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
 - The definition needs to provide enough information to differentiate this entity
- from others. It cannot be a subset nor a superset of any existing definition. 
+  from others. It cannot be a subset nor a superset of any existing definition. 
 - If the names of your telemetry attributes are too generic you can define a condition on an attribute that needs to be met for the entity to be synthesized. 
   For more information on our supported conditions please refer to the [conditions](#conditions) section. 
 - If you are creating a definition for a `domain` and `type` that already exists we'll need to
