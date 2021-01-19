@@ -29,8 +29,9 @@ Some examples are APPLICATION, HOST or CONTAINER.
   - 1 to 36 standard ascii characters, excluding control chars (codes: 32-126).
   - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
 - The definition needs to provide enough information to differentiate this entity
- from others. It cannot be a subset nor a superset of any existing definition. If the names of
-  your telemetry attributes are too generic you can define conditions on the value of the field (e.g. `prefix: "eks"`).
+  from others. It cannot be a subset nor a superset of any existing definition. 
+- If the names of your telemetry attributes are too generic, you can define a condition to match on the value of an attribute. 
+  For more information on our supported conditions please refer to the [conditions](#conditions) section. 
 - If you are creating a definition for a `domain` and `type` that already exists we'll need to
  understand your use case, so please provide an explanation in your PR or get in touch with us to discuss it. 
 - If you are adding composite metrics' files for an entity definition they must be placed inside the same folder and follow the filename format.
@@ -58,6 +59,34 @@ When creating a new entity definition you may use the following files as a guide
 - Summary metrics definition: [summary metrics definition example](./docs/example-entity-summary_metrics.yml)
 
 For more concrete examples, you can take a look at the files located on the [definitions](./definitions) folder. 
+
+#### Conditions
+
+We support the following conditions over telemetry attributes and their values:
+
+- Attribute match: If the specified attribute is present on the telemetry, synthesize the entity. The value of the attribute is not taken into account. 
+
+```yaml
+  conditions:
+    # The attribute must be present on the telemetry
+    - attribute: attributeName
+```
+- Value match: If the value of the specified telemetry attribute matches the expected one, synthesize the entity.
+
+```yaml
+  conditions:
+    # The attribute’s value must match the provided value
+    - attribute: attributeName
+      value: value
+```
+- Value prefix match: If the value of the specified telemetry attribute has the expected prefix, synthesize the entity.
+
+```yaml
+  conditions:
+    # The attribute’s value must have the expected prefix
+    - attribute: attributeName
+      prefix: val
+```
 
 #### Tags
 

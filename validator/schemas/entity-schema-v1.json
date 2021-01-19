@@ -93,8 +93,10 @@
         "conditions": {
           "$id": "#/properties/conditions",
           "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
           "title": "Conditions for the entity to be synthesized",
-          "description": "Allows to specify that an attribute's value needs to match a specific value or have a specific prefix.",
+          "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
           "examples": [
             [
               {
@@ -107,15 +109,14 @@
               }
             ]
           ],
-          "additionalItems": true,
+          "additionalItems": false,
           "items": {
             "$id": "#/properties/conditions/items",
-            "anyOf": [
+            "oneOf": [
               {
                 "$id": "#/properties/conditions/items/anyOf/0",
                 "type": "object",
-                "title": "Match attribute value",
-                "description": "An attribute's value needs to match the provided one",
+                "description": "Match attribute and its value or prefix (if requested)",
                 "examples": [
                   {
                     "attribute": "attributeName",
@@ -123,8 +124,7 @@
                   }
                 ],
                 "required": [
-                  "attribute",
-                  "value"
+                  "attribute"
                 ],
                 "properties": {
                   "attribute": {
@@ -142,35 +142,9 @@
                     "examples": [
                       "value"
                     ]
-                  }
-                }
-              },
-              {
-                "$id": "#/properties/conditions/items/anyOf/1",
-                "type": "object",
-                "title": "Match attribute value's prefix",
-                "description": "An attribute's value prefix needs to match the provided one",
-                "examples": [
-                  {
-                    "attribute": "attributeName",
-                    "prefix": "value"
-                  }
-                ],
-                "required": [
-                  "attribute",
-                  "prefix"
-                ],
-                "properties": {
-                  "attribute": {
-                    "$id": "#/properties/conditions/items/anyOf/1/properties/attribute",
-                    "type": "string",
-                    "title": "The attribute name",
-                    "examples": [
-                      "attributeName"
-                    ]
                   },
                   "prefix": {
-                    "$id": "#/properties/conditions/items/anyOf/1/properties/prefix",
+                    "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
                     "type": "string",
                     "title": "The expected prefix",
                     "examples": [
