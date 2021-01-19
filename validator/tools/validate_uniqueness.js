@@ -8,25 +8,16 @@ function hasDifferentDomainType(entity1, entity2){
     return (entity1.domain !== entity2.domain || entity1.type !== entity2.type)
 }
 
-function hasSameConditions(entity1, entity2){
+function hasConflictingConditions(entity1, entity2){
     let e1conditions = entity1.synthesis.conditions || []
     let e2conditions = entity2.synthesis.conditions || []
 
-    if(isEqual(new Set(e1conditions), new Set(e2conditions))){
+    if(e1conditions.length === 0 || e2conditions.length === 0){
         return true
     }
 
-    // First entity conditions are a subset of the second entity's
-    if(e1conditions.filter(e1cond => !e2conditions.some(e2cond => isEqual(e1cond, e2cond))).length === 0){
-        return true
-    }
-
-    // Second entity conditions are a subset of the first entity's
-    if(e2conditions.filter(e2cond => !e1conditions.some(e1cond => isEqual(e2cond, e1cond))).length === 0){
-        return true
-    }
-
-    return false
+    // Conditions from one entity are present in the other
+    return e1conditions.some(e1cond => e2conditions.some(e2cond => isEqual(e1cond, e2cond)));
 }
 
 const RULES = [
@@ -35,8 +26,9 @@ const RULES = [
         apply: def => {
             if(def.synthesis != undefined) {
                 const identifier = def.synthesis.identifier
-                if (ENTITY.has(identifier) && hasSameConditions(ENTITY.get(identifier), def) && hasDifferentDomainType(ENTITY.get(identifier), def)) {
-                    throw `Same entity ID criteria ${identifier} and conditions assigned to different domain types.`
+
+                if (ENTITY.has(identifier) && hasConflictingConditions(ENTITY.get(identifier), def) && hasDifferentDomainType(ENTITY.get(identifier), def)) {
+                    throw `Same entity ID criteria ${identifier} and condition assigned to different domain types.`
                 }
 
                 ENTITY.set(identifier, def)
