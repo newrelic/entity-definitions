@@ -132,21 +132,21 @@ If this doesn't suit your needs you may also specify your desired behavior under
 
 ```yaml
 ttl:
-  # The strategy to follow when indexing the entity type. Defaults to DELETE_BY_QUERY
-  indexStrategy: DELETE_BY_QUERY
+  # The strategy to follow for the entity deletion. Defaults to AUTOMATIC
+  deletionStrategy: AUTOMATIC
   # The frequency to delete the entity types. Defaults to EIGHT_DAYS
   deletionFrequency: EIGHT_DAYS
 ```
 
-`indexStrategy` accepts the values `DELETE_BY_QUERY` (default) and `DELETE_BY_DOCUMENT`. 
+`deletionStrategy` accepts the values `AUTOMATIC` (default) and `MANUAL`. 
 
-If `DELETE_BY_QUERY` is used the entity will be automatically deleted after a certain amount of time, defined by the `deletionFrequency`: 
+If `AUTOMATIC` is used the entity will be automatically deleted after a certain amount of time, defined by the `deletionFrequency`: 
 - `HOURLY`
 - `DAILY`
 - `EIGHT_DAYS` (default)
 - `QUARTERLY`
 
-If `DELETE_BY_DOCUMENT` is used, the `deletionFrequency` field must be set to `MANUAL`. 
+If `MANUAL` is used, the `deletionFrequency` field must be left empty or set to `MANUAL`. 
 
 ## Testing and validation
 
