@@ -125,27 +125,23 @@ dashboardTemplates:
 
 Note that you can define more than one dashboard under the `dashboardTemplates` field. 
 
-#### Entity expiration 
+#### Configurations
 
-By default, entities are automatically deleted if we reach 8 days without receiving any telemetry from them. 
-If this doesn't suit your needs you may also specify your desired `expirationPolicy` and `expirationTime` under the `expiration` section of the main `definition.yml` file:  
+In the `configuration` section of the `definition.yml` file you can tweak the entity's behavior. At the moment you can only configure the entity's expiration time. 
 
 ```yaml
-expiration:
-  # The entity deletion policy. Defaults to AUTOMATIC
-  expirationPolicy: AUTOMATIC
+configuration:
   # The amount of time without receiving telemetry before an entity is deleted. Defaults to EIGHT_DAYS
-  expirationTime: EIGHT_DAYS
+  entityExpirationTime: EIGHT_DAYS
 ```
 
-`expirationPolicy` accepts the values `AUTOMATIC` (default) and `MANUAL`. 
+By default, entities are automatically deleted if we reach 8 days without receiving any telemetry from them. 
+If this doesn't suit your needs you may set the `entityExpirationTime` to one of the following values:  
 
-If `AUTOMATIC` is used, the entity will be deleted if we don't receive any telemetry for the time defined by `expirationTime`: 
 - `DAILY`
 - `EIGHT_DAYS` (default)
 - `QUARTERLY`
-
-If `MANUAL` is used, the entity will not be deleted based on an `expirationTime` so the field can be left empty. 
+- `MANUAL` (allowed only for entities without a `synthesis` section)
 
 ## Testing and validation
 
