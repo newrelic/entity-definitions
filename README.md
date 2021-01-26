@@ -125,6 +125,29 @@ dashboardTemplates:
 
 Note that you can define more than one dashboard under the `dashboardTemplates` field. 
 
+#### Entity TTL
+
+Entities are deleted by default 8 days after the last time they were indexed or sent out a heartbeat. 
+If this doesn't suit your needs you may also specify your desired behavior under the TTL section of the main `definition.yml` file:  
+
+```yaml
+ttl:
+  # The strategy to follow when indexing the entity type. Defaults to DELETE_BY_QUERY
+  indexStrategy: DELETE_BY_QUERY
+  # The frequency to delete the entity types. Defaults to EIGHT_DAYS
+  deletionFrequency: EIGHT_DAYS
+```
+
+`indexStrategy` accepts the values `DELETE_BY_QUERY` (default) and `DELETE_BY_DOCUMENT`. 
+
+If `DELETE_BY_QUERY` is used the entity will be automatically deleted after a certain amount of time, defined by the `deletionFrequency`: 
+- `HOURLY`
+- `DAILY`
+- `EIGHT_DAYS` (default)
+- `QUARTERLY`
+
+If `DELETE_BY_DOCUMENT` is used, the `deletionFrequency` field must be set to `MANUAL`. 
+
 ## Testing and validation
 
 Some validations are automatically executed whenever there is a contribution via pull request, to verify that the provided definition meets the basic requirements:
