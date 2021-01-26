@@ -141,7 +141,6 @@ expiration:
 `expirationPolicy` accepts the values `AUTOMATIC` (default) and `MANUAL`. 
 
 If `AUTOMATIC` is used, the entity will be deleted if we don't receive any telemetry for the time defined by `expirationTime`: 
-- `HOURLY`
 - `DAILY`
 - `EIGHT_DAYS` (default)
 - `QUARTERLY`
