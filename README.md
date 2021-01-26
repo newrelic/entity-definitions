@@ -125,28 +125,28 @@ dashboardTemplates:
 
 Note that you can define more than one dashboard under the `dashboardTemplates` field. 
 
-#### Entity TTL
+#### Entity expiration 
 
-Entities are deleted by default 8 days after the last time they were indexed or sent out a heartbeat. 
-If this doesn't suit your needs you may also specify your desired behavior under the TTL section of the main `definition.yml` file:  
+By default, entities are automatically deleted if we reach 8 days without receiving any telemetry from them. 
+If this doesn't suit your needs you may also specify your desired `expirationPolicy` and `expirationTime` under the `expiration` section of the main `definition.yml` file:  
 
 ```yaml
-ttl:
-  # The strategy to follow for the entity deletion. Defaults to AUTOMATIC
-  deletionStrategy: AUTOMATIC
-  # The frequency to delete the entity types. Defaults to EIGHT_DAYS
-  deletionFrequency: EIGHT_DAYS
+expiration:
+  # The entity deletion policy. Defaults to AUTOMATIC
+  expirationPolicy: AUTOMATIC
+  # The amount of time without receiving telemetry before an entity is deleted. Defaults to EIGHT_DAYS
+  expirationTime: EIGHT_DAYS
 ```
 
-`deletionStrategy` accepts the values `AUTOMATIC` (default) and `MANUAL`. 
+`expirationPolicy` accepts the values `AUTOMATIC` (default) and `MANUAL`. 
 
-If `AUTOMATIC` is used the entity will be automatically deleted after a certain amount of time, defined by the `deletionFrequency`: 
+If `AUTOMATIC` is used, the entity will be deleted if we don't receive any telemetry for the time defined by `expirationTime`: 
 - `HOURLY`
 - `DAILY`
 - `EIGHT_DAYS` (default)
 - `QUARTERLY`
 
-If `MANUAL` is used, the `deletionFrequency` field must be left empty or set to `MANUAL`. 
+If `MANUAL` is used, the entity will not be deleted based on an `expirationTime` so the field can be left empty. 
 
 ## Testing and validation
 
