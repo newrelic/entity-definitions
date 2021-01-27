@@ -125,6 +125,24 @@ dashboardTemplates:
 
 Note that you can define more than one dashboard under the `dashboardTemplates` field. 
 
+#### Configurations
+
+In the `configuration` section of the `definition.yml` file you can tweak the entity's behavior. At the moment you can only configure the entity's expiration time. 
+
+```yaml
+configuration:
+  # The amount of time without receiving telemetry before an entity is deleted. Defaults to EIGHT_DAYS
+  entityExpirationTime: EIGHT_DAYS
+```
+
+By default, entities are automatically deleted if we reach 8 days without receiving any telemetry from them. 
+If this doesn't suit your needs you may set the `entityExpirationTime` to one of the following values:  
+
+- `DAILY`
+- `EIGHT_DAYS` (default)
+- `QUARTERLY`
+- `MANUAL` (allowed only for entities without a `synthesis` section)
+
 ## Testing and validation
 
 Some validations are automatically executed whenever there is a contribution via pull request, to verify that the provided definition meets the basic requirements:
