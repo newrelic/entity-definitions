@@ -1,21 +1,30 @@
-effectiveCpuAvailableToVmsMhz:
-  title: Effective CPU available to VMs (MHz)
+overallStatus:
+  title: Overall Status of the Cluster
   query:
-    select: average(cpu.totalEffectiveMHz)
-    from: VSphereClusterSample
-    facet: entityName
     eventId: entityGuid
-effectiveMemoryAvailableToVmsMb:
-  title: Effective memory available to VMs (MB)
+    select: latest(`overallStatus`)
+    from: VSphereClusterSample
+effectiveHosts:
+  title: Effective Hosts in the Cluster
   query:
-    select: average(mem.effectiveSize)
-    from: VSphereClusterSample
-    facet: entityName
     eventId: entityGuid
-numberOfEffectiveHosts:
-  title: Number of effective hosts
+    select: latest(`effectiveHosts`)
+    from: VSphereClusterSample
+hostsCount:
+  title: Total Hosts in the Cluster
   query:
-    select: average(effectiveHosts)
-    from: VSphereClusterSample
-    facet: entityName
     eventId: entityGuid
+    select: latest(`hosts`)
+    from: VSphereClusterSample
+totalEffectiveMHz:
+  title: Total Effective CPU resources in MHz
+  query:
+    eventId: entityGuid
+    select: latest(`cpu.totalEffectiveMHz`)
+    from: VSphereClusterSample
+totalMHz:
+  title: Aggregated CPU resources of all hosts in MHz
+  query:
+    eventId: entityGuid
+    select: latest(`cpu.totalMHz`)
+    from: VSphereClusterSample
