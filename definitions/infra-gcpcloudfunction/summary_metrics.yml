@@ -1,0 +1,19 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: GCP Account
+  unit: STRING
+executions:
+  query:
+    eventId: entityGuid
+    select: sum(`function.Executions`)
+    from: GcpCloudFunctionSample
+  unit: COUNT
+  title: Executions
+errorRate:
+  query:
+    eventId: entityGuid
+    select: filter(sum(`function.Executions`), WHERE status != 'ok') * 100 / sum(`function.Executions`)
+    from: GcpCloudFunctionSample
+  unit: PERCENTAGE
+  title: Error rate
