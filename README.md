@@ -16,8 +16,9 @@ so your PR will get merged faster, and you can start enjoying your shiny new ent
 
 - Each entity definition file must live inside its own folder and both must follow the filename format explained below. 
 - The definition MUST be a valid YAML file.
-- The definition must contain at least the top-level fields `domain` and `type`, along with the fields `name` and `identifier`, located under `synthesis`. 
-We use the `domain`, `type` and `identifier` to assign each entity a Global Unique Identifier (GUID).
+- The definition must contain at least the top-level fields `domain` and `type`, along with the fields `name`, `identifier` and `conditions`, located under `synthesis`. 
+The synthesis section is optional only if you can ensure that the telemetry is being stamped with the entity GUID and tags based on rules defined internally at NewRelic.
+- We use the `domain`, `type` and `identifier` to assign each entity a Global Unique Identifier (GUID).
 - The `domain` must be a value matching `/[A-Z][A-Z0-9_]{2,7}/`. This field is mostly relevant internally for NR. 
 Use EXT by default, although we may advise to use a different value in some cases.                
 - The `type` must be a value matching `/[A-Z][A-Z0-9_]{2,11}/`. This field is meant to identify the type of entity. 
@@ -28,10 +29,9 @@ Some examples are APPLICATION, HOST or CONTAINER.
   - `/[\x20-\x7E]{1,36}/`.
   - 1 to 36 standard ascii characters, excluding control chars (codes: 32-126).
   - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
-- The definition needs to provide enough information to differentiate this entity
-  from others. It cannot be a subset nor a superset of any existing definition. 
-- If the names of your telemetry attributes are too generic, you can define a condition to match on the value of an attribute. 
+- You must also define a condition to match on the value of an attribute. An entity will be synthesized if it matches the provided condition and contains the attributes set for the identifier and name. 
   For more information on our supported conditions please refer to the [conditions](#conditions) section. 
+- The definition needs to provide enough information to differentiate this entity from others. It cannot be a subset nor a superset of any existing definition. 
 - If you are creating a definition for a `domain` and `type` that already exists we'll need to
  understand your use case, so please provide an explanation in your PR or get in touch with us to discuss it. 
 - If you are adding composite metrics' files for an entity definition they must be placed inside the same folder and follow the filename format.
@@ -124,6 +124,36 @@ dashboardTemplates:
 ```
 
 Note that you can define more than one dashboard under the `dashboardTemplates` field. 
+
+#### Configurations
+
+In the `configuration` section of the `definition.yml` file you can tweak the entity's behavior. 
+At the moment we accept two optional configuration parameters `entityExpirationTime` and `alertable`.
+
+```yaml
+configuration:
+  # The amount of time without receiving telemetry before an entity is deleted. Defaults to EIGHT_DAYS
+  entityExpirationTime: EIGHT_DAYS
+  # Defines whether the entities of this type should have an alert severity associated, defaults to true
+  alertable: true
+```
+
+**entityExpirationTime**
+
+By default, entities are automatically deleted if we reach 8 days without receiving any telemetry from them. 
+If this doesn't suit your needs you may set the `entityExpirationTime` to one of the following values:  
+
+- `DAILY`
+- `EIGHT_DAYS` (default)
+- `QUARTERLY`
+- `MANUAL` (allowed only for entities without a `synthesis` section)
+
+
+**alertable**
+
+If `alertable` is set to true (default), the entity's metadata will include a field `alertSeverity` that is updated when the telemetry associated to this entity breaks an alerting condition.
+
+
 
 ## Testing and validation
 
