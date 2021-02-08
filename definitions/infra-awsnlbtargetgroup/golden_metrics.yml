@@ -1,16 +1,33 @@
-healthyHosts:
-  title: Healthy hosts
+failedClientNlbTlsHandshakes:
+  title: Failed client-NLB TLS handshakes
   query:
-    select: min(provider.healthyHostCount.Minimum)
+    select: rate((sum(provider.clientTlsNegotiationErrorCount.Sum),1 minute)
     from: LoadBalancerSample
-    where: provider='NlbTargetGroup'
-    facet: entityName
+    where: provider='Nlb'
     eventId: entityGuid
-unhealthyHosts:
-  title: Unhealthy hosts
+    facet: entityName
+failedNlbTargetTlsHandshakes:
+  title: Failed NLB-target TLS handshakes
   query:
-    select: max(provider.unHealthyHostCount.Maximum)
+    select: rate(sum(provider.targetTlsNegotiationErrorCount.Sum),1 minute)
     from: LoadBalancerSample
-    where: provider='NlbTargetGroup'
-    facet: entityName
+    where: provider='Nlb'
     eventId: entityGuid
+    facet: entityName
+concurrentFlows:
+  title: Avg Concurrent flows
+  query:
+    select: average(provider.activeFlowCount.Average)
+    from: LoadBalancerSample
+    where: provider='Nlb'
+    eventId: entityGuid
+    facet: entityName
+concurrentTlsFlows:
+  title: Avg Concurrent TLS flows
+  query:
+    select: average(provider.activeFlowCountTls.Average)
+    from: LoadBalancerSample
+    where: provider='Nlb'
+    eventId: entityGuid
+    facet: entityName
+    
