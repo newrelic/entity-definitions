@@ -1,14 +1,21 @@
-databaseSizeBytes:
-  title: Database size (bytes)
+storageUsagePercent:
+  title: Storage usage (%)
   query:
-    select: sum(storage.Total)
+    select: max(storagePercent.Maximum)
     from: AzureSqlDatabaseSample
     facet: entityName
     eventId: entityGuid
-deadlocks:
-  title: Deadlocks
+cpu:
+  title: CPU (%)
   query:
-    select: sum(deadlock.Total)
+    select: average(cpuPercent.Average)
+    from: AzureSqlDatabaseSample
+    facet: entityName
+    eventId: entityGuid
+successfulConnections:
+  title: Successful connections
+  query:
+    select: sum(connectionSuccessful.Total)
     from: AzureSqlDatabaseSample
     facet: entityName
     eventId: entityGuid
@@ -16,6 +23,13 @@ failedConnections:
   title: Failed connections
   query:
     select: sum(connectionFailed.Total)
+    from: AzureSqlDatabaseSample
+    facet: entityName
+    eventId: entityGuid
+deadlocks:
+  title: Deadlocks
+  query:
+    select: sum(deadlock.Total)
     from: AzureSqlDatabaseSample
     facet: entityName
     eventId: entityGuid
