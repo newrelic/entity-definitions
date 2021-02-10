@@ -1,13 +1,13 @@
 responseTimeMs:
   title: Response time (ms)
   query:
-    select: average(newrelic.timeslice.value)
+    select: average(newrelic.timeslice.value) AS 'Response time (ms)'
     where: metricTimesliceName in ('HttpDispatcher', 'OtherTransaction/all')
     facet: appName
 throughput:
   title: Throughput
   query:
-    select: count(newrelic.timeslice.value)
+    select: count(newrelic.timeslice.value) AS 'Throughput'
     where: metricTimesliceName in ('HttpDispatcher', 'OtherTransaction/all')
     facet: appName
 errorRate:
@@ -15,5 +15,5 @@ errorRate:
   query:
     select: filter(count(newrelic.timeslice.value), where metricTimesliceName = 'Errors/all')
       / (filter(count(newrelic.timeslice.value), where metricTimesliceName in ('HttpDispatcher',
-      'OtherTransaction/all'))) * 100
+      'OtherTransaction/all'))) * 100 AS 'Error %'
     facet: appName
