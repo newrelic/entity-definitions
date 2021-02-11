@@ -1,27 +1,21 @@
-providerAccountName:
-  tag:
-    key: providerAccountName
-  title: GCP Account
-  unit: STRING
-executions:
+Executions:
+  title: Number of function executions
   query:
-    eventId: entityGuid
-    select: sum(`function.Executions`)
+    select: sum(`api.Requests`)
     from: GcpCloudFunctionSample
-  unit: COUNT
-  title: Executions
-errorRate:
-  query:
+    facet: entityName
     eventId: entityGuid
+ErrorRate:
+  title: Error rate
+  query: 
     select: filter(sum(`function.Executions`), WHERE status != 'ok') * 100 / sum(`function.Executions`)
     from: GcpCloudFunctionSample
-  unit: PERCENTAGE
-  title: Error rate
-latency:
-  query:
+    facet: entityName
     eventId: entityGuid
+latency:
+  title: Latency
+  query:                                                                      
     select: (average(`function.ExecutionTimeNanos`)) / 1000000000
     from: GcpCloudFunctionSample
-  unit: SECONDS
-  title: Latency
-
+    facet: entityName
+    eventId: entityGuid
