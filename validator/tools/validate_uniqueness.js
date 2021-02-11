@@ -36,7 +36,7 @@ const RULES = [
         }
     },
     {
-        name: 'Summary metrics for this type is not allowed',
+        name: 'Summary metrics for this type are not allowed',
         apply: def => {
             const notAllowed = [
                 // Types with not exposed functionality.
