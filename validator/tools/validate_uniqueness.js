@@ -34,6 +34,46 @@ const RULES = [
                 ENTITY.set(identifier, def)
             }
         }
+    },
+    {
+        name: 'Summary metrics for this type are not allowed',
+        apply: def => {
+            const notAllowed = [
+                // Types with not exposed functionality.
+                "INFRA-AZUREVIRTUALNETWORKSPUBLICIPADDRESS",
+                "INFRA-CONTAINER",
+                "INFRA-COUCHBASENODE",
+                "INFRA-F5NODE",
+                "INFRA-F5POOL",
+                "INFRA-F5POOLMEMEBER",
+                "INFRA-F5VIRTUALSERVER",
+                "INFRA-F5VIRTUALSERVER",
+                "INFRA-HOST",
+                "INFRA-KUBERNETESCLUSTER",
+                "INFRA-RABBITMQNODE",
+                "MOBILE-APPLICATION",
+
+                // Types with special implementations.
+                "APM-APPLICATION",
+                "BROWSER-APPLICATION",
+                "EXT-SERVICE",
+                "INFRA-AWSLAMBDAFUNCTION",
+                "NR1-WORKLOADS",
+                "PROTO-ENGGROUP",
+                "PROTO-TEAM",
+                "SYNTH-MONITOR",
+                "SYNTH-SECURED",
+                "VIZ-DASHBOARD",
+            ]
+
+
+            const domainType = def.domain + "-" + def.type
+            const hasSummaryMetrics = 'compositeMetrics' in def && 'summaryMetrics' in def['compositeMetrics']
+
+            if (notAllowed.includes(domainType) && hasSummaryMetrics) {
+                throw `We don't allow custom summary metrics for ${domainType}. Please open an issue if you want to change this type.`
+            }
+        }
     }
 ]
 
