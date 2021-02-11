@@ -1,14 +1,14 @@
-requests:
-  title: Requests
+requestsRate:
+  title: Requests per second
   query:
-    select: sum(https.Requests)
+    select: (rate(sum(`https.Requests`), 1 minute)) / 60
     from: GcpHttpLoadBalancerSample
     facet: entityName
     eventId: entityGuid
 totalLatencyMs:
-  title: Total Latency (ms)
+  title: Total Latency
   query:
-    select: average(https.TotalLatencies)
+    select: (average(`https.TotalLatencies`)) / 1000
     from: GcpHttpLoadBalancerSample
     facet: entityName
     eventId: entityGuid
