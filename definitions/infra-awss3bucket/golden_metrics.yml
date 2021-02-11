@@ -1,7 +1,32 @@
+requests:
+  title: Requests
+  query:
+    select: sum(`provider.getRequests.Sum`) + sum(`provider.putRequests.Sum`) + sum(`provider.headRequests.Sum`)
+    from: DatastoreSample
+    where: provider='S3BucketRequests'
+    facet: entityName
+    eventId: entityGuid
+  unit: COUNT  
+errors4xxAnd5xx:
+  title: Errors
+  query:
+    select: sum(`provider.error4xxErrors.Sum`) + sum(`provider.error5xxErrors.Sum`)
+    from: DatastoreSample
+    eventId: entityGuid
+    where: provider='S3BucketRequests'
+    facet: entityName
+  unit: COUNT
+latency:
+  title: Latency
+  query:
+    eventId: entityGuid
+    select: (average(`provider.totalRequestLatency.Average`)) / 1000
+    from: DatastoreSample
+  unit: SECONDS
 bytesDownloaded:
   title: Bytes downloaded
   query:
-    select: sum(provider.bytesDownloaded.Sum)
+    select: sum(`provider.bytesDownloaded.Sum`)
     from: DatastoreSample
     where: provider='S3BucketRequests'
     facet: entityName
@@ -9,23 +34,7 @@ bytesDownloaded:
 bytesUploaded:
   title: Bytes uploaded
   query:
-    select: sum(provider.bytesUploaded.Sum)
-    from: DatastoreSample
-    where: provider='S3BucketRequests'
-    facet: entityName
-    eventId: entityGuid
-errors4XxAnd5Xx:
-  title: Errors (4xx and 5xx)
-  query:
-    select: sum(provider.error4xxErrors.Sum) + sum(provider.error5xxErrors.Sum)
-    from: DatastoreSample
-    where: provider='S3BucketRequests'
-    facet: entityName
-    eventId: entityGuid
-averageLatencyMs:
-  title: Average latency (ms)
-  query:
-    select: average(provider.totalRequestLatency.Average)
+    select: sum(`provider.bytesUploaded.Sum`)
     from: DatastoreSample
     where: provider='S3BucketRequests'
     facet: entityName
