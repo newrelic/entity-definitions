@@ -1,24 +1,27 @@
 availableMemoryBytes:
-  title: Available memory (bytes)
+  title: Available memory
   query:
     select: average(provider.memoryAvailableBytes.Average)
     from: ElasticMapReduceClusterSample
     where: provider='ElasticMapReduceCluster'
     facet: entityName
     eventId: entityGuid
+  unit: BYTES
 completedApplications:
   title: Completed applications
   query:
-    select: sum(provider.appsCompleted.Sum)
+    select: rate(sum(provider.appsCompleted.Sum), 1 minute)
     from: ElasticMapReduceClusterSample
     where: provider='ElasticMapReduceCluster'
     facet: entityName
     eventId: entityGuid
+  unit: COUNT
 failedApplications:
   title: Failed applications
   query:
-    select: sum(provider.appsFailed.Sum)
+    select: rate(sum(provider.appsFailed.Sum), 1 minute)
     from: ElasticMapReduceClusterSample
     where: provider='ElasticMapReduceCluster'
     facet: entityName
     eventId: entityGuid
+  unit: COUNT

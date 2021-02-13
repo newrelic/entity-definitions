@@ -1,6 +1,7 @@
 #  [mandatory] The domain of an entity, default to EXT unless otherwise indicated by the maintainers.
 domain: DOMAIN
 # [mandatory] The type of an entity. Must be unique within its domain, but may be duplicated between domains.
+# Please add a brief description of what your type is here on the definition file.
 type: TYPE
 
 # Entity definitions without this section are synthesized based on rules defined elsewhere.
@@ -14,8 +15,7 @@ synthesis:
   # Set to true if the identifier is expected to be longer than our maximum allowed characters (see README guidelines), defaults to false
   encodeIdentifierInGUID: false
 
-  # Condition that must be met for this entity to be synthesized.
-  # Can be added if the attribute used for the identifier is too generic to differentiate this entity from others
+  # [mandatory] Condition that must be met for this entity to be synthesized.
   # Please refer to the documentation to see the different types of conditions supported.
   conditions:
     # The attribute’s value must match the provided value
@@ -29,14 +29,14 @@ synthesis:
 
 # Template that can be used to generate a dashboard for the entity.
 dashboardTemplates:
- - ./dashboard.json
+ - dashboard.json
 
 # Reference to the golden and/or summary metrics associated with the entity (if any).
 compositeMetrics:
   goldenMetrics:
-    - ./domain-type-golden_metrics.yml
+    - domain-type-golden_metrics.yml
   summaryMetrics:
-    - ./domain-type-summary_metrics.yml
+    - domain-type-summary_metrics.yml
 
 # The golden tags associated with the entity. They must be existing NewRelic tags which includes:
 #   - Tags extracted from telemetry attributes and defined here in the `tags` section.
@@ -44,3 +44,10 @@ compositeMetrics:
 goldenTags:
   - tagNameA
   - tagNameB
+
+# Additional configurations for a more granular control of the entity's behavior
+configuration:
+  # The amount of time without receiving telemetry before an entity is deleted. Defaults to EIGHT_DAYS
+  entityExpirationTime: EIGHT_DAYS
+  # Defines whether the entities of this type should have an alert severity field associated, defaults to true
+  alertable: true
