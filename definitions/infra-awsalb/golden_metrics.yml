@@ -1,16 +1,15 @@
-requests:
-  title: Requests
+serverErrors4XxAnd5Xx:
+  title: Server errors (4xx and 5xx)
   query:
-    select: sum(provider.requestCount.Sum)
+    select: rate(sum((provider.httpCodeElb4XXCount.Sum OR 0) + (provider.httpCodeElb5XXCount.Sum OR 0)),1 minute)
     from: LoadBalancerSample
     where: provider='Alb'
     facet: entityName
     eventId: entityGuid
-serverErrors4XxAnd5Xx:
-  title: Server errors (4xx and 5xx)
+activeConnections:
+  title: Active Connections
   query:
-    select: sum((provider.httpCodeElb4XXCount.Sum OR 0) + (provider.httpCodeElb5XXCount.Sum
-      OR 0))
+    select: rate(sum(provider.activeConnectionCount.Sum),1 minute)
     from: LoadBalancerSample
     where: provider='Alb'
     facet: entityName
@@ -18,7 +17,7 @@ serverErrors4XxAnd5Xx:
 rejectedConnections:
   title: Rejected connections
   query:
-    select: sum(provider.rejectedConnectionCount.Sum)
+    select: rate(sum(provider.rejectedConnectionCount.Sum),1 minute)
     from: LoadBalancerSample
     where: provider='Alb'
     facet: entityName
