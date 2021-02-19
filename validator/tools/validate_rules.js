@@ -40,7 +40,14 @@ const RULES = [
         apply: def => {
             const notAllowed = [
                 // Types with not exposed functionality.
+                "INFRA-AZUREVIRTUALNETWORKSPUBLICIPADDRESS",
+                "INFRA-COUCHBASENODE",
+                "INFRA-F5NODE",
+                "INFRA-F5POOL",
+                "INFRA-F5POOLMEMEBER",
+                "INFRA-F5VIRTUALSERVER",
                 "INFRA-KUBERNETESCLUSTER",
+                "INFRA-RABBITMQNODE",
 
                 // Types with special implementations.
                 "APM-APPLICATION",
