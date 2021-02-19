@@ -1,7 +1,15 @@
-cpuUsage:
-  title: CPU usage (%)
+cpuUtilization:
+  title: CPU utilizacion (%)
   query:
     select: average(provider.cpuUtilization.Average)
+    from: DatastoreSample
+    where: provider='ElastiCacheRedisCluster'
+    facet: entityName
+    eventId: entityGuid
+engineCpuUtilization:
+  title: Egine CPU utilization (%)
+  query:
+    select: average(provider.engineCpuUtilization.Average)
     from: DatastoreSample
     where: provider='ElastiCacheRedisCluster'
     facet: entityName
@@ -10,6 +18,30 @@ swapUsageBytes:
   title: Swap usage (bytes)
   query:
     select: average(`provider.swapUsage.Average`)
+    from: DatastoreSample
+    where: provider='ElastiCacheRedisCluster'
+    facet: entityName
+    eventId: entityGuid
+freeableMemory:
+  title: Free memory (bytes)
+  query:
+    select: average(`provider.freeableMemory.Average`)
+    from: DatastoreSample
+    where: provider='ElastiCacheRedisCluster'
+    facet: entityName
+    eventId: entityGuid
+networkBytesIn:
+  title: Bytes in per sec
+  query:
+    select: rate(sum(`provider.networkBytesIn.Sum`), 1 second)
+    from: DatastoreSample
+    where: provider='ElastiCacheRedisCluster'
+    facet: entityName
+    eventId: entityGuid
+networkBytesOut:
+  title: Bytes out per sec
+  query:
+    select: rate(sum(`provider.networkBytesOut.Sum`), 1 second)
     from: DatastoreSample
     where: provider='ElastiCacheRedisCluster'
     facet: entityName
