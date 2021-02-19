@@ -19,9 +19,9 @@ memoryUsage:
     eventId: entity.guid
 ```
  
-A summary metric can be either an **NRDB-query-based metric**, a **Tag metric** (summary tag), an **Enum metric**, or a **Derived metric**, depending on the source of the information. 
+A summary metric can be either an **NRDB-query-based metric**, a **Tag metric** (summary tag), or a **Derived metric**, depending on the source of the information. 
 
-For this reason, exactly one of the `query`, `tag`, `enum` and `derive` configuration needs to be
+For this reason, exactly one of the `query`, `tag` and `derive` configuration needs to be
 provided. If less or more than one of them is found, the metric definition will not be valid.
 
 | **Name** | **Type**                      | **Description**                                            |
@@ -31,7 +31,6 @@ provided. If less or more than one of them is found, the metric definition will 
 | hidden     | Boolean   | If the metric is hidden it will not appear on any UI visualizations, but it can only be used to define intermediate metrics referenced by others. Defaults to false.  |
 | query    | [NRDB Query](#nrdb-query)     | The configuration for an NRDB-query-based metric                 |
 | tag      | [Tag](#tag)                    | The configuration for a tag metric        |
-| enum      | [Enum](#enum)                    | The configuration for an enum metric        |
 | derive   | [Derive String](#derive-string) | The string to define a derived metric                      |
 
 
@@ -72,15 +71,6 @@ The `query` map contains the information that is used to define a NRDB-query-bas
 | **Name** | **Type** | **Description**                                                                       |
 | -------- | -------- | ------------------------------------------------------------------------------------- |
 | key      | String   | The tag key you want to fetch the corresponding value for, e.g. `providerAccountName` |
-
-### Enum
-
-An enum metric can be used to map the real values of one metric to a custom value provided in the definition.
-
-| **Name** | **Type** | **Description**                                                                       |
-| -------- | -------- | ------------------------------------------------------------------------------------- |
-| metric      | String   | The metric whose values will be mapped with the enum, the metric must exist and be referenced in this format: `@metricName` |
-| values      | Map<String, String>   | The values of the enum in the shape of `metricValue: newValue` |
 
 ### Derive string 
 
