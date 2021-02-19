@@ -95,6 +95,13 @@ During synthesis, the tags will be created using the attribute name as key and i
 
 If some of the tags' attributes are not present on the telemetry message received, the entity will still be synthesized with the available tags (if any).
 
+```yaml
+  tags:
+    attributeNameB:
+      multiValue: false # declare if the value for this tag should be a list of string values (accumulated) or a single value (replaced). defaults to true
+    attributeNameC:
+```
+
 #### Golden tags
 
 The `goldenTags` field accepts an array of tag-keys which are considered the most important for the entity's DOMAIN and TYPE, 
