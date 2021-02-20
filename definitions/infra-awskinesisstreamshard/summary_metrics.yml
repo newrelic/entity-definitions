@@ -3,17 +3,17 @@ providerAccountName:
     key: providerAccountName
   title: AWS Account
   unit: STRING
-incoming:
+putTroughput:
   query:
     eventId: entityGuid
-    select: sum(`provider.incomingBytes.Sum`)
+    select: rate(sum(`provider.incomingBytes.Sum`), 1 second)
     from: QueueSample
-  unit: BYTES
-  title: Incoming
-outgoing:
+  unit: BYTES_PER_SECOND
+  title: Throughput in
+getThroughput:
   query:
     eventId: entityGuid
-    select: sum(`provider.outgoingBytes.Sum`)
+    select: rate(sum(`provider.outgoingBytes.Sum`), 1 second)
     from: QueueSample
-  unit: BYTES
-  title: Outgoing
+  unit: BYTES_PER_SECOND
+  title: Throughput out

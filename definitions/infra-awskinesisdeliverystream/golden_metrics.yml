@@ -1,0 +1,34 @@
+putThroughput:
+  title: Bytes in per sec
+  query:
+    select: rate(sum(provider.incomingBytes.Sum), 1 second)
+    from: QueueSample
+    where: provider='KinesisDeliveryStream'
+    facet: entityName
+    eventId: entityGuid
+getThroughput:
+  title: Bytes out per sec
+  query:
+    select: rate(sum(`provider.deliveryToElasticsearchBytes.Sum`) + sum(`provider.deliveryToS3Bytes.Sum`)
+      + sum(`provider.deliveryToRedshiftBytes.Sum`)), 1 second)
+    from: QueueSample
+    where: provider='KinesisDeliveryStream'
+    facet: entityName
+    eventId: entityGuid
+putRecordThroughput:
+  title: Records in per sec
+  query:
+    select: rate(sum(provider.incomingRecords.Sum), 1 second)
+    from: QueueSample
+    where: provider='KinesisDeliveryStream'
+    facet: entityName
+    eventId: entityGuid
+getRecordsThroughput:
+  title: Records out per sec
+  query:
+    select: rate(sum(`provider.deliveryToElasticsearchRecords.Sum`) + sum(`provider.deliveryToS3Records.Sum`)
+      + sum(`provider.deliveryToRedshiftRecords.Sum`)), 1 second)
+    from: QueueSample
+    where: provider='KinesisDeliveryStream'
+    facet: entityName
+    eventId: entityGuid

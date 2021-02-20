@@ -3,24 +3,24 @@ providerAccountName:
     key: providerAccountName
   title: AWS Account
   unit: STRING
-requests:
+throughput:
   query:
     eventId: entityGuid
-    select: sum(`provider.requestCount.Sum`)
+    select: rate(sum(`provider.requestCount.Sum`), 1 second)
     from: LoadBalancerSample
-  unit: COUNT
-  title: Requests
-healthyHosts:
+  unit: REQUESTS_PER_SECOND
+  title: Throughput
+latency:
   query:
     eventId: entityGuid
-    select: average(`provider.healthyHostCount.Average`)
+    select: average(provider.latency.Average)
     from: LoadBalancerSample
-  unit: COUNT
-  title: Healthy hosts
-unhealthyHosts:
+  unit: SECONDS
+  title: Latency (s)
+surgeQueueLength:
   query:
     eventId: entityGuid
-    select: average(`provider.unhealthyHostCount.Average`)
+    select: max(provider.surgeQueueLength.Max)
     from: LoadBalancerSample
   unit: COUNT
-  title: Unhealthy hosts
+  title: Surge Queue Length
