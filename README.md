@@ -96,7 +96,7 @@ During synthesis, the tags will be created using the attribute name as key and i
 If some of the tags' attributes are not present on the telemetry message received, the entity will still be synthesized with the available tags (if any).
 
 By default an entity tag will contain all the values seen for this attribute in the telemetry.
-If you want to override all the values with the new one you can configure `multiValue: false` for that specific tag
+If you want to override all the values with the new one you can configure `multiValue: false` for that specific tag.
 
 ```yaml
   tags:
