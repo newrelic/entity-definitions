@@ -19,14 +19,14 @@ so your PR will get merged faster, and you can start enjoying your shiny new ent
 - The definition must contain at least the top-level fields `domain` and `type`, along with the fields `name`, `identifier` and `conditions`, located under `synthesis`. 
 The synthesis section is optional only if you can ensure that the telemetry is being stamped with the entity GUID and tags based on rules defined internally at NewRelic.
 - We use the `domain`, `type` and `identifier` to assign each entity a Global Unique Identifier (GUID).
-- The `domain` must be a value matching `/[A-Z][A-Z0-9_]{2,7}/`. This field is mostly relevant internally for NR. 
+- The `domain` must be a value matching `/[A-Z][A-Z0-9_]{2,14}/`. This field is mostly relevant internally for NR. 
 Use EXT by default, although we may advise to use a different value in some cases.                
-- The `type` must be a value matching `/[A-Z][A-Z0-9_]{2,11}/`. This field is meant to identify the type of entity. 
+- The `type` must be a value matching `/[A-Z][A-Z0-9_]{2,49}/`. This field is meant to identify the type of entity. 
 Some examples are APPLICATION, HOST or CONTAINER.  
 - The `identifier` must be assigned a parameter that is unique within the domain and type (e.g
 . cluster ID, host ID, etc). Keep in mind that the value has the following restrictions and that the
  entity will not be synthesized if the value extracted from the metrics is considered invalid:
-  - `/[\x20-\x7E]{1,36}/`.
+  - `/[\x20-\x7E]{1,50}/`.
   - 1 to 36 standard ascii characters, excluding control chars (codes: 32-126).
   - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
 - You must also define a condition to match on the value of an attribute. An entity will be synthesized if it matches the provided condition and contains the attributes set for the identifier and name. 
