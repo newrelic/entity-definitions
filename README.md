@@ -105,7 +105,7 @@ If you want to override all the values with the new one you can configure `multi
     attributeNameC:
 ```
 
-An example for this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`RUNNING`, `STOPPED`, etc..) instead of a list of all the states the entity has gone trough
+An example of this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`RUNNING`, `STOPPED`, etc..) instead of a list of all the states the entity has gone through.
 
 
 #### Golden tags
