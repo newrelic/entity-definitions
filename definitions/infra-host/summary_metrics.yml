@@ -1,0 +1,122 @@
+agentVersion:
+  unit: STRING
+  tag:
+    key: agentVersion
+cpuUtilizationPercentHost:
+  unit: PERCENTAGE
+  query:
+    from: SystemSample
+    select: average(cpuPercent)
+    eventId: entityGuid
+  hidden: true
+cpuUtilizationPercentEc2:
+  unit: PERCENTAGE
+  query:
+    from: ComputeSample
+    select: average(provider.cpuUtilization.Average)
+    eventId: entityGuid
+  hidden: true
+cpuUtilizationPercentAzure:
+  unit: PERCENTAGE
+  query:
+    from: AzureVirtualMachineSample
+    select: average(cpuUsagePercent.Average)
+    eventId: entityGuid
+  hidden: true
+cpuUtilizationPercentGcp:
+  unit: PERCENTAGE
+  query:
+    from: GcpVirtualMachineSample
+    select: average(instance.cpu.Utilization)
+    eventId: entityGuid
+  hidden: true
+cpuUtilizationPercent:
+  unit: PERCENTAGE
+  derive: '@cpuUtilizationPercentEc2 || @cpuUtilizationPercentAzure || @cpuUtilizationPercentGcp || @cpuUtilizationPercentHost'
+memoryUsedPercent:
+  unit: PERCENTAGE
+  query:
+    from: SystemSample
+    select: average(memoryUsedPercent)
+    eventId: entityGuid
+diskUsedPercent:
+  unit: PERCENTAGE
+  query:
+    from: SystemSample
+    select: average(diskUsedPercent)
+    eventId: entityGuid
+networkInHost:
+  unit: BYTES_PER_SECOND
+  query:
+    from: NetworkSample
+    select: average(receiveBytesPerSecond)
+    eventId: entityGuid
+  hidden: true
+networkOutHost:
+  unit: BYTES_PER_SECOND
+  query:
+    from: NetworkSample
+    select: average(transmitBytesPerSecond)
+    eventId: entityGuid
+  hidden: true
+networkTrafficHost:
+  unit: BYTES_PER_SECOND
+  derive: '@networkInHost + @networkOutHost'
+  hidden: true
+networkInEc2:
+  unit: BYTES_PER_SECOND
+  query:
+    from: ComputeSample
+    select: average(provider.networkInBytes.Average)
+    eventId: entityGuid
+  hidden: true
+networkOutEc2:
+  unit: BYTES_PER_SECOND
+  query:
+    from: ComputeSample
+    select: average(provider.networkOutBytes.Average)
+    eventId: entityGuid
+  hidden: true
+networkTrafficEc2:
+  unit: BYTES_PER_SECOND
+  derive: '(@networkInEc2 + @networkOutEc2) / 60'
+  hidden: true
+networkInAzure:
+  unit: BYTES_PER_SECOND
+  query:
+    from: AzureVirtualMachineSample
+    select: average(networkInBytes.Average)
+    eventId: entityGuid
+  hidden: true
+networkOutAzure:
+  unit: BYTES_PER_SECOND
+  query:
+    from: AzureVirtualMachineSample
+    select: average(networkOutBytes.Average)
+    eventId: entityGuid
+  hidden: true
+networkTrafficAzure:
+  unit: BYTES_PER_SECOND
+  derive: '(@networkInAzure + @networkOutAzure) / 60'
+  hidden: true
+networkInGcp:
+  unit: BYTES_PER_SECOND
+  query:
+    from: GcpVirtualMachineSample
+    select: average(instance.network.ReceivedBytes)
+    eventId: entityGuid
+  hidden: true
+networkOutGcp:
+  unit: BYTES_PER_SECOND
+  query:
+    from: GcpVirtualMachineSample
+    select: average(instance.network.SentBytes)
+    eventId: entityGuid
+  hidden: true
+networkTrafficGcp:
+  unit: BYTES_PER_SECOND
+  derive: '(@networkInGcp + @networkOutGcp) / 60'
+  hidden: true
+networkTraffic:
+  unit: BYTES_PER_SECOND
+  derive: '@networkTrafficEc2 || @networkTrafficAzure || @networkTrafficGcp || @networkTrafficHost'

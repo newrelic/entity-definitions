@@ -1,0 +1,95 @@
+containerState:
+  title: Container state
+  unit: STRING
+  tag:
+    key: container.state
+cpuUsedCoresContainer:
+  query:
+    eventId: entityGuid
+    from: ContainerSample
+    select: average(cpuUsedCores)
+  unit: COUNT
+  hidden: true
+cpuUsedCoresK8s:
+  query:
+    eventId: entityGuid
+    from: K8sContainerSample
+    select: average(cpuUsedCores)
+  title: CPU usage (cores)
+  unit: COUNT
+  hidden: true
+cpuUsedCores:
+  derive: '@cpuUsedCoresContainer || @cpuUsedCoresK8s'
+  unit: COUNT
+cpuUtilizationPercentContainer:
+  query:
+    eventId: entityGuid
+    from: ContainerSample
+    select: average(cpuPercent)
+  unit: PERCENTAGE
+  hidden: true
+cpuUtilizationPercentK8s:
+  query:
+    eventId: entityGuid
+    from: K8sContainerSample
+    select: average(cpuCoresUtilization)
+  unit: PERCENTAGE
+  hidden: true
+cpuUtilizationPercent:
+  derive: '@cpuUtilizationPercentContainer || @cpuUtilizationPercentK8s'
+  unit: PERCENTAGE
+  title: CPU Utilization
+diskUsedContainer:
+  query:
+    eventId: entityGuid
+    from: ContainerSample
+    select: average(ioTotalBytes)
+  unit: BYTES
+  hidden: true
+diskUsedK8s:
+  query:
+    eventId: entityGuid
+    from: K8sContainerSample
+    select: average(fsUsedBytes)
+  unit: BYTES
+  hidden: true
+diskUsed:
+  title: Disk usage (bytes)
+  unit: BYTES
+  derive: '@diskUsedContainer || @diskUsedK8s'
+memoryUsedContainer:
+  query:
+    eventId: entityGuid
+    from: ContainerSample
+    select: average(memoryUsageBytes)
+  unit: BYTES
+  hidden: true
+memoryUsedK8s:
+  query:
+    eventId: entityGuid
+    from: K8sContainerSample
+    select: average(memoryWorkingSetBytes)
+  unit: BYTES
+  hidden: true
+memoryUsed:
+  derive: '@memoryUsedContainer || @memoryUsedK8s'
+  title: Memory usage (bytes)
+  unit: BYTES
+networkTrafficRx:
+  query:
+    eventId: entityGuid
+    from: ContainerSample
+    select: average(networkRxBytesPerSecond)
+  unit: BYTES_PER_SECOND
+  hidden: true
+networkTrafficTx:
+  query:
+    eventId: entityGuid
+    from: ContainerSample
+    select: average(networkTxBytesPerSecond)
+  unit: BYTES_PER_SECOND
+  hidden: true
+networkTrafficTotal:
+  derive: '@networkTrafficRx + @networkTrafficTx'
+  title: Network traffic (bytes per second)
+  unit: BYTES_PER_SECOND
