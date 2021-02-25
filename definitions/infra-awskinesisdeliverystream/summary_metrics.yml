@@ -3,18 +3,18 @@ providerAccountName:
     key: providerAccountName
   title: AWS Account
   unit: STRING
-incoming:
+putTroughput:
   query:
     eventId: entityGuid
-    select: sum(`provider.incomingBytes.Sum`)
+    select: rate(sum(`provider.incomingBytes.Sum`), 1 second)
     from: QueueSample
-  unit: BYTES
-  title: Incoming
+  unit: BYTES_PER_SECOND
+  title: Throughput in
 delivered:
   query:
     eventId: entityGuid
-    select: sum(`provider.deliveryToElasticsearchBytes.Sum`) + sum(`provider.deliveryToS3Bytes.Sum`)
-      + sum(`provider.deliveryToRedshiftBytes.Sum`)
+    select: rate(sum(`provider.deliveryToElasticsearchBytes.Sum`) + sum(`provider.deliveryToS3Bytes.Sum`)
+      + sum(`provider.deliveryToRedshiftBytes.Sum`)), 1 second)
     from: QueueSample
-  unit: BYTES
-  title: Delivered
+  unit: BYTES_PER_SECOND
+  title: Throuput out

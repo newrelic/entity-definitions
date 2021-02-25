@@ -1,5 +1,5 @@
-cpuUsage:
-  title: CPU usage (%)
+cpuUtilization:
+  title: CPU utilization (%)
   query:
     select: average(provider.cpuUtilization.Average)
     from: DatastoreSample
@@ -10,6 +10,30 @@ swapUsageBytes:
   title: Swap usage (bytes)
   query:
     select: average(`provider.swapUsage.Average`)
+    from: DatastoreSample
+    where: provider='ElastiCacheMemcachedCluster'
+    facet: entityName
+    eventId: entityGuid
+freeableMemory:
+  title: Free memory (bytes)
+  query:
+    select: average(`provider.freeableMemory.Average`)
+    from: DatastoreSample
+    where: provider='ElastiCacheMemcachedCluster'
+    facet: entityName
+    eventId: entityGuid
+networkBytesIn:
+  title: Bytes in per sec
+  query:
+    select: rate(sum(`provider.networkBytesIn.Sum`), 1 second)
+    from: DatastoreSample
+    where: provider='ElastiCacheMemcachedCluster'
+    facet: entityName
+    eventId: entityGuid
+networkBytesOut:
+  title: Bytes out per sec
+  query:
+    select: rate(sum(`provider.networkBytesOut.Sum`), 1 second)
     from: DatastoreSample
     where: provider='ElastiCacheMemcachedCluster'
     facet: entityName

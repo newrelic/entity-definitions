@@ -3,31 +3,17 @@ providerAccountName:
     key: providerAccountName
   title: AWS Account
   unit: STRING
-getRecords:
+putTroughput:
   query:
     eventId: entityGuid
-    select: sum(`provider.getRecordsRecords.Sum`)
+    select: rate(sum(`provider.incomingBytes.Sum`), 1 second)
     from: QueueSample
-  unit: COUNT
-  title: Get records
-putRecords:
+  unit: BYTES_PER_SECOND
+  title: Throughput in
+getThroughput:
   query:
     eventId: entityGuid
-    select: sum(`provider.incomingRecords.Sum`)
+    select: rate(sum(`provider.getRecordsBytes.Sum`), 1 second)
     from: QueueSample
-  unit: COUNT
-  title: Put records
-getThrottles:
-  query:
-    eventId: entityGuid
-    select: sum(`provider.readProvisionedThroughputExceeded.Sum`)
-    from: QueueSample
-  unit: COUNT
-  title: Get throttles
-putThrottles:
-  query:
-    eventId: entityGuid
-    select: sum(`provider.writeProvisionedThroughputExceeded.Sum`)
-    from: QueueSample
-  unit: COUNT
-  title: Put throttles
+  unit: BYTES_PER_SECOND
+  title: Throughput out

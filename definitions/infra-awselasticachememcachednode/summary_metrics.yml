@@ -3,24 +3,24 @@ providerAccountName:
     key: providerAccountName
   title: AWS Account
   unit: STRING
-cpuUtilization:
+getThroughput:
   query:
     eventId: entityGuid
-    select: average(`provider.cpuUtilization.Average`)
+    select: rate(sum(provider.getHits.Sum)+sum(provider.getMisses.Sum), 1 second)
+    from: DatastoreSample
+  unit: REQUESTS_PER_SECOND
+  title: Get throughput
+getHitRatio:
+  query:
+    eventId: entityGuid
+    select: (sum(provider.getHits.Sum)/(sum(provider.getHits.Sum)+sum(provider.getMisses.Sum)))*100
     from: DatastoreSample
   unit: PERCENTAGE
-  title: CPU utilization
-freeableMemory:
-  query:
-    eventId: entityGuid
-    select: sum(`provider.freeableMemory.Sum`)
-    from: DatastoreSample
-  unit: BYTES
-  title: Free memory
-memoryUtilization:
+  title: Get Hit Rate
+swapUsage:
   query:
     eventId: entityGuid
     select: average(`provider.swapUsage.Average`)
     from: DatastoreSample
   unit: BYTES
-  title: Swap usage
+  title: Swap Usage
