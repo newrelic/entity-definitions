@@ -1,0 +1,87 @@
+appLaunchCount:
+  unit: COUNT
+  title: App Launches
+  query:
+    from: Mobile
+    select: uniqueCount(sessionId)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+mobileSessionCrashCount:
+  unit: COUNT
+  query:
+    from: MobileCrash
+    select: uniqueCount(sessionId)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+mobileSessionCount:
+  unit: COUNT
+  query:
+    from: MobileSession
+    select: uniqueCount(sessionId)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+crashRate:
+  unit: PERCENTAGE
+  derive: '(100 * @mobileSessionCrashCount) / @mobileSessionCount'
+crashCount:
+  unit: COUNT
+  title: Crashes
+  query:
+    from: MobileCrash
+    select: count(*)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+httpRequestCount:
+  title: Http Requests
+  unit: COUNT
+  query:
+    from: MobileRequest
+    select: count(requestFingerprint)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+httpErrorCount:
+  unit: COUNT
+  query:
+    from: MobileRequestError
+    select: count(*)
+    where: errorType = 'HTTPError'
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+networkFailureCount:
+  unit: COUNT
+  query:
+    from: MobileRequestError
+    select: count(*)
+    where: errorType = 'NetworkFailure'
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+totalNetworkCount:
+  unit: COUNT
+  derive: '@networkFailureCount + @httpErrorCount + @httpRequestCount'
+  hidden: true
+httpErrorRate:
+  unit: PERCENTAGE
+  derive: '(100 * @httpErrorCount) / @totalNetworkCount'
+usersAffectedCount:
+  unit: COUNT
+  query:
+    from: MobileCrash
+    select: uniqueCount(uuid)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+httpResponseTimeAverage:
+  unit: SECONDS
+  query:
+    from: MobileRequest
+    select: average(responseTime OR duration)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+newtworkFailureRate:
+  unit: PERCENTAGE
+  derive: '(100 * @networkFailureCount) / @totalNetworkCount'
