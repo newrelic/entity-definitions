@@ -47,7 +47,6 @@ const RULES = [
                 "INFRA-F5POOLMEMEBER",
                 "INFRA-F5VIRTUALSERVER",
                 "INFRA-KUBERNETESCLUSTER",
-                "MOBILE-APPLICATION",
 
                 // Types with special implementations.
                 "APM-APPLICATION",
