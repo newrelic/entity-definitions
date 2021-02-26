@@ -69,6 +69,24 @@ const RULES = [
                 throw `We don't allow custom summary metrics for ${domainType}. Please open an issue if you want to change this type.`
             }
         }
+    },
+    {
+        name: 'Golden metrics & tags for this type are not allowed',
+        apply: def => {
+            const notAllowed = [
+                // Types with not exposed functionality.
+                "INFRA-KUBERNETESCLUSTER",
+            ]
+
+
+            const domainType = def.domain + "-" + def.type
+            const hasGoldenMetrics = 'compositeMetrics' in def && 'goldenMetrics' in def['compositeMetrics']
+            const hasGoldenTags = typeof def['goldenTags'] !== 'undefined'
+
+            if (notAllowed.includes(domainType) && (hasGoldenMetrics || hasGoldenTags)) {
+                throw `We don't allow custom golden metrics & tags for ${domainType}. Please open an issue if you want to change this type.`
+            }
+        }
     }
 ]
 
