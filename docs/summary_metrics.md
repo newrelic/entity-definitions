@@ -28,6 +28,7 @@ provided. If less or more than one of them is found, the metric definition will 
 | -------- | ----------------------------- | ---------------------------------------------------------- |
 | title    | String                        | The human-readable name of the metric                      |
 | unit     | [Metric Unit](#metric-unit)    | The unit of the metric                                     |
+| hidden     | Boolean   | If the metric is hidden it will not appear on any UI visualizations, but it can only be used to define intermediate metrics referenced by others. Defaults to false.  |
 | query    | [NRDB Query](#nrdb-query)     | The configuration for an NRDB-query-based metric                 |
 | tag      | [Tag](#tag)                    | The configuration for a tag metric        |
 | derive   | [Derive String](#derive-string) | The string to define a derived metric                      |
