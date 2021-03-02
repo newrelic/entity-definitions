@@ -1,0 +1,97 @@
+appLaunchCount:
+  unit: COUNT
+  title: App Launches
+  query:
+    from: Mobile
+    select: uniqueCount(sessionId)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+mobileSessionCrashCount:
+  title: Mobile Session Crash Count
+  unit: COUNT
+  query:
+    from: MobileCrash
+    select: uniqueCount(sessionId)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+mobileSessionCount:
+  title: Mobile Session Count
+  unit: COUNT
+  query:
+    from: MobileSession
+    select: uniqueCount(sessionId)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+crashRate:
+  title: Crash Rate
+  unit: PERCENTAGE
+  derive: '(100 * @mobileSessionCrashCount) / @mobileSessionCount'
+crashCount:
+  unit: COUNT
+  title: Crashes
+  query:
+    from: MobileCrash
+    select: count(*)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+httpRequestCount:
+  title: Http Requests
+  unit: COUNT
+  query:
+    from: MobileRequest
+    select: count(requestFingerprint)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+httpErrorCount:
+  title: HTTP Error Count
+  unit: COUNT
+  query:
+    from: MobileRequestError
+    select: count(*)
+    where: errorType = 'HTTPError'
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+networkFailureCount:
+  title: Network Failure Count
+  unit: COUNT
+  query:
+    from: MobileRequestError
+    select: count(*)
+    where: errorType = 'NetworkFailure'
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+totalNetworkCount:
+  title: Total Network Count
+  unit: COUNT
+  derive: '@networkFailureCount + @httpErrorCount + @httpRequestCount'
+  hidden: true
+httpErrorRate:
+  title: HTTP Error Rate
+  unit: PERCENTAGE
+  derive: '(100 * @httpErrorCount) / @totalNetworkCount'
+usersAffectedCount:
+  title: Users Affected Count
+  unit: COUNT
+  query:
+    from: MobileCrash
+    select: uniqueCount(uuid)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+httpResponseTimeAverage:
+  title: HTTP Response Time Average
+  unit: SECONDS
+  query:
+    from: MobileRequest
+    select: average(responseTime OR duration)
+    eventId: appId
+    eventObjectId: DOMAIN_IDS
+  hidden: true
+newtworkFailureRate:
+  title: Newtwork Failure Rate
+  unit: PERCENTAGE
+  derive: '(100 * @networkFailureCount) / @totalNetworkCount'
