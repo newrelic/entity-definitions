@@ -132,11 +132,22 @@ You can create a dashboard with the NewRelic interface and export it to JSON for
 Then you can just copy it to a file within your entity type's folder, modify it if needed and refer to it from the definition.yml:
 
 ```yaml
-dashboardTemplates: 
- - ./<dashboardName>.json
+dashboardTemplates:
+ - template: ./<dashboardName>.json
 ```
 
 Note that you can define more than one dashboard under the `dashboardTemplates` field. 
+
+If your entity has different sources you can also provide a rule to show the dashboard only if the condition matches.
+The condition is that the entity has the tag `instrumentation.provider` with the value specified in the `tag` field when tag is used we also require a `title`:
+
+```yaml
+dashboardTemplates:
+ - title: Prometheus only dashboard
+   template: ./prometheus_dashboard.json
+   tag: prometheus
+```
+
 
 #### Configurations
 
