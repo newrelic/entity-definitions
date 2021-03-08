@@ -1,15 +1,48 @@
 domain: INFRA
 type: CONTAINER
 synthesis:
-  identifier: entity.id
-  name: docker.name
-  encodeIdentifierInGUID: true
-  conditions:
-  - attribute: docker.containerId
+  rules:
+  - identifier: entity.id
+    name: docker.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: docker.containerId
+    tags:
+      container.state:
+      docker.state: # Missing alias
+      docker.containerId:
+      docker.shortContainerId:
+      docker.imageName:
+      docker.ecsClusterArn:
+      docker.ecsClusterName:
+      docker.ecsContainerName:
+      docker.ecsLaunchType:
+      docker.ecsTaskArn:
+      docker.ecsTaskDefinitionFamily:
+      docker.ecsTaskDefinitionVersion:
+  - identifier: entity.id
+    name: k8s.containerName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: k8s.containerId
+    tags:
+      k8s.status: # Missing alias
+      k8s.clusterName:
+      k8s.namespaceName:
+      k8s.podName:
+      k8s.containerImage:
+      k8s.nodeName:
+      k8s.containerId:
+      label.topology.kubernetes.io/region:
+      label.topology.kubernetes.io/zone:
+      label.eks.amazonaws.com/compute-type:
+      label.kubernetes.io/arch:
+      label.kubernetes.io/hostname:
+      label.kubernetes.io/os:
+      # This is for OTEL. Verify if we need to respect tag priority since they alias to the same tagName as `k8s.clusterName`
+      k8s.cluster.name: # Missing alias
+      k8s.namespace.name: # Missing alias
   tags:
-    container.state:
-    docker.state:
-    docker.containerId:
     newrelic.integrationName:
     newrelic.integrationVersion:
     newrelic.agentVersion:
