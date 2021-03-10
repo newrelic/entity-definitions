@@ -32,7 +32,7 @@
     "domain": {
       "$id": "#/properties/domain",
       "type": "string",
-      "pattern": "^[A-Z][A-Z0-9_]{2,7}$",
+      "pattern": "^[A-Z][A-Z0-9_]{2,14}$",
       "title": "The entity domain",
       "description": "Information used to synthesize the entity domain",
       "examples": [
@@ -42,7 +42,7 @@
     "type": {
       "$id": "#/properties/type",
       "type": "string",
-      "pattern": "^[A-Z][A-Z0-9_]{2,}$",
+      "pattern": "^(([A-Z][A-Z0-9_]{2,49})|NA)$",
       "title": "The entity type",
       "description": "Information used to synthesize the entity type",
       "examples": [
@@ -62,7 +62,8 @@
       ],
       "required": [
         "name",
-        "identifier"
+        "identifier",
+        "conditions"
       ],
       "properties": {
         "name": {
@@ -93,8 +94,10 @@
         "conditions": {
           "$id": "#/properties/conditions",
           "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
           "title": "Conditions for the entity to be synthesized",
-          "description": "Allows to specify that an attribute's value needs to match a specific value or have a specific prefix.",
+          "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
           "examples": [
             [
               {
@@ -107,15 +110,14 @@
               }
             ]
           ],
-          "additionalItems": true,
+          "additionalItems": false,
           "items": {
             "$id": "#/properties/conditions/items",
-            "anyOf": [
+            "oneOf": [
               {
                 "$id": "#/properties/conditions/items/anyOf/0",
                 "type": "object",
-                "title": "Match attribute value",
-                "description": "An attribute's value needs to match the provided one",
+                "description": "Match attribute and its value or prefix (if requested)",
                 "examples": [
                   {
                     "attribute": "attributeName",
@@ -123,8 +125,7 @@
                   }
                 ],
                 "required": [
-                  "attribute",
-                  "value"
+                  "attribute"
                 ],
                 "properties": {
                   "attribute": {
@@ -142,35 +143,9 @@
                     "examples": [
                       "value"
                     ]
-                  }
-                }
-              },
-              {
-                "$id": "#/properties/conditions/items/anyOf/1",
-                "type": "object",
-                "title": "Match attribute value's prefix",
-                "description": "An attribute's value prefix needs to match the provided one",
-                "examples": [
-                  {
-                    "attribute": "attributeName",
-                    "prefix": "value"
-                  }
-                ],
-                "required": [
-                  "attribute",
-                  "prefix"
-                ],
-                "properties": {
-                  "attribute": {
-                    "$id": "#/properties/conditions/items/anyOf/1/properties/attribute",
-                    "type": "string",
-                    "title": "The attribute name",
-                    "examples": [
-                      "attributeName"
-                    ]
                   },
                   "prefix": {
-                    "$id": "#/properties/conditions/items/anyOf/1/properties/prefix",
+                    "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
                     "type": "string",
                     "title": "The expected prefix",
                     "examples": [
@@ -184,7 +159,7 @@
         },
         "tags": {
           "$id": "#/properties/tags",
-          "type": "array",
+          "type": "object",
           "title": "An array of tags.",
           "description": "Tags associated to the entity that can be extracted from the metrics information received.",
           "examples": [
@@ -199,8 +174,19 @@
             "anyOf": [
               {
                 "$id": "#/properties/tags/items/anyOf/0",
-                "type": "string",
-                "title": "Reference to a tag extracted from metrics"
+                "type": "object",
+                "title": "Tag configuration",
+                "description": "The configuration of the tag being synthesized",
+                "examples": [
+                  {"multiValue": "false"}
+                ],
+                "properties": {
+                  "multiValue": {
+                    "$id": "#/properties/tags/items/anyOf/0/properties/multiValue",
+                    "type": "boolean",
+                    "title": "If the tag should allow a list of string values or a single string value"
+                  }
+                }
               }
             ]
           }
@@ -211,6 +197,10 @@
     "dashboardTemplates": {
       "$id": "#/properties/dashboardTemplates",
       "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z_-]*dashboard.json$"
+      },
       "description": "An array dashboard templates",
       "examples": [
         [
@@ -239,6 +229,10 @@
         "goldenMetrics": {
           "$id": "#/properties/compositeMetrics/properties/goldenMetrics",
           "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z_-]*golden_metrics.yml$"
+          },
           "description": "Array of relative paths golden metrics files",
           "examples": [
             [
@@ -249,6 +243,10 @@
         "summaryMetrics": {
           "$id": "#/properties/compositeMetrics/properties/summaryMetrics",
           "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z_-]*summary_metrics.yml$"
+          },
           "description": "Array of relative paths to summary metrics file",
           "examples": [
             [
@@ -281,6 +279,25 @@
           }
         ]
       }
+    },
+    "configuration": {
+      "$id": "#/properties/configuration",
+      "type": "object",
+      "title": "Configurations for the entity type.",
+      "properties": {
+        "entityExpirationTime": {
+          "$id": "#/properties/configuration/properties/entityExpirationTime",
+          "type": "string",
+          "title": "Entity expiration Time",
+          "enum": ["DAILY", "EIGHT_DAYS", "QUARTERLY", "MANUAL"]
+        },
+        "alertable": {
+          "$id": "#/properties/configuration/properties/alertable",
+          "type": "boolean",
+          "description": "Defines whether the entity type should have an alert severity field associated"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

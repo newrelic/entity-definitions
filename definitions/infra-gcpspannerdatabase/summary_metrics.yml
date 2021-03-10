@@ -1,0 +1,26 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: GCP Account
+  unit: STRING
+requests:
+  query:
+    eventId: entityGuid
+    select: sum(`api.Requests`)
+    from: GcpSpannerDatabaseSample
+  unit: COUNT
+  title: Requests
+errorRate:
+  query:
+    eventId: entityGuid
+    select: filter(sum(`api.Requests`), WHERE status != 'OK') * 100 / sum(`api.Requests`)
+    from: GcpSpannerDatabaseSample
+  unit: PERCENTAGE
+  title: Error rate
+latency:
+  query:
+    eventId: entityGuid
+    select: (average(`api.RequestLatencies`)) / 1000
+    from: GcpSpannerDatabaseSample
+  unit: SECONDS
+  title: Latency

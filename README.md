@@ -16,21 +16,22 @@ so your PR will get merged faster, and you can start enjoying your shiny new ent
 
 - Each entity definition file must live inside its own folder and both must follow the filename format explained below. 
 - The definition MUST be a valid YAML file.
-- The definition must contain at least the top-level fields `domain` and `type`, along with the fields `name` and `identifier`, located under `synthesis`. 
-We use the `domain`, `type` and `identifier` to assign each entity a Global Unique Identifier (GUID).
-- The `domain` must be a value matching `/[A-Z][A-Z0-9_]{2,7}/`. This field is mostly relevant internally for NR. 
+- The definition must contain at least the top-level fields `domain` and `type`, along with the fields `name`, `identifier` and `conditions`, located under `synthesis`. 
+The synthesis section is optional only if you can ensure that the telemetry is being stamped with the entity GUID and tags based on rules defined internally at NewRelic.
+- We use the `domain`, `type` and `identifier` to assign each entity a Global Unique Identifier (GUID).
+- The `domain` must be a value matching `/[A-Z][A-Z0-9_]{2,14}/`. This field is mostly relevant internally for NR. 
 Use EXT by default, although we may advise to use a different value in some cases.                
-- The `type` must be a value matching `/[A-Z][A-Z0-9_]{2,11}/`. This field is meant to identify the type of entity. 
+- The `type` must be a value matching `/[A-Z][A-Z0-9_]{2,49}/`. This field is meant to identify the type of entity. 
 Some examples are APPLICATION, HOST or CONTAINER.  
 - The `identifier` must be assigned a parameter that is unique within the domain and type (e.g
 . cluster ID, host ID, etc). Keep in mind that the value has the following restrictions and that the
  entity will not be synthesized if the value extracted from the metrics is considered invalid:
-  - `/[\x20-\x7E]{1,36}/`.
+  - `/[\x20-\x7E]{1,50}/`.
   - 1 to 36 standard ascii characters, excluding control chars (codes: 32-126).
   - If you suspect that your identifiers may not fulfil our length requirements, set the optional `encodeIdentifierInGUID` field to true. 
-- The definition needs to provide enough information to differentiate this entity
- from others. It cannot be a subset nor a superset of any existing definition. If the names of
-  your telemetry attributes are too generic you can define conditions on the value of the field (e.g. `prefix: "eks"`).
+- You must also define a condition to match on the value of an attribute. An entity will be synthesized if it matches the provided condition and contains the attributes set for the identifier and name. 
+  For more information on our supported conditions please refer to the [conditions](#conditions) section. 
+- The definition needs to provide enough information to differentiate this entity from others. It cannot be a subset nor a superset of any existing definition. 
 - If you are creating a definition for a `domain` and `type` that already exists we'll need to
  understand your use case, so please provide an explanation in your PR or get in touch with us to discuss it. 
 - If you are adding composite metrics' files for an entity definition they must be placed inside the same folder and follow the filename format.
@@ -59,12 +60,53 @@ When creating a new entity definition you may use the following files as a guide
 
 For more concrete examples, you can take a look at the files located on the [definitions](./definitions) folder. 
 
+#### Conditions
+
+We support the following conditions over telemetry attributes and their values:
+
+- Attribute match: If the specified attribute is present on the telemetry, synthesize the entity. The value of the attribute is not taken into account. 
+
+```yaml
+  conditions:
+    # The attribute must be present on the telemetry
+    - attribute: attributeName
+```
+- Value match: If the value of the specified telemetry attribute matches the expected one, synthesize the entity.
+
+```yaml
+  conditions:
+    # The attribute’s value must match the provided value
+    - attribute: attributeName
+      value: value
+```
+- Value prefix match: If the value of the specified telemetry attribute has the expected prefix, synthesize the entity.
+
+```yaml
+  conditions:
+    # The attribute’s value must have the expected prefix
+    - attribute: attributeName
+      prefix: val
+```
+
 #### Tags
 
 The `tags` field accepts an array of metric's attributes that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
 During synthesis, the tags will be created using the attribute name as key and its value as the tag value. 
 
 If some of the tags' attributes are not present on the telemetry message received, the entity will still be synthesized with the available tags (if any).
+
+By default an entity tag will contain all the values seen for this attribute in the telemetry.
+If you want to override all the values with the new one you can configure `multiValue: false` for that specific tag.
+
+```yaml
+  tags:
+    attributeNameB:
+      multiValue: false
+    attributeNameC:
+```
+
+An example of this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`running`, `stopped`, etc..) instead of a list of all the states the entity has gone through.
+
 
 #### Golden tags
 
@@ -96,6 +138,36 @@ dashboardTemplates:
 
 Note that you can define more than one dashboard under the `dashboardTemplates` field. 
 
+#### Configurations
+
+In the `configuration` section of the `definition.yml` file you can tweak the entity's behavior. 
+At the moment we accept two optional configuration parameters `entityExpirationTime` and `alertable`.
+
+```yaml
+configuration:
+  # The amount of time without receiving telemetry before an entity is deleted. Defaults to EIGHT_DAYS
+  entityExpirationTime: EIGHT_DAYS
+  # Defines whether the entities of this type should have an alert severity associated, defaults to true
+  alertable: true
+```
+
+**entityExpirationTime**
+
+By default, entities are automatically deleted if we reach 8 days without receiving any telemetry from them. 
+If this doesn't suit your needs you may set the `entityExpirationTime` to one of the following values:  
+
+- `DAILY`
+- `EIGHT_DAYS` (default)
+- `QUARTERLY`
+- `MANUAL` (allowed only for entities without a `synthesis` section)
+
+
+**alertable**
+
+If `alertable` is set to true (default), the entity's metadata will include a field `alertSeverity` that is updated when the telemetry associated to this entity breaks an alerting condition.
+
+
+
 ## Testing and validation
 
 Some validations are automatically executed whenever there is a contribution via pull request, to verify that the provided definition meets the basic requirements:
@@ -125,7 +197,7 @@ If you have any questions, or to execute our corporate CLA, required if your con
 
 As noted in our [security policy](../../security/policy), New Relic is committed to the privacy and security of our customers and their data. We believe that providing coordinated disclosure by security researchers and engaging with the security community are important means to achieve our security goals.
 
-If you believe you have found a security vulnerability in this project or any of New Relic's products or websites, we welcome and greatly appreciate you reporting it to New Relic through [HackerOne](https://hackerone.com/newrelic).
+If you believe you have found a security vulnerability in this project or any of New Relic's products or websites, we welcome and greatly appreciate you reporting it to New Relic through [HackerOne](https://hackerone.com/newrelic)
 
 ## License
 Entity Synthesis Definitions is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.

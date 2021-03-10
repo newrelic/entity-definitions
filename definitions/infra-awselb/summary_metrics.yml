@@ -1,0 +1,26 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+throughput:
+  query:
+    eventId: entityGuid
+    select: rate(sum(`provider.requestCount.Sum`), 1 second)
+    from: LoadBalancerSample
+  unit: REQUESTS_PER_SECOND
+  title: Throughput
+latency:
+  query:
+    eventId: entityGuid
+    select: average(provider.latency.Average)
+    from: LoadBalancerSample
+  unit: SECONDS
+  title: Latency (s)
+surgeQueueLength:
+  query:
+    eventId: entityGuid
+    select: max(provider.surgeQueueLength.Max)
+    from: LoadBalancerSample
+  unit: COUNT
+  title: Surge Queue Length

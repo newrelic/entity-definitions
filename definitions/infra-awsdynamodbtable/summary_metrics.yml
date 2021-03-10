@@ -1,0 +1,35 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+readConsumpiton:
+  query:
+    eventId: entityGuid
+    select: average(`provider.consumedReadCapacityUnits.Sum` / (`provider.provisionedReadCapacityUnits.Average`
+      * 60 * 5)) * 100
+    from: DatastoreSample
+  unit: PERCENTAGE
+  title: Read consumption
+writeConsumpiton:
+  query:
+    eventId: entityGuid
+    select: average(`provider.consumedWriteCapacityUnits.Sum` / (`provider.provisionedWriteCapacityUnits.Average`
+      * 60 * 5)) * 100
+    from: DatastoreSample
+  unit: PERCENTAGE
+  title: Write consumption
+readThrottles:
+  query:
+    eventId: entityGuid
+    select: average(`provider.readThrottleEvents.Sum`)
+    from: DatastoreSample
+  unit: COUNT
+  title: Read throttles
+writeThrottles:
+  query:
+    eventId: entityGuid
+    select: average(`provider.writeThrottleEvents.Sum`)
+    from: DatastoreSample
+  unit: COUNT
+  title: Write throttles

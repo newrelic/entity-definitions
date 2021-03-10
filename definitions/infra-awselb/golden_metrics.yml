@@ -1,0 +1,48 @@
+requests:
+  title: Requests per min
+  query:
+    select: rate(sum(provider.requestCount.Sum), 1 minute)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    facet: entityName
+    eventId: entityGuid
+latency:
+  title: Latency (s)
+  query:
+    select: average(provider.latency.Average)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    facet: entityName
+    eventId: entityGuid
+errorRate:
+  title: Error Rate
+  query:
+    select: rate(sum(provider.backendConnectionErrors.Sum), 1 minute)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    facet: entityName
+    eventId: entityGuid
+latencyP99:
+  title: P99 Latency (s)
+  query:
+    select: average(provider.latency.p99)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    facet: entityName
+    eventId: entityGuid
+latencyP90:
+  title: P90 Latency (s)
+  query:
+    select: average(provider.latency.p90)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    facet: entityName
+    eventId: entityGuid
+unhealthyHosts:
+  title: Unhealthy hosts
+  query:
+    select: average(`provider.unhealthyHostCount.Average`)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    facet: entityName
+    eventId: entityGuid

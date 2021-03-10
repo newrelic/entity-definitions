@@ -1,0 +1,20 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+putTroughput:
+  query:
+    eventId: entityGuid
+    select: rate(sum(`provider.incomingBytes.Sum`), 1 second)
+    from: QueueSample
+  unit: BYTES_PER_SECOND
+  title: Throughput in
+delivered:
+  query:
+    eventId: entityGuid
+    select: rate(sum(`provider.deliveryToElasticsearchBytes.Sum`) + sum(`provider.deliveryToS3Bytes.Sum`)
+      + sum(`provider.deliveryToRedshiftBytes.Sum`)), 1 second)
+    from: QueueSample
+  unit: BYTES_PER_SECOND
+  title: Throuput out
