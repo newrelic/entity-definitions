@@ -60,7 +60,76 @@ When creating a new entity definition you may use the following files as a guide
 
 For more concrete examples, you can take a look at the files located on the [definitions](./definitions) folder. 
 
-#### Conditions
+#### Synthesis
+
+The definition file may contain a synthesis section which is optional *only* if you can ensure that the telemetry is being stamped with the entity GUID and tags based on rules defined internally at NewRelic.
+
+If the telemetry you want to synthesize entities from always has the same attributes you can define a synthesis section with the following format:
+
+<details>
+  <summary>Example of `synthesis` section with simple format</summary>
+  
+  ```
+  synthesis:
+    # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
+    name: attributeNameA
+    # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique. It can be the same field used for the name or not.
+    identifier: attributeNameA
+    # [mandatory] Condition that must be met for this entity to be synthesized.
+    conditions:
+      # The attribute’s value must match the provided value
+      - attribute: attributeName
+        value: value
+    # Set to true if the identifier is expected to be longer than our maximum allowed characters, defaults to false
+    encodeIdentifierInGUID: false
+    # Tags associated with the entity that can be extracted from the telemetry attributes.
+    tags:
+      attributeNameB:
+      attributeNameC:
+  ```
+</details>
+
+
+
+If your telemetry has different sources which don't send the same attributes, you might need to define a specific set of rules for each one of them. In this case you cannot use the simplified synthesis format, instead, you must provide each set of rules inside a `rules` section:
+
+<details>
+  <summary>Example of `synthesis` section with multi-rule format</summary>
+  
+```
+synthesis:
+  rules:
+    # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
+    - name: attributeNameA
+      # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique. It can be the same field used for the name or not.
+      identifier: attributeNameA
+      # [mandatory] Condition that must be met for this entity to be synthesized.
+      conditions:
+      # The attribute’s value must match the provided value
+      - attribute: attributeName
+        value: value
+      # Set to true if the identifier is expected to be longer than our maximum allowed characters, defaults to false
+      encodeIdentifierInGUID: false
+      # Tags associated with the entity that can be extracted from the telemetry attributes. Specific to this synthesis rule. 
+      tags:
+        attributeNameB:
+    - name: attributeNameC
+      identifier: attributeNameC
+      conditions:
+      - attribute: attributeName
+        value: value
+      encodeIdentifierInGUID: false
+      tags:
+        attributeNameD:
+  # Tags associated with the entity that can be extracted from the telemetry attributes, regardless of the synthesis rule used. 
+  tags:
+    attributeNameE:
+```
+</details>
+
+As you can see, you can (optionally) define tags inside and outside of the `rules` section. Tags that are defined outside of `rules` will be common to this entity type, regardless of the synthesis rule used.  
+
+##### Conditions
 
 We support the following conditions over telemetry attributes and their values:
 
@@ -88,7 +157,7 @@ We support the following conditions over telemetry attributes and their values:
       prefix: val
 ```
 
-#### Tags
+##### Tags
 
 The `tags` field accepts an array of metric's attributes that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
 During synthesis, the tags will be created using the attribute name as key and its value as the tag value. 
@@ -105,7 +174,7 @@ If you want to override all the values with the new one you can configure `multi
     attributeNameC:
 ```
 
-An example of this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`running`, `stopped`, etc..) instead of a list of all the states the entity has gone through.
+An example of this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`running`, `stopped`, etc) instead of a list of all the states the entity has gone through.
 
 
 #### Golden tags
