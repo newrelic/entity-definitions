@@ -54,7 +54,7 @@ memoryUsage:
 
 ### Roll-up entities
 
-In the cases that the entity type can be ingested from different sources and you need to provide a different query implementation you can use `queries` instead of `query`
+In the cases that the entity type can be ingested from different sources and you need to provide a different query implementation for each of them, you can use `queries` instead of `query`
 
 ```yaml
 memoryUsage:

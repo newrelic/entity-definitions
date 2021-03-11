@@ -133,19 +133,20 @@ Then you can just copy it to a file within your entity type's folder, modify it 
 
 ```yaml
 dashboardTemplates:
- - template: ./<dashboardName>.json
+ newRelic:
+  template: dashboard.json
 ```
 
-Note that you can define more than one dashboard under the `dashboardTemplates` field. 
-
-If your entity has different sources you can also provide a rule to show the dashboard only if the condition matches.
-The condition is that the entity has the tag `instrumentation.provider` with the value specified in the `tag` field when tag is used we also require a `title`:
+If your entity has more than one telemetry source you can also provide a different dashboard for each of them. 
+The entity must have the tag `instrumentation.provider` with the value used as the key of the `dashboardTemplates`, in the example below we define a dashboard for two telemetry sources `newRelic` and `prometheus`.
+If no tag matches the keys you provide in the map, the dashboard used will be the one defined for `newRelic`. 
 
 ```yaml
 dashboardTemplates:
- - title: Prometheus only dashboard
-   template: ./prometheus_dashboard.json
-   tag: prometheus
+ newRelic:
+  template: dashboard.json
+ prometheus:
+  template: prometheus_dashboard.json
 ```
 
 
