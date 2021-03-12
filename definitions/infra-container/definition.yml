@@ -9,7 +9,8 @@ synthesis:
     - attribute: docker.containerId
     tags:
       container.state:
-      docker.state: # Missing alias
+      docker.state:
+        writeAs: container.state
       docker.containerId:
       docker.shortContainerId:
       docker.imageName:
@@ -26,7 +27,8 @@ synthesis:
     conditions:
     - attribute: k8s.containerId
     tags:
-      k8s.status: # Missing alias
+      k8s.status:
+        writeAs: container.state
       k8s.clusterName:
       k8s.namespaceName:
       k8s.podName:
@@ -39,9 +41,11 @@ synthesis:
       label.kubernetes.io/arch:
       label.kubernetes.io/hostname:
       label.kubernetes.io/os:
-      # This is for OTEL. Verify if we need to respect tag priority since they alias to the same tagName as `k8s.clusterName`
-      k8s.cluster.name: # Missing alias
-      k8s.namespace.name: # Missing alias
+      # This is for OTEL. Verify if we need to respect tag priority since they alias to the same tagName as others above
+      k8s.cluster.name:
+        writeAs: k8s.clusterName
+      k8s.namespace.name:
+        writeAs: k8s.namespaceName
   tags:
     newrelic.integrationName:
     newrelic.integrationVersion:
