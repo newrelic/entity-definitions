@@ -1,0 +1,41 @@
+ipAddress:
+  title: Router IP Address
+  unit: STRING
+  tag:
+    key: src_addr
+
+cpuUtilization:
+  title: CPU Utilization (%)
+  unit: PERCENTAGE
+  query:
+    select: average(kentik.snmp.CPU) AS 'CPU Utilization'
+    from: Metric
+    where: "provider = 'router'"
+    eventId: entityGuid
+
+memoryUtilization:
+  title: Memory Utilization (%)
+  unit: PERCENTAGE
+  query:
+    select: average(kentik.snmp.MemoryUtilization) AS 'Memory Utilization'
+    from: Metric
+    where: "provider = 'router'"
+    eventId: entityGuid
+
+receiveErrors:
+  title: Aggregate Receive Errors (count)
+  unit: COUNT
+  query:
+    select: sum(kentik.snmp.ifInErrors) AS 'Receive Errors'
+    from: Metric
+    where: "provider = 'router'"
+    eventId: entityGuid
+
+transmitErrors:
+  title: Aggregate Transmit Errors (count)
+  unit: COUNT
+  query:
+    select: sum(kentik.snmp.ifOutErrors) AS 'Transmit Errors'
+    from: Metric
+    where: "provider = 'router'"
+    eventId: entityGuid
