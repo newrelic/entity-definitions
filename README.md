@@ -176,15 +176,15 @@ If you want to override all the values with the new one you can configure `multi
 
 An example of this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`running`, `stopped`, etc) instead of a list of all the states the entity has gone through.
 
-You can also configure the key-name that you want for the tags we synthesize from your telemetry attributes. 
-By default, the tag-keys are the names of the attributes you specify on the tags section, but you can specify a different key-name using the `writeAs` field. 
+You can also configure the tag name that you want for the entity tags we synthesize from your telemetry attributes. 
+By default, the entity tag names are equal to the attributes you specify on the `tags` section, but you can specify a different tag name using the `entityTagName` field. 
 
 In the example below if `attributeNameB` is present on the telemetry, a tag with key `preferredTagName` and the value of the attribute will be added to the entity. For `attributeNameC` a tag would be created with `attributeNameC` as the key. 
 
 ```yaml
   tags:
     attributeNameB:
-      writeAs: preferredTagName,
+      entityTagName: preferredTagName,
     attributeNameC:
 ```
 
