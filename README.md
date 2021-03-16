@@ -132,11 +132,25 @@ You can create a dashboard with the NewRelic interface and export it to JSON for
 Then you can just copy it to a file within your entity type's folder, modify it if needed and refer to it from the definition.yml:
 
 ```yaml
-dashboardTemplates: 
- - ./<dashboardName>.json
+dashboardTemplates:
+ newRelic:
+  template: dashboard.json
 ```
 
-Note that you can define more than one dashboard under the `dashboardTemplates` field. 
+If your entity has more than one telemetry source you can also provide a different dashboard for each of them. The entity must have the tag `instrumentation.provider` with the value used as the key of the `dashboardTemplates`. If you are using a NewRelic agent you should use `newRelic` as the tag value, otherwise come talk to us and we'll guide you. 
+
+In the example below we define a dashboard for two telemetry sources `newRelic` and `otherSource`. 
+If no tag matches the keys you provide in the map, the dashboard used will be the first one defined, in this case the one for `newRelic`. 
+
+
+```yaml
+dashboardTemplates:
+ newRelic:
+  template: dashboard.json
+ otherSource:
+  template: other_source_dashboard.json
+```
+
 
 #### Configurations
 
