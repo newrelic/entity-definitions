@@ -25,9 +25,10 @@
   },
   "additionalProperties": {
     "type": "object",
-    "required": [
-      "title",
-      "query"
+
+    "oneOf": [
+      {"required": ["title", "query"]},
+      {"required": ["title", "queries"]}
     ],
     "properties": {
       "title": {
@@ -48,62 +49,83 @@
           false
         ]
       },
-      "query": {
-        "$id": "#/properties/query",
+      "query": { "$ref": "#/definitions/query" },
+      "queries": {
+        "$id": "#/properties/queries",
         "type": "object",
-        "title": "The query schema",
-        "description": "Information about the query to get the golden metric.",
-        "examples": [
-          {
-            "select": "average(host.memoryUsagePercent)",
-            "from": "Metric",
-            "where": "",
-            "facet": "entity.name",
-            "eventId": "entity.guid"
-          }
-        ],
-        "required": [
-          "select"
-        ],
-        "properties": {
-          "select": {
-            "$id": "#/properties/query/properties/select",
-            "type": "string",
-            "examples": [
-              "average(host.memoryUsagePercent)"
-            ]
-          },
-          "from": {
-            "$id": "#/properties/query/properties/from",
-            "type": "string",
-            "examples": [
-              "Metric"
-            ]
-          },
-          "where": {
-            "$id": "#/properties/query/properties/where",
-            "type": "string",
-            "examples": [
-              "condition is true"
-            ]
-          },
-          "facet": {
-            "$id": "#/properties/query/properties/facet",
-            "type": "string",
-            "examples": [
-              "entity.name"
-            ]
-          },
-          "eventId": {
-            "$id": "#/properties/query/properties/eventId",
-            "type": "string",
-            "examples": [
-              "entity.guid"
-            ]
-          }
+        "propertyNames": {
+          "pattern": "^[a-zA-Z0-9_]{1,100}$"
         },
-        "additionalProperties": true
+        "additionalProperties": {
+          "$ref": "#/definitions/query"
+        }
       }
+    }
+  },
+  "definitions": {
+    "query": {
+      "$id": "#/definitions/query",
+      "type": "object",
+      "title": "The query schema",
+      "description": "Information about the query to get the golden metric.",
+      "examples": [
+        {
+          "select": "average(host.memoryUsagePercent)",
+          "from": "Metric",
+          "where": "",
+          "facet": "",
+          "eventId": "entity.guid",
+          "eventName": "entity.name"
+        }
+      ],
+      "required": [
+        "select"
+      ],
+      "properties": {
+        "select": {
+          "$id": "#/properties/query/properties/select",
+          "type": "string",
+          "examples": [
+            "average(host.memoryUsagePercent)"
+          ]
+        },
+        "from": {
+          "$id": "#/properties/query/properties/from",
+          "type": "string",
+          "examples": [
+            "Metric"
+          ]
+        },
+        "where": {
+          "$id": "#/properties/query/properties/where",
+          "type": "string",
+          "examples": [
+            "condition is true"
+          ]
+        },
+        "facet": {
+          "$id": "#/properties/query/properties/facet",
+          "type": "string",
+          "examples": [
+            "drive"
+          ]
+        },
+        "eventId": {
+          "$id": "#/properties/query/properties/eventId",
+          "type": "string",
+          "examples": [
+            "entity.guid"
+          ]
+        },
+        "eventName": {
+          "$id": "#/properties/query/properties/eventName",
+          "type": "string",
+          "examples": [
+            "entity.name"
+          ]
+        }
+      },
+      "additionalProperties": true
     }
   }
 }
