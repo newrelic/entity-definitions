@@ -62,33 +62,32 @@ For more concrete examples, you can take a look at the files located on the [def
 
 #### Synthesis
 
-The definition file may contain a synthesis section which is optional *only* if you can ensure that the telemetry is being stamped with the entity GUID and tags based on rules defined internally at NewRelic.
+The `synthesis` section of a definition file contains information about the telemetry attributes needed to uniquely identify an entity and synthezise its tags. Some entities, such as those under the `INFRA` domain, don't have this section since they follow rules defined internally at NewRelic for historical reasons. 
 
-If the telemetry you want to synthesize entities from always has the same attributes you can define a synthesis section with the following format:
+If your telemetry has a single set of consistent attributes that can uniquely identify an entity, you can use this synthesis section format:
 
 <details>
   <summary>Example of `synthesis` section with simple format</summary>
   
   ```
   synthesis:
+    # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique within an account. It can be the same field used for the name or not.
+    identifier: attributeNameA
     # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
     name: attributeNameA
-    # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique. It can be the same field used for the name or not.
-    identifier: attributeNameA
-    # [mandatory] Condition that must be met for this entity to be synthesized.
+    # [mandatory] Condition that must be met for this entity to be synthesized. Only one can be provided. 
     conditions:
       # The attribute’s value must match the provided value
       - attribute: attributeName
         value: value
-    # Set to true if the identifier is expected to be longer than our maximum allowed characters, defaults to false
+    # When the value of the identifier attribute is expected to be longer than our maximum allowed characters, you should set this to true. Defaults to false.
     encodeIdentifierInGUID: false
-    # Tags associated with the entity that can be extracted from the telemetry attributes.
+    # Telemetry attributes that should be extracted into entity tags.
     tags:
       attributeNameB:
       attributeNameC:
   ```
 </details>
-
 
 
 If your telemetry has different sources which don't send the same attributes, you might need to define a specific set of rules for each one of them. In this case you cannot use the simplified synthesis format, instead, you must provide each set of rules inside a `rules` section:
@@ -99,29 +98,29 @@ If your telemetry has different sources which don't send the same attributes, yo
 ```
 synthesis:
   rules:
-    # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
-    - name: attributeNameA
-      # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique. It can be the same field used for the name or not.
-      identifier: attributeNameA
-      # [mandatory] Condition that must be met for this entity to be synthesized.
+    # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique within an account. It can be the same field used for the name or not.
+    - identifier: attributeNameA
+      # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
+      name: attributeNameA
+      # [mandatory] Condition that must be met for this entity to be synthesized. We need exactly one condition per synthesis rule. 
       conditions:
       # The attribute’s value must match the provided value
       - attribute: attributeName
         value: value
-      # Set to true if the identifier is expected to be longer than our maximum allowed characters, defaults to false
+      # When the value of the identifier attribute is expected to be longer than our maximum allowed characters, you should set this to true. Defaults to false.
       encodeIdentifierInGUID: false
-      # Tags associated with the entity that can be extracted from the telemetry attributes. Specific to this synthesis rule. 
+      # Telemetry attributes that should be extracted into entity tags. Specific to this synthesis rule. 
       tags:
         attributeNameB:
-    - name: attributeNameC
-      identifier: attributeNameC
+    - identifier: attributeNameC
+      name: attributeNameC
       conditions:
       - attribute: attributeName
         value: value
       encodeIdentifierInGUID: false
       tags:
         attributeNameD:
-  # Tags associated with the entity that can be extracted from the telemetry attributes, regardless of the synthesis rule used. 
+  # Telemetry attributes that should be extracted into entity tags, regardless of the synthesis rule used. 
   tags:
     attributeNameE:
 ```
