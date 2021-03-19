@@ -159,12 +159,12 @@ We support the following conditions over telemetry attributes and their values:
 
 ##### Tags
 
-The `tags` field accepts an array of metric's attributes that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
-During synthesis, the tags will be created using the attribute name as key and its value as the tag value. 
+The `tags` field accepts a map of metric attributes to entity tag configurations that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
+During synthesis, the tags will be created using the attribute name as key and its value as the tag value. The tag configurations are optional and can be left empty. 
 
 If some of the tags' attributes are not present on the telemetry message received, the entity will still be synthesized with the available tags (if any).
 
-By default an entity tag will contain all the values seen for this attribute in the telemetry.
+By default, an entity tag will contain all the values seen for this attribute in the telemetry.
 If you want to override all the values with the new one you can configure `multiValue: false` for that specific tag.
 
 ```yaml
@@ -176,6 +176,20 @@ If you want to override all the values with the new one you can configure `multi
 
 An example of this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`running`, `stopped`, etc) instead of a list of all the states the entity has gone through.
 
+You can also configure the tag name that you want for the entity tags we synthesize. By default, the entity tag names are equal to the telemetry attributes you specify on the `tags` section, but you can specify a different tag name using the `entityTagName` field.  
+
+In the example below if `attributeNameB` is present on the telemetry, a tag with key `preferredTagName` and the value of the attribute will be added to the entity. For `attributeNameC` a tag would be created with `attributeNameC` as the key. 
+
+```yaml
+  tags:
+    attributeNameB:
+      entityTagName: preferredTagName
+    attributeNameC:
+```
+
+This explicit naming can be used to guarantee consistency when you have telemetry from different sources for a single entity, since they are likely to use different attribute names for what would conceptually be the same entity tag. Otherwise, our advice is to use the default naming.
+
+An example of an entity definition where the `entityTagName` is needed and correctly used is the [INFRA-CONTAINER](https://github.com/newrelic-experimental/entity-synthesis-definitions/blob/main/definitions/infra-container/definition.yml) type. 
 
 #### Golden tags
 
