@@ -60,7 +60,75 @@ When creating a new entity definition you may use the following files as a guide
 
 For more concrete examples, you can take a look at the files located on the [definitions](./definitions) folder. 
 
-#### Conditions
+#### Synthesis
+
+The `synthesis` section of a definition file contains information about the telemetry attributes needed to uniquely identify an entity and synthezise its tags. Some entities, such as those under the `INFRA` domain, don't have this section since they follow rules defined internally at NewRelic for historical reasons. 
+
+If your telemetry has a single set of consistent attributes that can uniquely identify an entity, you can use this synthesis section format:
+
+<details>
+  <summary>Example of `synthesis` section with simple format</summary>
+  
+  ```
+  synthesis:
+    # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique within an account. It can be the same field used for the name or not.
+    identifier: attributeNameA
+    # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
+    name: attributeNameA
+    # [mandatory] Condition that must be met for this entity to be synthesized. Only one can be provided. 
+    conditions:
+      # The attribute’s value must match the provided value
+      - attribute: attributeName
+        value: value
+    # When the value of the identifier attribute is expected to be longer than our maximum allowed characters, you should set this to true. Defaults to false.
+    encodeIdentifierInGUID: false
+    # Telemetry attributes that should be extracted into entity tags.
+    tags:
+      attributeNameB:
+      attributeNameC:
+  ```
+</details>
+
+
+If your telemetry has different sources which don't send the same attributes, you might need to define a specific set of rules for each one of them. In this case you cannot use the simplified synthesis format, instead, you must provide each set of rules inside a `rules` section:
+
+<details>
+  <summary>Example of `synthesis` section with multi-rule format</summary>
+  
+```
+synthesis:
+  rules:
+    # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique within an account. It can be the same field used for the name or not.
+    - identifier: attributeNameA
+      # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
+      name: attributeNameA
+      # [mandatory] Condition that must be met for this entity to be synthesized. We need exactly one condition per synthesis rule. 
+      conditions:
+      # The attribute’s value must match the provided value
+      - attribute: attributeName
+        value: value
+      # When the value of the identifier attribute is expected to be longer than our maximum allowed characters, you should set this to true. Defaults to false.
+      encodeIdentifierInGUID: false
+      # Telemetry attributes that should be extracted into entity tags. Specific to this synthesis rule. 
+      tags:
+        attributeNameB:
+    - identifier: attributeNameC
+      name: attributeNameC
+      conditions:
+      - attribute: attributeName
+        value: value
+      encodeIdentifierInGUID: false
+      tags:
+        attributeNameD:
+  # Telemetry attributes that should be extracted into entity tags, regardless of the synthesis rule used. 
+  tags:
+    attributeNameE:
+```
+</details>
+
+As you can see, you can (optionally) define tags inside and outside of the `rules` section. Tags that are defined outside of `rules` will be common to this entity type, regardless of the synthesis rule used.  
+
+##### Conditions
 
 We support the following conditions over telemetry attributes and their values:
 
@@ -88,14 +156,14 @@ We support the following conditions over telemetry attributes and their values:
       prefix: val
 ```
 
-#### Tags
+##### Tags
 
-The `tags` field accepts an array of metric's attributes that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
-During synthesis, the tags will be created using the attribute name as key and its value as the tag value. 
+The `tags` field accepts a map of metric attributes to entity tag configurations that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
+During synthesis, the tags will be created using the attribute name as key and its value as the tag value. The tag configurations are optional and can be left empty. 
 
 If some of the tags' attributes are not present on the telemetry message received, the entity will still be synthesized with the available tags (if any).
 
-By default an entity tag will contain all the values seen for this attribute in the telemetry.
+By default, an entity tag will contain all the values seen for this attribute in the telemetry.
 If you want to override all the values with the new one you can configure `multiValue: false` for that specific tag.
 
 ```yaml
@@ -105,8 +173,22 @@ If you want to override all the values with the new one you can configure `multi
     attributeNameC:
 ```
 
-An example of this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`running`, `stopped`, etc..) instead of a list of all the states the entity has gone through.
+An example of this is `INFRA-CONTAINER` where the tag `container.state` will always display the last state (`running`, `stopped`, etc) instead of a list of all the states the entity has gone through.
 
+You can also configure the tag name that you want for the entity tags we synthesize. By default, the entity tag names are equal to the telemetry attributes you specify on the `tags` section, but you can specify a different tag name using the `entityTagName` field.  
+
+In the example below if `attributeNameB` is present on the telemetry, a tag with key `preferredTagName` and the value of the attribute will be added to the entity. For `attributeNameC` a tag would be created with `attributeNameC` as the key. 
+
+```yaml
+  tags:
+    attributeNameB:
+      entityTagName: preferredTagName
+    attributeNameC:
+```
+
+This explicit naming can be used to guarantee consistency when you have telemetry from different sources for a single entity, since they are likely to use different attribute names for what would conceptually be the same entity tag. Otherwise, our advice is to use the default naming.
+
+An example of an entity definition where the `entityTagName` is needed and correctly used is the [INFRA-CONTAINER](https://github.com/newrelic-experimental/entity-synthesis-definitions/blob/main/definitions/infra-container/definition.yml) type. 
 
 #### Golden tags
 

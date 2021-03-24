@@ -6,11 +6,11 @@ type: TYPE
 
 # Entity definitions without this section are synthesized based on rules defined elsewhere.
 synthesis:
-  # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
-  name: attributeNameA
   # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique,
   # it can be the same field used for the name or not.
   identifier: attributeNameA
+  # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
+  name: attributeNameA
 
   # Set to true if the identifier is expected to be longer than our maximum allowed characters (see README guidelines), defaults to false
   encodeIdentifierInGUID: false
@@ -22,10 +22,16 @@ synthesis:
     - attribute: attributeName
       value: value
 
-  # Tags associated with the entity that can be extracted from the telemetry attributes.
+  # Telemetry attributes that should be extracted into entity tags.
   tags:
     attributeNameB:
     attributeNameC:
+      # If set to true, an entity tag contains all the values seen for this attribute in the telemetry.
+      # If set to false it will only contain the last one. Defaults to true
+      multiValue: false
+    attributeNameD:
+      # The key of the tag to be created with the value of the provided attribute. Defaults to the attribute name.
+      entityTagName: preferredTagName
 
 # Template that can be used to generate a dashboard for the entity.
 # If your telemetry comes from different providers you can specify a dashboard for each one of them, otherwise you can just use `newRelic`
