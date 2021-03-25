@@ -1,0 +1,23 @@
+cpuUtilizationPercent:
+  title: CPU Utilization (%)
+  unit: PERCENTAGE
+  query:
+    select: 100-latest(cpu.idle)
+    from: '`unixMonitor:Stats`'
+    eventId: entity.guid
+
+memoryUtilizationPercent:
+  title: Memory Utilization (%)
+  unit: PERCENTAGE
+  query:
+    select: (latest(memory.total) - latest(memory.free))/latest(memory.total) * 100
+    from: '`unixMonitor:Stats`'
+    eventId: entity.guid
+
+networkUtilizationBps:
+  title: Network Throughput (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: latest(receive.bytes + transmit.bytes)
+    from: '`unixMonitor:NetworkIO`'
+    eventId: entity.guid
