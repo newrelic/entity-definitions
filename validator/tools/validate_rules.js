@@ -1,8 +1,7 @@
-const process = require('process')
 const utils = require('./utils')
 const isEqual = require('is-equal');
 
-var ENTITY
+let ENTITY
 
 function hasDifferentDomainType(entity1, entity2){
     return (entity1.domain !== entity2.domain || entity1.type !== entity2.type)
@@ -24,7 +23,7 @@ const RULES = [
     {
         name: 'Entities with the same identifier and conditions must have the same domain and type',
         apply: def => {
-            if(def.synthesis != undefined) {
+            if(def.hasOwnProperty("synthesis")) {
                 const identifier = def.synthesis.identifier
 
                 if (ENTITY.has(identifier) && hasConflictingConditions(ENTITY.get(identifier), def) && hasDifferentDomainType(ENTITY.get(identifier), def)) {
