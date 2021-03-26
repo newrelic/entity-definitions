@@ -7,16 +7,36 @@ function hasDifferentDomainType(entity1, entity2){
     return (entity1.domain !== entity2.domain || entity1.type !== entity2.type)
 }
 
-function hasConflictingConditions(entity1, entity2){
-    let e1conditions = entity1.synthesis.conditions || []
-    let e2conditions = entity2.synthesis.conditions || []
+// Conditions from one entity are present in those provided
+function hasConflictingConditions(previousEntity, conditions){
+    let conflict = false;
+    if(previousEntity.synthesis.rules !== undefined){
+        previousEntity.synthesis.rules.forEach((rule)=>{
+            let previousConditions = rule.conditions || []
+            conflict = conflict || areSameConditions(previousConditions, conditions)
+        })
 
-    if(e1conditions.length === 0 || e2conditions.length === 0){
-        return true
+    } else{
+        let previousConditions = previousEntity.synthesis.conditions || []
+        conflict = areSameConditions(previousConditions, conditions)
     }
 
-    // Conditions from one entity are present in the other
-    return e1conditions.some(e1cond => e2conditions.some(e2cond => isEqual(e1cond, e2cond)));
+    return conflict;
+}
+
+function areSameConditions(condition1, condition2){
+    if(condition1.length === 0 || condition2.length === 0){
+        return true
+    }
+    return condition1.some(e1cond => condition2.some(e2cond => isEqual(e1cond, e2cond)));
+}
+
+function validateAndRecord(definition, identifier, conditions) {
+    if (ENTITY.has(identifier) && hasConflictingConditions(ENTITY.get(identifier), conditions) && hasDifferentDomainType(ENTITY.get(identifier), definition)) {
+        throw `Same entity ID criteria ${identifier} and condition assigned to different domain types.`
+    }
+
+    ENTITY.set(identifier, definition)
 }
 
 const RULES = [
@@ -24,13 +44,19 @@ const RULES = [
         name: 'Entities with the same identifier and conditions must have the same domain and type',
         apply: def => {
             if(def.hasOwnProperty("synthesis")) {
-                const identifier = def.synthesis.identifier
+                if(def.synthesis.rules !== undefined){
+                    def.synthesis.rules.forEach( (rule) =>{
+                        const identifier = rule.identifier
+                        const conditions = rule.conditions || []
 
-                if (ENTITY.has(identifier) && hasConflictingConditions(ENTITY.get(identifier), def) && hasDifferentDomainType(ENTITY.get(identifier), def)) {
-                    throw `Same entity ID criteria ${identifier} and condition assigned to different domain types.`
+                        validateAndRecord(def, identifier, conditions);
+                    })
+                } else{
+                    const identifier = def.synthesis.identifier
+                    const conditions = def.synthesis.conditions || []
+
+                    validateAndRecord(def, identifier, conditions);
                 }
-
-                ENTITY.set(identifier, def)
             }
         }
     },
