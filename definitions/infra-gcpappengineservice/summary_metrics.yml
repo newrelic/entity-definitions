@@ -3,6 +3,13 @@ providerAccountName:
     key: providerAccountName
   title: GCP Account
   unit: STRING
+Instances:
+  query:
+    eventId: entityGuid
+    select: max(`system.Instances`)
+    from: GcpAppEngineServiceSample
+  unit: COUNT
+  title: Number of instances
 Service responses:
   query:
     eventId: entityGuid
@@ -13,8 +20,7 @@ Service responses:
 errorRate:
   query:
     eventId: entityGuid
-    select: filter(sum(`server.Responses`), WHERE response_code NOT LIKE '2%') * 100
-      / sum(`server.Responses`)
+    select: filter(sum(`server.Responses`), WHERE response_code NOT LIKE '2%') * 100 / sum(`server.Responses`)
     from: GcpAppEngineServiceSample
   unit: PERCENTAGE
   title: Error rate

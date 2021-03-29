@@ -1,23 +1,64 @@
 domain: INFRA
 type: CONTAINER
 
-# TODO: missing conditions to match on k8s containers, waiting until
-#       we add support for multiple telemetry sources.
 synthesis:
-  identifier: entity.id
-  name: docker.name
-  encodeIdentifierInGUID: true
-
-  conditions:
+  rules:
+  - identifier: entity.id
+    name: docker.name
+    encodeIdentifierInGUID: false
+    conditions:
     - attribute: docker.containerId
-
+    tags:
+      container.state:
+      docker.state:
+        entityTagName: container.state
+      docker.containerId:
+      docker.shortContainerId:
+      docker.imageName:
+      docker.ecsClusterArn:
+      docker.ecsClusterName:
+      docker.ecsContainerName:
+      docker.ecsLaunchType:
+      docker.ecsTaskArn:
+      docker.ecsTaskDefinitionFamily:
+      docker.ecsTaskDefinitionVersion:
+  - identifier: entity.id
+    name: k8s.containerName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: k8s.containerId
+    tags:
+      k8s.status:
+        entityTagName: container.state
+      k8s.clusterName:
+      k8s.namespaceName:
+      k8s.podName:
+      k8s.containerImage:
+      k8s.nodeName:
+      k8s.containerId:
+      label.topology.kubernetes.io/region:
+      label.topology.kubernetes.io/zone:
+      label.eks.amazonaws.com/compute-type:
+      label.kubernetes.io/arch:
+      label.kubernetes.io/hostname:
+      label.kubernetes.io/os:
+      # This is for OpenTelemetry. Verify if we need to respect tag priority since they alias to the same tagName as others above
+      k8s.cluster.name:
+        entityTagName: k8s.clusterName
+      k8s.namespace.name:
+        entityTagName: k8s.namespaceName
   tags:
-    - container.state
-    - docker.state
-    - docker.containerId
-    - newrelic.integrationName
-    - newrelic.integrationVersion
-    - newrelic.agentVersion
+    newrelic.integrationName:
+    newrelic.integrationVersion:
+    newrelic.agentVersion:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+    telemetry.sdk.language:
+      entityTagName: language
+    # AWS tags
+    aws.region:
+    aws.ec2.instanceType:
 
 goldenTags:
 - environment
@@ -28,3 +69,7 @@ compositeMetrics:
   - golden_metrics.yml
   summaryMetrics:
   - summary_metrics.yml
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true

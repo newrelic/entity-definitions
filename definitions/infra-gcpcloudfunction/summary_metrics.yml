@@ -6,7 +6,6 @@ providerAccountName:
 executions:
   query:
     eventId: entityGuid
-    eventObjectId: ENTITY_GUID
     select: sum(`function.Executions`)
     from: GcpCloudFunctionSample
   unit: COUNT
@@ -14,8 +13,15 @@ executions:
 errorRate:
   query:
     eventId: entityGuid
-    eventObjectId: ENTITY_GUID
     select: filter(sum(`function.Executions`), WHERE status != 'ok') * 100 / sum(`function.Executions`)
     from: GcpCloudFunctionSample
   unit: PERCENTAGE
   title: Error rate
+latency:
+  query:
+    eventId: entityGuid
+    select: (average(`function.ExecutionTimeNanos`)) / 1000000000
+    from: GcpCloudFunctionSample
+  unit: SECONDS
+  title: Latency
+

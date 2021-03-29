@@ -22,13 +22,18 @@
   "additionalProperties": {
     "type": "object",
     "required": [
-      "title",
-      "unit"
+      "unit",
+      "title"
     ],
     "oneOf": [
       {
         "required": [
           "query"
+        ]
+      },
+      {
+        "required": [
+          "queries"
         ]
       },
       {
@@ -60,59 +65,21 @@
           "COUNT"
         ]
       },
-      "query": {
-        "$id": "#/properties/query",
+      "hidden": {
+        "$id": "#/properties/hidden",
+        "type": "boolean",
+        "title": "Whether the metric shows up on the UI or not"
+      },
+      "query": { "$ref": "#/definitions/query" },
+      "queries": {
+        "$id": "#/properties/queries",
         "type": "object",
-        "title": "The NRDB query to build the metric",
-        "description": "Information about the query to get the summary metric.",
-        "examples": [
-          {
-            "select": "sum(metricName)",
-            "from": "Metric",
-            "where": "",
-            "eventId": "entity.guid"
-          }
-        ],
-        "required": [
-          "select",
-          "from",
-          "eventId"
-        ],
-        "properties": {
-          "select": {
-            "$id": "#/properties/query/properties/select",
-            "type": "string",
-            "title": "The query's select",
-            "examples": [
-              "sum(metricName)"
-            ]
-          },
-          "from": {
-            "$id": "#/properties/query/properties/from",
-            "type": "string",
-            "title": "The query's from",
-            "examples": [
-              "Metric"
-            ]
-          },
-          "where": {
-            "$id": "#/properties/query/properties/where",
-            "type": "string",
-            "title": "The query's where",
-            "examples": [
-              "condition is true"
-            ]
-          },
-          "eventId": {
-            "$id": "#/properties/query/properties/eventId",
-            "type": "string",
-            "title": "The query's eventId",
-            "examples": [
-              "entity.guid"
-            ]
-          }
+        "propertyNames": {
+          "pattern": "^[a-zA-Z0-9_]{1,100}$"
         },
-        "additionalProperties": true
+        "additionalProperties": {
+          "$ref": "#/definitions/query"
+        }
       },
       "tag": {
         "$id": "#/properties/tag",
@@ -128,7 +95,7 @@
           "key"
         ],
         "properties": {
-          "select": {
+          "key": {
             "$id": "#/properties/tag/properties/key",
             "type": "string",
             "title": "The tag key you want to fetch the corresponding value for",
@@ -137,7 +104,7 @@
             ]
           }
         },
-        "additionalProperties": true
+        "additionalProperties": false
       },
       "derive": {
         "$id": "#/properties/derive",
@@ -149,6 +116,68 @@
         ]
       }
     },
-    "additionalProperties": true
+    "additionalProperties": false
+  },
+
+  "definitions": {
+    "query": {
+      "$id": "#/definitions/query",
+      "type": "object",
+      "title": "The NRDB query to build the metric",
+      "description": "Information about the query to get the summary metric.",
+      "examples": [
+        {
+          "select": "sum(metricName)",
+          "from": "Metric",
+          "where": "",
+          "eventId": "entity.guid"
+        }
+      ],
+      "required": [
+        "select",
+        "from",
+        "eventId"
+      ],
+      "properties": {
+        "select": {
+          "$id": "#/properties/query/properties/select",
+          "type": "string",
+          "title": "The query's select",
+          "examples": [
+            "sum(metricName)"
+          ]
+        },
+        "from": {
+          "$id": "#/properties/query/properties/from",
+          "type": "string",
+          "title": "The query's from",
+          "examples": [
+            "Metric"
+          ]
+        },
+        "where": {
+          "$id": "#/properties/query/properties/where",
+          "type": "string",
+          "title": "The query's where",
+          "examples": [
+            "condition is true"
+          ]
+        },
+        "eventId": {
+          "$id": "#/properties/query/properties/eventId",
+          "type": "string",
+          "title": "The query's eventId",
+          "examples": [
+            "entity.guid"
+          ]
+        },
+        "eventObjectId": {
+          "$id": "#/properties/query/properties/eventObjectId",
+          "type": "string",
+          "enum": ["DOMAIN_IDS","ENTITY_GUIDS"]
+        }
+      },
+      "additionalProperties": false
+    }
   }
 }
