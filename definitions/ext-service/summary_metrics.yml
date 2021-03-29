@@ -1,0 +1,18 @@
+throughput:
+  title: Throughput
+  unit: COUNT
+  query:
+    select: count(http.server.duration)
+    from: Metric
+responseTimeMs:
+  title: Response time
+  unit: SECONDS
+  query:
+    select: average(http.server.duration) / 1000
+    from: Metric
+errorCount:
+  title: Errors
+  unit: PERCENTAGE
+  query:
+    select: filter(count(*), WHERE http.status_code >= 400 AND http.status_code != 404) / count(*) * 100
+    from: Metric
