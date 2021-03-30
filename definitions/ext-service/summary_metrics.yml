@@ -1,0 +1,50 @@
+throughput:
+  title: Throughput
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: count(*)
+      from: Span
+      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+      eventId: entity.guid
+    kamon-agent:
+      select: sum(http.server.requests)
+      from: Metric
+      eventId: entity.guid
+    micrometer:
+      select: count(http.server.requests)
+      from: Metric
+errorRate:
+  title: Error rate
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: filter(count(*), where error.message IS NOT NULL) / count(*)
+      from: Span
+    kamon-agent:
+      select: sum(http.server.requests)
+      from: Metric
+      where: http.status_code = '5xx'
+      eventId: entity.guid
+    micrometer:
+      select: count(http.server.requests)
+      from: Metric
+      where: exception IS NOT NULL and exception != 'None'
+      eventId: entity.guid
+responseTimeMs:
+  title: Response time (ms)
+  unit: SECONDS
+  queries:
+    opentelemetry:
+      select: average(duration.ms)
+      from: Span
+      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+      eventId: entity.guid
+    kamon-agent:
+      select: average(http.server.requests)
+      from: Metric
+      eventId: entity.guid
+    micrometer:
+      select: average(http.server.requests)
+      from: Metric
+      eventId: entity.guid

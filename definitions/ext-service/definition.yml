@@ -1,11 +1,40 @@
 domain: EXT
 type: SERVICE
 synthesis:
-  identifier: service.name
-  name: service.name
-  encodeIdentifierInGUID: true
-  conditions:
-  - attribute: service.name
+  rules:
+    - attribute: service.name
+      conditions:
+        - attribute: telemetry.sdk.name
+          value: opentelemetry
+      tags:
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+        telemetry.sdk.language:
+          entityTagName: language
+        telemetry.sdk.version:
+
+    - attribute: service.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: instrumentation.provider
+          value: kamon-agent
+      tags:
+        instrumentation.provider:
+
+    - attribute: service.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: instrumentation.provider
+          value: micrometer
+      tags:
+        instrumentation.provider:
+
+compositeMetrics:
+  goldenMetrics:
+    - golden_metrics.yml
+  summaryMetrics:
+    - summary_metrics.yml
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
