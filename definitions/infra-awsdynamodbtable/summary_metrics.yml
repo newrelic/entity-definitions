@@ -6,16 +6,14 @@ providerAccountName:
 readConsumpiton:
   query:
     eventId: entity.guid
-    select: average(aws.dynamodb.ConsumedReadCapacityUnits.byTable) / average(aws.dynamodb.ProvisionedReadCapacityUnits.byTable)
-      * 100
+    select: rate(sum(aws.dynamodb.ConsumedReadCapacityUnits.byTable), 5 minutes) / average(aws.dynamodb.ProvisionedReadCapacityUnits.byTable) * 100
     from: Metric
   unit: PERCENTAGE
   title: Read consumption
 writeConsumpiton:
   query:
     eventId: entity.guid
-    select: average(aws.dynamodb.ConsumedWriteCapacityUnits.byTable) / average(aws.dynamodb.ProvisionedWriteCapacityUnits.byTable)
-      * 100
+    select: rate(sum(aws.dynamodb.ConsumedWriteCapacityUnits.byTable), 5 minutes) / average(aws.dynamodb.ProvisionedWriteCapacityUnits.byTable) * 100
     from: Metric
   unit: PERCENTAGE
   title: Write consumption
