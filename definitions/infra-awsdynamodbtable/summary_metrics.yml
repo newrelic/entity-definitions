@@ -5,31 +5,29 @@ providerAccountName:
   unit: STRING
 readConsumpiton:
   query:
-    eventId: entityGuid
-    select: average(`provider.consumedReadCapacityUnits.Sum` / (`provider.provisionedReadCapacityUnits.Average`
-      * 60 * 5)) * 100
-    from: DatastoreSample
+    eventId: entity.guid
+    select: rate(sum(aws.dynamodb.ConsumedReadCapacityUnits.byTable), 5 minutes) / average(aws.dynamodb.ProvisionedReadCapacityUnits.byTable) * 100
+    from: Metric
   unit: PERCENTAGE
   title: Read consumption
 writeConsumpiton:
   query:
-    eventId: entityGuid
-    select: average(`provider.consumedWriteCapacityUnits.Sum` / (`provider.provisionedWriteCapacityUnits.Average`
-      * 60 * 5)) * 100
-    from: DatastoreSample
+    eventId: entity.guid
+    select: rate(sum(aws.dynamodb.ConsumedWriteCapacityUnits.byTable), 5 minutes) / average(aws.dynamodb.ProvisionedWriteCapacityUnits.byTable) * 100
+    from: Metric
   unit: PERCENTAGE
   title: Write consumption
 readThrottles:
   query:
-    eventId: entityGuid
-    select: average(`provider.readThrottleEvents.Sum`)
-    from: DatastoreSample
+    eventId: entity.guid
+    select: sum(aws.dynamodb.ReadThrottleEvents.byTable)
+    from: Metric
   unit: COUNT
   title: Read throttles
 writeThrottles:
   query:
-    eventId: entityGuid
-    select: average(`provider.writeThrottleEvents.Sum`)
-    from: DatastoreSample
+    eventId: entity.guid
+    select: sum(aws.dynamodb.WriteThrottleEvents.byTable)
+    from: Metric
   unit: COUNT
   title: Write throttles

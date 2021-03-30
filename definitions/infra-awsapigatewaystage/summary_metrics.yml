@@ -5,22 +5,22 @@ providerAccountName:
   unit: STRING
 requests:
   query:
-    eventId: entityGuid
-    select: sum(`provider.count.SampleCount`)
-    from: ApiGatewaySample
+    eventId: entity.guid
+    select: sum(aws.apigateway.Count.byStage)
+    from: Metric
   unit: COUNT
   title: Requests
 errors:
   query:
-    eventId: entityGuid
-    select: sum(`provider.5xxError.Sum`) + sum(`provider.4xxError.Sum`)
-    from: ApiGatewaySample
+    eventId: entity.guid
+    select: sum(`aws.apigateway.5XXError.byStage`) + sum(`aws.apigateway.4XXError.byStage`)
+    from: Metric
   unit: COUNT
   title: Errors
 latency:
   query:
-    eventId: entityGuid
-    select: (average(`provider.latency.Average`)) / 1000
-    from: ApiGatewaySample
+    eventId: entity.guid
+    select: (average(aws.apigateway.Latency.byStage)) / 1000
+    from: Metric
   unit: SECONDS
   title: Latency
