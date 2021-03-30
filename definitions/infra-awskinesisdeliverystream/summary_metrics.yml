@@ -5,16 +5,15 @@ providerAccountName:
   unit: STRING
 putTroughput:
   query:
-    eventId: entityGuid
-    select: rate(sum(`provider.incomingBytes.Sum`), 1 second)
-    from: QueueSample
+    eventId: entity.guid
+    select: rate(sum(aws.firehose.IncomingBytes), 1 second)
+    from: Metric
   unit: BYTES_PER_SECOND
   title: Throughput in
 delivered:
   query:
-    eventId: entityGuid
-    select: rate(sum(`provider.deliveryToElasticsearchBytes.Sum`) + sum(`provider.deliveryToS3Bytes.Sum`)
-      + sum(`provider.deliveryToRedshiftBytes.Sum`), 1 second)
-    from: QueueSample
+    eventId: entity.guid
+    select: rate(sum(aws.firehose.DeliveryToElasticsearch.Bytes) + sum(aws.firehose.DeliveryToS3.Bytes) + sum(aws.firehose.DeliveryToRedshift.Bytes), 1 second)
+    from: Metric
   unit: BYTES_PER_SECOND
   title: Throuput out
