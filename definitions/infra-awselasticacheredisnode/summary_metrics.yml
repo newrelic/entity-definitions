@@ -5,22 +5,22 @@ providerAccountName:
   unit: STRING
 readThroughput:
   query:
-    eventId: entityGuid
-    select: rate(sum(provider.cacheHits.Sum)+sum(provider.cacheMisses.Sum), 1 second)
-    from: DatastoreSample
+    eventId: entity.guid
+    select: rate(sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses), 1 second)
+    from: Metric
   unit: REQUESTS_PER_SECOND
   title: Read Throughput
 cacheHitRate:
   query:
-    eventId: entityGuid
-    select: (sum(provider.cacheHits.Sum)/(sum(provider.cacheHits.Sum)+sum(provider.cacheMisses.Sum)))*100
-    from: DatastoreSample
+    eventId: entity.guid
+    select: sum(aws.elasticache.CacheHits) / (sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses)) * 100
+    from: Metric
   unit: PERCENTAGE
   title: Cache Hit Rate
 swapUsage:
   query:
-    eventId: entityGuid
-    select: average(`provider.swapUsage.Average`)
-    from: DatastoreSample
+    eventId: entity.guid
+    select: average(aws.elasticache.SwapUsage.byRedisNode)
+    from: Metric
   unit: BYTES
   title: Swap Usage
