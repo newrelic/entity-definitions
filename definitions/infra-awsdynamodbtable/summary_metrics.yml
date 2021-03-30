@@ -6,30 +6,28 @@ providerAccountName:
 readConsumpiton:
   query:
     eventId: entityGuid
-    select: average(`provider.consumedReadCapacityUnits.Sum` / (`provider.provisionedReadCapacityUnits.Average`
-      * 60 * 5)) * 100
+    select: average(`provider.consumedReadCapacityUnits.Average`) / average(`provider.provisionedReadCapacityUnits.Average`) * 100
     from: DatastoreSample
   unit: PERCENTAGE
   title: Read consumption
 writeConsumpiton:
   query:
     eventId: entityGuid
-    select: average(`provider.consumedWriteCapacityUnits.Sum` / (`provider.provisionedWriteCapacityUnits.Average`
-      * 60 * 5)) * 100
+    select: average(`provider.consumedWriteCapacityUnits.Average`) / average(`provider.provisionedWriteCapacityUnits.Average`) * 100
     from: DatastoreSample
   unit: PERCENTAGE
   title: Write consumption
 readThrottles:
   query:
     eventId: entityGuid
-    select: average(`provider.readThrottleEvents.Sum`)
+    select: sum(`provider.readThrottleEvents.Sum`)
     from: DatastoreSample
   unit: COUNT
   title: Read throttles
 writeThrottles:
   query:
     eventId: entityGuid
-    select: average(`provider.writeThrottleEvents.Sum`)
+    select: sum(`provider.writeThrottleEvents.Sum`)
     from: DatastoreSample
   unit: COUNT
   title: Write throttles
