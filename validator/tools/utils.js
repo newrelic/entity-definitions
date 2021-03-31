@@ -1,9 +1,8 @@
 const yaml = require('js-yaml')
 const fs = require('fs')
 const path = require('path')
-const { readdir } = require('fs').promises
-
-const DEFINITIONS_DIR = '../definitions/'
+const {readdir} = require('fs').promises
+const {DEFINITIONS_DIR} = require('./props')
 
 async function getFiles(dir) {
     const items = await readdir(dir, {withFileTypes: true})
