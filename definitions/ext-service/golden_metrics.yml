@@ -9,7 +9,7 @@ throughput:
       select: sum(http.server.requests)
       from: Metric
     micrometer:
-      select: count(http.server.requests)
+      select: sum(http.server.requests)
       from: Metric
 errorRate:
   title: Error rate
@@ -18,13 +18,11 @@ errorRate:
       select: filter(count(*), where error.message IS NOT NULL) / count(*)
       from: Span
     kamon-agent:
-      select: sum(http.server.requests)
+      select: filter(sum(http.server.requests), where http.status_code = '5xx') / sum(http.server.requests)
       from: Metric
-      where: http.status_code = '5xx'
     micrometer:
-      select: count(http.server.requests)
+      select: filter(sum(http.server.requests), where exception IS NOT NULL and exception != 'None') / sum(http.server.requests)
       from: Metric
-      where: exception IS NOT NULL and exception != 'None'
 responseTimeMs:
   title: Response time (ms)
   queries:
