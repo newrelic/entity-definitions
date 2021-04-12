@@ -20,6 +20,26 @@ synthesis:
       encodeIdentifierInGUID: true
       conditions:
         - attribute: serviceName
+    # rewrite telemetry.sdk.name for opentelemetry provider
+    - identifier: service.name
+      name: service.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: telemetry.sdk.name
+          value: opentelemetry
+      tags:
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+        telemetry.sdk.language:
+          entityTagName: language
+        telemetry.sdk.version:
+
+compositeMetrics:
+  goldenMetrics:
+    - golden_metrics.yml
+  summaryMetrics:
+    - summary_metrics.yml
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
