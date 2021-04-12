@@ -1,0 +1,50 @@
+#  [mandatory] The domain of an entity, default to EXT unless otherwise indicated by the maintainers.
+domain: EXT
+# [mandatory] The type of an entity. Must be unique within its domain, but may be duplicated between domains.
+# Please add a brief description of what your type is here on the definition file.
+type: RF_SCANNER
+
+# Entity definitions without this section are synthesized based on rules defined elsewhere.
+synthesis:
+  # [mandatory] The name of a telemetry attribute that will be used as the id of the entity, so it needs to be unique,
+  # it can be the same field used for the name or not.
+  identifier: macAddress
+
+  # [mandatory] The name of a telemetry attribute that will be used as the name of the entity (i.e. k8s.cluster.name).
+  name: macAddress
+
+  # Set to true if the identifier is expected to be longer than our maximum allowed characters (see README guidelines), defaults to false
+  encodeIdentifierInGUID: false
+
+  # [mandatory] Condition that must be met for this entity to be synthesized.
+  # Please refer to the documentation to see the different types of conditions supported.
+  conditions:
+    # The attribute’s value must match the provided value
+    - attribute: eventType
+      prefix: "THD_RF_TRANSACTIONS"
+
+  # Telemetry attributes that should be extracted into entity tags.
+  tags:
+    ipAddr:
+    osDetails:
+    inCradle:
+      multiValue: false
+# Template that can be used to generate a dashboard for the entity.
+# If your telemetry comes from different providers you can specify a dashboard for each one of them, otherwise you can just use `newRelic`
+# dashboardTemplates:
+#  newRelic:
+#    template: dashboard.json
+
+# Reference to the golden and/or summary metrics associated with the entity (if any).
+compositeMetrics:
+  goldenMetrics:
+    - golden_metrics.yml
+  summaryMetrics:
+    - summary_metrics.yml
+
+# The golden tags associated with the entity. They must be existing NewRelic tags which includes:
+#   - Tags extracted from telemetry attributes and defined here in the `tags` section.
+#   - Tags added to the entity through other means.
+# goldenTags:
+#   - tagNameA
+#   - tagNameB
