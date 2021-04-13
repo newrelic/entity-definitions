@@ -11,7 +11,7 @@ The following validations are applied to the entity definition files:
 
 For the summary and golden metrics definitions only the schema validation applies. 
 
-If you want to validate definition files manually, for example before opening a pull request, just put the file in a folder under `definitions` and run the validation locally as explained [here](#local-setup).
+If you want to validate definition files manually, for example before opening a pull request, just put the file in a folder under `definitions` and run the validation locally as explained [here](#running-via-docker).
 
 
 ### Running via docker
@@ -47,3 +47,9 @@ npm  --prefix validator run validate-folders
 ```
 
 The tool expects all definition files to be in a subfolder under the `definitions` folder.
+
+If you added or modified a dashboard and its validation is failing you can try to fix it with:
+
+```sh
+npm  --prefix validator run sanitize-dashboards
+```
