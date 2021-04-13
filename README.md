@@ -289,7 +289,7 @@ Some validations are automatically executed whenever there is a contribution via
 You can execute the validations locally using our dockerized validator:
 
 ```
-docker-compose up validate-definitions
+docker-compose run validate-definitions
 ``` 
 
 You can read more about the current validations [here](/validator/README.md).
