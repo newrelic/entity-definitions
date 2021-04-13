@@ -224,7 +224,7 @@ You can create a dashboard with the NewRelic interface and export it to JSON for
 Then you can just copy it to a file within your entity type's folder, modify it as needed and sanitize it using the Dockerized dashboard sanitizer that we provide: 
 
 ```
-docker-compose up sanitize-dashboards
+docker-compose run sanitize-dashboards
 ``` 
 
 You must also link your dashboard with the entity definition by adding it to the definition.yml:
