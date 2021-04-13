@@ -158,6 +158,16 @@ We support the following conditions over telemetry attributes and their values:
 
 ##### Tags
 
+When synthesizing an entitym we add some tags to it by default based on telemetry attributes and others based on the entity synthesis rules.
+
+###### Default tags
+
+We convert any telemetry attribute prefixed with `tags.` into an entity tag (e.g. `tags.clusterName` becomes a tag `clusterName`).
+
+If a rule-defined tag and a default tag result in the same entity tag name, the value of the default tag will be used. 
+
+###### Rule-defined tags
+
 The `tags` field accepts a map of metric attributes to entity tag configurations that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
 During synthesis, the tags will be created using the attribute name as key and its value as the tag value. The tag configurations are optional and can be left empty. 
 
