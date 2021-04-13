@@ -158,13 +158,20 @@ We support the following conditions over telemetry attributes and their values:
 
 ##### Tags
 
-When synthesizing an entitym we add some tags to it by default based on telemetry attributes and others based on the entity synthesis rules.
+When synthesizing an entity we add some tags to it by default based on telemetry attributes and others based on the entity synthesis rules.
 
 ###### Default tags
 
 We convert any telemetry attribute prefixed with `tags.` into an entity tag (e.g. `tags.clusterName` becomes a tag `clusterName`).
 
 If a rule-defined tag and a default tag result in the same entity tag name, the value of the default tag will be used. 
+
+In either case the resulting entity tag name can't be one of our reserved tags:
+- name
+- guid
+- account
+- accountId
+- trustedAccountId
 
 ###### Rule-defined tags
 
