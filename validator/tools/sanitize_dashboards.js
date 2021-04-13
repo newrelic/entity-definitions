@@ -8,7 +8,7 @@ const path = require('path');
     for (let folderDefinition of folderDefinitions){
         if(folderDefinition.isDirectory()){
             const files = await readdir(path.resolve(DEFINITIONS_DIR, folderDefinition.name), {withFileTypes: true})
-            for(let file of  files) {
+            for(let file of files) {
                 if(file.name.includes(DASHBOARD_FILE_NAME_SUFFIX)){
                     let filePath = path.resolve(DEFINITIONS_DIR, folderDefinition.name, file.name)
                     fs.readFile(filePath, FILE_ENCODING, function(err, fileContent){
