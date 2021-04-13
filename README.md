@@ -228,7 +228,13 @@ You can create a dashboard with the NewRelic interface and export it to JSON for
 
 ![Export Dashboard](./docs/images/export_dashboard.png)
 
-Then you can just copy it to a file within your entity type's folder, modify it if needed and refer to it from the definition.yml:
+Then you can just copy it to a file within your entity type's folder, modify it as needed and sanitize it using the Dockerized dashboard sanitizer that we provide: 
+
+```
+docker-compose run sanitize-dashboards
+``` 
+
+You must also link your dashboard with the entity definition by adding it to the definition.yml:
 
 ```yaml
 dashboardTemplates:
@@ -280,13 +286,18 @@ If this doesn't suit your needs you may set the `entityExpirationTime` to one of
 If `alertable` is set to true (default), the entity's metadata will include a field `alertSeverity` that is updated when the telemetry associated to this entity breaks an alerting condition.
 
 
-
 ## Testing and validation
 
 Some validations are automatically executed whenever there is a contribution via pull request, to verify that the provided definition meets the basic requirements:
 
 * The definition files are not malformed, incorrect or missing mandatory fields. 
 * The *identifier* cannot be extracted from an attribute with the same name for two different Domain-Types, unless conditions are set to differentiate them, so that the conditions from one entity are not a superset of the other. 
+
+You can execute the validations locally using our dockerized validator:
+
+```
+docker-compose run validate-definitions
+``` 
 
 You can read more about the current validations [here](/validator/README.md).
 
