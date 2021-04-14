@@ -1,0 +1,72 @@
+{
+  "name": "Tinyproxy",
+  "description": null,
+  "pages": [
+    {
+      "name": "Tinyproxy",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Proxy requests",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(tinyproxy_requests_total) FROM Metric facet targetName  SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Connections opened per second",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(max(tinyproxy_connections_open)-min(tinyproxy_connections_open), 1 second) FROM Metric TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Bad connections",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(tinyproxy_connections_bad_total) FROM Metric facet targetName  SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

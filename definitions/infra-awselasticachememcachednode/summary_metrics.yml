@@ -1,0 +1,26 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+getThroughput:
+  query:
+    eventId: entity.guid
+    select: rate(sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses), 1 second)
+    from: Metric
+  unit: REQUESTS_PER_SECOND
+  title: Get throughput
+getHitRatio:
+  query:
+    eventId: entity.guid
+    select: sum(aws.elasticache.GetHits) / (sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses)) * 100
+    from: Metric
+  unit: PERCENTAGE
+  title: Get Hit Rate
+swapUsage:
+  query:
+    eventId: entity.guid
+    select: average(aws.elasticache.SwapUsage.byMemcachedNode)
+    from: Metric
+  unit: BYTES
+  title: Swap Usage

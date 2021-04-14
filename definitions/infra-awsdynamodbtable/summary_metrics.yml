@@ -1,0 +1,33 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+readConsumpiton:
+  query:
+    eventId: entity.guid
+    select: rate(sum(aws.dynamodb.ConsumedReadCapacityUnits.byTable), 5 minutes) / average(aws.dynamodb.ProvisionedReadCapacityUnits.byTable) * 100
+    from: Metric
+  unit: PERCENTAGE
+  title: Read consumption
+writeConsumpiton:
+  query:
+    eventId: entity.guid
+    select: rate(sum(aws.dynamodb.ConsumedWriteCapacityUnits.byTable), 5 minutes) / average(aws.dynamodb.ProvisionedWriteCapacityUnits.byTable) * 100
+    from: Metric
+  unit: PERCENTAGE
+  title: Write consumption
+readThrottles:
+  query:
+    eventId: entity.guid
+    select: sum(aws.dynamodb.ReadThrottleEvents.byTable)
+    from: Metric
+  unit: COUNT
+  title: Read throttles
+writeThrottles:
+  query:
+    eventId: entity.guid
+    select: sum(aws.dynamodb.WriteThrottleEvents.byTable)
+    from: Metric
+  unit: COUNT
+  title: Write throttles

@@ -1,0 +1,26 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+throughput:
+  query:
+    eventId: entity.guid
+    select: rate(sum(aws.elb.RequestCount), 1 second)
+    from: Metric
+  unit: REQUESTS_PER_SECOND
+  title: Throughput
+latency:
+  query:
+    eventId: entity.guid
+    select: average(aws.elb.Latency)
+    from: Metric
+  unit: SECONDS
+  title: Latency (s)
+surgeQueueLength:
+  query:
+    eventId: entity.guid
+    select: max(aws.elb.SurgeQueueLength)
+    from: Metric
+  unit: COUNT
+  title: Surge Queue Length

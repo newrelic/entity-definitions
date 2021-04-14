@@ -1,0 +1,31 @@
+providerAccountName:
+  tag:
+    key: providerAccountName
+  title: AWS Account
+  unit: STRING
+engine:
+  unit: STRING
+  tag:
+    key: aws.engine
+  title: Engine
+throughput:
+  query:
+    eventId: entity.guid
+    select: average(aws.rds.ReadThroughput) + average(aws.rds.WriteThroughput)
+    from: Metric
+  unit: BYTES
+  title: Throughput
+freeStorage:
+  query:
+    eventId: entity.guid
+    select: min(aws.rds.FreeStorageSpace)
+    from: Metric
+  unit: BYTES
+  title: Free storage
+cpuUtilization:
+  query:
+    eventId: entity.guid
+    select: average(aws.rds.CPUUtilization)
+    from: Metric
+  unit: PERCENTAGE
+  title: CPU utilization

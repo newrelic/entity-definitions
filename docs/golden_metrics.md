@@ -6,7 +6,8 @@ We allow a maximum of 10 metrics per entityType.
 
 ## Defining golden metrics
 
-Golden metrics are defined in a map where each key is a camel-case name that defines the intention of the metric: 
+Golden metrics are defined in a map where each key should be unique. The allowed characters are `[a-zA-Z0-9_]` with a maximum of 100 characters.
+This key defines the intention of the metric:
 
 ```yaml
 memoryUsage:
@@ -15,8 +16,9 @@ memoryUsage:
     select: average(host.memoryUsagePercent)
     from: Metric
     where: ""
-    facet: entity.name
+    facet: ""
     eventId: entity.guid
+    eventName: entity.name
   displayAsValue: false
 ```
 
@@ -46,7 +48,29 @@ memoryUsage:
 | select    |      Yes      |  | Provide the field and function you want to display in the metric. You must only provide one field, but you can do aggregations, sums, etc. Always name the fields to make it easier to read. e.g. `sum((provider.httpCodeElb4XXCount.Sum OR 0) + (provider.httpCodeElb5XXCount.Sum OR 0)) AS 'Errors'`|
 | from |   No    | `Metric` | Choose where your metric gathers the information from |
 | where |   No    | empty string | In the case you need a more granular WHERE clause added into the query you can use this field. e.g. `provider='Alb'` |
-| facet |   No    | `entity.name` | Which field to use when doing a FACET. This field will be used when displaying the metric for several entities |
+| facet |   No    | empty string | An extra facet by a specific field to be added to the default facet by entityName |
 | eventId |   No    | `entity.guid` | The event attribute used to filter the entity. We recommend to use the default `entity.guid` which is generated automatically as part of the entity synthesis. |
+| eventName |   No    | `entity.name` | The name of the field in the event that references the entity name. By default `entity.guid` which is generated automatically as part of the entity synthesis. |
 
+### Roll-up entities
 
+In the cases that the entity type can be ingested from different sources and you need to provide a different query implementation for each of them, you can use `queries` instead of `query`
+
+```yaml
+memoryUsage:
+  title: "A title explaining what the user is seeing (unit displayed in the dashboard)"
+  queries:
+    prometheus:
+      select: average(field)
+      from: PrometheusSample
+    newRelic:
+      select: average(nrField)
+      from: NewRelicSample
+```
+
+In this example `prometheus` and `newRelic` are the values the entity must have in the `instrumentation.provider` tag.
+The first tag value that matches with the entity will be the one used to build the queries.
+
+Is also important to note that the semantics of the queries should match between each implementation. This includes things like average vs counts, units and other details.
+
+If no rule matches the `newRelic` one will be used.
