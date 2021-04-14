@@ -76,7 +76,6 @@ const RULES = [
                 // Types with special implementations.
                 "APM-APPLICATION",
                 "BROWSER-APPLICATION",
-                "EXT-SERVICE",
                 "INFRA-AWSLAMBDAFUNCTION",
                 "NR1-WORKLOADS",
                 "PROTO-ENGGROUP",
