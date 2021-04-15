@@ -1,0 +1,119 @@
+{
+  "name": "Network Synthetic",
+  "description": null,
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
+    {
+      "name": "Network Synthetic",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Total Test Locations",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 1,
+                "query": "FROM Metric SELECT uniqueCount(agent_name) FACET entity.name WHERE provider = 'kentik-network-synthetic'"
+              }
+            ],
+            "thresholds": []
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Average Latency (ms)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1,
+                "query": "FROM Metric SELECT average(kentik.synth.avg_rtt)/1000 FACET entity.name WHERE provider = 'kentik-network-synthetic' TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Average Jitter (ms)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 5,
+                "query": "FROM Metric SELECT average(kentik.synth.jit_rtt)/1000 FACET entity.name WHERE provider = 'kentik-network-synthetic' TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Packet Loss (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 10,
+                "query": "FROM Metric SELECT latest(kentik.synth.lost_pct) FACET entity.name WHERE provider = 'kentik-network-synthetic' TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          },
+          "linkedEntityGuids": null
+        }
+      ]
+    }
+  ]
+}
