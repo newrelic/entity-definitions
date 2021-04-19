@@ -1,0 +1,38 @@
+region:
+  title: Region
+  unit: STRING
+  tag: 
+    key: vpc_region
+
+endpoints:
+  title: Endpoints
+  unit: COUNT
+  query:
+    select: uniqueCount(ip_address)
+    from: Metric
+    eventId: entity.guid
+
+conversations:
+  title: Conversations
+  unit: COUNT
+  query:
+    select: uniqueCount(tuple(ip_address,port))
+    from: Metric
+    where: "metricName LIKE 'kentik.rollup.vpc.%.bytes'"
+    eventId: entity.guid
+
+averageJitter:
+  title: Transmit (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: rate(sum(kentik.rollup.vpc.xmt.bytes)*8, 1 second)
+    from: Metric
+    eventId: entity.guid
+
+packetLoss:
+  title: Receive (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: rate(sum(kentik.rollup.vpc.rcv.bytes)*8, 1 second)
+    from: Metric
+    eventId: entity.guid
