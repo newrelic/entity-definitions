@@ -1,0 +1,84 @@
+{
+  "name": "Unix Host status",
+  "description": null,
+  "pages": [
+    {
+      "name": "Unix Host status",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "CPU Utilization (%)",
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "cpu.idle",
+                "precision": null,
+                "type": "humanized"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT 100-latest(cpu.idle) FROM `unixMonitor:Stats` "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Memory Utilization (%)",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (latest(memory.total) - latest(memory.free))/latest(memory.total) * 100 FROM `unixMonitor:Stats` "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk Utilization (%)",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(percentUsed) FROM `unixMonitor:Disk` FACET mountedOn"
+              }
+            ],
+            "thresholds": []
+          }
+        }
+      ]
+    }
+  ]
+}

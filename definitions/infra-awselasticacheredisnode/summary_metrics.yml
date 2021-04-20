@@ -3,24 +3,24 @@ providerAccountName:
     key: providerAccountName
   title: AWS Account
   unit: STRING
-cpuUtilization:
+readThroughput:
   query:
-    eventId: entityGuid
-    select: average(`provider.cpuUtilization.Average`)
-    from: DatastoreSample
+    eventId: entity.guid
+    select: rate(sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses), 1 second)
+    from: Metric
+  unit: REQUESTS_PER_SECOND
+  title: Read Throughput
+cacheHitRate:
+  query:
+    eventId: entity.guid
+    select: sum(aws.elasticache.CacheHits) / (sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses)) * 100
+    from: Metric
   unit: PERCENTAGE
-  title: CPU utilization
-freeableMemory:
+  title: Cache Hit Rate
+swapUsage:
   query:
-    eventId: entityGuid
-    select: sum(`provider.freeableMemory.Sum`)
-    from: DatastoreSample
+    eventId: entity.guid
+    select: average(aws.elasticache.SwapUsage.byRedisNode)
+    from: Metric
   unit: BYTES
-  title: Free memory
-memoryUtilization:
-  query:
-    eventId: entityGuid
-    select: average(`provider.swapUsage.Average`)
-    from: DatastoreSample
-  unit: BYTES
-  title: Swap usage
+  title: Swap Usage

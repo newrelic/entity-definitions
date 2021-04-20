@@ -1,32 +1,48 @@
-getRecords:
-  title: Get Records
+putThroughput:
+  title: Bytes in per sec
   query:
-    select: sum(provider.getRecordsRecords.Sum)
+    select: rate(sum(provider.incomingBytes.Sum), 1 second)
     from: QueueSample
     where: provider='KinesisStream'
-    facet: entityName
     eventId: entityGuid
-putRecords:
-  title: Put Records
+    eventName: entityName
+getThroughput:
+  title: Bytes out per sec
   query:
-    select: sum(provider.putRecordsRecords.Sum)
+    select: rate(sum(provider.getRecordsBytes.Sum), 1 second)
     from: QueueSample
     where: provider='KinesisStream'
-    facet: entityName
     eventId: entityGuid
-getrecordsCallsThrottled:
-  title: GetRecords calls throttled
+    eventName: entityName
+putRecordThroughput:
+  title: Put records per sec
   query:
-    select: sum(provider.readProvisionedThroughputExceeded.Sum)
+    select: rate(sum(provider.incomingRecords.Sum), 1 second)
     from: QueueSample
     where: provider='KinesisStream'
-    facet: entityName
     eventId: entityGuid
+    eventName: entityName
+getRecordsThroughput:
+  title: Get records per sec
+  query:
+    select: rate(sum(provider.getRecordsRecords.Sum), 1 second)
+    from: QueueSample
+    where: provider='KinesisStream'
+    eventId: entityGuid
+    eventName: entityName
 putrecordsCallsThrottled:
-  title: PutRecords calls throttled
+  title: Puts throttled per second
   query:
-    select: sum(provider.writeProvisionedThroughputExceeded.Sum)
+    select: rate(sum(provider.writeProvisionedThroughputExceeded.Sum), 1 second)
     from: QueueSample
     where: provider='KinesisStream'
-    facet: entityName
     eventId: entityGuid
+    eventName: entityName
+getrecordsCallsThrottled:
+  title: Gets throttled per second
+  query:
+    select: rate(sum(provider.readProvisionedThroughputExceeded.Sum), 1 second)
+    from: QueueSample
+    where: provider='KinesisStream'
+    eventId: entityGuid
+    eventName: entityName

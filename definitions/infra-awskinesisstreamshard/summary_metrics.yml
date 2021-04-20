@@ -3,17 +3,17 @@ providerAccountName:
     key: providerAccountName
   title: AWS Account
   unit: STRING
-incoming:
+putTroughput:
   query:
-    eventId: entityGuid
-    select: sum(`provider.incomingBytes.Sum`)
-    from: QueueSample
-  unit: BYTES
-  title: Incoming
-outgoing:
+    eventId: entity.guid
+    select: rate(sum(aws.kinesis.IncomingBytes.byStreamShard), 1 second)
+    from: Metric
+  unit: BYTES_PER_SECOND
+  title: Throughput in
+getThroughput:
   query:
-    eventId: entityGuid
-    select: sum(`provider.outgoingBytes.Sum`)
-    from: QueueSample
-  unit: BYTES
-  title: Outgoing
+    eventId: entity.guid
+    select: rate(sum(aws.kinesis.OutgoingBytes), 1 second)
+    from: Metric
+  unit: BYTES_PER_SECOND
+  title: Throughput out
