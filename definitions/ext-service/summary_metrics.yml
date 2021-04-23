@@ -29,19 +29,19 @@ errorRate:
   unit: PERCENTAGE
   queries:
     opentelemetry:
-      select: filter(count(*), where error.message IS NOT NULL) / count(*)
+      select: filter(count(*), where error.message IS NOT NULL) / count(*) * 100
       from: Span
       eventId: entity.guid
     kamon-agent:
-      select: filter(sum(http.server.requests), where http.status_code = '5xx') / sum(http.server.requests)
+      select: filter(sum(http.server.requests), where http.status_code = '5xx') / sum(http.server.requests) * 100
       from: Metric
       eventId: entity.guid
     micrometer:
-      select: filter(sum(http.server.requests), where exception IS NOT NULL and exception != 'None') / sum(http.server.requests)
+      select: filter(sum(http.server.requests), where exception IS NOT NULL and exception != 'None') / sum(http.server.requests) * 100
       from: Metric
       eventId: entity.guid
     pixie:
-      select: filter(count(http.server.duration), where http.status_code >= 400 AND http.status_code != 404) / count(http.server.duration)
+      select: filter(count(http.server.duration), where http.status_code >= 400 AND http.status_code != 404) / count(http.server.duration) * 100
       from: Metric
       eventId: entity.guid
 responseTimeMs:
