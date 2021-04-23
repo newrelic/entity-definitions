@@ -1,33 +1,33 @@
 throughput:
-  title: Throughput
+  title: Throughput (rpm)
   queries:
     opentelemetry:
-      select: count(*)
+      select: rate(count(*), 1 minute)
       from: Span
       where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
     kamon-agent:
-      select: sum(http.server.requests)
+      select: rate(sum(http.server.requests), 1 minute)
       from: Metric
     micrometer:
-      select: sum(http.server.requests)
+      select: rate(sum(http.server.requests), 1 minute)
       from: Metric
     pixie:
-      select: count(http.server.duration)
+      select: rate(count(http.server.duration), 1 minute)
       from: Metric
 errorRate:
-  title: Error rate
+  title: Error rate (%)
   queries:
     opentelemetry:
-      select: filter(count(*), where error.message IS NOT NULL) / count(*)
+      select: filter(count(*), where error.message IS NOT NULL) / count(*) * 100
       from: Span
     kamon-agent:
-      select: filter(sum(http.server.requests), where http.status_code = '5xx') / sum(http.server.requests)
+      select: filter(sum(http.server.requests), where http.status_code = '5xx') / sum(http.server.requests) * 100
       from: Metric
     micrometer:
-      select: filter(sum(http.server.requests), where exception IS NOT NULL and exception != 'None') / sum(http.server.requests)
+      select: filter(sum(http.server.requests), where exception IS NOT NULL and exception != 'None') / sum(http.server.requests) * 100
       from: Metric
     pixie:
-      select: filter(count(http.server.duration), where http.status_code >= 400 AND http.status_code != 404) / count(http.server.duration)
+      select: filter(count(http.server.duration), where http.status_code >= 400 AND http.status_code != 404) / count(http.server.duration) * 100
       from: Metric
 responseTimeMs:
   title: Response time (ms)
