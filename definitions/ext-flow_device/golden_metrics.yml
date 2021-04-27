@@ -1,0 +1,25 @@
+endpoints:
+  title: Total IP Address Endpoints
+  query:
+    select: uniqueCount(ip_address)
+    from: Metric
+    where: "metricName LIKE 'kentik.rollup.bytes.%'"
+
+conversations:
+  title: Total Conversations (Endpoint:Port)
+  query:
+    select: uniqueCount(tuple(ip_address,port))
+    from: Metric
+    where: "metricName LIKE 'kentik.rollup.bytes.%'"
+
+transmitMbps:
+  title: Transmit (Mbps)
+  query:
+    select: rate(sum(kentik.rollup.bytes.xmt)*8/1000/1000, 1 second) AS 'Mbps'
+    from: Metric
+
+receiveMbps:
+  title: Receive (Mbps)
+  query:
+    select: rate(sum(kentik.rollup.bytes.rcv)*8/1000/1000, 1 second) AS 'Mbps'
+    from: Metric

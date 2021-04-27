@@ -1,0 +1,33 @@
+endpoints:
+  title: Endpoints
+  unit: COUNT
+  query:
+    select: uniqueCount(ip_address)
+    from: Metric
+    where: "metricName LIKE 'kentik.rollup.bytes.%'"
+    eventId: entity.guid
+
+conversations:
+  title: Conversations
+  unit: COUNT
+  query:
+    select: uniqueCount(tuple(ip_address,port))
+    from: Metric
+    where: "metricName LIKE 'kentik.rollup.bytes.%'"
+    eventId: entity.guid
+
+transmitBps:
+  title: Transmit (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: rate(sum(kentik.rollup.bytes.xmt)*8, 1 second)
+    from: Metric
+    eventId: entity.guid
+
+receiveBps:
+  title: Receive (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: rate(sum(kentik.rollup.bytes.rcv)*8, 1 second)
+    from: Metric
+    eventId: entity.guid
