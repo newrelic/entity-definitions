@@ -1,39 +1,17 @@
 {
-  "name": "VPC Network",
+  "name": "Flow Devices",
   "description": null,
   "pages": [
     {
-      "name": "VPC Network",
+      "name": "Flow Devices",
       "description": null,
       "widgets": [
-        {
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "layout": {
-            "column": 1,
-            "row": 1,
-            "height": 3,
-            "width": 3
-          },
-          "title": "",
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT latest(application_type) AS 'VPC Source', latest(vpc_region) AS 'Region'"
-              }
-            ],
-            "thresholds": []
-          }
-        },
         {
           "visualization": {
             "id": "viz.line"
           },
           "layout": {
-            "column": 4,
+            "column": 1,
             "row": 1,
             "height": 3,
             "width": 3
@@ -46,7 +24,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT uniqueCount(ip_address) FACET entity.name WHERE metricName LIKE 'kentik.rollup.vpc.%.bytes' TIMESERIES"
+                "query": "FROM Metric SELECT uniqueCount(ip_address) FACET entity.name WHERE metricName LIKE 'kentik.rollup.bytes.%' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -59,7 +37,7 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 7,
+            "column": 4,
             "row": 1,
             "height": 3,
             "width": 3
@@ -72,7 +50,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT uniqueCount(tuple(ip_address,port)) FACET entity.name WHERE metricName LIKE 'kentik.rollup.vpc.%.bytes' TIMESERIES "
+                "query": "FROM Metric SELECT uniqueCount(tuple(ip_address,port)) FACET entity.name WHERE metricName LIKE 'kentik.rollup.bytes.%' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -85,7 +63,7 @@
             "id": "viz.bar"
           },
           "layout": {
-            "column": 10,
+            "column": 7,
             "row": 1,
             "height": 3,
             "width": 3
@@ -98,7 +76,30 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT (rate(sum(kentik.rollup.vpc.xmt.bytes)*8/1000/1000, 1 second) + rate(sum(kentik.rollup.vpc.rcv.bytes)*8/1000/1000, 1 second)) FACET country LIMIT 5"
+                "query": "FROM Metric SELECT (rate(sum(kentik.rollup.bytes.xmt)*8/1000/1000, 1 second) + rate(sum(kentik.rollup.bytes.rcv)*8/1000/1000, 1 second)) FACET country LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 5 - Mbps Per ASN",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT (rate(sum(kentik.rollup.bytes.xmt)*8/1000/1000, 1 second) + rate(sum(kentik.rollup.bytes.rcv)*8/1000/1000, 1 second)) FACET asn_name LIMIT 5"
               }
             ]
           }
@@ -121,7 +122,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(kentik.rollup.vpc.xmt.bytes)*8/1000/1000, 1 second) FACET entity.name TIMESERIES"
+                "query": "FROM Metric SELECT rate(sum(kentik.rollup.bytes.xmt)*8/1000/1000, 1 second) FACET entity.name TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -147,7 +148,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(kentik.rollup.vpc.rcv.bytes)*8/1000/1000, 1 second) FACET entity.name TIMESERIES"
+                "query": "FROM Metric SELECT rate(sum(kentik.rollup.bytes.rcv)*8/1000/1000, 1 second) FACET entity.name TIMESERIES"
               }
             ],
             "yAxisLeft": {
