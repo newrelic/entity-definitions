@@ -2,12 +2,21 @@ domain: EXT
 type: PIHOLE
 
 synthesis:
-  name: piHoleName
-  identifier: piHoleName
+  rules:
+    # telemetry with piHoleName attribute
+    - identifier: piHoleName
+      name: piHoleName
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: piHoleName
 
-  conditions:
-  - attribute: metricName
-    prefix: pihole_
+    # telemetry from prometheus exporter
+    - identifier: hostname
+      name: hostname
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: metricName
+          prefix: pihole_
 
 dashboardTemplates:
   newRelic:
@@ -15,9 +24,9 @@ dashboardTemplates:
 
 compositeMetrics:
   goldenMetrics:
-  - golden_metrics.yml
+    - golden_metrics.yml
   summaryMetrics:
-  - summary_metrics.yml
+    - summary_metrics.yml
 
 configuration:
   entityExpirationTime: EIGHT_DAYS

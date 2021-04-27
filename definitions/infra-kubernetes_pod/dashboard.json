@@ -1,0 +1,112 @@
+{
+  "name": "Kubernetes pod",
+  "description": null,
+  "pages": [
+    {
+      "name": "Kubernetes pod",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Current status",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(k8s.status) as 'status', latest(startTime) as 'startTime' WHERE metricName = 'k8s.pod.startTime'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 8
+          },
+          "title": "Status over time",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT 1 WHERE metricName = 'k8s.pod.startTime' facet k8s.status TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Pod readiness & status",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(k8s.pod.isReady) as 'Ready', min(k8s.pod.isScheduled) as 'Scheduled' TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Network",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(k8s.pod.netRxBytesPerSecond) / 1000 AS 'Received KBps', max(k8s.pod.netTxBytesPerSecond) / 1000 AS 'Transmitted KBps', max(k8s.pod.netErrorsPerSecond) AS 'Errors / sec' TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

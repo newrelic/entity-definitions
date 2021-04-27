@@ -158,6 +158,23 @@ We support the following conditions over telemetry attributes and their values:
 
 ##### Tags
 
+When synthesizing an entity we add some tags to it by default based on telemetry attributes and others based on the entity synthesis rules.
+
+###### Default tags
+
+We convert any telemetry attribute prefixed with `tags.` into an entity tag (e.g. `tags.clusterName` becomes a tag `clusterName`).
+
+If a rule-defined tag and a default tag result in the same entity tag name, the value of the default tag will be used. 
+
+In either case the resulting entity tag name can't be one of our reserved tags:
+- name
+- guid
+- account
+- accountId
+- trustedAccountId
+
+###### Rule-defined tags
+
 The `tags` field accepts a map of metric attributes to entity tag configurations that can be used to generate tags for the entities of the defined DOMAIN and TYPE.
 During synthesis, the tags will be created using the attribute name as key and its value as the tag value. The tag configurations are optional and can be left empty. 
 
@@ -211,7 +228,13 @@ You can create a dashboard with the NewRelic interface and export it to JSON for
 
 ![Export Dashboard](./docs/images/export_dashboard.png)
 
-Then you can just copy it to a file within your entity type's folder, modify it if needed and refer to it from the definition.yml:
+Then you can just copy it to a file within your entity type's folder, modify it as needed and sanitize it using the Dockerized dashboard sanitizer that we provide: 
+
+```
+docker-compose run sanitize-dashboards
+``` 
+
+You must also link your dashboard with the entity definition by adding it to the definition.yml:
 
 ```yaml
 dashboardTemplates:
@@ -252,6 +275,7 @@ configuration:
 By default, entities are automatically deleted if we reach 8 days without receiving any telemetry from them. 
 If this doesn't suit your needs you may set the `entityExpirationTime` to one of the following values:  
 
+- `FOUR_HOURS`
 - `DAILY`
 - `EIGHT_DAYS` (default)
 - `QUARTERLY`
@@ -263,13 +287,18 @@ If this doesn't suit your needs you may set the `entityExpirationTime` to one of
 If `alertable` is set to true (default), the entity's metadata will include a field `alertSeverity` that is updated when the telemetry associated to this entity breaks an alerting condition.
 
 
-
 ## Testing and validation
 
 Some validations are automatically executed whenever there is a contribution via pull request, to verify that the provided definition meets the basic requirements:
 
 * The definition files are not malformed, incorrect or missing mandatory fields. 
 * The *identifier* cannot be extracted from an attribute with the same name for two different Domain-Types, unless conditions are set to differentiate them, so that the conditions from one entity are not a superset of the other. 
+
+You can execute the validations locally using our dockerized validator:
+
+```
+docker-compose run validate-definitions
+``` 
 
 You can read more about the current validations [here](/validator/README.md).
 
