@@ -275,6 +275,7 @@ configuration:
 By default, entities are automatically deleted if we reach 8 days without receiving any telemetry from them. 
 If this doesn't suit your needs you may set the `entityExpirationTime` to one of the following values:  
 
+- `FOUR_HOURS`
 - `DAILY`
 - `EIGHT_DAYS` (default)
 - `QUARTERLY`

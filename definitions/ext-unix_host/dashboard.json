@@ -1,14 +1,14 @@
 {
-  "name": "Unix Host status",
+  "name": "Unix Host",
   "description": null,
   "pages": [
     {
-      "name": "Unix Host status",
+      "name": "Unix Host",
       "description": null,
       "widgets": [
         {
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.line"
           },
           "layout": {
             "column": 1,
@@ -18,25 +18,25 @@
           },
           "title": "CPU Utilization (%)",
           "rawConfiguration": {
-            "dataFormatters": [
-              {
-                "name": "cpu.idle",
-                "precision": null,
-                "type": "humanized"
-              }
-            ],
+            "legend": {
+              "enabled": true
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT 100-latest(cpu.idle) FROM `unixMonitor:Stats` "
+                "query": "SELECT 100-latest(cpu.idle) FROM `unixMonitor:Stats` FACET entity.name TIMESERIES"
               }
             ],
-            "thresholds": []
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
           }
         },
         {
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.line"
           },
           "layout": {
             "column": 5,
@@ -46,19 +46,25 @@
           },
           "title": "Memory Utilization (%)",
           "rawConfiguration": {
-            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (latest(memory.total) - latest(memory.free))/latest(memory.total) * 100 FROM `unixMonitor:Stats` "
+                "query": "SELECT (latest(memory.total) - latest(memory.free))/latest(memory.total) * 100 FROM `unixMonitor:Stats` FACET entity.name TIMESERIES"
               }
             ],
-            "thresholds": []
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
           }
         },
         {
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.bar"
           },
           "layout": {
             "column": 9,
@@ -66,16 +72,17 @@
             "height": 3,
             "width": 4
           },
-          "title": "Disk Utilization (%)",
+          "title": "Top 5 - Disk Utilization (%)",
           "rawConfiguration": {
-            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(percentUsed) FROM `unixMonitor:Disk` FACET mountedOn"
+                "query": "SELECT max(percentUsed) FROM `unixMonitor:Disk` FACET entity.name, mountedOn OR instance LIMIT 5"
               }
-            ],
-            "thresholds": []
+            ]
           }
         }
       ]
