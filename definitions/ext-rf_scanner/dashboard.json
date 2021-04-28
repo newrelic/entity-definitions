@@ -1,87 +1,173 @@
 {
-  "title": "RF Devices",
-  "icon": "line-chart",
-  "grid_column_count": 12,
-  "filter": null,
-  "widgets": [
-{
-      "title": "Detail",
-      "nrql": "select  latest(serialNumber),latest(inCradle),latest(ipAddress),latest(lastActiveTimestamp) since 1 day ago",
-      "process_as": "comparison_line_chart",
-      "width": 4,
-      "height": 3,
-      "row": 1,
-      "column": 1,
-      "event_types": null,
-      "facet": null,
-      "customizations": null,
-      "notes": null
-    },    
+  "name": "RF Device",
+  "description": null,
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
     {
-      "title": "Latency (ms)",
-      "nrql": "select average(totalTime) from THD_RF_TRANSACTION TIMESERIES since 1 day ago",
-      "process_as": "comparison_line_chart",
-      "width": 4,
-      "height": 3,
-      "row": 1,
-      "column": 5,
-      "event_types": null,
-      "facet": null,
-      "customizations": null,
-      "notes": null
-    },
-    {
-      "title": "Volume",
-      "nrql": "select count(*) from THD_RF_TRANSACTION TIMESERIES since 1 day ago",
-      "process_as": "comparison_line_chart",
-      "width": 4,
-      "height": 3,
-      "row": 1,
-      "column": 9,
-      "event_types": null,
-      "facet": null,
-      "customizations": null,
-      "notes": null
-    },
-    {
-      "title": "Errors",
-      "nrql": "SELECT count(message) from Log where message like '%error%' or message like '%Error%' and message NOT LIKE '%lqqqq%' or message NOT LIKE '%Winsock error 10042%' TIMESERIES since 1 day ago",
-      "process_as": "comparison_line_chart",
-      "width": 4,
-      "height": 3,
-      "row": 4,
-      "column": 1,
-      "event_types": null,
-      "facet": null,
-      "customizations": null,
-      "notes": null
-    },
-    {
-      "title": "Request Time (ms)",
-      "nrql": "select average(msToFirstRead) from  THD_RF_TRANSACTION TIMESERIES since 1 day ago",
-      "process_as": "comparison_line_chart",
-      "width": 4,
-      "height": 3,
-      "row": 4,
-      "column": 5,
-      "event_types": null,
-      "facet": null,
-      "customizations": null,
-      "notes": null
-    },
-    {
-      "title": "Response Time (ms)",
-      "nrql": "select average(msInRead) from  THD_RF_TRANSACTION TIMESERIES since 1 day ago",
-      "process_as": "comparison_line_chart",
-      "width": 4,
-      "height": 3,
-      "row": 4,
-      "column": 9,
-      "event_types": null,
-      "facet": null,
-      "customizations": null,
-      "notes": null
+      "name": "entity dashboard",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Details by Device",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from THD_RF_TRANSACTION select  latest(serialNumber),latest(ipAddress),latest(lastActiveTimestamp) since 12 hours ago"
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Latency (ms)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "select average(totalTime) from THD_RF_TRANSACTION TIMESERIES since 12 hours ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Volume",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "select count(*) from THD_RF_TRANSACTION TIMESERIES since 12 hours ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Errors",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(message) from Log where message like '%error%' or message like '%Error%' and message NOT LIKE '%lqqqq%' or message NOT LIKE '%Winsock error 10042%' TIMESERIES since 12 hours ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Request Time (ms)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "select average(msToFirstRead) from  THD_RF_TRANSACTION TIMESERIES since 12 hours ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Response Time (ms)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "select average(msInRead) from  THD_RF_TRANSACTION TIMESERIES since 12 hours ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          },
+          "linkedEntityGuids": null
+        }
+      ]
     }
-  ],
-  "dashboard_account_id": 0
+  ]
 }
