@@ -1,0 +1,89 @@
+{
+  "name": "Datadog System Status",
+  "pages": [
+    {
+      "name": "Datadog System Status",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "System Load",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(datadog.system.load.1), sum(datadog.system.load.5), sum(datadog.system.load.15) SINCE 1 day ago TIMESERIES COMPARE WITH 7 days ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "CPU Usage",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(`system.cpu.idle`), latest(`system.cpu.system`), latest(`system.cpu.iowait`), latest(`system.cpu.user`), latest(`system.cpu.stolen`), latest(`system.cpu.guest`) SINCE 1 day ago COMPARE WITH 7 days ago TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "System Memory",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(datadog.system.mem.usable), sum(datadog.system.mem.total) - sum(datadog.system.mem.usable) SINCE 1 day ago COMPARE WITH 7 days ago TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
