@@ -1,21 +1,39 @@
 requests:
   title: Requests
-  query:
-    select: sum(requests.Total)
-    from: AzureAppServiceWebAppSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(azure.web.sites.Requests)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(requests.Total)
+      from: AzureAppServiceWebAppSample
+      eventId: entityGuid
+      eventName: entityName
 averageResponseTimeS:
   title: Response time (s)
-  query:
-    select: average(averageResponseTimeSeconds.Average)
-    from: AzureAppServiceWebAppSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(azure.web.sites.AverageResponseTime)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(averageResponseTimeSeconds.Average)
+      from: AzureAppServiceWebAppSample
+      eventId: entityGuid
+      eventName: entityName
 serverErrors5Xx:
   title: Errors (5xx)
-  query:
-    select: sum(http5xx.Total)
-    from: AzureAppServiceWebAppSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(azure.web.sites.Http5xx.byWebApp)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(http5xx.Total)
+      from: AzureAppServiceWebAppSample
+      eventId: entityGuid
+      eventName: entityName
