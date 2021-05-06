@@ -1,40 +1,70 @@
 cpuUtilization:
   title: CPU utilization (%)
-  query:
-    select: average(provider.cpuUtilization.Average)
-    from: DatastoreSample
-    where: provider='ElastiCacheMemcachedCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.rds.CPUUtilization)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.cpuUtilization.Average)
+      from: DatastoreSample
+      where: provider='ElastiCacheMemcachedCluster'
+      eventId: entityGuid
+      eventName: entityName
 swapUsageBytes:
   title: Swap usage (bytes)
-  query:
-    select: average(`provider.swapUsage.Average`)
-    from: DatastoreSample
-    where: provider='ElastiCacheMemcachedCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.elasticache.SwapUsage.byMemcachedCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.swapUsage.Average`)
+      from: DatastoreSample
+      where: provider='ElastiCacheMemcachedCluster'
+      eventId: entityGuid
+      eventName: entityName
 freeableMemory:
   title: Free memory (bytes)
-  query:
-    select: average(`provider.freeableMemory.Average`)
-    from: DatastoreSample
-    where: provider='ElastiCacheMemcachedCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.elasticache.FreeableMemory.byMemcachedCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.freeableMemory.Average`)
+      from: DatastoreSample
+      where: provider='ElastiCacheMemcachedCluster'
+      eventId: entityGuid
+      eventName: entityName
 networkBytesIn:
   title: Bytes in per sec
-  query:
-    select: rate(sum(`provider.networkBytesIn.Sum`), 1 second)
-    from: DatastoreSample
-    where: provider='ElastiCacheMemcachedCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: rate(sum(aws.elasticache.NetworkBytesIn.byMemcachedCluster), 1 second)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(`provider.networkBytesIn.Sum`), 1 second)
+      from: DatastoreSample
+      where: provider='ElastiCacheMemcachedCluster'
+      eventId: entityGuid
+      eventName: entityName
 networkBytesOut:
   title: Bytes out per sec
-  query:
-    select: rate(sum(`provider.networkBytesOut.Sum`), 1 second)
-    from: DatastoreSample
-    where: provider='ElastiCacheMemcachedCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: rate(sum(aws.elasticache.NetworkBytesOut.byMemcachedCluster), 1 second)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(`provider.networkBytesOut.Sum`), 1 second)
+      from: DatastoreSample
+      where: provider='ElastiCacheMemcachedCluster'
+      eventId: entityGuid
+      eventName: entityName
