@@ -14,15 +14,37 @@
             "column": 1,
             "row": 1,
             "height": 3,
-            "width": 4
+            "width": 6
           },
-          "title": "",
+          "title": "Summary",
           "rawConfiguration": {
             "dataFormatters": [],
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.statefulset.createdAt) as 'createdAt'"
+                "query": "FROM Metric SELECT latest(k8s.clusterName) as 'Cluster Name', latest(k8s.namespaceName) as 'Namespace Name', latest(podsDesired) as 'Pods Desired', latest(podsReady) as 'Pods Ready', latest(podsMissing) as 'Pods Missing' WHERE metricName = 'k8s.statefulset.createdAt'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Deployment age",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(k8s.statefulset.createdAt) as 'Created At'"
               }
             ],
             "thresholds": []
@@ -33,24 +55,25 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 5,
-            "row": 1,
+            "column": 1,
+            "row": 4,
             "height": 3,
-            "width": 4
+            "width": 6
           },
-          "title": "Updated replicas",
+          "title": "Replicas count",
           "rawConfiguration": {
+            "dataFormatters": [],
             "legend": {
               "enabled": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(k8s.statefulset.podsUpdated) as 'podsUpdated' TIMESERIES"
+                "query": "FROM Metric SELECT max(k8s.statefulset.podsMissing) as 'Pods Missing', latest(k8s.statefulset.podsDesired) as 'Pods Desired', min(k8s.statefulset.podsCurrent) as 'Pods Current' TIMESERIES"
               }
             ],
             "yAxisLeft": {
-              "zero": true
+              "zero": false
             }
           }
         },
@@ -59,20 +82,21 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 9,
-            "row": 1,
+            "column": 7,
+            "row": 4,
             "height": 3,
-            "width": 4
+            "width": 6
           },
           "title": "Replicas availability",
           "rawConfiguration": {
+            "dataFormatters": [],
             "legend": {
               "enabled": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT min(k8s.statefulset.podsReady) as 'podsReady' TIMESERIES"
+                "query": "FROM Metric SELECT min(k8s.statefulset.podsReady) as 'Pods Ready' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -86,11 +110,11 @@
           },
           "layout": {
             "column": 1,
-            "row": 4,
+            "row": 7,
             "height": 3,
-            "width": 4
+            "width": 6
           },
-          "title": "Replicas count",
+          "title": "Updated replicas",
           "rawConfiguration": {
             "legend": {
               "enabled": true
@@ -98,7 +122,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.statefulset.podsMissing) as 'podsMissing', latest(k8s.statefulset.podsDesired) as 'podsDesired', min(k8s.statefulset.podsCurrent) as 'podsCurrent' TIMESERIES"
+                "query": "FROM Metric SELECT min(k8s.statefulset.podsUpdated) as 'Pods Updated' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -111,10 +135,10 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 5,
-            "row": 4,
+            "column": 7,
+            "row": 7,
             "height": 3,
-            "width": 4
+            "width": 6
           },
           "title": "Generation",
           "rawConfiguration": {
@@ -124,7 +148,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.statefulset.metadataGeneration) as 'metadataGeneration' TIMESERIES"
+                "query": "FROM Metric SELECT max(k8s.statefulset.metadataGeneration) as 'Metadata Generation' TIMESERIES"
               }
             ],
             "yAxisLeft": {

@@ -14,15 +14,37 @@
             "column": 1,
             "row": 1,
             "height": 3,
-            "width": 4
+            "width": 6
           },
-          "title": "",
+          "title": "Summary",
           "rawConfiguration": {
             "dataFormatters": [],
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.daemonset.createdAt) as 'createdAt'"
+                "query": "FROM Metric SELECT latest(k8s.clusterName) as 'Cluster Name', latest(k8s.namespaceName) as 'Namespace Name', latest(podsDesired) as 'Pods Desired', latest(podsReady) as 'Pods Ready', latest(podsMissing) as 'Pods Missing' WHERE metricName = 'k8s.daemonset.createdAt'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Deployment age",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(k8s.daemonset.createdAt) as 'Created At'"
               }
             ],
             "thresholds": []
@@ -33,12 +55,12 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 5,
-            "row": 1,
+            "column": 1,
+            "row": 4,
             "height": 3,
-            "width": 4
+            "width": 6
           },
-          "title": "Scheduled pods",
+          "title": "Scheduling status",
           "rawConfiguration": {
             "legend": {
               "enabled": true
@@ -46,7 +68,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.daemonset.podsMissing) as 'podsMissing', min(k8s.daemonset.podsScheduled) as 'podsScheduled', latest(k8s.daemonset.podsDesired) as 'podsDesired' TIMESERIES"
+                "query": "FROM Metric SELECT max(k8s.daemonset.podsUpdatedScheduled) as 'Pods Updated Scheduled', max(k8s.daemonset.podsMisscheduled) as 'Pods Misscheduled' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -59,20 +81,21 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 9,
-            "row": 1,
+            "column": 7,
+            "row": 4,
             "height": 3,
-            "width": 4
+            "width": 6
           },
-          "title": "Scheduling status",
+          "title": "Pods availability",
           "rawConfiguration": {
+            "dataFormatters": [],
             "legend": {
               "enabled": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.daemonset.podsUpdatedScheduled) as 'podsUpdatedScheduled', max(k8s.daemonset.podsMisscheduled) as 'podsMisscheduled' TIMESERIES"
+                "query": "FROM Metric SELECT min(k8s.daemonset.podsAvailable) as 'Pods Available', min(k8s.daemonset.podsReady) as 'Pods Ready', max(k8s.daemonset.podsUnavailable) as 'Pods Unavailable' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -86,11 +109,11 @@
           },
           "layout": {
             "column": 1,
-            "row": 4,
+            "row": 7,
             "height": 3,
-            "width": 4
+            "width": 6
           },
-          "title": "Pods availability",
+          "title": "Scheduled pods",
           "rawConfiguration": {
             "legend": {
               "enabled": true
@@ -98,7 +121,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT min(k8s.daemonset.podsAvailable) as 'podsAvailable', min(k8s.daemonset.podsReady) as 'podsReady', max(k8s.daemonset.podsUnavailable) as 'podsUnavailable' TIMESERIES"
+                "query": "FROM Metric SELECT max(k8s.daemonset.podsMissing) as 'Pods Missing', min(k8s.daemonset.podsScheduled) as 'Pods Scheduled', latest(k8s.daemonset.podsDesired) as 'Pods Desired' TIMESERIES "
               }
             ],
             "yAxisLeft": {
@@ -111,10 +134,10 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 5,
-            "row": 4,
+            "column": 7,
+            "row": 7,
             "height": 3,
-            "width": 4
+            "width": 6
           },
           "title": "Generation",
           "rawConfiguration": {
@@ -124,7 +147,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.daemonset.metadataGeneration) as 'metadataGeneration' TIMESERIES"
+                "query": "FROM Metric SELECT max(k8s.daemonset.metadataGeneration) as 'Metadata Generation' TIMESERIES"
               }
             ],
             "yAxisLeft": {
