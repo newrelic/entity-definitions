@@ -1,21 +1,39 @@
 bytesSuccessfullySentPerRequest:
   title: Bytes successfully sent per request
-  query:
-    select: average(egressBytes)
-    from: AwsMediaPackageVODPackagingConfigurationSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.mediapackage.EgressBytes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.egressBytes.Average)
+      from: AwsMediaPackageVODPackagingConfigurationSample
+      eventId: entityGuid
+      eventName: entityName
 processTimeOfOutputRequestsMs:
   title: Process time of output requests (ms)
-  query:
-    select: average(egressResponseTime)
-    from: AwsMediaPackageVODPackagingConfigurationSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.mediapackage.EgressResponseTime)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.egressResponseTime.Average)
+      from: AwsMediaPackageVODPackagingConfigurationSample
+      eventId: entityGuid
+      eventName: entityName
 contentRequestsReceived:
   title: Content requests received
-  query:
-    select: average(egressRequestCount)
-    from: AwsMediaPackageVODPackagingConfigurationSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(aws.mediapackage.EgressRequestCount)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.egressRequestCount.Sum)
+      from: AwsMediaPackageVODPackagingConfigurationSample
+      eventId: entityGuid
+      eventName: entityName

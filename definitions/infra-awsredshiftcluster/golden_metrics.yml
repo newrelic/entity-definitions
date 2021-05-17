@@ -1,32 +1,56 @@
 CPUUtilization:
   title: Max CPU Utilization
-  query:
-    select: max(`provider.cpuUtilization.Maximum`)
-    from: DatastoreSample
-    where: provider='RedshiftCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: max(aws.rds.CPUUtilization)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: max(`provider.cpuUtilization.Maximum`)
+      from: DatastoreSample
+      where: provider='RedshiftCluster'
+      eventId: entityGuid
+      eventName: entityName
 QueryDuration:
   title: Max Query Duration
-  query:
-    select: max(`provider.QueryDuration.Maximum`)
-    from: DatastoreSample
-    where: provider='RedshiftCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: max(aws.redshift.QueryDuration)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: max(`provider.QueryDuration.Maximum`)
+      from: DatastoreSample
+      where: provider='RedshiftCluster'
+      eventId: entityGuid
+      eventName: entityName
 HealthStatus:
   title: Cluster Health Status
-  query:
-    select: min(`provider.HealthStatus.Minimum`)
-    from: DatastoreSample
-    where: provider='RedshiftCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: min(aws.redshift.HealthStatus.byCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: min(`provider.HealthStatus.Minimum`)
+      from: DatastoreSample
+      where: provider='RedshiftCluster'
+      eventId: entityGuid
+      eventName: entityName
 DatabaseConnections:
   title: Database Connections
-  query:
-    select: max(`provider.DatabaseConnections.Maximum`)
-    from: DatastoreSample
-    where: provider='RedshiftCluster'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: max(aws.redshift.DatabaseConnections.byCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: max(`provider.DatabaseConnections.Maximum`)
+      from: DatastoreSample
+      where: provider='RedshiftCluster'
+      eventId: entityGuid
+      eventName: entityName
