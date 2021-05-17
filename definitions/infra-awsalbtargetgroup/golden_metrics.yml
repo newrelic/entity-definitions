@@ -1,33 +1,56 @@
 serverErrors4XxAnd5Xx:
   title: Server errors (4xx and 5xx)
-  query:
-    select: rate(sum(`provider.httpCodeTarget4XXCount.Sum`) + sum(`provider.httpCodeTarget5XXCount.Sum`),1
-      minute)
-    from: LoadBalancerSample
-    where: provider='AlbTargetGroup'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: rate(sum(aws.applicationelb.HTTPCode_Target_4XX_Count) + sum(aws.applicationelb.HTTPCode_Target_5XX_Count), 1 minute)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(`provider.httpCodeTarget4XXCount.Sum`) + sum(`provider.httpCodeTarget5XXCount.Sum`),1 minute)
+      from: LoadBalancerSample
+      where: provider='AlbTargetGroup'
+      eventId: entityGuid
+      eventName: entityName
 unhealthyHosts:
   title: Unhealthy host count
-  query:
-    select: max(`provider.unHealthyHostCount.Maximum`)
-    from: LoadBalancerSample
-    where: provider='AlbTargetGroup'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: max(aws.applicationelb.UnHealthyHostCount)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: max(`provider.unHealthyHostCount.Maximum`)
+      from: LoadBalancerSample
+      where: provider='AlbTargetGroup'
+      eventId: entityGuid
+      eventName: entityName
 responseTime:
   title: Average response time
-  query:
-    select: average(`provider.targetResponseTime.Average`)
-    from: LoadBalancerSample
-    where: provider='AlbTargetGroup'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.applicationelb.TargetResponseTime)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.targetResponseTime.Average`)
+      from: LoadBalancerSample
+      where: provider='AlbTargetGroup'
+      eventId: entityGuid
+      eventName: entityName
 requests:
   title: Requests
-  query:
-    select: rate(sum(provider.requestCountPerTarget.Sum),1 minute)
-    from: LoadBalancerSample
-    where: provider='AlbTargetGroup'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: rate(sum(aws.applicationelb.RequestCountPerTarget), 1 minute)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(provider.requestCountPerTarget.Sum),1 minute)
+      from: LoadBalancerSample
+      where: provider='AlbTargetGroup'
+      eventId: entityGuid
+      eventName: entityName

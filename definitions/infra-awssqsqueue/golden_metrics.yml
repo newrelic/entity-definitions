@@ -1,24 +1,42 @@
 receivedMessages:
   title: Received messages
-  query:
-    select: sum(provider.numberOfMessagesReceived.Sum)
-    from: QueueSample
-    where: provider='SqsQueue'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(aws.sqs.NumberOfMessagesReceived)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.numberOfMessagesReceived.Sum)
+      from: QueueSample
+      where: provider='SqsQueue'
+      eventId: entityGuid
+      eventName: entityName
 sentMessages:
   title: Sent messages
-  query:
-    select: sum(provider.numberOfMessagesSent.Sum)
-    from: QueueSample
-    where: provider='SqsQueue'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(aws.sqs.NumberOfMessagesSent)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.numberOfMessagesSent.Sum)
+      from: QueueSample
+      where: provider='SqsQueue'
+      eventId: entityGuid
+      eventName: entityName
 oldestMessageAgeS:
   title: Approximate age of oldest message (s)
-  query:
-    select: average(provider.approximateAgeOfOldestMessage.Average)
-    from: QueueSample
-    where: provider='SqsQueue'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.sqs.ApproximateAgeOfOldestMessage)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.approximateAgeOfOldestMessage.Average)
+      from: QueueSample
+      where: provider='SqsQueue'
+      eventId: entityGuid
+      eventName: entityName

@@ -1,32 +1,56 @@
 failedClientNlbTlsHandshakes:
   title: Failed client-NLB TLS handshakes
-  query:
-    select: rate(sum(provider.clientTlsNegotiationErrorCount.Sum),1 minute)
-    from: LoadBalancerSample
-    where: provider='Nlb'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: rate(sum(aws.applicationelb.ClientTLSNegotiationErrorCount), 1 minute)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(provider.clientTlsNegotiationErrorCount.Sum),1 minute)
+      from: LoadBalancerSample
+      where: provider='Nlb'
+      eventId: entityGuid
+      eventName: entityName
 failedNlbTargetTlsHandshakes:
   title: Failed NLB-target TLS handshakes
-  query:
-    select: rate(sum(provider.targetTlsNegotiationErrorCount.Sum),1 minute)
-    from: LoadBalancerSample
-    where: provider='Nlb'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: rate(sum(aws.applicationelb.TargetTLSNegotiationErrorCount), 1 minute)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(provider.targetTlsNegotiationErrorCount.Sum),1 minute)
+      from: LoadBalancerSample
+      where: provider='Nlb'
+      eventId: entityGuid
+      eventName: entityName
 concurrentFlows:
   title: Avg Concurrent flows
-  query:
-    select: average(provider.activeFlowCount.Average)
-    from: LoadBalancerSample
-    where: provider='Nlb'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.networkelb.ActiveFlowCount)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.activeFlowCount.Average)
+      from: LoadBalancerSample
+      where: provider='Nlb'
+      eventId: entityGuid
+      eventName: entityName
 concurrentTlsFlows:
   title: Avg Concurrent TLS flows
-  query:
-    select: average(provider.activeFlowCountTls.Average)
-    from: LoadBalancerSample
-    where: provider='Nlb'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.networkelb.ActiveFlowCount_TLS)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.activeFlowCountTls.Average)
+      from: LoadBalancerSample
+      where: provider='Nlb'
+      eventId: entityGuid
+      eventName: entityName
