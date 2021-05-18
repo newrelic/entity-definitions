@@ -107,6 +107,27 @@ synthesis:
         k8s.namespace.name:
           entityTagName: k8s.namespaceName
 
+    # IMPORTANT:
+    # This rule matches on any telemetry with service.name 
+    # which is too broad for some telemetry sources, resulting
+    # in matches that are not actually about services.  We're
+    # keeping it for backwards compatibility reasons but it 
+    # is being ignored in some internal services while we add
+    # a configuration option to choose the relevant ingestion
+    # sources for each rule.
+    - identifier: service.name
+      name: service.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: service.name
+      tags:
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+        telemetry.sdk.language:
+          entityTagName: language
+        telemetry.sdk.version:
+
+
 compositeMetrics:
   goldenMetrics:
     - golden_metrics.yml
