@@ -1,15 +1,38 @@
 domain: EXT
-# Network Router devices from Kentik using Metric API
+
 # Leaving this ambiguous to allow future technical partners to use the same entity type with additional conditions
 type: ROUTER
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
+  rules:
+    # Network Router devices from Kentik using Metric API
+    - identifier: device_name
+      name: device_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: instrumentation.provider
+          value: kentik-router
+      tags:
+        provider:
+          entityTagName: instrumentation.provider
 
-  conditions:
-  - attribute: provider
-    value: kentik-router
+    # Mikrotik routers using Metric API
+    - identifier: mikrotik.serialnumber
+      name: mikrotik.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: instrumentation.provider
+          value: mikrotik-router
+      tags:
+        provider:
+          entityTagName: instrumentation.provider
+        agentVersion:
+          entityTagName: instrumentation.version
+        model:
+          entityTagName: mikrotik.model
+        boardname:
+          entityTagName: mikrotik.boardname
+        firmware:
+          entityTagName: mikrotik.currentfirmware
 
 compositeMetrics:
   goldenMetrics:
@@ -20,3 +43,5 @@ compositeMetrics:
 dashboardTemplates:
   newRelic:
     template: dashboard.json
+  mikrotik-router:
+    template: mikrotik-dashboard.json

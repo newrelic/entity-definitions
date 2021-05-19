@@ -1,27 +1,39 @@
 cpuUtilization:
   title: CPU Utilization (%)
-  query:
-    select: average(kentik.snmp.CPU)
-    from: Metric
-    where: "provider = 'kentik-router'"
+  queries:
+    kentik-router:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+    mikrotik-router:
+      select: average(mikrotik.system.cpu.load)
+      from: Metric
 
 memoryUtilization:
   title: Memory Utilization (%)
-  query:
-    select: average(kentik.snmp.MemoryUtilization)
-    from: Metric
-    where: "provider = 'kentik-router'"
+  queries:
+    kentik-router:
+      select: average(kentik.snmp.MemoryUtilization)
+      from: Metric
+    mikrotik-router:
+      select: (1 - (average(mikrotik.system.memory.free) / average(mikrotik.system.memory.total)))
+      from: Metric
 
 receiveErrors:
   title: Aggregate Receive Errors (count)
-  query:
-    select: sum(kentik.snmp.ifInErrors)
-    from: Metric
-    where: "provider = 'kentik-router'"
+  queries:
+    kentik-router:
+      select: sum(kentik.snmp.ifInErrors)
+      from: Metric
+    mikrotik-router:
+      select: sum(mikrotik.interface.ether1.rxerrorsps)
+      from: Metric
 
 transmitErrors:
   title: Aggregate Transmit Errors (count)
-  query:
-    select: sum(kentik.snmp.ifOutErrors)
-    from: Metric
-    where: "provider = 'kentik-router'"
+  queries:
+    kentik-router:
+      select: sum(kentik.snmp.ifOutErrors)
+      from: Metric
+    mikrotik-router:
+      select: sum(mikrotik.interface.ether1.txerrorsps)
+      from: Metric
