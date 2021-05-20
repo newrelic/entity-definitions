@@ -1,28 +1,52 @@
 Instances:
   title: Number of instances
-  query:
-    select: max(`system.Instances`)
-    from: GcpAppEngineServiceSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    gcp:
+      select: max(gcp.appengine.system.instance_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: max(`system.Instances`)
+      from: GcpAppEngineServiceSample
+      eventId: entityGuid
+      eventName: entityName
 Responses:
   title: Number of http responses
-  query:
-    select: sum(`server.Responses`)
-    from: GcpAppEngineServiceSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    gcp:
+      select: sum(gcp.appengine.http.server.response_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: sum(`server.Responses`)
+      from: GcpAppEngineServiceSample
+      eventId: entityGuid
+      eventName: entityName
 ErrorRate:
   title: Error rate
-  query:
-    select: filter(sum(`server.Responses`), WHERE response_code NOT LIKE '2%') * 100
-    from: GcpAppEngineServiceSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    gcp:
+      select: filter(sum(gcp.appengine.http.server.response_count), WHERE response_code NOT LIKE '2%') * 100
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: filter(sum(`server.Responses`), WHERE response_code NOT LIKE '2%') * 100
+      from: GcpAppEngineServiceSample
+      eventId: entityGuid
+      eventName: entityName
 latency:
   title: Latency
-  query:
-    select: (average(`server.ResponseLatenciesMilliseconds`)) / 1000
-    from: GcpAppEngineServiceSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    gcp:
+      select: average(gcp.appengine.http.server.response_latencies) / 1000
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: average(`server.ResponseLatenciesMilliseconds`) / 1000
+      from: GcpAppEngineServiceSample
+      eventId: entityGuid
+      eventName: entityName
