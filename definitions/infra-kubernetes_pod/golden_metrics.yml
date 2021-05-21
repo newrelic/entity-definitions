@@ -1,41 +1,65 @@
-statusOverTime:
-  title: Status changes over time
-  query:
-    select: count(*)
-    from: K8sPodSample
-    eventId: entityGuid
-    eventName: entityName
 podReadiness:
   title: Readiness over time
-  query:
-    select: latest(isReady)
-    from: K8sPodSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    newRelic:
+      select: latest(k8s.pod.isReady)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: latest(isReady)
+      from: K8sPodSample
+      eventId: entityGuid
+      eventName: entityName
 podScheduled:
   title: Scheduling status over time
-  query:
-    select: latest(isScheduled)
-    from: K8sPodSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    newRelic:
+      select: latest(k8s.pod.isScheduled)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: latest(isScheduled)
+      from: K8sPodSample
+      eventId: entityGuid
+      eventName: entityName
 networkErrors:
   title: Network errors (per second)
-  query:
-    select: max(net.errorsPerSecond)
-    from: K8sPodSample
-    eventId: entityGuid
+  queries:
+    newRelic:
+      select: max(k8s.pod.netErrorsPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: max(net.errorsPerSecond)
+      from: K8sPodSample
+      eventId: entityGuid
+      eventName: entityName
 networkTxBytes:
   title: Network Tx (b/s)
-  query:
-    select: max(net.txBytesPerSecond)
-    from: K8sPodSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    newRelic:
+      select: max(k8s.pod.netTxBytesPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: max(net.txBytesPerSecond)
+      from: K8sPodSample
+      eventId: entityGuid
+      eventName: entityName
 networkRxBytes:
   title: Network Rx (b/s)
-  query:
-    select: max(net.rxBytesPerSecond)
-    from: K8sPodSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    newRelic:
+      select: max(k8s.pod.netRxBytesPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: max(net.rxBytesPerSecond)
+      from: K8sPodSample
+      eventId: entityGuid
+      eventName: entityName
