@@ -1,25 +1,56 @@
 {
-  "name": "CDN Data",
+  "name": "CDN Health Metrics",
   "description": null,
   "permissions": "PUBLIC_READ_WRITE",
   "pages": [
     {
-      "name": "CDN Data",
+      "name": "CDN Health Metrics",
       "description": null,
       "widgets": [
         {
           "visualization": {
-            "id": "viz.markdown"
+            "id": "viz.billboard"
           },
           "layout": {
             "column": 1,
             "row": 1,
-            "height": 3,
-            "width": 4
+            "height": 2,
+            "width": 12
           },
-          "title": "",
+          "title": "Summary Metrics",
           "rawConfiguration": {
-            "text": "# CDN (Draft)\n\nThis is a draft dashboard built for the Reli Hack event that explores a CDN datatype created from SyntheticRequests where the url is like '%cdn%'. \n\nIn the future, you could have more sophisticated logic that includes Browser and Mobile data as well. "
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 439836,
+                "query": "FROM SyntheticRequest SELECT average((requestBodySize+requestHeaderSize)/duration) as 'kB/s', percentage(count(*), where responseCode = 200 AND duration < 3000 ), average(duration), max(duration), percentile(duration,95) where URL  like '%cdn%' SINCE 1 day ago LIMIT 1000"
+              }
+            ],
+            "thresholds": []
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "height": 8,
+            "width": 3
+          },
+          "title": "Worst Performing (95th percentile)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 439836,
+                "query": "FROM SyntheticRequest SELECT percentile(duration,95)  where URL  like '%cdn.%' SINCE 1 week ago LIMIT 1000 facet domain "
+              }
+            ]
           },
           "linkedEntityGuids": null
         },
@@ -28,14 +59,13 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 5,
-            "row": 1,
+            "column": 4,
+            "row": 3,
             "height": 3,
-            "width": 4
+            "width": 9
           },
-          "title": "CDN Latency",
+          "title": "Latency (KB/s) by Domain",
           "rawConfiguration": {
-            "dataFormatters": [],
             "facet": {
               "showOtherSeries": false
             },
@@ -44,8 +74,8 @@
             },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "SELECT average(duration) as 'Bytes/s' FROM CDN  facet domain as 'cdn' timeseries since 4 hours ago"
+                "accountId": 439836,
+                "query": "FROM SyntheticRequest SELECT average((requestBodySize+requestHeaderSize)/duration) as 'kB/s' where URL  like '%cdn%' SINCE 1 day ago LIMIT 1000 TIMESERIES facet domain "
               }
             ],
             "yAxisLeft": {
@@ -56,25 +86,31 @@
         },
         {
           "visualization": {
-            "id": "viz.bar"
+            "id": "viz.line"
           },
           "layout": {
-            "column": 9,
-            "row": 1,
-            "height": 3,
-            "width": 4
+            "column": 4,
+            "row": 6,
+            "height": 5,
+            "width": 9
           },
-          "title": "CDN Availability",
+          "title": "Success % Trend",
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
             },
+            "legend": {
+              "enabled": true
+            },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "SELECT percentage(count(*), where responseCode < 300) from CDN facet domain where responseCode is NOT NULL"
+                "accountId": 439836,
+                "query": "FROM SyntheticRequest SELECT percentage(count(*), where responseCode = 200 AND duration < 3000 )   where URL  like '%cdn%' and domain !='newrelic.com' SINCE 1 week ago LIMIT 25 TIMESERIES   facet domain "
               }
-            ]
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
           },
           "linkedEntityGuids": null
         },
@@ -84,11 +120,11 @@
           },
           "layout": {
             "column": 1,
-            "row": 4,
-            "height": 6,
+            "row": 11,
+            "height": 4,
             "width": 12
           },
-          "title": "Raw Data",
+          "title": "Synthetic CDN Summary Metrics",
           "rawConfiguration": {
             "dataFormatters": [],
             "facet": {
@@ -96,12 +132,14 @@
             },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "SELECT * FROM CDN "
+                "accountId": 439836,
+                "query": "FROM SyntheticRequest SELECT percentage(count(*), where responseCode = 200 AND duration < 3000 ),  average((requestBodySize+requestHeaderSize)/duration) as 'kB/s',average(duration), max(duration), percentile(duration,95), uniqueCount(tuple(entityGuid,domain)) as 'urls' where URL  like '%cdn%' SINCE 1 day ago LIMIT 100 facet domain "
               }
             ]
           },
-          "linkedEntityGuids": null
+          "linkedEntityGuids": [
+            "MXxWSVp8REFTSEJPQVJEfDIwMjI5OTY"
+          ]
         }
       ]
     }
