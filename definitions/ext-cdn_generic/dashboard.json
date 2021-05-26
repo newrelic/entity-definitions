@@ -1,0 +1,139 @@
+{
+  "name": "CDN Health Metrics",
+  "description": null,
+  "pages": [
+    {
+      "name": "CDN Health Metrics",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 2,
+            "width": 12
+          },
+          "title": "Summary Metrics",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM CDN SELECT average((responseBodySize+responseHeaderSize)/duration) as 'kB/s', percentage(count(*), where responseCode = 200 AND duration < 3000 ), average(duration), max(duration), percentile(duration,95) where URL  like '%cdn%' SINCE 1 day ago LIMIT 1000"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "height": 8,
+            "width": 3
+          },
+          "title": "Worst Performing (95th percentile)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM CDN SELECT percentile(duration,95)  where URL  like '%cdn.%' SINCE 1 week ago LIMIT 1000 facet domain "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 4,
+            "row": 3,
+            "height": 3,
+            "width": 9
+          },
+          "title": "Latency (KB/s) by Domain",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM CDN SELECT average((responseBodySize+responseHeaderSize)/duration) as 'kB/s' where URL  like '%cdn%' SINCE 1 day ago LIMIT 1000 TIMESERIES facet domain "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 4,
+            "row": 6,
+            "height": 5,
+            "width": 9
+          },
+          "title": "Success % Trend",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM CDN SELECT percentage(count(*), where responseCode = 200 AND duration < 3000 )   where URL  like '%cdn%' and domain !='newrelic.com' SINCE 1 week ago LIMIT 25 TIMESERIES   facet domain "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "height": 4,
+            "width": 12
+          },
+          "title": "Synthetic CDN Summary Metrics",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM CDN SELECT percentage(count(*), where responseCode = 200 AND duration < 3000 ),  average((responseBodySize+responseHeaderSize)/duration) as 'kB/s',average(duration), max(duration), percentile(duration,95), uniqueCount(tuple(monitorName,domain)) as 'urls' where URL  like '%cdn%' SINCE 1 day ago LIMIT 100 facet domain "
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
