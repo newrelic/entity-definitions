@@ -13,9 +13,9 @@
  */
 
 // ------MODIFY THE FOLLOWING VARIABLES--------
-const QUERY_KEY = `${$secure.RELI_HACK_QUERY_KEY}`;
-const INSERT_KEY = `${$secure.RELI_INGEST_KEY}`;
-const ACCOUNT_ID = 1822040;
+const QUERY_KEY = `{{QUERY_KEY}}`;
+const INSERT_KEY = `{{INGEST_KEY}}`;
+const ACCOUNT_ID = '{{ACCOUNT_ID}}';
 const MONITOR_FREQUENCY_IN_MINUTES = '5'; // This must match the monitor frequency
 //----------------END-------------------------
 
