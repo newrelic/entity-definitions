@@ -1,69 +1,41 @@
 requests:
   title: Requests
-  queries:
-    aws:
-      select: sum(aws.s3.GetRequests) + sum(aws.s3.PutRequests) + sum(aws.s3.HeadRequests)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: sum(`provider.getRequests.Sum`) + sum(`provider.putRequests.Sum`) + sum(`provider.headRequests.Sum`)
-      from: DatastoreSample
-      where: provider='S3BucketRequests'
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: sum(`provider.getRequests.Sum`) + sum(`provider.putRequests.Sum`) + sum(`provider.headRequests.Sum`)
+    from: DatastoreSample
+    where: provider='S3BucketRequests'
+    eventId: entityGuid
+    eventName: entityName
+  unit: COUNT
 errors4xxAnd5xx:
   title: Errors
-  queries:
-    aws:
-      select: sum(`aws.s3.4xxErrors`) + sum(`aws.s3.5xxErrors`)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: sum(`provider.error4xxErrors.Sum`) + sum(`provider.error5xxErrors.Sum`)
-      from: DatastoreSample
-      where: provider='S3BucketRequests'
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: sum(`provider.error4xxErrors.Sum`) + sum(`provider.error5xxErrors.Sum`)
+    from: DatastoreSample
+    eventId: entityGuid
+    where: provider='S3BucketRequests'
+    eventName: entityName
+  unit: COUNT
 latency:
   title: Latency
-  queries:
-    aws:
-      select: (average(aws.s3.TotalRequestLatency)) / 1000
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: (average(`provider.totalRequestLatency.Average`)) / 1000
-      from: DatastoreSample
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    eventId: entityGuid
+    select: (average(`provider.totalRequestLatency.Average`)) / 1000
+    from: DatastoreSample
+  unit: SECONDS
 bytesDownloaded:
   title: Bytes downloaded
-  queries:
-    aws:
-      select: sum(aws.s3.BytesDownloaded)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: sum(`provider.bytesDownloaded.Sum`)
-      from: DatastoreSample
-      where: provider='S3BucketRequests'
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: sum(`provider.bytesDownloaded.Sum`)
+    from: DatastoreSample
+    where: provider='S3BucketRequests'
+    eventId: entityGuid
+    eventName: entityName
 bytesUploaded:
   title: Bytes uploaded
-  queries:
-    aws:
-      select: sum(aws.s3.BytesUploaded)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: sum(`provider.bytesUploaded.Sum`)
-      from: DatastoreSample
-      where: provider='S3BucketRequests'
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: sum(`provider.bytesUploaded.Sum`)
+    from: DatastoreSample
+    where: provider='S3BucketRequests'
+    eventId: entityGuid
+    eventName: entityName
