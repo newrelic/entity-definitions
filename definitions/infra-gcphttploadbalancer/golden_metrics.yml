@@ -1,26 +1,14 @@
 requestsRate:
   title: Requests per second
-  queries:
-    gcp:
-      select: rate(sum(gcp.loadbalancing.https.request_count), 1 minute) / 60
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    gcpSample:
-      select: rate(sum(`https.Requests`), 1 minute) / 60
-      from: GcpHttpLoadBalancerSample
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: (rate(sum(`https.Requests`), 1 minute)) / 60
+    from: GcpHttpLoadBalancerSample
+    eventId: entityGuid
+    eventName: entityName
 totalLatencyMs:
   title: Total Latency
-  queries:
-    gcp:
-      select: average(gcp.loadbalancing.https.total_latencies) / 1000
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    gcpSample:
-      select: average(`https.TotalLatencies`) / 1000
-      from: GcpHttpLoadBalancerSample
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: (average(`https.TotalLatencies`)) / 1000
+    from: GcpHttpLoadBalancerSample
+    eventId: entityGuid
+    eventName: entityName
