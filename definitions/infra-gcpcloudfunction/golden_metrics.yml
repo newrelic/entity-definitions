@@ -1,39 +1,21 @@
 Executions:
   title: Number of function executions
-  queries:
-    gcp:
-      select: sum(gcp.cloudfunctions.function.execution_count)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    gcpSample:
-      select: sum(`function.Executions`)
-      from: GcpCloudFunctionSample
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: sum(`api.Requests`)
+    from: GcpCloudFunctionSample
+    eventId: entityGuid
+    eventName: entityName
 ErrorRate:
   title: Error rate
-  queries:
-    gcp:
-      select: filter(sum(gcp.cloudfunctions.function.execution_count), WHERE status != 'ok') * 100 / sum(`function.Executions`)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    gcpSample:
-      select: filter(sum(`function.Executions`), WHERE status != 'ok') * 100 / sum(`function.Executions`)
-      from: GcpCloudFunctionSample
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: filter(sum(`function.Executions`), WHERE status != 'ok') * 100 / sum(`function.Executions`)
+    from: GcpCloudFunctionSample
+    eventId: entityGuid
+    eventName: entityName
 latency:
   title: Latency
-  queries:
-    gcp:
-      select: (average(gcp.cloudfunctions.function.execution_times)) / 1000000000
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    gcpSample:
-      select: (average(`function.ExecutionTimeNanos`)) / 1000000000
-      from: GcpCloudFunctionSample
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: (average(`function.ExecutionTimeNanos`)) / 1000000000
+    from: GcpCloudFunctionSample
+    eventId: entityGuid
+    eventName: entityName
