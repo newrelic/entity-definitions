@@ -1,56 +1,48 @@
 requests:
   title: Requests per min
-  queries:
-    aws:
-      select: rate(sum(aws.elb.RequestCount), 1 minute)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: rate(sum(provider.requestCount.Sum), 1 minute)
-      from: LoadBalancerSample
-      where: provider='Elb'
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: rate(sum(provider.requestCount.Sum), 1 minute)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    eventId: entityGuid
+    eventName: entityName
 latency:
   title: Latency (s)
-  queries:
-    aws:
-      select: average(aws.elb.Latency)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: average(provider.latency.Average)
-      from: LoadBalancerSample
-      where: provider='Elb'
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: average(provider.latency.Average)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    eventId: entityGuid
+    eventName: entityName
 errorRate:
   title: Error Rate
-  queries:
-    aws:
-      select: rate(sum(aws.elb.BackendConnectionErrors), 1 minute)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: rate(sum(provider.backendConnectionErrors.Sum), 1 minute)
-      from: LoadBalancerSample
-      where: provider='Elb'
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: rate(sum(provider.backendConnectionErrors.Sum), 1 minute)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    eventId: entityGuid
+    eventName: entityName
+latencyP99:
+  title: P99 Latency (s)
+  query:
+    select: average(provider.latency.p99)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    eventId: entityGuid
+    eventName: entityName
+latencyP90:
+  title: P90 Latency (s)
+  query:
+    select: average(provider.latency.p90)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    eventId: entityGuid
+    eventName: entityName
 unhealthyHosts:
   title: Unhealthy hosts
-  queries:
-    aws:
-      select: average(aws.elb.UnhealthyHostCount)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: average(`provider.unhealthyHostCount.Average`)
-      from: LoadBalancerSample
-      where: provider='Elb'
-      eventId: entityGuid
-      eventName: entityName
+  query:
+    select: average(`provider.unhealthyHostCount.Average`)
+    from: LoadBalancerSample
+    where: provider='Elb'
+    eventId: entityGuid
+    eventName: entityName
