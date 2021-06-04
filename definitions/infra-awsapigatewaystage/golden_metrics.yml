@@ -1,24 +1,42 @@
 requests:
   title: Requests
-  query:
-    select: sum(provider.count.SampleCount)
-    from: ApiGatewaySample
-    where: provider='ApiGatewayStage'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(aws.apigateway.Count.byApi)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.count.SampleCount)
+      from: ApiGatewaySample
+      where: provider='ApiGatewayStage'
+      eventId: entityGuid
+      eventName: entityName
 errors4XxAnd5Xx:
   title: Errors (4xx and 5xx)
-  query:
-    select: sum((`provider.4xxError.Sum` OR 0) + (`provider.5xxError.Sum` OR 0))
-    from: ApiGatewaySample
-    where: provider='ApiGatewayStage'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(`aws.apigateway.4XXError.byApi`) + sum(`aws.apigateway.5XXError.byApi`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum((`provider.4xxError.Sum` OR 0) + (`provider.5xxError.Sum` OR 0))
+      from: ApiGatewaySample
+      where: provider='ApiGatewayStage'
+      eventId: entityGuid
+      eventName: entityName
 latencyMs:
   title: Latency (ms)
-  query:
-    select: average(provider.latency.Average)
-    from: ApiGatewaySample
-    where: provider='ApiGatewayStage'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.apigateway.Latency.byApi)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.latency.Average)
+      from: ApiGatewaySample
+      where: provider='ApiGatewayStage'
+      eventId: entityGuid
+      eventName: entityName
