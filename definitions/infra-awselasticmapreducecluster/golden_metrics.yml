@@ -1,27 +1,42 @@
 availableMemoryBytes:
   title: Available memory
-  query:
-    select: average(provider.memoryAvailableBytes.Average)
-    from: ElasticMapReduceClusterSample
-    where: provider='ElasticMapReduceCluster'
-    eventId: entityGuid
-    eventName: entityName
-  unit: BYTES
+  queries:
+    aws:
+      select: average(aws.elasticmapreduce.MemoryAvailableMB)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.memoryAvailableBytes.Average)
+      from: ElasticMapReduceClusterSample
+      where: provider='ElasticMapReduceCluster'
+      eventId: entityGuid
+      eventName: entityName
 completedApplications:
   title: Completed applications
-  query:
-    select: rate(sum(provider.appsCompleted.Sum), 1 minute)
-    from: ElasticMapReduceClusterSample
-    where: provider='ElasticMapReduceCluster'
-    eventId: entityGuid
-    eventName: entityName
-  unit: COUNT
+  queries:
+    aws:
+      select: rate(sum(aws.elasticmapreduce.AppsCompleted), 1 minute)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(provider.appsCompleted.Sum), 1 minute)
+      from: ElasticMapReduceClusterSample
+      where: provider='ElasticMapReduceCluster'
+      eventId: entityGuid
+      eventName: entityName
 failedApplications:
   title: Failed applications
-  query:
-    select: rate(sum(provider.appsFailed.Sum), 1 minute)
-    from: ElasticMapReduceClusterSample
-    where: provider='ElasticMapReduceCluster'
-    eventId: entityGuid
-    eventName: entityName
-  unit: COUNT
+  queries:
+    aws:
+      select: rate(sum(aws.elasticmapreduce.AppsFailed), 1 minute)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(provider.appsFailed.Sum), 1 minute)
+      from: ElasticMapReduceClusterSample
+      where: provider='ElasticMapReduceCluster'
+      eventId: entityGuid
+      eventName: entityName
