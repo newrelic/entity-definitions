@@ -11,38 +11,3 @@ compositeMetrics:
 configuration:
   entityExpirationTime: QUARTERLY
   alertable: true
-
-relationships:
-  # Select entityGuid, peer.hostname from Span where peer.hostname is not null and category =
-  # 'datastore'
-  # ExtService in this case is a DB
-  - provider: newrelic
-    eventType: Span
-    source:
-      guid: entityGuid
-    relationship: CALLS
-    target:
-      domain: EXT
-      type: SERVICE
-      domainId: peer.hostname
-      encodeDomainId: true
-    conditions:
-      - attribute: category
-        value: datastore
-
-relationships:
-  # Select entityGuid, peer.hostname from Span where peer.hostname is not null and category =
-  # 'datastore'
-  # ExtService in this case is a DB
-  - provider: newrelic
-    eventType: Span
-    rootEntityNodeType: SOURCE
-    relationship: CALLS
-    relatedEntity:
-      domain: EXT
-      type: SERVICE
-      domainId: peer.hostname
-      encodeDomainId: true
-    conditions:
-      - attribute: category
-        value: datastore
