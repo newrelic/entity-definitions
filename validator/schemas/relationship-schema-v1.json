@@ -1,0 +1,347 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema",
+  "$id": "relationship-schema-v1",
+  "type": "object",
+  "title": "Entity Relationship synthesis schema",
+  "description": "Schema used to verify that a given entity relationship yaml is valid",
+  "required": [
+    "relationships"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "relationships": {
+      "$id": "#/relationships",
+      "type": "array",
+      "title": "Rules for Relationship Synthesis",
+      "description": "Information necessary to synthesize the relatioship between two entity types",
+      "minItems": 1,
+      "examples": [{
+        "provider": "newrelic",
+        "eventType": ["Span"],
+        "relationship": "CALLS",
+        "rootEntityNodeType": "SOURCE",
+        "relatedEntity": {
+          "domain": "EXT",
+          "type": "SERVICE",
+          "domainId": "peer.hostname",
+          "encodeIdentifierInGUID": true,
+          "processor": "hostExtractor"
+        },
+        "conditions": [{
+          "attribute": "requestUrl"
+        }]
+      }],
+      "items": {
+        "$id": "#/relationships/items",
+        "type": "object",
+        "required" : [
+          "provider",
+          "eventType",
+          "relationship",
+          "rootEntityNodeType",
+          "relatedEntity"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "provider": {
+            "$id": "#relationships/items/provider",
+            "type": "string",
+            "title": "Instrumentation Provider",
+            "description": "instrumention.provider agent or source from where the telemetry is coming",
+            "examples": ["newrelic"]
+          },
+          "eventType" : {
+            "$id": "#relationships/items/eventType",
+            "type": "string",
+            "title": "NRDB Event Type",
+            "description": "Event Type table where telemetry is to be analysed for relationship synthesis",
+            "examples": ["Span", "Transaction", "AjaxRequest"]
+          },
+          "relationship": {
+            "$id": "#relationships/items/relationship",
+            "type":"string",
+            "title": "Relationship Type",
+            "description" : "The relationship edge type you are looking to build between two entity nodes",
+            "examples" : ["CALLS", "HOSTS", "IS", "CONTAINS"],
+            "enum" : ["CALLS", "HOSTS", "IS", "CONTAINS"]
+          },
+          "rootEntityNodeType": {
+            "$id": "#relationships/items/rootEntityNodeType",
+            "type": "string",
+            "title": "Root Node Type",
+            "description": "Is the node type that the telemetry is coming from the source or target of the relationship",
+            "examples": ["SOURCE", "TARGET"],
+            "enum": ["SOURCE", "TARGET"]
+          }, 
+          "relatedEntity": {
+            "$id": "#relationships/items/relatedEntity",
+            "type": "object",
+            "required" : [
+              "domain",
+              "type",
+              "domainId"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "domain": {
+                "$id": "#relationships/items/relatedEntity/domain",
+                "type": "string",
+                "title": "Domain of entity",
+                "description": "What domain the related entity belongs to",
+                "examples": ["APM", "EXT", "INFRA", "BROWSER"]
+              },
+              "type": {
+                "$id": "#relationships/items/relatedEntity/type",
+                "type" : "string",
+                "title": "The Entity Type",
+                "description": "What entity type the related entity belongs to",
+                "examples": ["APPLICATION", "SERVICE", "HOST"]
+              },
+              "domainId": {
+                "$id": "#relationships/items/relatedEntity/domainId",
+                "type": "string",
+                "title": "Unique Identifier",
+                "description": "NRDB attribute containing a Unique Identifier of the related entity.",
+                "examples": ["myUniqueServiceName", "123"]
+              },
+              "processor": {
+                "$id": "#relationships/items/relatedEntity/processor",
+                "type": "string",
+                "title": "DomainId Post Processor",
+                "description" : "Post processor that will execute on value of registered domainID attributes value",
+                "enum": ["hostExtractor"]
+              },
+              "encodeIdentifierInGUID": {
+                "$id": "#relationships/items/relatedEntity/encodeIdentifierInGUID",
+                "type": "boolean",
+                "title": "Encode DomainId",
+                "description": "Signify if the domainID is required to be encoded or not. Should match entity definition rule"
+              },
+
+              "conditions": {
+                "$id": "#/synthesis/rules/items/conditions",
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "title": "Conditions for the entity to be synthesized",
+                "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
+                "examples": [
+                  [
+                    {
+                      "attribute": "attributeName",
+                      "value": "value"
+                    },
+                    {
+                      "attribute": "attributeName",
+                      "prefix": "value"
+                    }
+                  ]
+                ],
+                "additionalItems": false,
+                "items": {
+                  "$id": "#/properties/conditions/items",
+                  "oneOf": [
+                    {
+                      "$id": "#/properties/conditions/items/anyOf/0",
+                      "type": "object",
+                      "description": "Match attribute and its value or prefix (if requested)",
+                      "examples": [
+                        {
+                          "attribute": "attributeName",
+                          "value": "value"
+                        }
+                      ],
+                      "required": [
+                        "attribute"
+                      ],
+                      "properties": {
+                        "attribute": {
+                          "$id": "#/properties/conditions/items/anyOf/0/properties/attribute",
+                          "type": "string",
+                          "title": "The attribute name",
+                          "examples": [
+                            "attributeName"
+                          ]
+                        },
+                        "value": {
+                          "$id": "#/properties/conditions/items/anyOf/0/properties/value",
+                          "type": "string",
+                          "title": "The expected value",
+                          "examples": [
+                            "value"
+                          ]
+                        },
+                        "prefix": {
+                          "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
+                          "type": "string",
+                          "title": "The expected prefix",
+                          "examples": [
+                            "value"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "rules": {
+          "$id": "#/synthesis/rules",
+          "type": "array",
+          "title": "Synthesis information",
+          "description": "Information necessary to synthesize the entity",
+          "minItems": 1,
+          "items": {
+            "$id": "#/synthesis/rules/items",
+            "type": "object",
+            "required": [
+              "name",
+              "identifier",
+              "conditions"
+            ],
+            "properties": {
+            "name": {
+              "$id": "#/synthesis/rules/items/name",
+              "type": "string",
+              "title": "The entity name",
+              "description": "Information used to synthesize the entity name",
+              "examples": [
+                "EntityName"
+              ]
+            },
+            "identifier": {
+              "$id": "#/synthesis/rules/items/identifier",
+              "type": "string",
+              "title": "The entity id",
+              "description": "Information used to synthesize the entity id",
+              "examples": [
+                "12345"
+              ]
+            },
+            "encodeIdentifierInGUID": {
+              "$id": "#/synthesis/rules/items/encodeIdentifierInGUID",
+              "type": "boolean",
+              "default": false,
+              "title": "encode identifier in GUID",
+              "description": "Defines whether the identifier should be encoded in the entity GUID, to be used when the identifier is too long."
+            },
+            "conditions": {
+              "$id": "#/synthesis/rules/items/conditions",
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "title": "Conditions for the entity to be synthesized",
+              "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
+              "examples": [
+                [
+                  {
+                    "attribute": "attributeName",
+                    "value": "value"
+                  },
+                  {
+                    "attribute": "attributeName",
+                    "prefix": "value"
+                  }
+                ]
+              ],
+              "additionalItems": false,
+              "items": {
+                "$id": "#/properties/conditions/items",
+                "oneOf": [
+                  {
+                    "$id": "#/properties/conditions/items/anyOf/0",
+                    "type": "object",
+                    "description": "Match attribute and its value or prefix (if requested)",
+                    "examples": [
+                      {
+                        "attribute": "attributeName",
+                        "value": "value"
+                      }
+                    ],
+                    "required": [
+                      "attribute"
+                    ],
+                    "properties": {
+                      "attribute": {
+                        "$id": "#/properties/conditions/items/anyOf/0/properties/attribute",
+                        "type": "string",
+                        "title": "The attribute name",
+                        "examples": [
+                          "attributeName"
+                        ]
+                      },
+                      "value": {
+                        "$id": "#/properties/conditions/items/anyOf/0/properties/value",
+                        "type": "string",
+                        "title": "The expected value",
+                        "examples": [
+                          "value"
+                        ]
+                      },
+                      "prefix": {
+                        "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
+                        "type": "string",
+                        "title": "The expected prefix",
+                        "examples": [
+                          "value"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "tags": {
+              "$id": "#/synthesis/rules/items/tags",
+              "type": "object",
+              "description": "Tags associated to the entity that can be extracted from the metrics information received.",
+              "additionalItems": false,
+              "items": {
+                "$id": "#/properties/tags/items",
+                "anyOf": [
+                  {
+                    "$id": "#/properties/tags/items/anyOf/0",
+                    "type": "object",
+                    "title": "Tag configuration",
+                    "description": "The configuration of the tag being synthesized",
+                    "examples": [
+                      {
+                        "multiValue": "false",
+                        "entityTagName": "intendedTagName"
+                      }
+                    ],
+                    "properties": {
+                      "multiValue": {
+                        "$id": "#/properties/tags/items/anyOf/0/properties/multiValue",
+                        "type": "boolean",
+                        "title": "If the tag should allow a list of string values or a single string value"
+                      },
+                      "entityTagName": {
+                        "$id": "#/properties/tags/items/anyOf/0/properties/entityTagName",
+                        "type": "string",
+                        "title": "The key of the tag to be created with the value of the provided attribute"
+                      }
+                    },
+                    "additionalItems": false
+                  }
+                ]
+              }
+            }
+            },
+            "additionalProperties": false
+          }
+        },
+        "name": {"$ref": "#/synthesis/rules/items/name"},
+        "identifier": {"$ref": "#/synthesis/rules/items/identifier"},
+        "encodeIdentifierInGUID": {"$ref": "#/synthesis/rules/items/encodeIdentifierInGUID"},
+        "conditions": {"$ref": "#/synthesis/rules/items/conditions"},
+        "tags": {"$ref": "#/synthesis/rules/items/tags"}
+      }
+    }
+  }
+}
