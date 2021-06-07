@@ -73,6 +73,72 @@
             "examples": ["SOURCE", "TARGET"],
             "enum": ["SOURCE", "TARGET"]
           }, 
+          "conditions": {
+            "$id": "#/relationships/items/conditions",
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "title": "Conditions for the entity to be synthesized",
+            "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
+            "examples": [
+              [
+                {
+                  "attribute": "attributeName",
+                  "value": "value"
+                },
+                {
+                  "attribute": "attributeName",
+                  "prefix": "value"
+                }
+              ]
+            ],
+            "additionalItems": false,
+            "items": {
+              "$id": "#/properties/conditions/items",
+              "oneOf": [
+                {
+                  "$id": "#/properties/conditions/items/anyOf/0",
+                  "type": "object",
+                  "description": "Match attribute and its value or prefix (if requested)",
+                  "examples": [
+                    {
+                      "attribute": "attributeName",
+                      "value": "value"
+                    }
+                  ],
+                  "required": [
+                    "attribute"
+                  ],
+                  "properties": {
+                    "attribute": {
+                      "$id": "#/properties/conditions/items/anyOf/0/properties/attribute",
+                      "type": "string",
+                      "title": "The attribute name",
+                      "examples": [
+                        "attributeName"
+                      ]
+                    },
+                    "value": {
+                      "$id": "#/properties/conditions/items/anyOf/0/properties/value",
+                      "type": "string",
+                      "title": "The expected value",
+                      "examples": [
+                        "value"
+                      ]
+                    },
+                    "prefix": {
+                      "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
+                      "type": "string",
+                      "title": "The expected prefix",
+                      "examples": [
+                        "value"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
           "relatedEntity": {
             "$id": "#relationships/items/relatedEntity",
             "type": "object",
@@ -116,231 +182,10 @@
                 "type": "boolean",
                 "title": "Encode DomainId",
                 "description": "Signify if the domainID is required to be encoded or not. Should match entity definition rule"
-              },
-
-              "conditions": {
-                "$id": "#/synthesis/rules/items/conditions",
-                "type": "array",
-                "minItems": 1,
-                "maxItems": 1,
-                "title": "Conditions for the entity to be synthesized",
-                "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
-                "examples": [
-                  [
-                    {
-                      "attribute": "attributeName",
-                      "value": "value"
-                    },
-                    {
-                      "attribute": "attributeName",
-                      "prefix": "value"
-                    }
-                  ]
-                ],
-                "additionalItems": false,
-                "items": {
-                  "$id": "#/properties/conditions/items",
-                  "oneOf": [
-                    {
-                      "$id": "#/properties/conditions/items/anyOf/0",
-                      "type": "object",
-                      "description": "Match attribute and its value or prefix (if requested)",
-                      "examples": [
-                        {
-                          "attribute": "attributeName",
-                          "value": "value"
-                        }
-                      ],
-                      "required": [
-                        "attribute"
-                      ],
-                      "properties": {
-                        "attribute": {
-                          "$id": "#/properties/conditions/items/anyOf/0/properties/attribute",
-                          "type": "string",
-                          "title": "The attribute name",
-                          "examples": [
-                            "attributeName"
-                          ]
-                        },
-                        "value": {
-                          "$id": "#/properties/conditions/items/anyOf/0/properties/value",
-                          "type": "string",
-                          "title": "The expected value",
-                          "examples": [
-                            "value"
-                          ]
-                        },
-                        "prefix": {
-                          "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
-                          "type": "string",
-                          "title": "The expected prefix",
-                          "examples": [
-                            "value"
-                          ]
-                        }
-                      }
-                    }
-                  ]
-                }
               }
             }
           }
         }
-      },
-      "additionalProperties": false,
-      "properties": {
-        "rules": {
-          "$id": "#/synthesis/rules",
-          "type": "array",
-          "title": "Synthesis information",
-          "description": "Information necessary to synthesize the entity",
-          "minItems": 1,
-          "items": {
-            "$id": "#/synthesis/rules/items",
-            "type": "object",
-            "required": [
-              "name",
-              "identifier",
-              "conditions"
-            ],
-            "properties": {
-            "name": {
-              "$id": "#/synthesis/rules/items/name",
-              "type": "string",
-              "title": "The entity name",
-              "description": "Information used to synthesize the entity name",
-              "examples": [
-                "EntityName"
-              ]
-            },
-            "identifier": {
-              "$id": "#/synthesis/rules/items/identifier",
-              "type": "string",
-              "title": "The entity id",
-              "description": "Information used to synthesize the entity id",
-              "examples": [
-                "12345"
-              ]
-            },
-            "encodeIdentifierInGUID": {
-              "$id": "#/synthesis/rules/items/encodeIdentifierInGUID",
-              "type": "boolean",
-              "default": false,
-              "title": "encode identifier in GUID",
-              "description": "Defines whether the identifier should be encoded in the entity GUID, to be used when the identifier is too long."
-            },
-            "conditions": {
-              "$id": "#/synthesis/rules/items/conditions",
-              "type": "array",
-              "minItems": 1,
-              "maxItems": 1,
-              "title": "Conditions for the entity to be synthesized",
-              "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
-              "examples": [
-                [
-                  {
-                    "attribute": "attributeName",
-                    "value": "value"
-                  },
-                  {
-                    "attribute": "attributeName",
-                    "prefix": "value"
-                  }
-                ]
-              ],
-              "additionalItems": false,
-              "items": {
-                "$id": "#/properties/conditions/items",
-                "oneOf": [
-                  {
-                    "$id": "#/properties/conditions/items/anyOf/0",
-                    "type": "object",
-                    "description": "Match attribute and its value or prefix (if requested)",
-                    "examples": [
-                      {
-                        "attribute": "attributeName",
-                        "value": "value"
-                      }
-                    ],
-                    "required": [
-                      "attribute"
-                    ],
-                    "properties": {
-                      "attribute": {
-                        "$id": "#/properties/conditions/items/anyOf/0/properties/attribute",
-                        "type": "string",
-                        "title": "The attribute name",
-                        "examples": [
-                          "attributeName"
-                        ]
-                      },
-                      "value": {
-                        "$id": "#/properties/conditions/items/anyOf/0/properties/value",
-                        "type": "string",
-                        "title": "The expected value",
-                        "examples": [
-                          "value"
-                        ]
-                      },
-                      "prefix": {
-                        "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
-                        "type": "string",
-                        "title": "The expected prefix",
-                        "examples": [
-                          "value"
-                        ]
-                      }
-                    }
-                  }
-                ]
-              }
-            },
-            "tags": {
-              "$id": "#/synthesis/rules/items/tags",
-              "type": "object",
-              "description": "Tags associated to the entity that can be extracted from the metrics information received.",
-              "additionalItems": false,
-              "items": {
-                "$id": "#/properties/tags/items",
-                "anyOf": [
-                  {
-                    "$id": "#/properties/tags/items/anyOf/0",
-                    "type": "object",
-                    "title": "Tag configuration",
-                    "description": "The configuration of the tag being synthesized",
-                    "examples": [
-                      {
-                        "multiValue": "false",
-                        "entityTagName": "intendedTagName"
-                      }
-                    ],
-                    "properties": {
-                      "multiValue": {
-                        "$id": "#/properties/tags/items/anyOf/0/properties/multiValue",
-                        "type": "boolean",
-                        "title": "If the tag should allow a list of string values or a single string value"
-                      },
-                      "entityTagName": {
-                        "$id": "#/properties/tags/items/anyOf/0/properties/entityTagName",
-                        "type": "string",
-                        "title": "The key of the tag to be created with the value of the provided attribute"
-                      }
-                    },
-                    "additionalItems": false
-                  }
-                ]
-              }
-            }
-            },
-            "additionalProperties": false
-          }
-        },
-        "name": {"$ref": "#/synthesis/rules/items/name"},
-        "identifier": {"$ref": "#/synthesis/rules/items/identifier"},
-        "encodeIdentifierInGUID": {"$ref": "#/synthesis/rules/items/encodeIdentifierInGUID"},
-        "conditions": {"$ref": "#/synthesis/rules/items/conditions"},
-        "tags": {"$ref": "#/synthesis/rules/items/tags"}
       }
     }
   }
