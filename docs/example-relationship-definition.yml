@@ -1,0 +1,54 @@
+# a list of relationships defined in a file under the entity in which the telemetry is sourced
+relationships:
+  # what provider is the telemetry coming from. This currently is not used for much other than
+  # providing browsing information 
+  - instrumentation.provider: newrelic
+    # what NRDB event type should we filter telemetry from. eg Transaction, AjaxRequest, Span or a
+    # custom event type
+    eventType: Span
+    # there is a predefined set of relationship types. this is the connecting edge between the
+    # source and target nodes. eg CALLS, HOSTS, CONTAINS, IS
+    relationship: CALLS
+    # information of how to formulate the target node of the relationship 
+    target:
+      # domain of the target node
+      domain: EXT
+      # entity type of the target node
+      type: SERVICE
+      # the NRDB event type attribute we should use to extract the domainID of the guid of the
+      # target node
+      domainId: peer.hostname
+      # should we encode this domainID. This should match the entity definition of synthesis for
+      # corresponding entity type and instrumentation.provider
+      encodeIdentifierInGUID: true
+
+      # we have a predefined list of functions that you can call during synthesis which will help
+      # you extract or transform the domainID attribute value into something you're expecting. 
+      # as an example, take `hostExtractor` if your assigned domainID attribute value is
+      # https://myhost.com/bla/bla then the hostExtractor will return myhost.com ignoring the rest
+      processor: hostExtractor
+
+    # are there any filters you wish to apply. if so, you can match attributes values to what you
+    # expect here. eg attrA = 'foo' AND attrB = 'bar'
+    conditions:
+      - attribute: attrA
+        value: foo
+      - attribute: attrB
+        value: bar
+          #
+    # information of how to formulate the source node of the relationship. Object is identical to
+    # target. See target for notes
+    source:
+      domain: EXT
+      type: SERVICE
+      domainId: peer.hostname
+      encodeIdentifierInGUID: true
+      processor: hostExtractor
+
+    # are there any filters you wish to apply. if so, you can match attributes values to what you
+    # expect here. eg attrA = 'foo' AND attrB = 'bar'
+    conditions:
+      - attribute: attrA
+        value: foo
+      - attribute: attrB
+        value: bar
