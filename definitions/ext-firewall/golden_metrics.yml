@@ -1,0 +1,27 @@
+cpuUtilization:
+  title: CPU Utilization (%)
+  query:
+    select: max(kentik.snmp.fgSysCpuUsage)
+    from: Metric
+    where: "provider = 'kentik-firewall'"
+
+memoryUtilization:
+  title: Memory Utilization (%)
+  query:
+    select: (max(kentik.snmp.fgSysMemUsage) / max(kentik.snmp.fgSysMemCapacity)) * 100
+    from: Metric
+    where: "provider = 'kentik-firewall'"
+
+lowmemUtilization:
+  title: Lowmem Utilization (%)
+  query:
+    select: (max(kentik.snmp.fgSysLowMemUsage) / max(kentik.snmp.fgSysLowMemCapacity)) * 100
+    from: Metric
+    where: "provider = 'kentik-firewall'"
+
+ipSessionRate:
+  title: IP Session Rate (1min)
+  query:
+    select: latest(kentik.snmp.fgSysSesRate1) + latest(kentik.snmp.fgSysSes6Rate1)
+    from: Metric
+    where: "provider = 'kentik-firewall'"
