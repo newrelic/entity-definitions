@@ -16,11 +16,10 @@
       "description": "Information necessary to synthesize the relatioship between two entity types",
       "minItems": 1,
       "examples": [{
-        "provider": "newrelic",
+        "instrumentation.provider": "newrelic",
         "eventType": ["Span"],
         "relationship": "CALLS",
-        "rootEntityNodeType": "SOURCE",
-        "relatedEntity": {
+        "target": {
           "domain": "EXT",
           "type": "SERVICE",
           "domainId": "peer.hostname",
@@ -34,17 +33,24 @@
       "items": {
         "$id": "#/relationships/items",
         "type": "object",
-        "required" : [
-          "provider",
-          "eventType",
-          "relationship",
-          "rootEntityNodeType",
-          "relatedEntity"
+        "oneOf" : [
+          {"required" : [
+            "instrumentation.provider",
+            "eventType",
+            "relationship",
+            "source"
+          ]},
+          {"required" : [
+            "instrumentation.provider",
+            "eventType",
+            "relationship",
+            "target"
+          ]}
         ],
         "additionalProperties": false,
         "properties": {
-          "provider": {
-            "$id": "#relationships/items/provider",
+          "instrumentation.provider": {
+            "$id": "#relationships/items/instrumentation.provider",
             "type": "string",
             "title": "Instrumentation Provider",
             "description": "instrumention.provider agent or source from where the telemetry is coming",
@@ -65,14 +71,6 @@
             "examples" : ["CALLS", "HOSTS", "IS", "CONTAINS"],
             "enum" : ["CALLS", "HOSTS", "IS", "CONTAINS"]
           },
-          "rootEntityNodeType": {
-            "$id": "#relationships/items/rootEntityNodeType",
-            "type": "string",
-            "title": "Root Node Type",
-            "description": "Is the node type that the telemetry is coming from the source or target of the relationship",
-            "examples": ["SOURCE", "TARGET"],
-            "enum": ["SOURCE", "TARGET"]
-          }, 
           "conditions": {
             "$id": "#/relationships/items/conditions",
             "type": "array",
@@ -139,8 +137,8 @@
               ]
             }
           },
-          "relatedEntity": {
-            "$id": "#relationships/items/relatedEntity",
+          "target": {
+            "$id": "#relationships/items/target",
             "type": "object",
             "required" : [
               "domain",
@@ -150,35 +148,81 @@
             "additionalProperties": false,
             "properties": {
               "domain": {
-                "$id": "#relationships/items/relatedEntity/domain",
+                "$id": "#relationships/items/target/domain",
                 "type": "string",
                 "title": "Domain of entity",
                 "description": "What domain the related entity belongs to",
                 "examples": ["APM", "EXT", "INFRA", "BROWSER"]
               },
               "type": {
-                "$id": "#relationships/items/relatedEntity/type",
+                "$id": "#relationships/items/target/type",
                 "type" : "string",
                 "title": "The Entity Type",
                 "description": "What entity type the related entity belongs to",
                 "examples": ["APPLICATION", "SERVICE", "HOST"]
               },
               "domainId": {
-                "$id": "#relationships/items/relatedEntity/domainId",
+                "$id": "#relationships/items/target/domainId",
                 "type": "string",
                 "title": "Unique Identifier",
                 "description": "NRDB attribute containing a Unique Identifier of the related entity.",
                 "examples": ["myUniqueServiceName", "123"]
               },
               "processor": {
-                "$id": "#relationships/items/relatedEntity/processor",
+                "$id": "#relationships/items/target/processor",
                 "type": "string",
                 "title": "DomainId Post Processor",
                 "description" : "Post processor that will execute on value of registered domainID attributes value",
                 "enum": ["hostExtractor"]
               },
               "encodeIdentifierInGUID": {
-                "$id": "#relationships/items/relatedEntity/encodeIdentifierInGUID",
+                "$id": "#relationships/items/target/encodeIdentifierInGUID",
+                "type": "boolean",
+                "title": "Encode DomainId",
+                "description": "Signify if the domainID is required to be encoded or not. Should match entity definition rule"
+              }
+            }
+          },
+          "source": {
+            "$id": "#relationships/items/source",
+            "type": "object",
+            "required" : [
+              "domain",
+              "type",
+              "domainId"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "domain": {
+                "$id": "#relationships/items/source/domain",
+                "type": "string",
+                "title": "Domain of entity",
+                "description": "What domain the related entity belongs to",
+                "examples": ["APM", "EXT", "INFRA", "BROWSER"]
+              },
+              "type": {
+                "$id": "#relationships/items/source/type",
+                "type" : "string",
+                "title": "The Entity Type",
+                "description": "What entity type the related entity belongs to",
+                "examples": ["APPLICATION", "SERVICE", "HOST"]
+              },
+              "domainId": {
+                "$id": "#relationships/items/source/domainId",
+                "type": "string",
+                "title": "Unique Identifier",
+                "description": "NRDB attribute containing a Unique Identifier of the related entity.",
+                "examples": ["myUniqueServiceName", "123"]
+              },
+              "processor": {
+                "$id": "#relationships/items/source/processor",
+                "type": "string",
+                "title": "DomainId Post Processor",
+                "description" : "Post processor that will execute on value of registered domainID attributes value",
+                "enum": ["hostExtractor"]
+              },
+              "encodeIdentifierInGUID": {
+                "$id": "#relationships/items/source/encodeIdentifierInGUID",
                 "type": "boolean",
                 "title": "Encode DomainId",
                 "description": "Signify if the domainID is required to be encoded or not. Should match entity definition rule"
