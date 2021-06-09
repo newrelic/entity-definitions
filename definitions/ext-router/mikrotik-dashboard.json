@@ -1,0 +1,174 @@
+{
+  "name": "Mikrotik router",
+  "description": null,
+  "pages": [
+    {
+      "name": "Mikrotik router",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "System usage",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (average(mikrotik.ip.dns.cache.used) / average(mikrotik.ip.dns.cache.size)) * 100 as '% DNS cache used' FROM Metric TIMESERIES"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT (1 - (average(mikrotik.system.memory.free) / average(mikrotik.system.memory.total))) * 100 as '% RAM used' FROM Metric TIMESERIES"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT average(mikrotik.system.cpu.load) as '% CPU load' FROM Metric TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Interface - WAN (ether1) throughputs (bps)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(mikrotik.interface.ether1.txbps) + average(mikrotik.interface.ether1.fptxbps) AS 'TX', average(mikrotik.interface.ether1.rxbps) + average(mikrotik.interface.ether1.fprxbps) AS 'RX' FROM Metric SINCE 10 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Firmware version",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(mikrotik.currentfirmware) as 'Current', latest(mikrotik.upgradefirmware) as 'Last available' FROM Metric"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Firewall - Connections",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(mikrotik.firewall.connection.tcp) as TCP, average(mikrotik.firewall.connection.udp) as UDP FROM Metric SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Interface - WLAN throughputs (bps)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(mikrotik.interface.wlan1.txbps) + average(mikrotik.interface.wlan1.fptxbps) AS 'WLAN 1 (b/g/n) TX', average(mikrotik.interface.wlan1.rxbps) + average(mikrotik.interface.wlan1.fprxbps) AS 'WLAN 1 (b/g/n) RX', average(mikrotik.interface.wlan2.txbps) + average(mikrotik.interface.wlan2.fptxbps) AS 'WLAN 2 (a/n/ac) TX', average(mikrotik.interface.wlan2.rxbps) + average(mikrotik.interface.wlan2.fprxbps) AS 'WLAN 2 (a/n/ac) RX' FROM Metric SINCE 10 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "IP Pool",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(mikrotik.ip.pool.used) as 'Total IPs used', latest(mikrotik.ip.dhcpserver.leases) as 'DHCP Leases' FROM Metric SINCE 30 MINUTES AGO TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
