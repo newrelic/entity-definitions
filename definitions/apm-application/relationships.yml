@@ -14,3 +14,17 @@ relationships:
     conditions:
       - attribute: category
         value: datastore
+
+  # SELECT count(*) From Span facet request.domain where request.domain is not null and
+  # entityGuid is not null
+  - provider: newrelic
+    eventType: Span
+    rootEntityNodeType: SOURCE
+    relationship: CALLS
+    relatedEntity:
+      domain: EXT
+      type: SERVICE
+      domainId: request.domain
+      encodeIdentifierInGUID: true
+    conditions:
+      - attribute: request.domain
