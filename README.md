@@ -49,7 +49,7 @@ They must be placed inside the same folder as the entity definition and must be 
 
 - Golden metrics: `golden_metrics.yml`
 - Summary metrics: `summary_metrics.yml `
-- Relationship Definitions: `relationship_definitions.yml `
+- Relationship Definitions: `relationships.yml `
 
 ### Schema definition
 
@@ -303,6 +303,10 @@ docker-compose run validate-definitions
 ``` 
 
 You can read more about the current validations [here](/validator/README.md).
+
+## Relationships
+We now support the synthesis of relationships between two given entities from a relationship rule
+based system. More details can be found on the [Relationship Definition Documentation](./docs/relationship_definitions.md)
 
 ## Support
 
