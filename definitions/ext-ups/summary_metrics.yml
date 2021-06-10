@@ -1,0 +1,32 @@
+ipAddress:
+  title: UPS IP Address
+  unit: STRING
+  tag:
+    key: device_ip
+
+outputLoadCapacity:
+  title: Load Capacity (%)
+  unit: PERCENTAGE
+  query:
+    select: latest(kentik.snmp.upsAdvOutputLoad)
+    from: Metric
+    where: "provider = 'kentik-ups'"
+    eventId: entity.guid
+
+batteryTemperature:
+  title: Battery Temp (C)
+  unit: STRING
+  query:
+    select: latest(kentik.snmp.upsAdvBatteryTemperature)
+    from: Metric
+    where: "provider = 'kentik-ups'"
+    eventId: entity.guid
+
+batteryTimeRemaining:
+  title: Battery Run Time Remaining
+  unit: SECONDS
+  query:
+    select: latest(kentik.snmp.upsAdvBatteryRunTimeRemaining)*.01
+    from: Metric
+    where: "provider = 'kentik-ups'"
+    eventId: entity.guid
