@@ -2,6 +2,8 @@ relationships:
   # Select entityGuid, peer.hostname from Span where peer.hostname is not null and category =
   # 'datastore'
   # ExtService in this case is a DB
+  #
+  # TODO revise rule 
   - instrumentation.provider: newRelic
     eventType: Span
     relationship: CALLS
@@ -17,6 +19,13 @@ relationships:
 
   # SELECT count(*) From Span facet request.domain where request.domain is not null and
   # entityGuid is not null
+  # This did match at one stage. however, all of the target ext entities here are over a month old.
+  # This is mostly likely due to when ext-service rules were too open thus creating entities that
+  # shouldn't exist.
+  # Saying that, we can use this rule to test out our pipeline - we don't want to show relationships
+  # on to non existing entities
+  #
+  # TODO delete rule once testing is complete
   - instrumentation.provider: newRelic
     eventType: Span
     relationship: CALLS
