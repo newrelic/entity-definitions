@@ -1,0 +1,50 @@
+playsInitiated:
+  title: Plays Initiated (count)
+  query:
+    select: count(*)
+    from: PageAction
+    where: actionName IN ('CONTENT_START', 'CONTENT_NEXT')
+    facet: entity.name
+    eventId: entity.guid
+
+exitBeforeVideoStart:
+  title: Plays Initiated (count)
+  query:
+    select: filter(count(*), WHERE actionName = 'CONTENT_REQUEST') - filter(count(*), WHERE actionName = 'CONTENT_START')
+    from: PageAction
+    facet: entity.name
+    eventId: entity.guid
+
+joinTime:
+  title: Median Join Time (seconds)
+  query:
+    select: percentile(timeSinceRequested/1000, 50)
+    from: PageAction
+    where: actionName = 'CONTENT_START'
+    facet: entity.name
+    eventId: entity.guid
+
+totalTimeToFirstFrame:
+  title: Median Total Time To First Frame (seconds)
+  query:
+    select: percentile(timeSinceLoad, 50)
+    from: PageAction
+    where: actionName = 'CONTENT_START'
+    facet: entity.name
+    eventId: entity.guid
+
+rebufferRatio:
+  title: Rebuffer Ratio
+  query:
+    select: filter(sum(timeSinceBufferBegin), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0) / filter(sum(playtimeSinceLastEvent), WHERE contentPlayhead is not null)
+    from: PageAction
+    facet: entity.name
+    eventId: entity.guid
+
+videoStartFailureRate:
+  title: Video Start Failure Rate (%)
+  query:
+    select: filter(count(*), WHERE actionName = 'CONTENT_ERROR' AND contentPlayhead = 0) / filter(count(*), WHERE actionName = 'CONTENT_REQUEST') * 100
+    from: PageAction
+    facet: entity.name
+    eventId: entity.guid
