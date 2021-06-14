@@ -162,9 +162,11 @@ When synthesizing an entity we add some tags to it by default based on telemetry
 
 ###### Default tags
 
-We convert any telemetry attribute prefixed with `tags.` into an entity tag (e.g. `tags.clusterName` becomes a tag `clusterName`).
+We convert any telemetry attribute prefixed with `tags.` into an entity tag (e.g. `tags.clusterName` becomes a tag `clusterName`). 
+If the telemetry contains an `instrumentation.provider` attribute we also create an entity tag from it with the same name and value.  
 
 If a rule-defined tag and a default tag result in the same entity tag name, the value of the default tag will be used. 
+This means for example that you can't override the value of `instrumentation.provider` if the attribute comes in the telemetry. 
 
 In either case the resulting entity tag name can't be one of our reserved tags:
 - name
