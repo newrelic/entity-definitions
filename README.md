@@ -44,8 +44,7 @@ Each entity definition needs to be placed inside a folder named like this:
 
 Inside each folder there must be *at least* an entity definition file named `definition.yml`.
 
-Composite metrics must be defined in their own YAML file and referenced from the entity definition file. 
-They must be placed inside the same folder as the entity definition and must be named according to their type:
+Composite metrics must be defined in their own YAML file. They must be placed inside the same folder as the entity definition and must be named according to their type:
 
 - Golden metrics: `golden_metrics.yml`
 - Summary metrics: `summary_metrics.yml `
@@ -54,9 +53,9 @@ They must be placed inside the same folder as the entity definition and must be 
 
 When creating a new entity definition you may use the following files as a guide:
 
-- Entity definition: [entity definition example](./docs/example-entity-definition.yml)
-- Golden metrics definition: [golden metrics definition example](./docs/example-entity-golden_metrics.yml)
-- Summary metrics definition: [summary metrics definition example](./docs/example-entity-summary_metrics.yml)
+- Entity definition: [entity definition example](docs/example-entity/definition.yml)
+- Golden metrics definition: [golden metrics definition example](docs/example-entity/golden_metrics.yml)
+- Summary metrics definition: [summary metrics definition example](docs/example-entity/summary_metrics.yml)
 
 For more concrete examples, you can take a look at the files located on the [definitions](./definitions) folder. 
 
