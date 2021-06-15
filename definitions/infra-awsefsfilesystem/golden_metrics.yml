@@ -1,32 +1,56 @@
 iops:
   title: Total I/O (Bytes per sec)
-  query:
-    select: rate(sum(`provider.totalIOBytes.Sum`), 1 second)
-    from: BlockDeviceSample
-    where: provider='EfsFileSystem'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: rate(sum(aws.efs.TotalIOBytes), 1 second)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(`provider.totalIOBytes.Sum`), 1 second)
+      from: BlockDeviceSample
+      where: provider='EfsFileSystem'
+      eventId: entityGuid
+      eventName: entityName
 iolimit:
   title: I/O limit (%)
-  query:
-    select: max(`provider.percentIOLimit.Maximum`)
-    from: BlockDeviceSample
-    where: provider='EfsFileSystem'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: max(aws.efs.PercentIOLimit)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: max(`provider.percentIOLimit.Maximum`)
+      from: BlockDeviceSample
+      where: provider='EfsFileSystem'
+      eventId: entityGuid
+      eventName: entityName
 clientConnections:
   title: Client Connections
-  query:
-    select: max(`provider.clientConnections.Sum`)
-    from: BlockDeviceSample
-    where: provider='EfsFileSystem'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(aws.efs.ClientConnections)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(`provider.clientConnections.Sum`)
+      from: BlockDeviceSample
+      where: provider='EfsFileSystem'
+      eventId: entityGuid
+      eventName: entityName
 burstCreditBalance:
   title: Burst Credit Balance
-  query:
-    select: average(`provider.burstCreditBalance.Average`)
-    from: BlockDeviceSample
-    where: provider='EfsFileSystem'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.efs.BurstCreditBalance)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.burstCreditBalance.Average`)
+      from: BlockDeviceSample
+      where: provider='EfsFileSystem'
+      eventId: entityGuid
+      eventName: entityName

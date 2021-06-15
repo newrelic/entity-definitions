@@ -1,24 +1,42 @@
 readThrottledRequests:
   title: Read throttled requests
-  query:
-    select: sum(provider.readThrottleEvents.Sum)
-    from: DatastoreSample
-    where: provider='DynamoDbTable'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(aws.dynamodb.ReadThrottleEvents.byGlobalSecondaryIndex)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.readThrottleEvents.Sum)
+      from: DatastoreSample
+      where: provider='DynamoDbTable'
+      eventId: entityGuid
+      eventName: entityName
 writeThrottledRequests:
   title: Write throttled requests
-  query:
-    select: sum(provider.writeThrottleEvents.Sum)
-    from: DatastoreSample
-    where: provider='DynamoDbTable'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: sum(aws.dynamodb.WriteThrottleEvents.byGlobalSecondaryIndex)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.writeThrottleEvents.Sum)
+      from: DatastoreSample
+      where: provider='DynamoDbTable'
+      eventId: entityGuid
+      eventName: entityName
 getitemLatencyMs:
   title: GetItem latency (ms)
-  query:
-    select: average(provider.getSuccessfulRequestLatency.Average)
-    from: DatastoreSample
-    where: provider='DynamoDbTable'
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    aws:
+      select: average(aws.dynamodb.SuccessfulRequestLatency.get)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.getSuccessfulRequestLatency.Average)
+      from: DatastoreSample
+      where: provider='DynamoDbTable'
+      eventId: entityGuid
+      eventName: entityName
