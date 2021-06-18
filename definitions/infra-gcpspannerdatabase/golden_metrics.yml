@@ -1,21 +1,39 @@
 requests:
   title: Number of requests
-  query:
-    select: sum(`api.Requests`)
-    from: GcpSpannerDatabaseSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    gcp:
+      select: sum(gcp.spanner.api.request_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: sum(`api.Requests`)
+      from: GcpSpannerDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
 errorRate:
   title: Error rate
-  query:
-    select: filter(sum(`api.Requests`), WHERE status != 'OK') * 100 / sum(`api.Requests`)
-    from: GcpSpannerDatabaseSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    gcp:
+      select: filter(sum(gcp.spanner.api.request_count), WHERE status != 'OK') * 100 / sum(`api.Requests`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: filter(sum(`api.Requests`), WHERE status != 'OK') * 100 / sum(`api.Requests`)
+      from: GcpSpannerDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
 latency:
   title: Latency
-  query:
-    select: (average(`api.RequestLatencies`)) / 1000
-    from: GcpSpannerDatabaseSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    gcp:
+      select: (average(gcp.spanner.api.request_latencies)) / 1000
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: (average(`api.RequestLatencies`)) / 1000
+      from: GcpSpannerDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
