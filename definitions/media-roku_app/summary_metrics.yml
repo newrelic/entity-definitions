@@ -1,5 +1,5 @@
 appLaunches:
-  title: App Launches (count)
+  title: App Launches
   unit: COUNT
   query:
     select: count(*)  
@@ -8,13 +8,13 @@ appLaunches:
     eventId: entity.guid
 
 totalErrors:
-  title: Total Errors (count)
+  title: Total Errors
   unit: COUNT
   derive: "@httpErrors + @contentErrors"
 
 contentErrors:
   hidden: true
-  title: Content Errors (count)
+  title: Content Errors
   unit: COUNT
   query:
     select: filter(count(*), WHERE actionName = 'CONTENT_ERROR')
@@ -23,7 +23,7 @@ contentErrors:
 
 httpErrors:
   hidden: true
-  title: Http Errors (count)
+  title: Http Errors
   unit: COUNT
   query: 
     select: filter(count(*), WHERE actionName = 'HTTP_ERROR')
@@ -31,10 +31,10 @@ httpErrors:
     eventId: entity.guid
 
 videoStartTime:
-  title: Median Video Start Time (ms)
-  unit: MILLISECONDS
+  title: Median Video Start Time
+  unit: SECONDS
   query:
-    select: percentile(timeSinceRequested - timeSinceStarted ,50) 
+    select: percentile(timeSinceRequested - timeSinceStarted ,50)*1000
     from: RokuVideo
     where: actionName = 'CONTENT_START'
     eventId: entity.guid

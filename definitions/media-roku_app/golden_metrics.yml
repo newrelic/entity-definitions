@@ -6,9 +6,9 @@ appLaunches:
     where: actionName = 'APP_STARTED'
 
 videoStartTime:
-  title: Median Video Start Time (ms)
+  title: Median Video Start Time (Seconds)
   query:
-    select: percentile(timeSinceRequested - timeSinceStarted ,50) 
+    select: percentile(timeSinceRequested - timeSinceStarted ,50)/1000
     from: RokuVideo
     where: actionName = 'CONTENT_START'
 
@@ -19,9 +19,9 @@ interruptions:
     from: RokuVideo
 
 rebufferTime:
-  title: Median Rebuffer Time (ms)
+  title: Median Rebuffer Time (Seconds)
   query:
-    select: filter(percentile(timeSinceBufferBegin/1000, 50), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0)
+    select: filter(percentile(timeSinceBufferBegin/1000, 50), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0)/1000
     from: RokuVideo
 
 contentErrors:

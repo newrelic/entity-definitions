@@ -1,7 +1,7 @@
 {
-  "name": "Roku QoE",
+  "name": "Roku QoE - For Entity",
   "description": "",
-  "permissions": "PUBLIC_READ_WRITE",
+  "permissions": "PUBLIC_READ_ONLY",
   "pages": [
     {
       "name": "Overview",
@@ -9,29 +9,13 @@
       "widgets": [
         {
           "visualization": {
-            "id": "viz.markdown"
+            "id": "viz.billboard"
           },
           "layout": {
             "column": 1,
             "row": 1,
-            "height": 6,
-            "width": 3
-          },
-          "title": "",
-          "rawConfiguration": {
-            "text": "\n\n# Roku Quality of Experience\n---\n\n* How many Roku devices are playing videos?\n* Can users access the stream?\n* What is the crash rate?\n* Are there video start failures?\n* How long does it take from content request to content start (time to first frame)?\n* Are there rebuffering or interruptions?\n"
-          },
-          "linkedEntityGuids": null
-        },
-        {
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "layout": {
-            "column": 4,
-            "row": 1,
             "height": 2,
-            "width": 2
+            "width": 4
           },
           "title": "Devices",
           "rawConfiguration": {
@@ -41,15 +25,34 @@
                 "query": "SELECT uniqueCount(uuid) from RokuSystem since 30 minutes ago COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
             "id": "viz.billboard"
           },
           "layout": {
-            "column": 6,
+            "column": 5,
+            "row": 1,
+            "height": 2,
+            "width": 2
+          },
+          "title": "Interruption Ratio",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_BUFFER_START' and contentPlayhead != 0) / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) as '%'COMPARE WITH 1 week ago"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 7,
             "row": 1,
             "height": 2,
             "width": 2
@@ -62,36 +65,14 @@
                 "query": "FROM RokuSystem SELECT filter(count(*), WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY')) / filter(count(*), WHERE actionName = 'APP_STARTED') * 100 as '%'COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
             "id": "viz.billboard"
           },
           "layout": {
-            "column": 8,
-            "row": 1,
-            "height": 2,
-            "width": 2
-          },
-          "title": "VSF Ratio",
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0) / filter(count(*), WHERE actionName = 'CONTENT_START' and contentPlayhead = 0)  * 100  as '%' since 30 minutes ago COMPARE WITH 1 week ago"
-              }
-            ]
-          },
-          "linkedEntityGuids": null
-        },
-        {
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "layout": {
-            "column": 10,
+            "column": 9,
             "row": 1,
             "height": 2,
             "width": 2
@@ -104,16 +85,15 @@
                 "query": "FROM RokuSystem SELECT filter(count(*), WHERE  actionName = 'HTTP_ERROR') / filter(count(*), where actionName = 'HTTP_REQUEST') * 100 as '%'COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
             "id": "viz.billboard"
           },
           "layout": {
-            "column": 4,
-            "row": 3,
+            "column": 11,
+            "row": 1,
             "height": 2,
             "width": 2
           },
@@ -125,57 +105,34 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_ERROR') / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) * 100 as '%'COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
             "id": "viz.billboard"
           },
           "layout": {
-            "column": 6,
+            "column": 1,
             "row": 3,
             "height": 2,
             "width": 2
           },
-          "title": "Interruption Ratio",
+          "title": "Player Load Time",
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_BUFFER_START' and contentPlayhead != 0) / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) as '%'COMPARE WITH 1 week ago"
+                "query": "FROM RokuVideo SELECT percentile(timeSinceLoad, 50) as 'seconds' WHERE actionName ='PLAYER_READY' COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
             "id": "viz.billboard"
           },
           "layout": {
-            "column": 8,
-            "row": 3,
-            "height": 2,
-            "width": 2
-          },
-          "title": "Rebuffer Time",
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead != 0 COMPARE WITH 1 week ago"
-              }
-            ]
-          },
-          "linkedEntityGuids": null
-        },
-        {
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "layout": {
-            "column": 10,
+            "column": 3,
             "row": 3,
             "height": 2,
             "width": 2
@@ -188,39 +145,57 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead = 0 COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
             "id": "viz.billboard"
           },
           "layout": {
-            "column": 4,
-            "row": 5,
+            "column": 5,
+            "row": 3,
             "height": 2,
             "width": 2
           },
-          "title": "Player Load Time",
+          "title": "Rebuffer Time",
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM RokuVideo SELECT percentile(timeSinceLoad, 50) as 'seconds' WHERE actionName ='PLAYER_READY' COMPARE WITH 1 week ago"
+                "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead != 0 COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
             "id": "viz.billboard"
           },
           "layout": {
-            "column": 6,
-            "row": 5,
+            "column": 7,
+            "row": 3,
             "height": 2,
-            "width": 6
+            "width": 2
+          },
+          "title": "VSF Ratio",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0) / filter(count(*), WHERE actionName = 'CONTENT_START' and contentPlayhead = 0)  * 100  as '%' since 30 minutes ago COMPARE WITH 1 week ago"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 3,
+            "height": 2,
+            "width": 4
           },
           "title": "Measured Bitrate",
           "rawConfiguration": {
@@ -230,8 +205,7 @@
                 "query": "FROM RokuVideo SELECT percentile(contentMeasuredBitrate, 50) COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -239,7 +213,7 @@
           },
           "layout": {
             "column": 1,
-            "row": 7,
+            "row": 5,
             "height": 3,
             "width": 4
           },
@@ -251,8 +225,7 @@
                 "query": "SELECT uniqueCount(uuid) from RokuSystem since 30 minutes ago TIMESERIES auto facet deviceModel"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -260,7 +233,7 @@
           },
           "layout": {
             "column": 5,
-            "row": 7,
+            "row": 5,
             "height": 3,
             "width": 4
           },
@@ -272,8 +245,7 @@
                 "query": "FROM RokuSystem SELECT (filter(count(*), WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY')) / filter(count(*), WHERE actionName = 'APP_STARTED')) as '%' facet deviceModel timeseries auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -281,7 +253,7 @@
           },
           "layout": {
             "column": 9,
-            "row": 7,
+            "row": 5,
             "height": 3,
             "width": 4
           },
@@ -293,8 +265,7 @@
                 "query": "FROM RokuVideo SELECT  filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0) / filter(count(*), WHERE actionName = 'CONTENT_START' and contentPlayhead = 0) * 100 as 'Video Start Failure' facet deviceModel timeseries AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -302,7 +273,7 @@
           },
           "layout": {
             "column": 1,
-            "row": 10,
+            "row": 8,
             "height": 3,
             "width": 4
           },
@@ -314,8 +285,7 @@
                 "query": "FROM RokuSystem SELECT filter(count(*), WHERE  actionName = 'HTTP_ERROR') / filter(count(*), where actionName = 'HTTP_REQUEST') * 100 as 'HTTP Error Ratio' facet deviceModel timeseries auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -323,7 +293,7 @@
           },
           "layout": {
             "column": 5,
-            "row": 10,
+            "row": 8,
             "height": 3,
             "width": 4
           },
@@ -335,8 +305,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_BUFFER_START' and contentPlayhead != 0) / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) as 'Interruption Ratio' facet deviceModel timeseries AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -344,7 +313,7 @@
           },
           "layout": {
             "column": 9,
-            "row": 10,
+            "row": 8,
             "height": 3,
             "width": 4
           },
@@ -356,8 +325,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_ERROR') / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) * 100 as 'Content Error Ratio' facet deviceModel TIMESERIES auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -365,7 +333,7 @@
           },
           "layout": {
             "column": 1,
-            "row": 13,
+            "row": 11,
             "height": 3,
             "width": 4
           },
@@ -377,8 +345,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead != 0 facet deviceModel TIMESERIES auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -386,7 +353,7 @@
           },
           "layout": {
             "column": 5,
-            "row": 13,
+            "row": 11,
             "height": 3,
             "width": 4
           },
@@ -398,8 +365,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead = 0 facet deviceModel TIMESERIES AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -407,7 +373,7 @@
           },
           "layout": {
             "column": 9,
-            "row": 13,
+            "row": 11,
             "height": 3,
             "width": 4
           },
@@ -419,8 +385,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceLoad, 50) as 'seconds' WHERE actionName ='PLAYER_READY' facet deviceModel TIMESERIES AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -428,7 +393,7 @@
           },
           "layout": {
             "column": 1,
-            "row": 16,
+            "row": 14,
             "height": 3,
             "width": 4
           },
@@ -440,8 +405,7 @@
                 "query": "FROM RokuVideo SELECT percentile(contentMeasuredBitrate, 50) facet deviceModel TIMESERIES AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         }
       ]
     },
@@ -467,8 +431,7 @@
                 "query": "FROM RokuSystem, RokuVideo SELECT filter(count(*), WHERE actionName ='APP_STARTED' and lastExitOrTerminationReason IN ( 'EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY')) as 'Crashes', filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0) as 'Video Start Failures', filter(count(*), WHERE actionName = 'HTTP_ERROR') as 'HTTP Errors', filter(count(*), WHERE actionName = 'CONTENT_ERROR') as 'Content Errors', filter(count(*), WHERE actionName = 'CONTENT_BUFFER_START' and contentPlayhead > 0) as 'Interruptions', filter(percentile(timeSinceBufferBegin/1000, 50), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0) as 'Rebuffer Time (s)',  filter(percentile(timeSinceBufferBegin/1000, 50), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead = 0) as 'Initial Buffer Time (s)', filter(percentile(timeSinceLoad, 50), WHERE actionName = 'PLAYER_READY') as 'Player Load Time (s)', filter(percentile(contentMeasuredBitrate, 50), WHERE actionName = 'CONTENT_HEARTBEAT') as 'Measured Bitrate'  since 30 minutes ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -485,11 +448,10 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM RokuSystem, RokuVideo SELECT uniqueCount(uuid) timeseries auto "
+                "query": "FROM RokuSystem, RokuVideo SELECT uniqueCount(uuid) timeseries"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -509,8 +471,7 @@
                 "query": "FROM RokuSystem SELECT filter(count(*), WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY')) / filter(count(*), WHERE actionName = 'APP_STARTED') * 100 facet uuid "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -530,8 +491,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0) / filter(count(*), WHERE actionName = 'CONTENT_START' and contentPlayhead = 0)  * 100  as '%' facet uuid "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -551,8 +511,7 @@
                 "query": "FROM RokuSystem SELECT filter(count(*), WHERE  actionName = 'HTTP_ERROR') / filter(count(*), where actionName = 'HTTP_REQUEST') * 100 as '%'facet uuid"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -572,8 +531,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_ERROR') / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) * 100 as '%'facet uuid"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -593,8 +551,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_BUFFER_START' and contentPlayhead != 0) / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) as '%'facet uuid"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -614,8 +571,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead != 0 facet uuid "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -635,8 +591,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead = 0 facet uuid"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -656,8 +611,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceLoad, 50) as 'seconds' WHERE actionName ='PLAYER_READY' facet uuid "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -677,8 +631,7 @@
                 "query": "FROM RokuVideo SELECT percentile(contentMeasuredBitrate, 50) facet uuid "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -698,8 +651,7 @@
                 "query": "FROM RokuSystem, RokuVideo SELECT * limit 1000"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         }
       ]
     },
@@ -725,8 +677,7 @@
                 "query": "FROM RokuSystem SELECT filter(count(*), WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY')) / filter(count(*), WHERE actionName = 'APP_STARTED') * 100 as '%'"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -746,8 +697,7 @@
                 "query": "FROM RokuSystem SELECT (filter(count(*), WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY')) / filter(count(*), WHERE actionName = 'APP_STARTED')) as '%' facet deviceModel timeseries auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -767,8 +717,7 @@
                 "query": "FROM RokuSystem SELECT count(*) as 'Crashes' WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY') FACET deviceModel"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -788,8 +737,7 @@
                 "query": "FROM RokuSystem SELECT count(*) as 'Crashes' WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY') FACET lastExitOrTerminationReason"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -809,8 +757,7 @@
                 "query": "FROM RokuSystem SELECT count(*) as 'Crashes' WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY') FACET appVersion, appBuild"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -830,8 +777,7 @@
                 "query": "FROM RokuSystem SELECT count(*) as 'Crashes' WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY') FACET appVersion, appBuild TIMESERIES auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         }
       ]
     },
@@ -857,8 +803,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0) / filter(count(*), WHERE actionName = 'CONTENT_START' and contentPlayhead = 0)  * 100  as '%' since 30 minutes ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -878,8 +823,7 @@
                 "query": "FROM RokuVideo SELECT  filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0) / filter(count(*), WHERE actionName = 'CONTENT_START' and contentPlayhead = 0) * 100 as 'Video Start Failure' facet deviceModel timeseries AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -899,8 +843,7 @@
                 "query": "FROM RokuVideo SELECT count(*) WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0 facet errorMessage since 30 minutes ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -920,8 +863,7 @@
                 "query": "FROM RokuVideo SELECT count(*) WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0 facet appVersion, appBuild since 30 minutes ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -941,8 +883,7 @@
                 "query": "FROM RokuVideo SELECT count(*) WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0 facet appVersion, appBuild since 30 minutes ago TIMESERIES auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         }
       ]
     },
@@ -968,8 +909,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0) / filter(count(*), WHERE actionName = 'CONTENT_START')  * 100  as '%' since 30 minutes ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -989,8 +929,7 @@
                 "query": "FROM RokuVideo SELECT  filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0) / filter(count(*), WHERE actionName = 'CONTENT_START') * 100 as 'Video Start Failure' facet deviceModel timeseries AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1010,8 +949,7 @@
                 "query": "FROM RokuVideo SELECT count(*) WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0 facet errorMessage since 30 minutes ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1031,8 +969,7 @@
                 "query": "FROM RokuVideo SELECT count(*) WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0 facet appVersion, appBuild since 30 minutes ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1052,8 +989,7 @@
                 "query": "FROM RokuVideo SELECT count(*) WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0 facet appVersion, appBuild since 30 minutes ago TIMESERIES auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         }
       ]
     },
@@ -1079,8 +1015,7 @@
                 "query": "FROM RokuSystem SELECT filter(count(*), WHERE  actionName = 'HTTP_ERROR') / filter(count(*), where actionName = 'HTTP_REQUEST') * 100 as '%'"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1100,8 +1035,7 @@
                 "query": "FROM RokuSystem SELECT count(*) where actionName like 'HTTP%' facet actionName "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1121,8 +1055,7 @@
                 "query": "FROM RokuSystem SELECT count(*) where actionName like 'HTTP%' facet origUrl "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1142,8 +1075,7 @@
                 "query": "FROM RokuSystem SELECT filter(count(*), WHERE  actionName = 'HTTP_ERROR') / filter(count(*), where actionName = 'HTTP_REQUEST') * 100 as 'HTTP Error Ratio' facet deviceModel timeseries auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1163,8 +1095,7 @@
                 "query": "FROM RokuSystem SELECT count(*) where actionName like 'HTTP%' and httpResult != 'OK' facet httpResult"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1184,8 +1115,7 @@
                 "query": "SELECT count(*) FROM RokuSystem WHERE actionName='HTTP_ERROR' AND origUrl LIKE '%.ts%' FACET status SINCE 1 week ago TIMESERIES"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1205,8 +1135,7 @@
                 "query": "SELECT count(*) FROM RokuSystem WHERE actionName='HTTP_ERROR' AND (origUrl NOT LIKE '%.mp4%' AND origUrl NOT LIKE '%.m3u8%' AND origUrl NOT LIKE '%.ts%' AND origUrl NOT LIKE '%.mpd%') FACET status SINCE 1 month ago TIMESERIES"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1226,8 +1155,7 @@
                 "query": "SELECT count(*) FROM RokuSystem WHERE actionName='HTTP_ERROR' AND (origUrl LIKE '%.mp4%' AND origUrl NOT LIKE '%index_audio%.mp4%' AND origUrl NOT LIKE '%index_video%.mp4%') FACET status SINCE 1 week ago TIMESERIES"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1247,8 +1175,7 @@
                 "query": "SELECT count(*) FROM RokuSystem WHERE actionName='HTTP_ERROR' AND (origUrl LIKE '%.m3u8%') FACET status SINCE 1 month ago TIMESERIES"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1268,8 +1195,7 @@
                 "query": "FROM RokuSystem SELECT percentile(firstByteTime, 50), percentile(transferTime, 50) timeseries auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         }
       ]
     },
@@ -1295,8 +1221,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_BUFFER_START' and contentPlayhead != 0) / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) as '%'COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1316,8 +1241,7 @@
                 "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_BUFFER_START' and contentPlayhead != 0) / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) as 'Interruption Ratio' facet deviceModel timeseries AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1337,8 +1261,7 @@
                 "query": "FROM RokuVideo SELECT count(*) as 'Buffer Starts' WHERE actionName ='CONTENT_BUFFER_START' and contentPlayhead != 0 facet connectionType   since 30 seconds ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1358,8 +1281,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead != 0 COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1379,8 +1301,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead != 0 facet deviceModel TIMESERIES auto"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1400,8 +1321,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead != 0 facet connectionType"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1421,8 +1341,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead = 0 COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1442,8 +1361,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead = 0 facet deviceModel TIMESERIES AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1463,8 +1381,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead > 0 facet connectionType"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1484,8 +1401,7 @@
                 "query": "FROM RokuVideo SELECT count(*) Where actionName ='CONTENT_BUFFER_START' and contentPlayhead > 0 FACET viewId "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1505,8 +1421,7 @@
                 "query": "FROM RokuVideo SELECT sum(timeSinceBufferBegin/1000) WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0 FACET viewId "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1526,8 +1441,7 @@
                 "query": "FROM RokuVideo SELECT count(*) Where actionName ='CONTENT_BUFFER_START' and contentPlayhead = 0 FACET viewId "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1547,8 +1461,7 @@
                 "query": "FROM RokuVideo SELECT sum(timeSinceBufferBegin/1000) WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead = 0 FACET viewId "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1568,8 +1481,7 @@
                 "query": "FROM RokuVideo SELECT *"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         }
       ]
     },
@@ -1595,8 +1507,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceLoad, 50) as 'seconds' WHERE actionName ='PLAYER_READY' COMPARE WITH 1 week ago"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1616,8 +1527,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceLoad, 50) as 'seconds' WHERE actionName ='PLAYER_READY' facet deviceModel TIMESERIES AUTO "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1637,8 +1547,7 @@
                 "query": "FROM RokuVideo SELECT percentile(timeSinceLoad, 50) as 'seconds' WHERE actionName ='PLAYER_READY' facet deviceModel "
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         },
         {
           "visualization": {
@@ -1658,8 +1567,7 @@
                 "query": "FROM RokuVideo SELECT histogram(timeSinceLoad, buckets: 10, width: 20) WHERE actionName ='PLAYER_READY' facet deviceModel"
               }
             ]
-          },
-          "linkedEntityGuids": null
+          }
         }
       ]
     }
