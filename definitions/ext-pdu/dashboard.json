@@ -1,0 +1,152 @@
+{
+	"name": "Kentik - PDU",
+	"description": null,
+	"pages": [
+		{
+			"name": "Kentik - PDU",
+			"description": null,
+			"widgets": [
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "PDU Details",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(rPDUIdentModelNumber) AS 'Model', latest(rPDUIdentSerialNumber) AS 'Serial', latest(rPDUIdentFirmwareRev) AS 'Firmware' WHERE provider = 'kentik-pdu'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 3,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Current Alarms (1== OK, 2 == PS One Failed, 3 == PS Two Failed, 4 == PS One & Two Failed)",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.rPDUPowerSupplyAlarm) AS 'Power Supply Alarms' WHERE provider = 'kentik-pdu'"
+							}
+						],
+						"thresholds": [
+							{
+								"alertSeverity": "WARNING",
+								"value": 1
+							},
+							{
+								"alertSeverity": "CRITICAL",
+								"value": 1.1
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 5,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Outlet Status (1 == Online, 2 == Offline)",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.rPDUOutletStatusOutletState) AS 'Status' FACET rPDUOutletStatusOutletName AS 'Outlet Name' WHERE provider = 'kentik-pdu' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 7,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Device Uptime (Hours)",
+					"rawConfiguration": {
+						"dataFormatters": [
+							{
+								"name": "Hours",
+								"precision": null,
+								"type": "decimal"
+							}
+						],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(`kentik.snmp.Uptime`)/100/60/60 AS 'Hours' WHERE provider = 'kentik-pdu'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.line"
+					},
+					"layout": {
+						"column": 9,
+						"row": 1,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Aggregate Load (Amps)",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT max(kentik.snmp.rPDULoadStatusLoad)*10 AS 'Output Load Amps' FACET device_name WHERE provider = 'kentik-pdu' TIMESERIES 2 MINUTES"
+							}
+						],
+						"yAxisLeft": {
+							"zero": true
+						}
+					}
+				}
+			]
+		}
+	]
+}
