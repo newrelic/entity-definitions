@@ -1,0 +1,14 @@
+# Tested on Netgear ReadyNAS
+cpuUtilization:
+  title: CPU Utilization (%)
+  query:
+    select: 100 - latest(kentik.snmp.ssCpuIdle)
+    from: Metric
+    where: "provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16'"
+
+memoryUtilization:
+  title: Memory Utilization (%)
+  query:
+    select: ((latest(kentik.snmp.memTotalReal) - latest(kentik.snmp.memAvailReal)) / latest(kentik.snmp.memTotalReal)) * 100
+    from: Metric
+    where: "provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16'"
