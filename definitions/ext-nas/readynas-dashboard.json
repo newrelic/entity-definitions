@@ -1,0 +1,246 @@
+{
+	"name": "Kentik - Netgear ReadyNAS",
+	"description": null,
+	"pages": [
+		{
+			"name": "Kentik - Netgear ReadyNAS",
+			"description": null,
+			"widgets": [
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Device Uptime (Hours)",
+					"rawConfiguration": {
+						"dataFormatters": [
+							{
+								"name": "Hours",
+								"precision": null,
+								"type": "decimal"
+							}
+						],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(`kentik.snmp.Uptime`)/100/60/60 AS 'Hours' FACET device_name WHERE provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 3,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Chassis Temperature",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.temperatureValue) AS 'Celsius', (latest(kentik.snmp.temperatureValue)*1.8) + 32 AS 'Fahrenheit' WHERE provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 5,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Power Supply Status",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(psuStatus) FACET psuDescription WHERE objectIdentifier = '1.3.6.1.4.1.4526.22.8.1.1' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.line"
+					},
+					"layout": {
+						"column": 7,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "CPU Utilization %",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT 100 - latest(kentik.snmp.ssCpuIdle) FACET device_name WHERE provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16' TIMESERIES 2 MINUTES"
+							}
+						],
+						"yAxisLeft": {
+							"max": 100,
+							"min": 0,
+							"zero": true
+						}
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.line"
+					},
+					"layout": {
+						"column": 9,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Real Memory Utilization %",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT ((latest(kentik.snmp.memTotalReal) - latest(kentik.snmp.memAvailReal)) / latest(kentik.snmp.memTotalReal)) * 100 FACET device_name WHERE provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16' TIMESERIES 2 MINUTES"
+							}
+						],
+						"yAxisLeft": {
+							"zero": true
+						}
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.line"
+					},
+					"layout": {
+						"column": 11,
+						"row": 1,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Swap Memory Utilization %",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT ((latest(kentik.snmp.memTotalSwap) - latest(kentik.snmp.memAvailSwap)) / latest(kentik.snmp.memTotalSwap)) * 100 FACET device_name WHERE provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16' TIMESERIES 2 MINUTES"
+							}
+						],
+						"yAxisLeft": {
+							"zero": true
+						}
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 1,
+						"row": 4,
+						"height": 3,
+						"width": 6
+					},
+					"title": "NAS Volumes",
+					"rawConfiguration": {
+						"dataFormatters": [
+							{
+								"name": "Total GB",
+								"precision": null,
+								"type": "decimal"
+							},
+							{
+								"name": "Free GB",
+								"precision": null,
+								"type": "decimal"
+							},
+							{
+								"name": "% Utilization",
+								"precision": 2,
+								"type": "decimal"
+							}
+						],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.volumeRAIDLevel) AS 'RAID', latest(kentik.snmp.volumeSize)/1024 AS 'Total GB', latest(kentik.snmp.volumeFreeSpace)/1024 AS 'Free GB', (latest(kentik.snmp.volumeSize) - latest(kentik.snmp.volumeFreeSpace)) / latest(kentik.snmp.volumeSize) *100 AS '% Utilization' FACET volumeName WHERE provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16'"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 7,
+						"row": 4,
+						"height": 3,
+						"width": 6
+					},
+					"title": "Disk Inventory",
+					"rawConfiguration": {
+						"dataFormatters": [
+							{
+								"name": "Capacity (GB)",
+								"precision": null,
+								"type": "decimal"
+							}
+						],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.diskCapacity)/1073741824 AS 'Capacity (GB)' FACET diskID AS 'Name', diskModel AS 'Model', diskSerial AS 'Serial', diskState AS 'State', diskSlotName AS 'Slot Name', diskInterface AS 'Interface' WHERE provider = 'kentik-nas' AND SysObjectID = '.1.3.6.1.4.1.4526.100.16' LIMIT MAX"
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}
