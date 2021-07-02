@@ -4,6 +4,10 @@
 
 The definition files contained in this repository are mappings between the telemetry attributes NewRelic ingests, and the entities users can interact with. If you have telemetry from any source that is not supported out of the box, you can propose a mapping for it and upon a successful merge of your PR, any telemetry received by NewRelic and that matches your definition file will be synthesized into an entity. Then you can start leveraging any of the tools built around them such as the entity explorer, high-density views, workloads, etc.
 
+## Changelog
+
+All notable changes are defined in the [releases page](https://github.com/newrelic-experimental/entity-synthesis-definitions/releases)
+
 ## Guidelines 
 
 Please verify that the definition you want to merge meets the acceptance criteria outlined below 
@@ -20,7 +24,7 @@ so your PR will get merged faster, and you can start enjoying your shiny new ent
 The synthesis section is optional only if you can ensure that the telemetry is being stamped with the entity GUID and tags based on rules defined internally at NewRelic.
 - We use the `domain`, `type` and `identifier` to assign each entity a Global Unique Identifier (GUID).
 - The `domain` must be a value matching `/[A-Z][A-Z0-9_]{2,14}/`. This field is mostly relevant internally for NR. 
-Use EXT by default, although we may advise to use a different value in some cases.                
+Use EXT by default, although we may advise to use a different value in some cases.
 - The `type` must be a value matching `/[A-Z][A-Z0-9_]{2,49}/`. This field is meant to identify the type of entity. 
 Some examples are APPLICATION, HOST or CONTAINER.  
 - The `identifier` must be assigned a parameter that is unique within the domain and type (e.g
