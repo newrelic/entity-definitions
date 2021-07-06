@@ -1,12 +1,12 @@
-[![New Relic Experimental header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/Experimental.png)](https://opensource.newrelic.com/oss-category/#new-relic-experimental)
+[![Community Project header](https://github.com/newrelic/open-source-office/raw/master/examples/categories/images/Community_Project.png)](https://github.com/newrelic/open-source-office/blob/master/examples/categories/index.md#category-community-project)
 
-# Entity Synthesis Definitions 
+# Entity Definitions 
 
 The definition files contained in this repository are mappings between the telemetry attributes NewRelic ingests, and the entities users can interact with. If you have telemetry from any source that is not supported out of the box, you can propose a mapping for it and upon a successful merge of your PR, any telemetry received by NewRelic and that matches your definition file will be synthesized into an entity. Then you can start leveraging any of the tools built around them such as the entity explorer, high-density views, workloads, etc.
 
 ## Changelog
 
-All notable changes are defined in the [releases page](https://github.com/newrelic-experimental/entity-synthesis-definitions/releases)
+All notable changes are defined in the [releases page](https://github.com/newrelic/entity-definitions/releases)
 
 ## Guidelines 
 
@@ -210,7 +210,7 @@ In the example below if `attributeNameB` is present on the telemetry, a tag with
 
 This explicit naming can be used to guarantee consistency when you have telemetry from different sources for a single entity, since they are likely to use different attribute names for what would conceptually be the same entity tag. Otherwise, our advice is to use the default naming.
 
-An example of an entity definition where the `entityTagName` is needed and correctly used is the [INFRA-CONTAINER](https://github.com/newrelic-experimental/entity-synthesis-definitions/blob/main/definitions/infra-container/definition.yml) type. 
+An example of an entity definition where the `entityTagName` is needed and correctly used is the [INFRA-CONTAINER](https://github.com/newrelic/entity-definitions/blob/main/definitions/infra-container/definition.yml) type. 
 
 #### Golden tags
 
