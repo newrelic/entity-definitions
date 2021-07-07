@@ -5,22 +5,22 @@ providerAccountName:
   unit: STRING
 operations:
   query:
-    eventId: entityGuid
-    select: sum(`provider.volumeReadOps.Sum`) + sum(`provider.volumeWriteOps.Sum`)
-    from: BlockDeviceSample
+    eventId: entity.guid
+    select: sum(aws.ebs.VolumeReadOps) + sum(aws.ebs.VolumeWriteOps)
+    from: Metric
   unit: COUNT
   title: Operations
 readTime:
   query:
-    eventId: entityGuid
-    select: (average(`provider.volumeTotalReadTime.Sum` / `provider.volumeReadOps.Sum`) * 1000) / 1000
-    from: BlockDeviceSample
+    eventId: entity.guid
+    select: sum(aws.ebs.VolumeTotalReadTime) / sum(aws.ebs.VolumeReadOps)
+    from: Metric
   unit: SECONDS
   title: Read time
 writeTime:
   query:
-    eventId: entityGuid
-    select: (average(`provider.volumeTotalWriteTime.Sum` / `provider.volumeWriteOps.Sum`) * 1000) / 1000
-    from: BlockDeviceSample
+    eventId: entity.guid
+    select: sum(aws.ebs.VolumeTotalWriteTime) / sum(aws.ebs.VolumeWriteOps)
+    from: Metric
   unit: SECONDS
   title: Write time

@@ -1,0 +1,91 @@
+{
+  "name": "Unix Host",
+  "description": null,
+  "pages": [
+    {
+      "name": "Unix Host",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "CPU Utilization (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT 100-latest(cpu.idle) FROM `unixMonitor:Stats` FACET entity.name TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Memory Utilization (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (latest(memory.total) - latest(memory.free))/latest(memory.total) * 100 FROM `unixMonitor:Stats` FACET entity.name TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Top 5 - Disk Utilization (%)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(percentUsed) FROM `unixMonitor:Disk` FACET entity.name, mountedOn OR instance LIMIT 5"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

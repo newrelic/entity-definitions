@@ -1,0 +1,58 @@
+{
+	"name": "Kentik - Meraki WAP",
+	"description": null,
+	"pages": [
+		{
+			"name": "Kentik - Meraki WAP",
+			"description": null,
+			"widgets": [
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"height": 3,
+						"width": 3
+					},
+					"title": "WAP Details",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(device_name) FACET SysDescr, src_addr WHERE provider = 'kentik-wap'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 4,
+						"row": 1,
+						"height": 3,
+						"width": 7
+					},
+					"title": "Interface Details",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT max(kentik.snmp.ifHCInOctets) AS 'RCV Bytes', max(kentik.snmp.ifHCOutOctets) AS 'XMT Bytes', max(kentik.snmp.ifInDiscards) AS 'RCV Discards', max(kentik.snmp.ifOutDiscards) AS 'XMT Discards', max(kentik.snmp.ifInErrors) AS 'RCV Errors', max(kentik.snmp.ifOutErrors) AS 'XMT Errors' FACET if_Description AS 'Name', if_ifAdminStatus AS 'Admin Status', if_ifOperStatus AS 'Oper Status' WHERE provider = 'kentik-wap' LIMIT MAX"
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}

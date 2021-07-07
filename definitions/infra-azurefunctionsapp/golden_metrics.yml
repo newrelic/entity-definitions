@@ -1,28 +1,52 @@
 functionExecutionCount:
   title: Executions
-  query:
-    select: sum(functionExecutionCount.Total)
-    from: AzureFunctionsAppSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    azure:
+      select: sum(azure.web.sites.FunctionExecutionCount)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    azureSample:
+      select: sum(functionExecutionCount.Total)
+      from: AzureFunctionsAppSample
+      eventId: entityGuid
+      eventName: entityName
 errors:
   title: Errors
-  query:
-    select: sum(`http5xx.Total`)
-    from: AzureFunctionsAppSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    azure:
+      select: sum(azure.web.sites.Http5xx.byFunctionsApp)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    azureSample:
+      select: sum(`http5xx.Total`)
+      from: AzureFunctionsAppSample
+      eventId: entityGuid
+      eventName: entityName
 averageResponseTimeS:
   title: Average response time (s)
-  query:
-    select: sum(functionExecutionUnits.Total)
-    from: AzureFunctionsAppSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    azure:
+      select: sum(azure.web.sites.FunctionExecutionUnits)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    azureSample:
+      select: sum(functionExecutionUnits.Total)
+      from: AzureFunctionsAppSample
+      eventId: entityGuid
+      eventName: entityName
 averageMemoryWorkingSetBytes:
   title: Average memory working set (Bytes)
-  query:
-    select: average(averageMemoryWorkingSetBytes.Average)
-    from: AzureFunctionsAppSample
-    eventId: entityGuid
-    eventName: entityName
+  queries:
+    azure:
+      select: average(azure.web.sites.AverageMemoryWorkingSet.byFunctionsApp)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    azureSample:
+      select: average(averageMemoryWorkingSetBytes.Average)
+      from: AzureFunctionsAppSample
+      eventId: entityGuid
+      eventName: entityName
