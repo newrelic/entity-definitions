@@ -56,7 +56,7 @@
 				},
 				{
 					"visualization": {
-						"id": "viz.bar"
+						"id": "viz.table"
 					},
 					"layout": {
 						"column": 8,
@@ -66,13 +66,20 @@
 					},
 					"title": "Interface Statistics",
 					"rawConfiguration": {
+						"dataFormatters": [
+							{
+								"name": " Total Bytes",
+								"precision": null,
+								"type": "humanized"
+							}
+						],
 						"facet": {
 							"showOtherSeries": false
 						},
 						"nrqlQueries": [
 							{
 								"accountId": 0,
-								"query": "FROM Metric SELECT max(kentik.snmp.devInterfaceRecvBytes) + max(kentik.snmp.devInterfaceSentBytes) AS 'Bytes' FACET ap_name, ap_network_name, interface_name, Index WHERE provider = 'kentik-cloud-controller'"
+								"query": "FROM Metric SELECT max(kentik.snmp.devInterfaceRecvBytes) + max(kentik.snmp.devInterfaceSentBytes) AS ' Total Bytes' FACET ap_name, interface_name, ap_network_name WHERE provider = 'kentik-cloud-controller' LIMIT MAX"
 							}
 						]
 					}
@@ -96,7 +103,7 @@
 						"nrqlQueries": [
 							{
 								"accountId": 0,
-								"query": "FROM Metric SELECT latest(kentik.snmp.devClientCount) AS 'Current Clients' FACET ap_name, ap_model, ap_serial, ap_network_name "
+								"query": "FROM Metric SELECT latest(kentik.snmp.devClientCount) AS 'Current Clients' FACET ap_name, ap_model, ap_serial, devStatus AS 'ap_status' LIMIT MAX"
 							}
 						]
 					}
