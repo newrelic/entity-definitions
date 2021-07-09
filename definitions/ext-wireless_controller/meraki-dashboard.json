@@ -1,0 +1,107 @@
+{
+	"name": "Kentik - Meraki Cloud Controller",
+	"description": null,
+	"pages": [
+		{
+			"name": "Kentik - Meraki Cloud Controller",
+			"description": null,
+			"widgets": [
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"height": 4,
+						"width": 3
+					},
+					"title": "Controller Details",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(SysName) AS 'Name', latest(SysDescr) AS 'Description' WHERE provider = 'kentik-cloud-controller'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.area"
+					},
+					"layout": {
+						"column": 4,
+						"row": 1,
+						"height": 4,
+						"width": 4
+					},
+					"title": "Connected Clients per AP",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT max(kentik.snmp.devClientCount) AS 'Connected Clients' FACET ap_name, ap_network_name LIMIT MAX TIMESERIES 5 MINUTES"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.bar"
+					},
+					"layout": {
+						"column": 8,
+						"row": 1,
+						"height": 4,
+						"width": 4
+					},
+					"title": "Interface Statistics",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT max(kentik.snmp.devInterfaceRecvBytes) + max(kentik.snmp.devInterfaceSentBytes) AS 'Bytes' FACET ap_name, ap_network_name, interface_name, Index WHERE provider = 'kentik-cloud-controller'"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 1,
+						"row": 5,
+						"height": 4,
+						"width": 11
+					},
+					"title": "Access Points Inventory",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.devClientCount) AS 'Current Clients' FACET ap_name, ap_model, ap_serial, ap_network_name "
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}
