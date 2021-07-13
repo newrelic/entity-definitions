@@ -52,7 +52,7 @@ The unit of the metric must be a string with one of the following values:
 - HERTZ
 - APDEX
 - TIMESTAMP
-- STRING
+- STRING (Not supported for NRDB queries, please use tags instead)
 
 
 ### NRDB Query
