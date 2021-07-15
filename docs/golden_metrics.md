@@ -73,4 +73,4 @@ The first tag value that matches with the entity will be the one used to build t
 
 Is also important to note that the semantics of the queries should match between each implementation. This includes things like average vs counts, units and other details.
 
-If no rule matches the `newRelic` one will be used.
+If no rule matches, the first one on the list will be used. In the example above that would be `prometheus`.
