@@ -1,25 +1,23 @@
-endpoints:
-  title: Total IP Address Endpoints
-  query:
-    select: uniqueCount(ip_address)
-    from: Metric
-    where: "metricName LIKE 'kentik.rollup.bytes.%'"
+sources:
+  title: Unique Sources
+  queries:
+    kentik/netflow-events:
+      select: uniqueCount(src_addr)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
 
-conversations:
-  title: Total Conversations (Endpoint:Port)
-  query:
-    select: uniqueCount(tuple(ip_address,port))
-    from: Metric
-    where: "metricName LIKE 'kentik.rollup.bytes.%'"
+destinations:
+  title: Unique Destinations
+  queries:
+    kentik/netflow-events:
+      select: uniqueCount(dst_addr)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
 
-transmitMbps:
-  title: Transmit (Mbps)
-  query:
-    select: rate(sum(kentik.rollup.bytes.xmt)*8/1000/1000, 1 second) AS 'Mbps'
-    from: Metric
-
-receiveMbps:
-  title: Receive (Mbps)
-  query:
-    select: rate(sum(kentik.rollup.bytes.rcv)*8/1000/1000, 1 second) AS 'Mbps'
-    from: Metric
+packetsPerSecond:
+  title: Average Packets/sec
+  queries:
+    kentik/netflow-events:
+      select: sum(sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
