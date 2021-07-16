@@ -1,29 +1,26 @@
 {
-  "$schema": "http://json-schema.org/draft-06/schema",
+  "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "entity-schema-v1",
   "type": "object",
   "title": "Entity synthesis schema",
   "description": "Schema used to verify that a given entity yaml is valid",
-  "examples": [
-    {
-      "domain": "DomainName",
-      "type": "TypeName",
-      "synthesis": {
-        "name": "EntityName",
-        "identifier": "12345",
-        "conditions": [
-          {
-            "attribute": "attributeName",
-            "value": "value"
-          },
-          {
-            "attribute": "attributeName",
-            "prefix": "value"
-          }
-        ]
-      }
+  "examples": [{
+    "domain": "DomainName",
+    "type": "TypeName",
+    "synthesis": {
+      "name": "EntityName",
+      "identifier": "12345",
+      "conditions": [{
+          "attribute": "attributeName",
+          "value": "value"
+        },
+        {
+          "attribute": "attributeName",
+          "prefix": "value"
+        }
+      ]
     }
-  ],
+  }],
   "required": [
     "domain",
     "type"
@@ -54,14 +51,11 @@
       "type": "object",
       "title": "Synthesis information",
       "description": "Information necessary to synthesize the entity",
-      "examples": [
-        {
-          "name": "EntityName",
-          "identifier": "12345"
-        }
-      ],
-      "oneOf": [
-        {
+      "examples": [{
+        "name": "EntityName",
+        "identifier": "12345"
+      }],
+      "oneOf": [{
           "required": [
             "name",
             "identifier",
@@ -90,64 +84,59 @@
               "conditions"
             ],
             "properties": {
-            "name": {
-              "$id": "#/synthesis/rules/items/name",
-              "type": "string",
-              "title": "The entity name",
-              "description": "Information used to synthesize the entity name",
-              "examples": [
-                "EntityName"
-              ]
-            },
-            "identifier": {
-              "$id": "#/synthesis/rules/items/identifier",
-              "type": "string",
-              "title": "The entity id",
-              "description": "Information used to synthesize the entity id",
-              "examples": [
-                "12345"
-              ]
-            },
-            "encodeIdentifierInGUID": {
-              "$id": "#/synthesis/rules/items/encodeIdentifierInGUID",
-              "type": "boolean",
-              "default": false,
-              "title": "encode identifier in GUID",
-              "description": "Defines whether the identifier should be encoded in the entity GUID, to be used when the identifier is too long."
-            },
-            "conditions": {
-              "$id": "#/synthesis/rules/items/conditions",
-              "type": "array",
-              "minItems": 1,
-              "maxItems": 1,
-              "title": "Conditions for the entity to be synthesized",
-              "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
-              "examples": [
-                [
-                  {
-                    "attribute": "attributeName",
-                    "value": "value"
-                  },
-                  {
-                    "attribute": "attributeName",
-                    "prefix": "value"
-                  }
+              "name": {
+                "$id": "#/synthesis/rules/items/name",
+                "type": "string",
+                "title": "The entity name",
+                "description": "Information used to synthesize the entity name",
+                "examples": [
+                  "EntityName"
                 ]
-              ],
-              "additionalItems": false,
-              "items": {
-                "$id": "#/properties/conditions/items",
-                "oneOf": [
-                  {
+              },
+              "identifier": {
+                "$id": "#/synthesis/rules/items/identifier",
+                "type": "string",
+                "title": "The entity id",
+                "description": "Information used to synthesize the entity id",
+                "examples": [
+                  "12345"
+                ]
+              },
+              "encodeIdentifierInGUID": {
+                "$id": "#/synthesis/rules/items/encodeIdentifierInGUID",
+                "type": "boolean",
+                "default": false,
+                "title": "encode identifier in GUID",
+                "description": "Defines whether the identifier should be encoded in the entity GUID, to be used when the identifier is too long."
+              },
+              "conditions": {
+                "$id": "#/synthesis/rules/items/conditions",
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "title": "Conditions for the entity to be synthesized",
+                "description": "Allows to specify that an attribute's value exists, matches a prefix or a value.",
+                "examples": [
+                  [{
+                      "attribute": "attributeName",
+                      "value": "value"
+                    },
+                    {
+                      "attribute": "attributeName",
+                      "prefix": "value"
+                    }
+                  ]
+                ],
+                "items": {
+                  "$id": "#/properties/conditions/items",
+                  "oneOf": [{
                     "$id": "#/properties/conditions/items/anyOf/0",
                     "type": "object",
                     "description": "Match attribute and its value or prefix (if requested)",
-                    "examples": [
-                      {
-                        "attribute": "attributeName",
-                        "value": "value"
-                      }
-                    ],
+                    "examples": [{
+                      "attribute": "attributeName",
+                      "value": "value"
+                    }],
                     "required": [
                       "attribute"
                     ],
@@ -177,55 +166,55 @@
                         ]
                       }
                     }
-                  }
-                ]
-              }
-            },
-            "tags": {
-              "$id": "#/synthesis/rules/items/tags",
-              "type": "object",
-              "description": "Tags associated to the entity that can be extracted from the metrics information received.",
-              "additionalItems": false,
-              "items": {
-                "$id": "#/properties/tags/items",
-                "anyOf": [
-                  {
-                    "$id": "#/properties/tags/items/anyOf/0",
-                    "type": "object",
-                    "title": "Tag configuration",
-                    "description": "The configuration of the tag being synthesized",
-                    "examples": [
-                      {
-                        "multiValue": "false",
-                        "entityTagName": "intendedTagName"
-                      }
-                    ],
-                    "properties": {
-                      "multiValue": {
-                        "$id": "#/properties/tags/items/anyOf/0/properties/multiValue",
-                        "type": "boolean",
-                        "title": "If the tag should allow a list of string values or a single string value"
-                      },
-                      "entityTagName": {
-                        "$id": "#/properties/tags/items/anyOf/0/properties/entityTagName",
-                        "type": "string",
-                        "title": "The key of the tag to be created with the value of the provided attribute"
-                      }
+                  }]
+                }
+              },
+              "tags": {
+                "$id": "#/synthesis/rules/items/tags",
+                "type": "object",
+                "description": "Tags associated to the entity that can be extracted from the metrics information received.",
+                "anyOf": [{
+                  "$id": "#/properties/tags/items/anyOf/0",
+                  "type": "object",
+                  "title": "Tag configuration",
+                  "description": "The configuration of the tag being synthesized",
+                  "examples": [{
+                    "multiValue": "false",
+                    "entityTagName": "intendedTagName"
+                  }],
+                  "properties": {
+                    "multiValue": {
+                      "$id": "#/properties/tags/items/anyOf/0/properties/multiValue",
+                      "type": "boolean",
+                      "title": "If the tag should allow a list of string values or a single string value"
                     },
-                    "additionalItems": false
+                    "entityTagName": {
+                      "$id": "#/properties/tags/items/anyOf/0/properties/entityTagName",
+                      "type": "string",
+                      "title": "The key of the tag to be created with the value of the provided attribute"
+                    }
                   }
-                ]
+                }]
               }
-            }
             },
             "additionalProperties": false
           }
         },
-        "name": {"$ref": "#/synthesis/rules/items/name"},
-        "identifier": {"$ref": "#/synthesis/rules/items/identifier"},
-        "encodeIdentifierInGUID": {"$ref": "#/synthesis/rules/items/encodeIdentifierInGUID"},
-        "conditions": {"$ref": "#/synthesis/rules/items/conditions"},
-        "tags": {"$ref": "#/synthesis/rules/items/tags"},
+        "name": {
+          "$ref": "#/synthesis/rules/items/name"
+        },
+        "identifier": {
+          "$ref": "#/synthesis/rules/items/identifier"
+        },
+        "encodeIdentifierInGUID": {
+          "$ref": "#/synthesis/rules/items/encodeIdentifierInGUID"
+        },
+        "conditions": {
+          "$ref": "#/synthesis/rules/items/conditions"
+        },
+        "tags": {
+          "$ref": "#/synthesis/rules/items/tags"
+        },
         "additionalProperties": false
       },
       "additionalProperties": false
@@ -267,16 +256,13 @@
           "nrTagName2"
         ]
       ],
-      "additionalItems": false,
       "items": {
         "$id": "#/properties/goldenTags/items",
-        "anyOf": [
-          {
-            "$id": "#/properties/goldenTags/items/anyOf/0",
-            "type": "string",
-            "title": "Reference to a NewRelic tag"
-          }
-        ]
+        "anyOf": [{
+          "$id": "#/properties/goldenTags/items/anyOf/0",
+          "type": "string",
+          "title": "Reference to a NewRelic tag"
+        }]
       }
     },
     "configuration": {
@@ -288,7 +274,7 @@
           "$id": "#/properties/configuration/properties/entityExpirationTime",
           "type": "string",
           "title": "Entity expiration Time",
-          "enum": ["FOUR_HOURS","DAILY", "EIGHT_DAYS", "QUARTERLY", "MANUAL"]
+          "enum": ["FOUR_HOURS", "DAILY", "EIGHT_DAYS", "QUARTERLY", "MANUAL"]
         },
         "alertable": {
           "$id": "#/properties/configuration/properties/alertable",
