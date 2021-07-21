@@ -1,8 +1,8 @@
 {
-  "name": "PowerDNS recursor",
+  "name": "PowerDNS authoritative server",
   "pages": [
     {
-      "name": "recursor",
+      "name": "Autoritative",
       "description": null,
       "widgets": [
         {
@@ -12,15 +12,15 @@
           "layout": {
             "column": 1,
             "row": 1,
-            "height": 3,
+            "height": 2,
             "width": 2
           },
-          "title": "Timeouts exceptions",
+          "title": "Total queries",
           "rawConfiguration": {
             "dataFormatters": [],
             "nrqlQueries": [
               {
-                "query": "SELECT sum(powerdns_recursor_exceptions_total) AS 'Timeouts' FROM Metric WHERE error = 'outgoing_timeout' COMPARE WITH 1 hour ago"
+                "query": "SELECT average(powerdns_authoritative_queries_total)  AS 'Queries'  FROM Metric COMPARE WITH 1 hour ago"
               }
             ],
             "thresholds": []
@@ -33,15 +33,15 @@
           "layout": {
             "column": 3,
             "row": 1,
-            "height": 3,
+            "height": 2,
             "width": 2
           },
-          "title": "Over Capacity exceptions",
+          "title": "Recursive queries",
           "rawConfiguration": {
             "dataFormatters": [],
             "nrqlQueries": [
               {
-                "query": "SELECT sum(powerdns_recursor_exceptions_total) AS 'Over Capacity' FROM Metric WHERE error = 'over_capacity_drop' COMPARE WITH 1 HOUR AGO"
+                "query": "SELECT average(powerdns_authoritative_recursive_queries_total)  AS 'Recursive queries'  FROM Metric COMPARE WITH 1 hour ago"
               }
             ],
             "thresholds": []
@@ -54,10 +54,10 @@
           "layout": {
             "column": 5,
             "row": 1,
-            "height": 6,
+            "height": 4,
             "width": 4
           },
-          "title": "Total Exceptions",
+          "title": "Total queries by protocol",
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
@@ -67,7 +67,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT average(powerdns_recursor_exceptions_total) from Metric facet error  TIMESERIES "
+                "query": "SELECT average(powerdns_authoritative_queries_total)  FROM Metric facet proto   TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -77,7 +77,7 @@
         },
         {
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
           "layout": {
             "column": 9,
@@ -85,14 +85,17 @@
             "height": 3,
             "width": 4
           },
-          "title": "Cache Size",
+          "title": "Total Recursive queries by result",
           "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
             "legend": {
               "enabled": true
             },
             "nrqlQueries": [
               {
-                "query": "from Metric select average(powerdns_recursor_cache_size)  timeseries"
+                "query": "SELECT average(powerdns_authoritative_recursive_queries_total)  FROM Metric facet status  TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -106,16 +109,16 @@
           },
           "layout": {
             "column": 1,
-            "row": 4,
-            "height": 3,
+            "row": 3,
+            "height": 2,
             "width": 2
           },
-          "title": "Unreachables exceptions",
+          "title": "Answers",
           "rawConfiguration": {
             "dataFormatters": [],
             "nrqlQueries": [
               {
-                "query": "SELECT sum(powerdns_recursor_exceptions_total) AS 'Unreachables' FROM Metric  WHERE error = 'ns_unreachable' COMPARE WITH 1 hour ago"
+                "query": "SELECT average(powerdns_authoritative_answers_total)  AS 'Answers'  FROM Metric COMPARE WITH 1 hour ago"
               }
             ],
             "thresholds": []
@@ -127,16 +130,16 @@
           },
           "layout": {
             "column": 3,
-            "row": 4,
-            "height": 3,
+            "row": 3,
+            "height": 2,
             "width": 2
           },
-          "title": "Resource Limit exceptions",
+          "title": "Exceptions",
           "rawConfiguration": {
             "dataFormatters": [],
             "nrqlQueries": [
               {
-                "query": "SELECT sum(powerdns_recursor_exceptions_total) AS 'Resource limit' FROM Metric WHERE error = 'resource_limit' COMPARE WITH 1 hour ago"
+                "query": "SELECT average(powerdns_authoritative_exceptions_total)  AS 'Exceptions'  FROM Metric COMPARE WITH 1 hour ago"
               }
             ],
             "thresholds": []
@@ -144,11 +147,190 @@
         },
         {
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
           "layout": {
             "column": 9,
             "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Total dnsUpdate queries by status",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(powerdns_authoritative_dnsupdate_queries_total)  FROM Metric facet status  TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 2,
+            "width": 2
+          },
+          "title": "DNS updates",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(powerdns_authoritative_dnsupdate_queries_total)  AS 'DNS updates'  FROM Metric COMPARE WITH 1 hour ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 3,
+            "row": 5,
+            "height": 2,
+            "width": 2
+          },
+          "title": "Packets waiting for database attention",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(powerdns_authoritative_qsize)  AS 'Packets waiting'  FROM Metric COMPARE WITH 1 hour ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 5,
+            "height": 5,
+            "width": 4
+          },
+          "title": "Total answers by protocol",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(powerdns_authoritative_answers_total) FROM Metric facet proto  TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Exceptions by error",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(powerdns_authoritative_exceptions_total) FROM Metric facet error  TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Total cache queries and packet lookup by result",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(powerdns_authoritative_query_cache_lookup),average(powerdns_authoritative_packet_cache_lookup)  FROM Metric facet result  TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Number of entries in cache by type",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(powerdns_authoritative_key_cache_size) as 'key_cache',average(powerdns_authoritative_signature_cache_size) as 'signature_cache',average(powerdns_authoritative_packet_cache_size) as 'packet_cache'  FROM Metric   TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 10,
             "height": 3,
             "width": 4
           },
@@ -159,7 +341,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT average(powerdns_recursor_latency_average_seconds) from Metric TIMESERIES "
+                "query": "SELECT average(powerdns_authoritative_latency_average_seconds)   FROM Metric   TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -169,145 +351,7 @@
         },
         {
           "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 1,
-            "row": 7,
-            "height": 3,
-            "width": 4
-          },
-          "title": "Response Time",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "select average(powerdns_recursor_response_time_seconds_sum) from Metric TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 5,
-            "row": 7,
-            "height": 3,
-            "width": 4
-          },
-          "title": "Total incoming queries",
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT average(powerdns_recursor_incoming_queries_total) from Metric facet net  TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 9,
-            "row": 7,
-            "height": 3,
-            "width": 4
-          },
-          "title": "Total Recursor Answers by rcodes",
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT average(powerdns_recursor_answers_rcodes_total)  from Metric facet rcode  TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 1,
-            "row": 10,
-            "height": 3,
-            "width": 4
-          },
-          "title": "Total Recursor Rtime by timeslot",
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT average(powerdns_recursor_answers_rtime_total) from Metric facet timeslot TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 5,
-            "row": 10,
-            "height": 3,
-            "width": 4
-          },
-          "title": "Total outgoing queries",
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT average(powerdns_recursor_outgoing_queries_total) from Metric facet net TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
+            "id": "viz.area"
           },
           "layout": {
             "column": 9,
@@ -315,17 +359,14 @@
             "height": 3,
             "width": 4
           },
-          "title": "Total recursor cache lookups ",
+          "title": "Number of packets waiting for database attention. ",
           "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
             "legend": {
               "enabled": true
             },
             "nrqlQueries": [
               {
-                "query": "SELECT average(powerdns_recursor_cache_lookups_total) From Metric facet result TIMESERIES "
+                "query": "SELECT average(powerdns_authoritative_qsize)  FROM Metric   TIMESERIES"
               }
             ],
             "yAxisLeft": {
