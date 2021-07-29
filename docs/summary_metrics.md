@@ -53,6 +53,7 @@ The unit of the metric must be a string with one of the following values:
 - APDEX
 - TIMESTAMP
 - STRING (Not supported for NRDB queries, please use tags instead)
+- CELSIUS
 
 
 ### NRDB Query
