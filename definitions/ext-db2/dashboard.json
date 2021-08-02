@@ -1,0 +1,347 @@
+{
+	"name": "DB2 Database Status",
+	"description": null,
+	"permissions": "PUBLIC_READ_WRITE",
+	"pages": [{
+		"name": "DB2 Database Status",
+		"description": null,
+		"widgets": [{
+				"visualization": {
+					"id": "viz.table"
+				},
+				"layout": {
+					"column": 1,
+					"row": 1,
+					"height": 3,
+					"width": 6
+				},
+				"title": "DB2 Databse Reporting",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "SELECT latest(timestamp) AS 'LAST REPORTED' from db2 FACET databaseHost,database SINCE 1 day ago LIMIT MAX "
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.table"
+				},
+				"layout": {
+					"column": 7,
+					"row": 1,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Total List of DB2 Server Onboarded",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "SELECT latest(timestamp) AS 'LAST REPORTED' from db2 FACET hostname LIMIT 1000"
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.billboard"
+				},
+				"layout": {
+					"column": 11,
+					"row": 1,
+					"height": 3,
+					"width": 2
+				},
+				"title": "Total DB2 Server Onboarded",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "SELECT uniqueCount(databaseHost) AS 'LAST REPORTED' from db2 LIMIT 1000"
+					}],
+					"thresholds": []
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.line"
+				},
+				"layout": {
+					"column": 1,
+					"row": 4,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Query Preparation Time (ms)",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": true
+					},
+					"legend": {
+						"enabled": true
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": " SELECT average(prep_time_ms) from db2 WHERE queryName='Query Preparation Cost' facet hostname,agentName TIMESERIES 2 minutes"
+					}],
+					"yAxisLeft": {
+						"zero": true
+					}
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.line"
+				},
+				"layout": {
+					"column": 5,
+					"row": 4,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Index Hit Ratio",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"legend": {
+						"enabled": true
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "SELECT average(index_hit_ratio_percent) from db2 facet hostname,agentName TIMESERIES 2 minutes"
+					}],
+					"yAxisLeft": {
+						"zero": true
+					}
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.billboard"
+				},
+				"layout": {
+					"column": 9,
+					"row": 4,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Log Utilisation %",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2 SELECT average(log_utilization_percent) AS 'Log Utilisation %' WHERE queryName='Log Utilization Percent' facet hostname,agentName"
+					}],
+					"thresholds": []
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.bar"
+				},
+				"layout": {
+					"column": 1,
+					"row": 7,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Top Dynamic SQL",
+				"rawConfiguration": {
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2 SELECT count(stmt_text) AS 'Query Count' WHERE queryName='Top Dynamic SQL' FACET hostname,agentName "
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.bar"
+				},
+				"layout": {
+					"column": 5,
+					"row": 7,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Application - Row Selection %",
+				"rawConfiguration": {
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2 SELECT average(percent_rows_selected) WHERE queryName='Application Performance' FACET hostname,agentName,appl_name "
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.billboard"
+				},
+				"layout": {
+					"column": 9,
+					"row": 7,
+					"height": 3,
+					"width": 4
+				},
+				"title": "DB2 Database count",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "SELECT uniqueCount(database) FROM db2 FACET hostname LIMIT MAX "
+					}],
+					"thresholds": []
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.table"
+				},
+				"layout": {
+					"column": 1,
+					"row": 10,
+					"height": 3,
+					"width": 4
+				},
+				"title": "CPU Utilisation",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2 SELECT average(rows_read) AS 'Rows Read', average(rows_returned) AS 'Rows Returned', average(total_cpu_time) AS 'Total CPU Time', average(total_sorts) AS 'Total Sorts', average(total_wait_time) AS 'Total Wait Time' WHERE queryName='CPU Utilization' FACET hostname,agentName"
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.table"
+				},
+				"layout": {
+					"column": 5,
+					"row": 10,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Tablespace Utilisation",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2 SELECT hostname,agentName,tablespace,tbsp_auto_resize_enabled,tbsp_using_auto_storage,tbsp_state,tbsp_used_size_mb,tbsp_total_size_mb,tbsp_utilization_percent WHERE queryName='Tablespace Utilization' and tbsp_content_type IN ('ANY','LARGE')"
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.table"
+				},
+				"layout": {
+					"column": 9,
+					"row": 10,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Tablespaces",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2  SELECT * WHERE queryName='Tablespaces'"
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.table"
+				},
+				"layout": {
+					"column": 1,
+					"row": 13,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Partition Memory",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2 SELECT hostname,agentName,current_mem_mb,max_mem_mb WHERE queryName='Partition Memory'"
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.table"
+				},
+				"layout": {
+					"column": 5,
+					"row": 13,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Database Utilisation",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2 SELECT hostname,agentName,current_db_size_in_gb, total_db_capacity_in_gb WHERE queryName='database Utilization'"
+					}]
+				}
+			},
+			{
+				"visualization": {
+					"id": "viz.table"
+				},
+				"layout": {
+					"column": 1,
+					"row": 16,
+					"height": 3,
+					"width": 4
+				},
+				"title": "Long Runninhg Queries",
+				"rawConfiguration": {
+					"dataFormatters": [],
+					"facet": {
+						"showOtherSeries": false
+					},
+					"nrqlQueries": [{
+						"accountId": 0,
+						"query": "FROM db2 SELECT count(stmt_text) AS 'Query Count', average(elapsed_time_min) AS 'Execution Time (minutes)' WHERE queryName='Long Running Queries' FACET hostname, agentName, stmt_text  \n"
+					}]
+				}
+			}
+		]
+	}]
+}
