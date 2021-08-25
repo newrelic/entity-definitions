@@ -247,6 +247,38 @@ dashboardTemplates:
   template: other_source_dashboard.json
 ```
 
+**NOTE:** The entity overview naturally accepts an aggregate width of `12` for all widgets and an aggregate height of `8`. You can see this in your dashboard's JSON in each widget's `layout` section. For example, if you have 4 widgets total you would want them each to look like this to create a 4x4 grid:
+
+```json
+"layout": {
+  "column": 1,
+  "row": 1,
+  "height": 4,
+  "width": 6
+}
+...
+"layout": {
+  "column": 7,
+  "row": 1,
+  "height": 4,
+  "width": 6
+}
+...
+"layout": {
+  "column": 1,
+  "row": 5,
+  "height": 4,
+  "width": 6
+}
+...
+"layout": {
+  "column": 7,
+  "row": 5,
+  "height": 4,
+  "width": 6
+}
+```
+
 #### Configurations
 
 In the `configuration` section of the `definition.yml` file you can tweak the entity's behavior. At the moment we accept two optional configuration parameters: `entityExpirationTime` and `alertable`.
