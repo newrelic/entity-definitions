@@ -132,7 +132,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') / sum(istio_requests_total)) * 100 AS 'Error Rate (%)' WHERE reporter = 'destination' TIMESERIES "
+                  "query": "FROM Metric SELECT (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') * 100 ) / sum(istio_requests_total) AS 'Error Rate (%)' WHERE reporter = 'destination' TIMESERIES "
                 }
               ],
               "yAxisLeft": {
@@ -199,7 +199,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Incoming Requests by Source and Response Code",
+            "title": "Inbound Requests by Source and Response Code",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -217,7 +217,7 @@
           },
           {
             "visualization": {
-              "id": "viz.line"
+              "id": "viz.area"
             },
             "layout": {
               "column": 5,
@@ -225,7 +225,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Incoming Error Rate (5xx responses)",
+            "title": "Inbound Errors by Service",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -236,7 +236,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT (filter(rate(sum(istio_requests_total), 1 minute), WHERE response_code LIKE '5%') / rate(sum(istio_requests_total), 1 minute)) AS 'Error Rate (%)' WHERE reporter = 'destination' FACET source_canonical_service TIMESERIES "
+                  "query": "FROM Metric SELECT (filter(rate(sum(istio_requests_total), 1 minute), WHERE response_code LIKE '5%')) AS 'Errors' WHERE reporter = 'destination' FACET source_canonical_service TIMESERIES "
                 }
               ],
               "yAxisLeft": {
@@ -254,7 +254,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Incoming Request Duration by Source",
+            "title": "Inbound Request Duration by Source",
             "rawConfiguration": {
               "nrqlQueries": [
                 {
@@ -323,7 +323,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') / sum(istio_requests_total)) * 100 AS 'Error Rate (%)' WHERE reporter = 'source' TIMESERIES "
+                  "query": "FROM Metric SELECT (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') * 100) / sum(istio_requests_total) AS 'Error Rate (%)' WHERE reporter = 'source' TIMESERIES "
                 }
               ],
               "yAxisLeft": {
@@ -390,7 +390,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Outgoing Requests by Source and Response Code",
+            "title": "Outbound Requests by Source and Response Code",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -408,7 +408,7 @@
           },
           {
             "visualization": {
-              "id": "viz.line"
+              "id": "viz.area"
             },
             "layout": {
               "column": 5,
@@ -416,7 +416,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Outgoing Error Rate (5xx responses)",
+            "title": "Outbound Errors by Service",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -427,7 +427,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT (filter(rate(sum(istio_requests_total), 1 minute), WHERE response_code LIKE '5%') / rate(sum(istio_requests_total), 1 minute)) AS 'Error Rate (%)' WHERE reporter = 'source' FACET destination_canonical_service TIMESERIES "
+                  "query": "FROM Metric SELECT (filter(rate(sum(istio_requests_total), 1 minute), WHERE response_code LIKE '5%')) AS 'Errors' WHERE reporter = 'source' FACET destination_canonical_service TIMESERIES"
                 }
               ],
               "yAxisLeft": {
@@ -445,7 +445,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Outgoing Request Duration by Source",
+            "title": "Outbound Request Duration by Source",
             "rawConfiguration": {
               "nrqlQueries": [
                 {
