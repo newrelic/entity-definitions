@@ -16,13 +16,13 @@
               "height": 3,
               "width": 4
             },
-            "title": "Throughput",
+            "title": "Throughput per Second",
             "rawConfiguration": {
               "dataFormatters": [],
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' WHERE reporter = 'destination'"
+                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' FACET cases(WHERE reporter = 'destination' as 'Inbound', WHERE reporter = 'source' as 'Outbound')"
                 }
               ],
               "thresholds": []
@@ -38,7 +38,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Response Codes",
+            "title": " Response Codes",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": true
@@ -75,15 +75,30 @@
           },
           {
             "visualization": {
-              "id": "viz.line"
+              "id": "viz.markdown"
             },
             "layout": {
               "column": 1,
               "row": 4,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "# Server (inbound) Metrics"
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 5,
               "height": 3,
               "width": 3
             },
-            "title": "Client Throughput",
+            "title": "Server Throughput",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -105,11 +120,11 @@
             },
             "layout": {
               "column": 4,
-              "row": 4,
+              "row": 5,
               "height": 3,
               "width": 3
             },
-            "title": "Client Error Rate (5xx responses)",
+            "title": "Server Error Rate (5xx responses)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -117,7 +132,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT (filter(rate(sum(istio_requests_total), 1 minute), WHERE response_code LIKE '5%') / rate(sum(istio_requests_total), 1 minute)) * 100 AS 'Error Rate (%)' WHERE reporter = 'destination' TIMESERIES "
+                  "query": "FROM Metric SELECT (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') / sum(istio_requests_total)) * 100 AS 'Error Rate (%)' WHERE reporter = 'destination' TIMESERIES "
                 }
               ],
               "yAxisLeft": {
@@ -131,11 +146,11 @@
             },
             "layout": {
               "column": 7,
-              "row": 4,
+              "row": 5,
               "height": 3,
               "width": 3
             },
-            "title": "Client Request Duration (Average)",
+            "title": "Server Request Duration (Average)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -143,7 +158,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(sum(istio_request_duration_milliseconds_sum), 1 minute) / rate(sum(istio_request_duration_milliseconds_count), 1 minute) WHERE reporter = 'destination' TIMESERIES "
+                  "query": "FROM Metric SELECT sum(istio_request_duration_milliseconds_sum) / sum(istio_request_duration_milliseconds_count) WHERE reporter = 'destination' TIMESERIES "
                 }
               ],
               "yAxisLeft": {
@@ -157,11 +172,11 @@
             },
             "layout": {
               "column": 10,
-              "row": 4,
+              "row": 5,
               "height": 3,
               "width": 3
             },
-            "title": "Client Request Duration Ms (Histogram)",
+            "title": "Server Request Duration Ms (Histogram)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -176,112 +191,11 @@
           },
           {
             "visualization": {
-              "id": "viz.line"
-            },
-            "layout": {
-              "column": 1,
-              "row": 7,
-              "height": 3,
-              "width": 3
-            },
-            "title": "Server Throughput",
-            "rawConfiguration": {
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' where reporter = 'source' TIMESERIES"
-                }
-              ],
-              "yAxisLeft": {
-                "zero": true
-              }
-            }
-          },
-          {
-            "visualization": {
-              "id": "viz.line"
-            },
-            "layout": {
-              "column": 4,
-              "row": 7,
-              "height": 3,
-              "width": 3
-            },
-            "title": "Server Error Rate (5xx responses)",
-            "rawConfiguration": {
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT (filter(rate(sum(istio_requests_total), 1 minute), WHERE response_code LIKE '5%') / rate(sum(istio_requests_total), 1 minute)) * 100 AS 'Error Rate (%)' WHERE reporter = 'source' TIMESERIES "
-                }
-              ],
-              "yAxisLeft": {
-                "zero": true
-              }
-            }
-          },
-          {
-            "visualization": {
-              "id": "viz.line"
-            },
-            "layout": {
-              "column": 7,
-              "row": 7,
-              "height": 3,
-              "width": 3
-            },
-            "title": "Server Request Duration (Average)",
-            "rawConfiguration": {
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT rate(sum(istio_request_duration_milliseconds_sum), 1 minute) / rate(sum(istio_request_duration_milliseconds_count), 1 minute) WHERE reporter = 'source' TIMESERIES "
-                }
-              ],
-              "yAxisLeft": {
-                "zero": true
-              }
-            }
-          },
-          {
-            "visualization": {
-              "id": "viz.histogram"
-            },
-            "layout": {
-              "column": 10,
-              "row": 7,
-              "height": 3,
-              "width": 3
-            },
-            "title": "Server Request Duration Ms (Histogram)",
-            "rawConfiguration": {
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds_bucket, 1000) AS 'Requests' WHERE reporter = 'source'"
-                }
-              ]
-            }
-          },
-          {
-            "visualization": {
               "id": "viz.area"
             },
             "layout": {
               "column": 1,
-              "row": 10,
+              "row": 8,
               "height": 3,
               "width": 4
             },
@@ -307,7 +221,7 @@
             },
             "layout": {
               "column": 5,
-              "row": 10,
+              "row": 8,
               "height": 3,
               "width": 4
             },
@@ -336,7 +250,7 @@
             },
             "layout": {
               "column": 9,
-              "row": 10,
+              "row": 8,
               "height": 3,
               "width": 4
             },
@@ -352,11 +266,127 @@
           },
           {
             "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 11,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "# Client (outbound) Metrics"
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 12,
+              "height": 3,
+              "width": 3
+            },
+            "title": "Client Throughput",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' where reporter = 'source' TIMESERIES"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 4,
+              "row": 12,
+              "height": 3,
+              "width": 3
+            },
+            "title": "Client Error Rate (5xx responses)",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') / sum(istio_requests_total)) * 100 AS 'Error Rate (%)' WHERE reporter = 'source' TIMESERIES "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 7,
+              "row": 12,
+              "height": 3,
+              "width": 3
+            },
+            "title": "Client Request Duration (Average)",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT sum(istio_request_duration_milliseconds_sum) / sum(istio_request_duration_milliseconds_count) WHERE reporter = 'source' TIMESERIES "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.histogram"
+            },
+            "layout": {
+              "column": 10,
+              "row": 12,
+              "height": 3,
+              "width": 3
+            },
+            "title": "Client Request Duration Ms (Histogram)",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds_bucket, 1000) AS 'Requests' WHERE reporter = 'source'"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
               "id": "viz.area"
             },
             "layout": {
               "column": 1,
-              "row": 13,
+              "row": 15,
               "height": 3,
               "width": 4
             },
@@ -382,7 +412,7 @@
             },
             "layout": {
               "column": 5,
-              "row": 13,
+              "row": 15,
               "height": 3,
               "width": 4
             },
@@ -411,7 +441,7 @@
             },
             "layout": {
               "column": 9,
-              "row": 13,
+              "row": 15,
               "height": 3,
               "width": 4
             },
