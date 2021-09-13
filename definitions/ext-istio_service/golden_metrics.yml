@@ -1,0 +1,16 @@
+throughput:
+  title: Throughput
+  query:
+    select: rate(sum(istio_requests_total), 1 SECOND)
+    from: Metric
+errorRate:
+  title: Error rate
+  query:
+    select: (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') * 100 ) / sum(istio_requests_total) WHERE reporter = 'destination'
+    from: Metric
+responseTimeMs:
+  title: Response time (ms)
+  query:
+    select: sum(istio_request_duration_milliseconds_sum / istio_request_duration_milliseconds_count) WHERE reporter = 'destination' 
+    from: Metric
+
