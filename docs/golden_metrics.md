@@ -12,6 +12,7 @@ This key defines the intention of the metric:
 ```yaml
 memoryUsage:
   title: "A title explaining what the user is seeing (unit displayed in the dashboard)"
+  unit: COUNT
   query:
     select: average(host.memoryUsagePercent)
     from: Metric
@@ -39,6 +40,7 @@ memoryUsage:
 | -------- | ------------- | ------------ | ---------------------------------------------             |
 | title    |      Yes      |  | Provide a meaningful title to the graph or value you are displaying. Is also a good practice to add the unit at the end. e.g. `Effective memory available to VMs (MB)`|
 | displayAsValue |   No    | `false` | Use this option if you want to display a value instead of a line (TIMESERIES) when viewing the information of *one* entity. |
+| unit     | [Metric Unit](#metric-unit)    | The unit of the metric                                     |
 
 
 ### Query options
@@ -51,6 +53,26 @@ memoryUsage:
 | facet |   No    | empty string | An extra facet by a specific field to be added to the default facet by entityName |
 | eventId |   No    | `entity.guid` | The event attribute used to filter the entity. We recommend to use the default `entity.guid` which is generated automatically as part of the entity synthesis. |
 | eventName |   No    | `entity.name` | The name of the field in the event that references the entity name. By default `entity.guid` which is generated automatically as part of the entity synthesis. |
+
+### Metric Unit
+
+The unit of the metric must be a string with one of the following values:
+
+- REQUESTS_PER_SECOND
+- PAGES_PER_SECOND
+- MESSAGES_PER_SECOND
+- OPERATIONS_PER_SECOND
+- COUNT
+- SECONDS
+- PERCENTAGE
+- BITS
+- BYTES
+- BITS_PER_SECOND
+- BYTES_PER_SECOND
+- HERTZ
+- APDEX
+- TIMESTAMP
+- CELSIUS
 
 ### Roll-up entities
 
