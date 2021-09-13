@@ -1,0 +1,38 @@
+clusterName:
+  tag:
+    key: clusterName
+  title: Cluster
+  unit: STRING
+namespaceName:
+  tag:
+    key: namespaceName
+  title: Namespace
+  unit: STRING
+throughputInbound:
+  title: Throughput (Inbound)
+  unit: REQUESTS_PER_SECOND
+  query:
+    select: rate(sum(istio_requests_total), 1 SECOND) WHERE reporter = 'destination'
+    from: Metric
+    eventId: entity.guid
+throughputOutbound:
+  title: Throughput (Outbound)
+  unit: REQUESTS_PER_SECOND
+  query:
+    select: rate(sum(istio_requests_total), 1 SECOND) WHERE reporter = 'source'
+    from: Metric
+    eventId: entity.guid
+errorRate:
+  title: Error rate
+  unit: PERCENTAGE
+  query:
+    select: (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') / sum(istio_requests_total)) * 100 WHERE reporter = 'destination'
+    from: Metric
+    eventId: entity.guid
+responseTimeMs:
+  title: Response time
+  unit: SECONDS
+  query:
+    select: (sum(istio_request_duration_milliseconds_sum) / sum(istio_request_duration_milliseconds_count)) / 1000 WHERE reporter = 'destination' 
+    from: Metric
+    eventId: entity.guid
