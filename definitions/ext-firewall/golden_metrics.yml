@@ -1,27 +1,47 @@
 cpuUtilization:
   title: CPU Utilization (%)
-  query:
-    select: max(kentik.snmp.fgSysCpuUsage)
-    from: Metric
-    where: "provider = 'kentik-firewall'"
+  queries:
+    kentik/cisco-asa:
+      select: max(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+    kentik/palo-alto:
+      select: max(kentik.snmp.hrProcessorLoad)
+      from: Metric
+      where: "provider = 'kentik-firewall' AND Index = '.1'"
+    kentik/fortinet-fortigate:
+      select: max(kentik.snmp.fgSysCpuUsage)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
 
 memoryUtilization:
   title: Memory Utilization (%)
-  query:
-    select: (max(kentik.snmp.fgSysMemUsage) / max(kentik.snmp.fgSysMemCapacity)) * 100
-    from: Metric
-    where: "provider = 'kentik-firewall'"
+  queries:
+    kentik/cisco-asa:
+      select: max(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+    kentik/palo-alto:
+      select: (max(kentik.snmp.hrStorageUsed) / max(kentik.snmp.hrStorageSize)) * 100
+      from: Metric
+      where: "provider = 'kentik-firewall' AND storage_description LIKE '%Management Memory%'"
+    kentik/fortinet-fortigate:
+      select: (max(kentik.snmp.fgSysMemUsage) / max(kentik.snmp.fgSysMemCapacity)) * 100
+      from: Metric
+      where: "provider = 'kentik-firewall'"
 
-lowmemUtilization:
-  title: Lowmem Utilization (%)
-  query:
-    select: (max(kentik.snmp.fgSysLowMemUsage) / max(kentik.snmp.fgSysLowMemCapacity)) * 100
-    from: Metric
-    where: "provider = 'kentik-firewall'"
-
-ipSessionRate:
-  title: IP Session Rate (1min)
-  query:
-    select: latest(kentik.snmp.fgSysSesRate1) + latest(kentik.snmp.fgSysSes6Rate1)
-    from: Metric
-    where: "provider = 'kentik-firewall'"
+sessionsTotal:
+  title: Current Sessions
+  queries:
+    kentik/cisco-asa:
+      select: latest(kentik.snmp.crasNumSessions)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+    kentik/palo-alto:
+      select: max(kentik.snmp.panSessionActive)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+    kentik/fortinet-fortigate:
+      select: latest(kentik.snmp.fgSysSesCount) + latest(kentik.snmp.fgSysSes6Count)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
