@@ -7,26 +7,59 @@ ipAddress:
 cpuUtilization:
   title: CPU
   unit: PERCENTAGE
-  query:
-    select: max(kentik.snmp.fgSysCpuUsage)
-    from: Metric
-    where: "provider = 'kentik-firewall'"
-    eventId: entity.guid
+  queries:
+    kentik/cisco-asa:
+      select: max(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+      eventId: entity.guid
+    kentik/palo-alto:
+      select: max(kentik.snmp.hrProcessorLoad)
+      from: Metric
+      where: "provider = 'kentik-firewall' AND Index = '.1'"
+      eventId: entity.guid
+    kentik/fortinet-fortigate:
+      select: max(kentik.snmp.fgSysCpuUsage)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+      eventId: entity.guid
 
 memoryUtilization:
   title: Memory
   unit: PERCENTAGE
-  query:
-    select: (max(kentik.snmp.fgSysMemUsage) / max(kentik.snmp.fgSysMemCapacity)) * 100
-    from: Metric
-    where: "provider = 'kentik-firewall'"
-    eventId: entity.guid
+  queries:
+    kentik/cisco-asa:
+      select: max(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+      eventId: entity.guid
+    kentik/palo-alto:
+      select: (max(kentik.snmp.hrStorageUsed) / max(kentik.snmp.hrStorageSize)) * 100
+      from: Metric
+      where: "provider = 'kentik-firewall' AND storage_description LIKE '%Management Memory%'"
+      eventId: entity.guid
+    kentik/fortinet-fortigate:
+      select: (max(kentik.snmp.fgSysMemUsage) / max(kentik.snmp.fgSysMemCapacity)) * 100
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+      eventId: entity.guid
 
-ipSessionsTotal:
-  title: Current IP Sessions
+sessionsTotal:
+  title: Current Sessions
   unit: COUNT
-  query:
-    select: latest(kentik.snmp.fgSysSesCount) + latest(kentik.snmp.fgSysSes6Count)
-    from: Metric
-    where: "provider = 'kentik-firewall'"
-    eventId: entity.guid
+  queries:
+    kentik/cisco-asa:
+      select: latest(kentik.snmp.crasNumSessions)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+      eventId: entity.guid
+    kentik/palo-alto:
+      select: max(kentik.snmp.panSessionActive)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+      eventId: entity.guid
+    kentik/fortinet-fortigate:
+      select: latest(kentik.snmp.fgSysSesCount) + latest(kentik.snmp.fgSysSes6Count)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
+      eventId: entity.guid
