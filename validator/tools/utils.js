@@ -25,8 +25,8 @@ module.exports = {
     sanitizeDashboard(fileContent){
         return fileContent
                 .replace(/\"accountId\"\s*:\s*\d+\s*/g , '"accountId": 0') // Anonymize account ID
-                .replace(/^.+\"linkedEntityGuids\".+\n?/mg , '') // Remove linkedEntityGuids
-                .replace(/^.+\"permissions\".+\n?/mg , '') // Remove permissions
-                .replace(/\,(?!\s*?[\{\[\"\'\w])/g, ''); // Remove trailing commas
+                .replace(/^.+\"linkedEntityGuids\".+\n?/mg , '')           // Remove linkedEntityGuids
+                .replace(/^.+\"permissions\".+\n?/mg , '')                 // Remove permissions
+                .replace(/[\}\)\]]\,(?!\s*?[\{\[\"\'\w])/g, '}');          // Remove trailing commas if any left after json blocks
     }
 }
