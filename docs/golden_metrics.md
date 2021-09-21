@@ -76,7 +76,7 @@ The unit of the metric must be a string with one of the following values:
 
 ### Roll-up entities
 
-In the cases that the entity type can be ingested from different sources and requires to provide a different query implementation for each of them, you can use `queries` instead of `query`
+In the cases where the entity type can be ingested from multiple sources, you'll be required to provide a different query implementation per source. In this case, you should use `queries` instead of `query`
 
 ```yaml
 memoryUsage:
