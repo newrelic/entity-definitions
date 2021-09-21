@@ -103,7 +103,7 @@ destinations:
       where: "provider = 'kentik-flow-device'"
 ```
 
-There's also the possibility to specify both, provider and name in the form of `{provider}/{name}`.
+There's also the possibility to specify both provider and name in the form of `{provider}/{name}`.
 1. `provider` must have in the `instrumentation.provider` tag. (`kentik` in the example)
 2. `name` must have in the `instrumentation.name` tag. (`netflow-events` in the example)
 
