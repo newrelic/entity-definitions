@@ -104,7 +104,7 @@ destinations:
 ```
 
 There's also the possibility to specify both provider and name in the form of `{provider}/{name}`.
-1. `provider` must have in the `instrumentation.provider` tag. (`kentik` in the example)
+1.  You must add the provider as a value of the `instrumentation.provider` tag. (eg provider: `kentik`, as in the example)
 2.  You must add the name of the provider in the `instrumentation.name` tag. (eg provider name: `netflow-events`, as in the example)
 
 Is also important to note that the semantics of the queries should match between each implementation. This includes things like average vs counts, units and other details.
