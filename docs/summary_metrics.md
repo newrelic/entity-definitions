@@ -99,7 +99,7 @@ It returns the value of `metricA` if it's not `null`, `10` otherwise.
 
 ### Roll-up entities
 
-In the cases that the entity type can be ingested from different sources and you need to provide a different query implementation you can use `queries` instead of `query`
+In the cases where the entity type can be ingested from multiple sources, you'll be required to provide a different query implementation per source. In this case, you should use `queries` instead of `query`
 
 ```yaml
 memoryUsage:
@@ -116,6 +116,20 @@ memoryUsage:
 
 In this example `prometheus` and `newRelic` are the values the entity must have in the `instrumentation.provider` tag.
 The first tag value that matches with the entity will be the one used to build the queries.
+
+```yaml
+destinations:
+  title: Unique Destinations
+  queries:
+    kentik/netflow-events:
+      select: uniqueCount(dst_addr)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
+```
+
+There's also the possibility to specify both provider and name in the form of `{provider}/{name}`.
+1.  You must add the provider as a value of the `instrumentation.provider` tag. (eg provider: `kentik`, as in the example)
+2.  You must add the name of the provider in the `instrumentation.name` tag. (eg provider name: `netflow-events`, as in the example)
 
 Is also important to note that the semantics of the queries should match between each implementation. This includes things like average vs counts, units and other details.
 
