@@ -1,0 +1,30 @@
+domain: EXT
+type: PIHOLE
+
+synthesis:
+  rules:
+    # telemetry with piHoleName attribute
+  - identifier: piHoleName
+    name: piHoleName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: piHoleName
+
+    # telemetry from prometheus exporter
+  - identifier: hostname
+    name: hostname
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: metricName
+      prefix: pihole_
+  tags:
+    instrumentation.provider:
+    instrumentation.name:
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
