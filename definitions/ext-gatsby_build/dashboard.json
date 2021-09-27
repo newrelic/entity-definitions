@@ -1,22 +1,37 @@
 {
-  "name": "Gatsby v2",
+  "name": "Gatsby v3",
   "description": null,
   "pages": [
     {
-      "name": "Gatsby v2",
+      "name": "Gatsby v3",
       "description": null,
       "widgets": [
         {
           "visualization": {
-            "id": "viz.pie"
+            "id": "viz.markdown"
           },
           "layout": {
             "column": 1,
             "row": 1,
-            "height": 4,
-            "width": 8
+            "height": 3,
+            "width": 2
           },
-          "title": "Plugins",
+          "title": "",
+          "rawConfiguration": {
+            "text": "![image](https://codingthesmartway.com/wp-content/uploads/2019/02/gatsby-logo.png)"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Latest Build Times (in s)",
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": true
@@ -24,7 +39,27 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(duration.ms)  FROM Span FACET plugin"
+                "query": "FROM Span SELECT latest(duration.ms)/1000 FACET gatsbySite, buildId WHERE `nr.entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw' OR `entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw' "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "logger.log-table-widget"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 7,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT `log_severity``timestamp``message` FROM Log WHERE `entity.type` = 'GATSBY_BUILD' AND message LIKE '%success%'"
               }
             ]
           }
@@ -34,18 +69,63 @@
             "id": "viz.billboard"
           },
           "layout": {
-            "column": 9,
-            "row": 1,
-            "height": 8,
-            "width": 4
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 2
           },
-          "title": "Build Time Steps",
+          "title": "",
           "rawConfiguration": {
             "dataFormatters": [],
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Span SELECT latest(duration.ms) FACET cases(WHERE name = 'open and validate gatsby-configs, load plugins' , WHERE name = 'onpreinit', WHERE name = 'initialize cache', WHERE name = 'copy gatsby files', WHERE name = 'onprebootstrap', WHERE name='source and transform nodes', WHERE name='add explicit types', WHERE name='add inferred types', WHERE name='Processing Types') COMPARE WITH 1 day ago"
+                "query": "SELECT latest(capture(message, r'info Total nodes: (?P<nodes>\\d+).*')), latest(capture(message, r'info Total nodes:.*SitePage nodes: (?P<pages>\\d+).*')) FROM Log WHERE gatsbySite='jankstack'  "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "height": 4,
+            "width": 6
+          },
+          "title": "BundleSize",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(gzipSize) FROM bundleSize FACET path "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 7,
+            "width": 2
+          },
+          "title": "Latest Build Metrics",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`bootstrapTime`)/1000, latest(`instantiationTime`)/1000, latest(`benchmarkStart`)/1000, latest(`preInit`)/1000, latest(`preBootstrap`)/1000, latest(`preBuild`)/1000, latest(`postBuild`)/1000 FROM Metric SINCE 12 hours AGO COMPARE WITH 30 minutes ago WHERE `nr.entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw' OR `entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw'"
               }
             ],
             "thresholds": []
@@ -56,28 +136,45 @@
             "id": "viz.stacked-bar"
           },
           "layout": {
-            "column": 1,
-            "row": 5,
-            "height": 4,
-            "width": 8
+            "column": 3,
+            "row": 8,
+            "height": 3,
+            "width": 6
           },
           "title": "",
           "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
             "legend": {
               "enabled": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Span SELECT latest(duration.ms) FACET cases(WHERE name = 'open and validate gatsby-configs, load plugins' , WHERE name = 'onpreinit', WHERE name = 'initialize cache', WHERE name = 'copy gatsby files', WHERE name = 'onprebootstrap', WHERE name='source and transform nodes', WHERE name='add explicit types', WHERE name='add inferred types', WHERE name='Processing Types') TIMESERIES AUTO "
+                "query": "SELECT latest(`bootstrapTime`), latest(`instantiationTime`), latest(`benchmarkStart`), latest(`preInit`), latest(`preBootstrap`), latest(`preBuild`), latest(`postBuild`) FROM Metric TIMESERIES 15 minutes WHERE `nr.entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw' OR `entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw'"
               }
-            ],
-            "yAxisLeft": {
-              "zero": false
-            }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 9,
+            "row": 8,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Plugins",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(duration.ms)  FROM Span FACET plugin WHERE `nr.entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw' OR `entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw' AND plugin != 'gatsby-build-newrelic'"
+              }
+            ]
           }
         },
         {
@@ -85,10 +182,10 @@
             "id": "viz.area"
           },
           "layout": {
-            "column": 9,
-            "row": 5,
+            "column": 3,
+            "row": 11,
             "height": 3,
-            "width": 4
+            "width": 6
           },
           "title": "images by type",
           "rawConfiguration": {
@@ -98,30 +195,30 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(otherImages), latest(gifs), latest(pngs), latest(jpgs) FROM Metric SINCE 1 day AGO TIMESERIES 1 hour"
+                "query": "SELECT latest(otherImages), latest(gifs), latest(pngs), latest(jpgs) FROM Metric TIMESERIES AUTO WHERE `nr.entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw' OR `entity.guid` = 'MzI4MzgxOXxFWFR8R0FUU0JZX0JVSUxEfC04MTE2MjQwOTMzNjMwOTE2NDYw'"
               }
             ]
           }
         },
         {
           "visualization": {
-            "id": "viz.stacked-bar"
+            "id": "viz.pie"
           },
           "layout": {
-            "column": 1,
-            "row": 8,
+            "column": 9,
+            "row": 11,
             "height": 3,
             "width": 4
           },
-          "title": "",
+          "title": "Internal APIs sorted by Build Time Contribution (in s)",
           "rawConfiguration": {
-            "legend": {
-              "enabled": true
+            "facet": {
+              "showOtherSeries": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(`bootstrapTime`), latest(`instantiationTime`), latest(`benchmarkStart`), latest(`preInit`), latest(`preBootstrap`), latest(`preBuild`), latest(`postBuild`) FROM Metric SINCE 12 hours AGO TIMESERIES 15 minutes"
+                "query": "SELECT average(`duration.ms`)/1000 FROM Span FACET api LIMIT 1000"
               }
             ]
           }
