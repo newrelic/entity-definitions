@@ -1,10 +1,17 @@
 cpuUtilization:
   title: CPU Utilization (%)
   queries:
-    kentik:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: average(kentik.snmp.CPU)
       from: Metric
       where: "provider = 'kentik-router'"
+    # Cisco CSR profiles
+    kentik/cisco-csr:
+      select: average(kentik.snmp.dataPlane_CPU)
+      from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: average(mikrotik.system.cpu.load)
       from: Metric
@@ -12,10 +19,17 @@ cpuUtilization:
 memoryUtilization:
   title: Memory Utilization (%)
   queries:
-    kentik:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: average(kentik.snmp.MemoryUtilization)
       from: Metric
       where: "provider = 'kentik-router'"
+    # Cisco CSR profiles
+    kentik/cisco-csr:
+      select: (average(kentik.snmp.dataPlane_MemoryUsed)/(average(kentik.snmp.dataPlane_MemoryUsed)+average(kentik.snmp.dataPlane_MemoryFree)))*100
+      from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: average(mikrotik.system.memory.used)
       from: Metric
@@ -23,10 +37,17 @@ memoryUtilization:
 receiveErrors:
   title: Aggregate Receive Errors (count)
   queries:
-    kentik:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: sum(kentik.snmp.ifInErrors)
       from: Metric
       where: "provider = 'kentik-router'"
+    # Cisco CSR profiles
+    kentik/cisco-csr:
+      select: average(kentik.snmp.ifInErrors)
+      from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: sum(mikrotik.interface.ether1.rxerrorsps)
       from: Metric
@@ -34,10 +55,17 @@ receiveErrors:
 transmitErrors:
   title: Aggregate Transmit Errors (count)
   queries:
-    kentik:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: sum(kentik.snmp.ifOutErrors)
       from: Metric
       where: "provider = 'kentik-router'"
+    # Cisco CSR profiles
+    kentik/cisco-csr:
+      select: average(kentik.snmp.ifOutErrors)
+      from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: sum(mikrotik.interface.ether1.txerrorsps)
       from: Metric
