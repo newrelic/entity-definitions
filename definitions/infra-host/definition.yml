@@ -13,6 +13,35 @@ goldenTags:
 - azure.resourceGroup
 - gcp.zone
 - gcp.projectId
+# opentelemetry semantic conventions for cloud instances
+- cloud.provider
+- cloud.account.id
+- cloud.region
+- cloud.availability_zone
+- cloud.platform
+synthesis:
+  rules:
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.id
+      encodeIdentifierInGUID: true
+      # This is a temporary condition to restrict synthesis for a particular set of telemetry data.
+      conditions:
+        - attribute: nr.entity_type
+          value: host
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
 configuration:
   entityExpirationTime: DAILY
   alertable: true

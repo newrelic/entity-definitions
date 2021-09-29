@@ -1,9 +1,9 @@
 {
-    "name": "Kentik Router",
+    "name": "Cisco CSR Router",
     "description": null,
     "pages": [
       {
-        "name": "Kentik Router",
+        "name": "Cisco CSR Router",
         "description": null,
         "widgets": [
           {
@@ -14,9 +14,9 @@
               "column": 1,
               "row": 1,
               "height": 4,
-              "width": 6
+              "width": 3
             },
-            "title": "CPU Utilization (%)",
+            "title": "Control Plane CPU Utilization (%)",
             "rawConfiguration": {
               "dataFormatters": [],
               "legend": {
@@ -25,7 +25,36 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.snmp.CPU) FACET entity.name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES"
+                  "query": "FROM Metric SELECT average(kentik.snmp.controlPlane_CPU) FACET entity.name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 4,
+              "row": 1,
+              "height": 4,
+              "width": 3
+            },
+            "title": "Data Plane CPU Utilization (%)",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.dataPlane_CPU) FACET entity.name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES"
                 }
               ],
               "yAxisLeft": {
@@ -43,9 +72,9 @@
               "column": 7,
               "row": 1,
               "height": 4,
-              "width": 6
+              "width": 3
             },
-            "title": "Memory Utilization (%)",
+            "title": "Control Plane Memory Utilization (%)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -53,7 +82,35 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.snmp.MemoryUtilization) FACET entity.name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES"
+                  "query": "FROM Metric SELECT (average(kentik.snmp.controlPlane_MemoryUsed)/(average(kentik.snmp.controlPlane_MemoryUsed)+average(kentik.snmp.controlPlane_MemoryFree)))*100 FACET entity.name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 10,
+              "row": 1,
+              "height": 4,
+              "width": 3
+            },
+            "title": "Data Plane Memory Utilization (%)",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (average(kentik.snmp.dataPlane_MemoryUsed)/(average(kentik.snmp.dataPlane_MemoryUsed)+average(kentik.snmp.dataPlane_MemoryFree)))*100 FACET entity.name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES"
                 }
               ],
               "yAxisLeft": {
