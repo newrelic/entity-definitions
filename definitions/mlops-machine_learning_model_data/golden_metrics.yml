@@ -2,26 +2,15 @@ data_drift:
   unit: COUNT
   title: Data drift average
   query:
-    from: Metric
     select: average(getField(aws.sagemaker.endpoints.datametrics.feature_baseline_drift_%, total))
+    from: Metric
     eventId: entity.guid
-feature_count:
-  unit: COUNT
-    title: Feature count
-    query:
-      from: Metric
-      select: sum(getField(aws.sagemaker.endpoints.datametrics.feature_data_%, count))
-      eventId: entity.guid
-    hidden: true
-feature_non_null:
-  unit: COUNT
-    title: Feature non null
-    query:
-      from: Metric
-      select: sum(getField(aws.sagemaker.endpoints.datametrics.feature_non_null_%, total)))
-      eventId: entity.guid
-    hidden: true
-missing_values:
-  unit: PERCENTAGE
-  title: Missing values
-  derive: "(@feature_count - @feature_non_null) / @feature_non_null * 100"
+feature_importance:
+   unit: COUNT
+   title: Feature Importance (SHAP values)
+   displayAsValue: true
+   query:
+     select: average(aws.sagemaker.endpoints.explainabilitymetrics.feature_%)
+     from: Metric
+     facet: capture(metricName, r'aws.sagemaker.endpoints.explainabilitymetrics.feature_(?P<feature>.*)')
+     eventId: entity.guid
