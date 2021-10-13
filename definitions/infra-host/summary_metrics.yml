@@ -137,7 +137,14 @@ networkTrafficGcp:
   unit: BYTES_PER_SECOND
   derive: (@networkInGcp + @networkOutGcp) / 60
   hidden: true
+networkTrafficOtel:
+  title: Network Traffic OTEL
+  unit: BYTES_PER_SECOND
+  query:
+    from: Metric
+    select: average(system.network.io)
+    eventId: entity.guid
 networkTraffic:
   title: Network Traffic
   unit: BYTES_PER_SECOND
-  derive: '@networkTrafficEc2 || @networkTrafficAzure || @networkTrafficGcp || @networkTrafficHost'
+  derive: '@networkTrafficEc2 || @networkTrafficAzure || @networkTrafficGcp || @networkTrafficHost || @networkTrafficOtel'
