@@ -1,0 +1,65 @@
+{
+  "name": "sagemaker_model",
+  "description": null,
+  "pages": [
+    {
+      "name": "sagemaker_model",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 7,
+            "width": 8
+          },
+          "title": "Model Performence Metrics Timeseries",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(aws.sagemaker.endpoints.modelmetrics.%) FACET capture(metricName, r'aws\\.sagemaker\\.endpoints\\.modelmetrics\\.(?P<metric>.*)') AS 'metric' SINCE 7 day ago LIMIT MAX TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 7,
+            "width": 4
+          },
+          "title": "Model Performence Metrics - Latest Values",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(getField(aws.sagemaker.endpoints.modelmetrics.%, total)) FACET capture(metricName, r'aws\\.sagemaker\\.endpoints\\.modelmetrics\\.(?P<metric>.*)') AS 'metric' SINCE 7 day AGO LIMIT MAX"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
