@@ -41,7 +41,7 @@ storageUsage:
       eventId: entityGuid
       eventName: entityName
 networkTraffic:
-  title: Network Traffic (kB/s)
+  title: Network Traffic (B/s)
   unit: BYTES_PER_SECOND
   queries:
     newRelic:
@@ -54,3 +54,9 @@ networkTraffic:
       from: NetworkSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: rate(average(system.network.io), 1 second)
+      where: device != 'lo'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
