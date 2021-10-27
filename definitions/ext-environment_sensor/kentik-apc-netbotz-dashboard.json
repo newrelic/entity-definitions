@@ -1,0 +1,256 @@
+{
+	"name": "Netbotz",
+	"description": null,
+	"pages": [
+		{
+			"name": "Netbotz",
+			"description": null,
+			"widgets": [
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"height": 6,
+						"width": 3
+					},
+					"title": "",
+					"rawConfiguration": {
+						"dataFormatters": [
+							{
+								"name": "Uptime (Days)",
+								"precision": 1,
+								"type": "decimal"
+							}
+						],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)' WHERE provider = 'kentik-netbotz'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 4,
+						"row": 1,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Temperature Sensors",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.tempSensorValueInt) AS 'C', latest(kentik.snmp.tempSensorValueIntF) AS 'F', latest(tempSensorErrorStatus) AS 'Status' FACET tempSensorLabel AS 'Sensor' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 8,
+						"row": 1,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Humidity Sensors",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.humiSensorValueInt) AS 'Relative Humidity %', latest(humiSensorErrorStatus) AS 'Status' FACET humiSensorLabel AS 'Sensor' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 4,
+						"row": 4,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Door Switch Sensor",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(doorSwitchSensorValueStr) AS 'Error Message' FACET doorSwitchSensorLabel AS 'Sensor' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 8,
+						"row": 4,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Other Port Sensors",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(otherPortStatus) AS 'Status' FACET otherPortLabel AS 'Sensor' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 1,
+						"row": 7,
+						"height": 4,
+						"width": 7
+					},
+					"title": "Error Conditions",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(errorCondSeverity) AS 'Severity', latest(errorCondResolved) AS 'Resolved' FACET errorCondId AS 'ID', errorCondTypeId AS 'Type', errorCondSensorId AS 'Sensor', errorCondStartTimeStr AS 'Start Time', errorCondResolvedTimeStr AS 'Resolved Time' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 8,
+						"row": 7,
+						"height": 4,
+						"width": 4
+					},
+					"title": "Other Sensors",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(otherStateSensorErrorStatus) AS 'Status', latest(otherStateSensorValueStr) AS 'Value' FACET otherStateSensorLabel AS 'Sensor' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 1,
+						"row": 11,
+						"height": 3,
+						"width": 3
+					},
+					"title": "Dew Point Sensors",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.dewPointSensorValueInt) AS 'C', latest(kentik.snmp.dewPointSensorValueIntF) AS 'F' FACET dewPointSensorLabel AS 'Sensor' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 4,
+						"row": 11,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Enclosure Sensors",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(enclosureStatus) AS 'Status', latest(enclosureErrorStatus) AS 'Errors' FACET enclosureLabel AS 'Sensor' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 8,
+						"row": 11,
+						"height": 3,
+						"width": 4
+					},
+					"title": "DIN Connector Sensors",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(dinPortStatus) AS 'Status' FACET dinPortId AS 'Sensor' WHERE provider = 'kentik-netbotz' LIMIT MAX"
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}
