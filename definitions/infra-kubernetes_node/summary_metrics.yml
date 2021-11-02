@@ -1,0 +1,46 @@
+clusterName:
+  title: Cluster name
+  unit: STRING
+  tag:
+    key: k8s.clusterName
+cpuUtilization:
+  title: CPU usage (%)
+  unit: PERCENTAGE
+  query:
+    from: Metric
+    select: max(k8s.node.allocatableCpuCoresUtilization)
+    eventId: entity.guid
+memoryUtilization:
+  title: Memory usage (%)
+  unit: PERCENTAGE
+  query:
+    from: Metric
+    select: max(k8s.node.allocatableMemoryUtilization)
+    eventId: entity.guid
+storageUsage:
+  title: Storage usage (%)
+  unit: PERCENTAGE
+  query:
+    select: max(k8s.node.fsCapacityUtilization)
+    from: Metric
+    eventId: entity.guid
+networkTxBytes:
+  title: Network Tx (B/s)
+  unit: BYTES_PER_SECOND
+  query:
+    select: max(k8s.node.netTxBytesPerSecond)
+    from: Metric
+    eventId: entity.guid
+  hidden: true
+networkRxBytes:
+  title: Network Rx (B/s)
+  unit: BYTES_PER_SECOND
+  query:
+    select: max(k8s.node.netRxBytesPerSecond)
+    from: Metric
+    eventId: entity.guid
+  hidden: true
+networkTraffic:
+  title: Network Traffic (B/s)
+  unit: BYTES_PER_SECOND
+  derive: '@networkTxBytes + @networkRxBytes'
