@@ -1,0 +1,206 @@
+{
+	"name": "Brocade Fibre Channel Switch",
+	"description": null,
+	"pages": [
+		{
+			"name": "Brocade Fibre Channel Switch",
+			"description": null,
+			"widgets": [
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"height": 5,
+						"width": 3
+					},
+					"title": "",
+					"rawConfiguration": {
+						"dataFormatters": [
+							{
+								"name": "Uptime (Days)",
+								"precision": 1,
+								"type": "decimal"
+							}
+						],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)' WHERE provider = 'kentik-fibre-channel'"
+							}
+						],
+						"thresholds": []
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 4,
+						"row": 1,
+						"height": 1,
+						"width": 4
+					},
+					"title": "",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'CPU %' WHERE provider = 'kentik-fibre-channel'"
+							}
+						],
+						"thresholds": [
+							{
+								"alertSeverity": "WARNING",
+								"value": 90
+							},
+							{
+								"alertSeverity": "CRITICAL",
+								"value": 95
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 8,
+						"row": 1,
+						"height": 1,
+						"width": 4
+					},
+					"title": "",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Memory %' WHERE provider = 'kentik-fibre-channel'"
+							}
+						],
+						"thresholds": [
+							{
+								"alertSeverity": "WARNING",
+								"value": 90
+							},
+							{
+								"alertSeverity": "CRITICAL",
+								"value": 95
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.line"
+					},
+					"layout": {
+						"column": 4,
+						"row": 2,
+						"height": 4,
+						"width": 4
+					},
+					"title": "CPU Utilization",
+					"rawConfiguration": {
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT max(kentik.snmp.CPU) AS 'CPU %' WHERE provider = 'kentik-fibre-channel' TIMESERIES 5 MINUTES"
+							}
+						],
+						"yAxisLeft": {
+							"max": 100,
+							"min": 0,
+							"zero": false
+						}
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.line"
+					},
+					"layout": {
+						"column": 8,
+						"row": 2,
+						"height": 4,
+						"width": 4
+					},
+					"title": "Memory Utilization",
+					"rawConfiguration": {
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT max(kentik.snmp.MemoryUtilization) AS 'Memory %' WHERE provider = 'kentik-fibre-channel' TIMESERIES 5 MINUTES"
+							}
+						],
+						"yAxisLeft": {
+							"max": 100,
+							"min": 0,
+							"zero": false
+						}
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 1,
+						"row": 6,
+						"height": 5,
+						"width": 5
+					},
+					"title": "Interface Statistics",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT max(kentik.snmp.IfInUtilization) AS 'RX %', max(kentik.snmp.IfOutUtilization) AS 'TX %' FACET device_name, if_Description OR if_interface_name AS 'Interface' WHERE provider = 'kentik-fibre-channel' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.table"
+					},
+					"layout": {
+						"column": 6,
+						"row": 6,
+						"height": 5,
+						"width": 6
+					},
+					"title": "Fibre Channel Port Statistics",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(fcFxPortAdminMode), latest(fcFxPortOperMode), latest(fcFxPortPhysAdminStatus), latest(fcFxPortPhysOperStatus) FACET device_name, port_index WHERE provider = 'kentik-fibre-channel' LIMIT MAX"
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}
