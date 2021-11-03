@@ -8,7 +8,7 @@
       "widgets": [
         {
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.billboard"
           },
           "layout": {
             "column": 1,
@@ -16,20 +16,27 @@
             "height": 3,
             "width": 4
           },
-          "title": "CPU usage (%)",
+          "title": "Allocatable resources",
           "rawConfiguration": {
-            "legend": {
-              "enabled": false
-            },
+            "dataFormatters": [
+              {
+                "name": "Ephemeral storage bytes",
+                "precision": null,
+                "type": "humanized"
+              },
+              {
+                "name": "Allocatable memory bytes",
+                "precision": null,
+                "type": "humanized"
+              }
+            ],
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.node.allocatableCpuCoresUtilization) as 'CPU usage (%)' TIMESERIES"
+                "query": "FROM Metric SELECT latest(k8s.node.allocatableCpuCores) AS 'Allocatable CPU cores', latest(k8s.node.allocatableMemoryBytes) AS 'Allocatable memory bytes', latest(k8s.node.allocatableEphemeralStorageBytes) AS 'Ephemeral storage bytes', latest(k8s.node.allocatablePods) AS 'Allocatable pods'"
               }
             ],
-            "yAxisLeft": {
-              "zero": true
-            }
+            "thresholds": []
           }
         },
         {
@@ -68,7 +75,7 @@
             "height": 3,
             "width": 4
           },
-          "title": "Storage usage (%)",
+          "title": "CPU usage (%)",
           "rawConfiguration": {
             "legend": {
               "enabled": false
@@ -76,7 +83,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.node.fsCapacityUtilization) as 'Storage usage (%)' TIMESERIES"
+                "query": "FROM Metric SELECT max(k8s.node.allocatableCpuCoresUtilization) as 'CPU usage (%)' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -86,7 +93,7 @@
         },
         {
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
           "layout": {
             "column": 1,
@@ -94,15 +101,15 @@
             "height": 3,
             "width": 4
           },
-          "title": "Network Traffic (B/s)",
+          "title": "Storage usage (%)",
           "rawConfiguration": {
             "legend": {
-              "enabled": true
+              "enabled": false
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.node.netRxBytesPerSecond) as 'Receive bytes per second', max(k8s.node.netTxBytesPerSecond) as 'Transmit bytes per second' TIMESERIES"
+                "query": "FROM Metric SELECT max(k8s.node.fsCapacityUtilization) as 'Storage usage (%)' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -129,6 +136,32 @@
               {
                 "accountId": 0,
                 "query": "FROM Metric SELECT max(k8s.node.netErrorsPerSecond) as 'Network errors per second' TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Network Traffic (B/s)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(k8s.node.netRxBytesPerSecond) as 'Receive bytes per second', max(k8s.node.netTxBytesPerSecond) as 'Transmit bytes per second' TIMESERIES"
               }
             ],
             "yAxisLeft": {
