@@ -1,0 +1,38 @@
+providerName:
+  tag:
+    key: instrumentation.provider
+  title: Provider
+  unit: STRING
+
+ipAddress:
+  title: IP Address
+  unit: STRING
+  tag:
+    key: device_ip
+
+cpuUtilization:
+  title: CPU
+  unit: PERCENTAGE
+  query:
+    select: average(kentik.snmp.CPU)
+    from: Metric
+    where: "provider = 'kentik-fibre-channel'"
+    eventId: entity.guid
+
+memoryUtilization:
+  title: Memory
+  unit: PERCENTAGE
+  query:
+    select: average(kentik.snmp.MemoryUtilization)
+    from: Metric
+    where: "provider = 'kentik-fibre-channel'"
+    eventId: entity.guid
+
+portStatus:
+  title: Offline Ports
+  unit: COUNT
+  query:
+    select: uniqueCount(port_index)
+    from: Metric
+    where: "provider = 'kentik-fibre-channel' AND fcFxPortPhysOperStatus !='online'"
+    eventId: entity.guid

@@ -1,0 +1,219 @@
+{
+  "name": "model-data-quality",
+  "description": null,
+  "pages": [
+    {
+      "name": "model-data-quality",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 9,
+            "width": 2
+          },
+          "title": "Feature List",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT uniques(capture(metricName, r'aws\\.sagemaker\\.endpoints\\.datametrics\\.feature_(data|non_null|baseline_drift)_(?P<feature>.*)')) LIMIT MAX SINCE 10 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Feature count",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(getField(aws.sagemaker.endpoints.datametrics.feature_data_%, count)) FACET capture(metricName, r'aws\\.sagemaker\\.endpoints\\.datametrics\\.feature_(data|non_null|baseline_drift)_(?P<feature>.*)') TIMESERIES LIMIT MAX SINCE 10 day ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 6,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Feature average value",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(aws.sagemaker.endpoints.datametrics.feature_data_%) FACET capture(metricName, r'aws\\.sagemaker\\.endpoints\\.datametrics\\.feature_(data|non_null|baseline_drift)_(?P<feature>.*)') TIMESERIES LIMIT MAX SINCE 10 day ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 9,
+            "width": 2
+          },
+          "title": "Feature Importance",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(aws.sagemaker.endpoints.explainabilitymetrics.feature_%) FACET capture(metricName, r'aws.sagemaker.endpoints.explainabilitymetrics.feature_(?P<feature>.*)') as Feature limit MAX SINCE 10 days ago "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Feature  baseline drift",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(getField(aws.sagemaker.endpoints.datametrics.feature_baseline_drift_%, total)) FACET capture(metricName, r'aws\\.sagemaker\\.endpoints\\.datametrics\\.feature_(data|non_null|baseline_drift)_(?P<feature>.*)') TIMESERIES LIMIT MAX SINCE 10 day ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 6,
+            "row": 4,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Feature missing values (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT (average(getField(aws.sagemaker.endpoints.datametrics.feature_data_%, count)) - average(getField(aws.sagemaker.endpoints.datametrics.feature_non_null_%, total))) / average(getField(aws.sagemaker.endpoints.datametrics.feature_data_%,count)) * 100 FACET capture(metricName, r'aws\\.sagemaker\\.endpoints\\.datametrics\\.feature_(data|non_null|baseline_drift)_(?P<feature>.*)') LIMIT MAX TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Feature min value",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(aws.sagemaker.endpoints.datametrics.feature_data_%) FACET capture(metricName, r'aws\\.sagemaker\\.endpoints\\.datametrics\\.feature_(data|non_null|baseline_drift)_(?P<feature>.*)') TIMESERIES LIMIT MAX SINCE 10 day ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 6,
+            "row": 7,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Feature max value",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(aws.sagemaker.endpoints.datametrics.feature_data_%) WHERE aws.Namespace='aws/sagemaker/Endpoints/data-metrics' FACET capture(metricName, r'aws\\.sagemaker\\.endpoints\\.datametrics\\.feature_(data|non_null|baseline_drift)_(?P<feature>.*)') TIMESERIES LIMIT MAX SINCE 10 day ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
