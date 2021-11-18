@@ -2,7 +2,7 @@ sources:
   title: Unique Sources
   unit: COUNT
   queries:
-    kentik/vpc-flow-events:
+    kentik/aws-vpc-flow-events:
       select: uniqueCount(src_endpoint)
       from: KFlow
       where: "provider = 'kentik-vpc'"
@@ -12,8 +12,28 @@ destinations:
   title: Unique Destinations
   unit: COUNT
   queries:
-    kentik/vpc-flow-events:
+    kentik/aws-vpc-flow-events:
       select: uniqueCount(dst_endpoint)
       from: KFlow
       where: "provider = 'kentik-vpc'"
+      eventId: entity.guid
+
+egressBytes:
+  title: Egress Bytes
+  unit: BYTES
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: sum(out_bytes*sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-vpc' AND flow_direction = 'egress'"
+      eventId: entity.guid
+
+ingressBytes:
+  title: Ingress Bytes
+  unit: BYTES
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: sum(in_bytes*sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-vpc' AND flow_direction = 'ingress'"
       eventId: entity.guid
