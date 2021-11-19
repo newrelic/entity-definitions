@@ -1,113 +1,756 @@
 {
-	"name": "Kentik - Flow Devices",
+	"name": "Flow Device",
 	"description": null,
 	"pages": [
-		{
-			"name": "Kentik - Flow Devices",
-			"description": null,
-			"widgets": [
+	  {
+		"name": "Flow Device",
+		"description": null,
+		"widgets": [
+		  {
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 1,
+			  "height": 4,
+			  "width": 3
+			},
+			"title": "Flow Device Summary",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "nrqlQueries": [
 				{
-					"visualization": {
-						"id": "viz.line"
-					},
-					"layout": {
-						"column": 1,
-						"row": 1,
-						"height": 3,
-						"width": 6
-					},
-					"title": "Total Endpoints",
-					"rawConfiguration": {
-						"legend": {
-							"enabled": true
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM KFlow SELECT uniqueCount(src_addr) AS 'Sources', uniqueCount(dst_addr) AS 'Destinations' WHERE instrumentation.name = 'netflow-events' TIMESERIES"
-							}
-						],
-						"yAxisLeft": {
-							"zero": false
-						}
-					}
-				},
-				{
-					"visualization": {
-						"id": "viz.bar"
-					},
-					"layout": {
-						"column": 7,
-						"row": 1,
-						"height": 3,
-						"width": 6
-					},
-					"title": "Top 5 - Mbps per ASN",
-					"rawConfiguration": {
-						"facet": {
-							"showOtherSeries": false
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM KFlow SELECT rate(sum(in_bytes)*8/1000/1000, 1 SECOND) AS 'Mbps' FACET src_as_name OR dst_as_name AS 'Geo' WHERE instrumentation.name = 'netflow-events' AND (src_as_name IS NOT NULL OR dst_as_name IS NOT NULL) LIMIT 5"
-							}
-						]
-					}
-				},
-				{
-					"visualization": {
-						"id": "viz.line"
-					},
-					"layout": {
-						"column": 1,
-						"row": 4,
-						"height": 3,
-						"width": 6
-					},
-					"title": "Estimated Packets/sec (Flows * Sample Rate)",
-					"rawConfiguration": {
-						"facet": {
-							"showOtherSeries": false
-						},
-						"legend": {
-							"enabled": true
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM KFlow SELECT count(*) * latest(sample_rate) AS 'Packets/sec' WHERE instrumentation.name = 'netflow-events' FACET device_name TIMESERIES"
-							}
-						],
-						"yAxisLeft": {
-							"zero": true
-						}
-					}
-				},
-				{
-					"visualization": {
-						"id": "viz.bar"
-					},
-					"layout": {
-						"column": 7,
-						"row": 4,
-						"height": 3,
-						"width": 6
-					},
-					"title": "Top 5 - Mbps per Geo",
-					"rawConfiguration": {
-						"facet": {
-							"showOtherSeries": false
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM KFlow SELECT rate(sum(in_bytes)*8/1000/1000, 1 SECOND) AS 'Mbps' FACET src_geo OR dst_geo AS 'Geo' WHERE instrumentation.name = 'netflow-events' AND (src_geo IS NOT NULL OR dst_geo IS NOT NULL) LIMIT 5"
-							}
-						]
-					}
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT latest(device_name), latest(Type) AS 'Flow Type', rate(count(*),1 second) AS 'Flows per Second', latest(timestamp) AS 'Last Update', uniqueCount(src_addr, dst_addr) AS 'Observed IP Addresses' "
 				}
-			]
-		}
+			  ],
+			  "thresholds": []
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 4,
+			  "row": 1,
+			  "height": 4,
+			  "width": 5
+			},
+			"title": "Flow Bytes",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS 'Rx Bytes', sum(out_bytes) AS 'Tx Bytes' TIMESERIES AUTO "
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 9,
+			  "row": 1,
+			  "height": 4,
+			  "width": 4
+			},
+			"title": "Flow Packets",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_pkts*sample_rate) AS 'Rx Packets', sum(out_pkts*sample_rate) AS 'Tx Packets'   TIMESERIES AUTO "
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 5,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Observed Applications",
+			"rawConfiguration": {
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(application) AS 'Applications' WHERE instrumentation.name = 'netflow-events' TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.pie"
+			},
+			"layout": {
+			  "column": 3,
+			  "row": 5,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Applications",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET application LIMIT 25"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.area"
+			},
+			"layout": {
+			  "column": 8,
+			  "row": 5,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Applications",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET application LIMIT 25 TIMESERIES AUTO "
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 8,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Conversations",
+			"rawConfiguration": {
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(src_addr,dst_addr) AS Conversations WHERE instrumentation.name = 'netflow-events' TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.pie"
+			},
+			"layout": {
+			  "column": 3,
+			  "row": 8,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Conversations",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET src_addr,dst_addr LIMIT 25"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.area"
+			},
+			"layout": {
+			  "column": 8,
+			  "row": 8,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Conversations",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET src_addr, dst_addr LIMIT 25 TIMESERIES AUTO "
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 11,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Sources",
+			"rawConfiguration": {
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(src_addr) AS 'Sources' WHERE instrumentation.name = 'netflow-events' TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.pie"
+			},
+			"layout": {
+			  "column": 3,
+			  "row": 11,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Sources",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET src_addr LIMIT 25"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.area"
+			},
+			"layout": {
+			  "column": 8,
+			  "row": 11,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Sources",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET src_addr LIMIT 25 TIMESERIES AUTO"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 14,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Destinations",
+			"rawConfiguration": {
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(dst_addr) AS 'Destinations' WHERE instrumentation.name = 'netflow-events' TIMESERIES "
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.pie"
+			},
+			"layout": {
+			  "column": 3,
+			  "row": 14,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Destinations",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET dst_addr LIMIT 25"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.area"
+			},
+			"layout": {
+			  "column": 8,
+			  "row": 14,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Destinations",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET dst_addr LIMIT 25 TIMESERIES AUTO"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 17,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Geo Region Conversations",
+			"rawConfiguration": {
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(src_geo, dst_geo) AS 'Geo Conversations'WHERE instrumentation.name = 'netflow-events' TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.pie"
+			},
+			"layout": {
+			  "column": 3,
+			  "row": 17,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Geo Region Conversations",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET src_geo, dst_geo LIMIT 25"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.area"
+			},
+			"layout": {
+			  "column": 8,
+			  "row": 17,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Geo Region Conversations",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET src_geo, dst_geo LIMIT 25 TIMESERIES AUTO"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 20,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Protocols",
+			"rawConfiguration": {
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(protocol) AS 'Protocols' WHERE instrumentation.name = 'netflow-events' TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.pie"
+			},
+			"layout": {
+			  "column": 3,
+			  "row": 20,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Protocols",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET protocol LIMIT 25"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.area"
+			},
+			"layout": {
+			  "column": 8,
+			  "row": 20,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Protocols",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET protocol LIMIT 25 TIMESERIES AUTO"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 23,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Autonomous System Conversations",
+			"rawConfiguration": {
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(src_as_name, dst_as_name,dst_as) AS 'Autonomous System Conversations' WHERE instrumentation.name = 'netflow-events' TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.pie"
+			},
+			"layout": {
+			  "column": 3,
+			  "row": 23,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Autonomous System Conversations",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET src_as_name, src_as, dst_as_name,dst_as  LIMIT 25"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.area"
+			},
+			"layout": {
+			  "column": 8,
+			  "row": 23,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Top Autonomous System Conversations",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": true
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT sum(in_bytes * sample_rate) AS Bytes FACET src_as_name, src_as, dst_as_name, dst_as LIMIT 25 TIMESERIES AUTO"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.table"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 26,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Devices with most outbound partners",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(dst_addr) AS 'Destination IPS', uniqueCount(l4_dst_port) AS 'Outbound Ports' FACET src_addr AS 'Source IP' LIMIT 25"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 6,
+			  "row": 26,
+			  "height": 3,
+			  "width": 7
+			},
+			"title": "Devices with most outbound partners",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(dst_addr) FACET src_addr LIMIT 25 TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.table"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 29,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Devices with most inbound partners",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(src_addr) AS 'Source IPS', uniqueCount(l4_dst_port) AS 'Incoming Ports' FACET dst_addr AS 'Destination IP' LIMIT 25 "
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 6,
+			  "row": 29,
+			  "height": 3,
+			  "width": 7
+			},
+			"title": "Devices with most inbound partners",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "FACET": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM KFlow SELECT uniqueCount(src_addr) FACET dst_addr LIMIT 25 TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  }
+		]
+	  }
 	]
-}
+  }
