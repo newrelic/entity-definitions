@@ -357,6 +357,14 @@ totalQueries:
 
 You can check more information on [summary metrics configuration options in our docs][summary_metrics]
 
+## Wrapping up
+
+With all this we have a working definition of a new entityType, you can now commit the changes and open a new PR for it.
+
+After we merge it and create a new release all New Relic users will take advantage of your contribution!
+By default all entity types will display under `Your system` category in the Explorer.
+
+This can be changed if you think that is not the best place for your new type but you will need to ask us for that change when opening the PR.
 
 [guid_spec]: guid_spec.md
 [synthesis]: synthesis.md
