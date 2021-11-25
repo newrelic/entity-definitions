@@ -35,4 +35,8 @@ configuration:
 
 If `alertable` is set to `true`, the entity's metadata will include a field `alertSeverity` that's updated when the telemetry associated to this entity breaks an alerting condition.
 
+!!!
+TODO: ADd an image of health using alertSeverity here?
+!!!
+
 [synthesis]: synthesis.md

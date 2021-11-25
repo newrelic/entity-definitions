@@ -202,6 +202,52 @@ Imagine you have a PiHole server and it suddenly shuts down so it stops reportin
 
 That’s why we default to keeping the entity for eight days. But you can see more options on our [lifecycle docs][lifecycle]
 
+## Entity overview
+
+Now we are creating entities and we ensure that they are being deleted on a reasonable period of time after they stop reporting. Now we will focus on how we display them.
+
+The first thing we should focus on is the overview, this is the view the user will see when it opens the entity
+
+!!!
+TODO: [screen of a pihole entity overview]
+!!!
+
+Create a file named `dashboard.json` and reference it into the `definition.yml` file
+
+```yaml
+domain: EXT
+type: PIHOLE
+
+synthesis:
+     # ...
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  # ...
+```
+
+The easiest way to create an overview is to actually [build a dashboard](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/)
+
+After you have a dashboard that looks how you would like the overview of an entity to be, [export it as json](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/dashboards-charts-import-export-data/#dashboards) and copy the content into the `dashboard.json` file.
+
+<details>
+  <summary>Different sources of data</summary>
+When you have different sources of data you can create multiple dashboards for each provider.
+The only requirement is that the json files end up with `dashboard.json` as the name.
+
+And the definition would look similar to
+
+```yaml
+dashboardTemplates:
+  pihole-exportert:
+    template: pihole-exporter-dashboard.json
+  pihole-windows:
+    template: pihole-windows.json
+```
+</details>
 
 
 
