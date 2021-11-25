@@ -5,7 +5,7 @@ but if you are looking only for the configuration options here is the list:
 
 - [GUID Spec][guid_spec]
 - [Synthesis rules][synthesis]
-- [Lifecycle](lifecycle.md)
+- [Lifecycle][lifecycle]
 - [Entity Overview](entity_overview.md)
 - [Golden Metrics](golden_metrics.md)
 - [Summary Metrics](summary_metrics.md)
@@ -172,7 +172,39 @@ synthesis:
 
 ## Entity Lifecycle
 
+At this point we have a new entity type and one rule that creates entities matching telemetry.
+
+Now we need to decide on two main properties of the entity.
+Can we set up alerts for this entity? If the answer is yes we need to add a new property called `alertable` as part of the configuration section.
+
+```yaml
+domain: EXT
+type: PIHOLE
+
+synthesis:
+  rules:
+  - identifier: hostname
+    encodeIdentifierInGUID: true
+    name: hostname
+    conditions:
+    - attribute: metricName
+      prefix: pihole_
+  tags:
+     aws.az:
+
+configuration:
+  alertable: true
+```
+
+The last question is how long should we keep the entity after it stopped reporting telemetry?
+
+Imagine you have a PiHole server and it suddenly shuts down so it stops reporting telemetry. If we deleted the entity at that same moment you couldn’t try to debug why it stopped in the first place!
+
+That’s why we default to keeping the entity for eight days. But you can see more options on our [lifecycle docs][lifecycle]
+
+
 
 
 [guid_spec]: guid_spec.md
 [synthesis]: synthesis.md
+[lifecycle]: lifecycle.md
