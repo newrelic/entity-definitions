@@ -24,7 +24,6 @@ If you are looking onto the specifications of each feature review the appropiate
 - [GUID Spec](docs/guid_spec.md)
 - [Synthesis](docs/synthesis.md)
 - [Lifecycle](docs/lifecycle.md)
-- [Entity Overview](docs/entity_overview.md)
 - [Golden Metrics](docs/golden_metrics.md)
 - [Summary Metrics](docs/summary_metrics.md)
 

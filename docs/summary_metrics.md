@@ -1,8 +1,9 @@
 # Summary Metrics
 
-Summary metrics are data related to entities that describes how certain parameters are behaving based the on the available telemetry. 
+Summary metrics are data related to entities that describes how certain parameters are behaving based on the available telemetry. 
 
-We recommend to add a maximum of 10 metrics per entityType.
+We recommend to add 3 metrics and never more of 10.
+We also recommend to keep them the same as the golden metrics defined.
 
 ## Defining summary metrics
 

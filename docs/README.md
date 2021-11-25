@@ -6,9 +6,8 @@ but if you are looking only for the configuration options here is the list:
 - [GUID Spec][guid_spec]
 - [Synthesis rules][synthesis]
 - [Lifecycle][lifecycle]
-- [Entity Overview](entity_overview.md)
-- [Golden Metrics](golden_metrics.md)
-- [Summary Metrics](summary_metrics.md)
+- [Golden Metrics][golden_metrics]
+- [Summary Metrics][summary_metrics]
 
 ## Main concepts
 
@@ -249,8 +248,118 @@ dashboardTemplates:
 ```
 </details>
 
+## Golden Metrics
+
+Your entity will probably have a lot of metrics and information to display, but in-between all that information there’s always a few metrics that are the main ones.
+
+Golden metrics is the list of those important metrics. For example a `HOST` will focus on CPU, memory, network & disk space while an `APPLICATION` is more concerned on response times, throughput and error counts.
+
+For our `PIHOLE` entity we will define two metrics, the total DNS queries received and the number of ads blocked.
+
+First you will need to create a file named `golden_metrics.yml` under your entity type folder.
+
+```yaml
+totalQueries:
+  title: Total queries
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(pihole_dns_queries_all_types)
+adsBlockedToday:
+  title: Ads Blocked Today
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(pihole_ads_blocked_today)
+```
+
+These queries will display in the following way in New Relic
+
+!!!
+TODO [Images of how it looks in a few places in the UI ]
+!!!
+
+<details>
+  <summary>Different sources of data</summary>
+We can define the same golden metric with different queries for each provider
+
+```yaml
+totalQueries:
+  title: Total queries
+  unit: COUNT
+  queries:
+    pihole-exporter:
+      select: latest(pihole_dns_queries_all_types)
+    pihole-windows:
+      select: latest(all_dns_queries)
+```
+</details>
+
+You can check more information on [golden metrics configuration options in our docs][golden_metrics]
+
+## Summary metrics
+
+Summary metrics are also a definition of important metrics for your entity type,
+The main change is where they are used, these metrics will only be displayed in the [Explorer list view](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/new-relic-explorer-view-performance-across-apps-services-hosts/#find)
+
+
+Our recommendation is to provide at most three metrics to display and make them the same as the golden metrics.
+
+We are working towards removing this definition and it will use the golden metrics in the future.
+In order to provide summary metrics you need to create a file named `summary_metrics.yml` inside the entity type folder.
+
+We will provide the same golden metrics as summary metrics for our PiHole entities.
+
+```yaml
+totalQueries:
+  title: Total queries
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(pihole_dns_queries_all_types)
+      from: Metric
+      eventId: entity.guid
+adsBlockedToday:
+  title: Ads Blocked Today
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(pihole_ads_blocked_today)
+      from: Metric
+      eventId: entity.guid
+```
+
+!!!
+TODO: [image of the list view displaying these metrics]
+!!!
+
+As you can see the configurations are mostly the same as the golden metrics.
+
+<details>
+  <summary>Different sources of data</summary>
+We can define the same summary metric with different queries for each provider
+
+```yaml
+totalQueries:
+  title: Total queries
+  unit: COUNT
+  queries:
+    pihole-exporter:
+      select: latest(pihole_dns_queries_all_types)
+      from: Metric
+      eventId: entity.guid
+    pihole-windows:
+      select: latest(all_dns_queries)
+      from: Metric
+      eventId: entity.guid
+```
+</details>
+
+You can check more information on [summary metrics configuration options in our docs][summary_metrics]
 
 
 [guid_spec]: guid_spec.md
 [synthesis]: synthesis.md
 [lifecycle]: lifecycle.md
+[golden_metrics]: golden_metrics.md
+[summary_metrics]: summary_metrics.md
