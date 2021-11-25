@@ -15,9 +15,18 @@ By proposing changes to this repository you can achieve the following:
 
 All notable changes are defined in the [releases page](https://github.com/newrelic/entity-definitions/releases).
 
-## Proposing changes
+## Getting started
 
-Please review [our documentation](./docs/README.md) on how to create a new entity type.
+If you are looking into creating a new entity type from scratch review [our documentation](./docs/README.md).
+
+If you are looking onto the specifications of each feature review the appropiate documentation:
+
+- [GUID Spec](docs/guid_spec.md)
+- [Synthesis](docs/synthesis.md)
+- [Lifecycle](docs/lifecycle.md)
+- [Entity Overview](docs/entity_overview.md)
+- [Golden Metrics](docs/golden_metrics.md)
+- [Summary Metrics](docs/summary_metrics.md)
 
 ## Testing and validation
 
