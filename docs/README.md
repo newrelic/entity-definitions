@@ -6,6 +6,7 @@ but if you are looking only for the configuration options here is the list:
 - [GUID Spec][guid_spec]
 - [Synthesis rules][synthesis]
 - [Lifecycle][lifecycle]
+- [Entity Summary][entity_summary]
 - [Golden Metrics][golden_metrics]
 - [Golden Tags][golden_tags]
 - [Summary Metrics][summary_metrics]
@@ -202,14 +203,14 @@ Imagine you have a PiHole server and it suddenly shuts down so it stops reportin
 
 That’s why we default to keeping the entity for eight days. But you can see more options on our [lifecycle docs][lifecycle]
 
-## Entity overview
+## Entity summary
 
-Now we are creating entities and we ensure that they are being deleted on a reasonable period of time after they stop reporting. Now we will focus on how we display them.
+Now we are creating entities and we ensure that they are being deleted on a reasonable period of time after they stop reporting. Next we will focus on how we display them.
 
-The first thing we should focus on is the overview, this is the view the user will see when it opens the entity
+The first thing we create is the entity summary, this is the view the user will see when it opens the entity
 
 <!--
-TODO: [screen of a pihole entity overview]
+TODO: [screen of a pihole entity summary]
 -->
 
 Create a file named `dashboard.json` and reference it into the `definition.yml` file
@@ -248,6 +249,8 @@ dashboardTemplates:
     template: pihole-windows.json
 ```
 </details>
+
+You can check more information about [entity overview in our docs][entity_overview]
 
 ## Golden Metrics
 
@@ -371,6 +374,7 @@ This can be changed if you think that is not the best place for your new type bu
 [guid_spec]: guid_spec.md
 [synthesis]: synthesis.md
 [lifecycle]: lifecycle.md
+[entity_summary]: entity_summary.md
 [golden_metrics]: golden_metrics.md
 [golden_tags]: golden_tags.md
 [summary_metrics]: summary_metrics.md

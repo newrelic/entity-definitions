@@ -17,13 +17,14 @@ All notable changes are defined in the [releases page](https://github.com/newrel
 
 ## Getting started
 
-If you are looking into creating a new entity type from scratch review [our documentation](./docs/README.md).
+If it's your first time with this repository we recommend to check the [creating an entity type example](./docs/README.md)
 
-If you are looking onto the specifications of each feature review the appropiate documentation:
+If you have experience with the repo and are looking for a specific section documentation:
 
 - [GUID Spec](docs/guid_spec.md)
 - [Synthesis](docs/synthesis.md)
 - [Lifecycle](docs/lifecycle.md)
+- [Entity Summary](docs/entity_summary.md)
 - [Golden Metrics](docs/golden_metrics.md)
 - [Golden Tags](docs/golden_tags.md)
 - [Summary Metrics](docs/summary_metrics.md)
