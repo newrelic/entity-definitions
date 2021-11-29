@@ -1,6 +1,6 @@
 # Golden Metrics
 
-The most important metrices for a specific entity type.
+The most important metrics for a specific entity type.
 
 We allow a maximum of 10 metrics but recommend no more than 3.
 
@@ -90,7 +90,7 @@ The unit of the metric must be a string with one of the following values:
 
 ### Multiple sources of data
 
-In the cases where the entity type can be ingested from multiple sources, you'll be required to provide a different query implementation per source.
+In the cases where the entity type can be ingested from multiple sources, you'll be required to provide a different query implementation for each source.
 
 In this example `prometheus` and `newRelic` are the values the entity must have in the `instrumentation.provider` tag.
 The first tag value that matches with the entity will be the one used to build the queries.
@@ -108,8 +108,8 @@ memoryUsage:
 ```
 
 There's also the possibility to specify both provider and name in the form of `{provider}/{name}`.
-1.  You must add the provider as a value of the `instrumentation.provider` tag. (eg provider: `kentik`, as in the example)
-2.  You must add the name of the provider in the `instrumentation.name` tag. (eg provider name: `netflow-events`, as in the example)
+1.  You must add the provider as a value of the `instrumentation.provider` tag. (e.g. provider: `kentik`, as in the example)
+2.  You must add the name of the provider in the `instrumentation.name` tag. (e.g. provider name: `netflow-events`, as in the example)
 
 Is also important to note that the semantics of the queries should match between each implementation. This includes things like average vs counts, units and other details.
 

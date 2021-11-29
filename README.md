@@ -6,10 +6,10 @@ This repository holds all the entity types that exist in New Relic and their con
 
 By proposing changes to this repository you can achieve the following:
 - Create a new entity type
-- Generate entities from a new source of data (telemetry, logs, etc..)
+- Generate entities from a new source of data (telemetry, logs, etc)
 - Change how an entity is represented in different experiences via golden metrics ( [New Relic Lookout](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/new-relic-lookout-monitor-your-estate-glance/), [workloads](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/workloads/workloads-isolate-resolve-incidents-faster/), etc) and summary metrics ([entity explorer](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/new-relic-explorer-view-performance-across-apps-services-hosts/))
 - Modify the overview of an entity type
-- Modify the lifecycle of an entity and make them alertable
+- Modify the lifecycle of an entity and make them `alertable`
 
 ## Changelog
 
@@ -17,7 +17,8 @@ All notable changes are defined in the [releases page](https://github.com/newrel
 
 ## Getting started
 
-If it's your first time with this repository we recommend to check the [creating an entity type example](./docs/README.md)
+For newcomers, we recommend checking the [creating an entity type example](./docs/README.md).
+This document will walk through creating an entity type from scratch.
 
 If you have experience with the repo and are looking for a specific section documentation:
 

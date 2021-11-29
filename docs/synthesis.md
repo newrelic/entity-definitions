@@ -1,10 +1,10 @@
-# Syntehsis rules
+# Synthesis rules
 
 Synthesis is the process of creating entities from telemetry. Given some rules we try to match them against all the telemetry in order to create entities and create tags for them.
 
 Synthesis rules should be defined in the `definition.yaml` file under a `synthesis.rules` section.
 
-The requirement for a rule is to define the telemetry attribute that provides the `identifier` of the entity and the attribute that will be used as the `name`.
+The requirement for a rule is to define the telemetry attribute that provides the `identifier` and the attribute that will be used as the `name` of the entity.
 
 ```yaml
 synthesis:
@@ -66,7 +66,8 @@ synthesis:
 
 ### Tags
 
-After a rule matches you can also define a set of attributes that can be copied into entity tags.
+You can also define a set of attributes that can be copied into entity tags.
+These attributes will only be copied after a datapoint matches a rule.
 
 ```yaml
 synthesis:
@@ -74,16 +75,18 @@ synthesis:
   - identifier: hostname
     name: hostname
     tags:
-	  aws.az:
+      aws.az:
 ```
 
 If the attribute `aws.az` is present in the data point that matched the rule it's value will be copied into a tag named `aws.az` into the entity.
 
-By default an entity tag is a list of values and any new tag will be added to the list.
+- One value per tag
+
+By default, an entity tag is a list of values and any new tag will be added to the list.
 There are a few cases where you want the new value to actually replace the old ones,
 for example a Kubernetes POD has a `k8s.status` tag that defines the last status of the pod.
 
-Having a list of values like `[running, stopped, restarting]` doesn't provide any value. But having the last state allows us to filter by all the `restarting` pods.
+Having a list of values like `[running, stopped, restarting]` doesn't provide any value, but having the last state allows us to filter by all the `restarting` pods.
 
 In those cases you can use `multiValue: false` to ensure only the last value is kept. 
 
@@ -97,9 +100,11 @@ synthesis:
       multiValue: false
 ```
 
+- Rename tags
+
 You can also change the name of the tag to use another value rather than the name in the attribute.
-In general we suggest to not use this configuration unless you are trying to use more standard namings,
-the reason is that sometimes for the user is difficult to see the difference between entity tags and telemetry attributes and chaning the names could cause even more confussion.
+In general, we suggest to not use this configuration unless you are trying to use more standard namings,
+the reason is that sometimes for the user is difficult to see the difference between entity tags and telemetry attributes and changing the names could cause even more confusion.
 
 A good use case for this feature is `CONTAINER`, we have different sources for a container (docker, kubernetes, etc) and we rename the tags to use a standard naming instead of per source naming.
 
@@ -120,13 +125,13 @@ synthesis:
 
 | **Name** | **Type** | **Description**  |
 | -------- | -------- | ---------------- |
-| multiValue | Boolean  | Defaults to `true`. If set to `false` any update will produce a replace of all existing values into the tag. Making it efectively a tag with only one value |
+| multiValue | Boolean  | Defaults to `true`. If set to `false` any update will produce a replace of all existing values into the tag. Making it effectively a tag with only one value |
 | entityTagName | String | Defaults to the attribute name. If provided the attribute value will be copied into a tag with this name |
 
 
 #### Default tags
 
-There's a set of tags that will be always added to an entity, these are:
+There's a set of tags that will always be added to an entity, these are:
 
 - `account`
 - `accountId`

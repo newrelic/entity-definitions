@@ -20,9 +20,10 @@ goldenTags:
 - Project
 ```
 
-If the entity is missing a tag from the golden tags that tag will not be displayed.
+Entities that don't have the defined tags will simply not show them.
 
-We recommend to unify tags to have a common structure between sources of data. But if you have a case where multiple sources bring different tags, you can specify all of them, only the tags existing for that specific entity will be displayed.
+We recommend unifying tags to have a common structure between sources of data.
+If you have a case where multiple sources bring different tags, you can specify all of them, only the tags existing for that specific entity will be displayed.
 
 ```yaml 
 goldenTags:

@@ -27,7 +27,7 @@ identity of the entity.
 The domain could be a product, such as `MOBILE` or `INFRA`, or a more
 general category, such as `CLOUD`.
 
-Unless you have a requirement to use a specific domain we recommend the usage of `EXT`
+We recommend to use `EXT` unless you have a requirement to use a specific domain.
 
 ## Type
 
@@ -49,11 +49,11 @@ by internal systems.
 
 ## Additional guidelines
 
-- If a third-party identifier is used as a domain ID, that identifier
+- If a third-party identifier is used as an identifier, that identifier
   should be documented by the third party as a primary and invariant
   identifying value of the entity.
-- If the domain ID is based on multiple values, these values:
+- If the identifier is based on multiple values, these values:
     - Must only consist of values required to uniquely identify the
       entity within its domain
     - Must not include metadata, superfluous to identifying the entity
-    - Must be used in a consistent way to generate the domain ID
+    - Must be used consistently to generate the identifier

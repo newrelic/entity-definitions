@@ -2,8 +2,8 @@
 
 Summary metrics are data related to entities that describes how certain parameters are behaving based on the available telemetry. 
 
-We recommend to add 3 metrics and never more of 10.
-We also recommend to keep them the same as the golden metrics defined.
+We recommend adding 3 metrics and never more of 10.
+We also recommend keeping them the same as the golden metrics defined.
 
 ## Defining summary metrics
 
@@ -76,22 +76,22 @@ The `query` map contains the information that is used to define a NRDB-query-bas
 
 ### Derive string 
 
-The derive string can be used to derive a summary metric out of others.
+The `derive` string can be used to derive a summary metric out of others.
 It is possible to reference other metrics using `@metricName`. Metrics can be added, subtracted, multiplied and divided by other metrics or numbers.
 
 Example: 
 
     (@metricA * 100) / (@metricB + @metricC)
 
-If a derive metric references a metric that does not exist, it will result in an error.
-If a derive metric references a metric whose value is `null`, its value will be `null` too. E.g. 
+If a derived metric references a metric that does not exist, it will result in an error.
+If a derived metric references a metric whose value is `null`, its value will be `null` too. E.g. 
 
     @metricA + @metricB + 100
 
 If either `metricA` or `metricB` is null, the value of the derived metric will be `null` too.
 
 Aside from normal mathematical operations, the `||` (or) operator can be used, which
-returns the value of the first metric that has a value different than `null`. e.g. 
+returns the value of the first metric that has a value different from `null`. e.g. 
 
     @metricA || 10
 
@@ -100,7 +100,7 @@ It returns the value of `metricA` if it's not `null`, `10` otherwise.
 
 ### Roll-up entities
 
-In the cases where the entity type can be ingested from multiple sources, you'll be required to provide a different query implementation per source. In this case, you should use `queries` instead of `query`
+In the cases where the entity type can be ingested from multiple sources, you'll be required to provide a different query implementation for each source. In this case, you should use `queries` instead of `query`
 
 ```yaml
 memoryUsage:
@@ -129,8 +129,8 @@ destinations:
 ```
 
 There's also the possibility to specify both provider and name in the form of `{provider}/{name}`.
-1.  You must add the provider as a value of the `instrumentation.provider` tag. (eg provider: `kentik`, as in the example)
-2.  You must add the name of the provider in the `instrumentation.name` tag. (eg provider name: `netflow-events`, as in the example)
+1.  You must add the provider as a value of the `instrumentation.provider` tag. (e.g. provider: `kentik`, as in the example)
+2.  You must add the name of the provider in the `instrumentation.name` tag. (e.g. provider name: `netflow-events`, as in the example)
 
 Is also important to note that the semantics of the queries should match between each implementation. This includes things like average vs counts, units and other details.
 
