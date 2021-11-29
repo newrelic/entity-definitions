@@ -7,6 +7,7 @@ but if you are looking only for the configuration options here is the list:
 - [Synthesis rules][synthesis]
 - [Lifecycle][lifecycle]
 - [Golden Metrics][golden_metrics]
+- [Golden Tags][golden_tags]
 - [Summary Metrics][summary_metrics]
 
 ## Main concepts
@@ -59,9 +60,9 @@ We call this process [synthesis][synthesis].
 
 A datapoint needs to contain at least two attributes in the rule in order to identify and generate an entity, those are `identifier` and `name`.
 
-!!!
+<!--
 TODO: add an image or table on the PiHole telemetry here.
-!!!
+-->
 
 After checking PiHole telemetry we decided on `hostname` being the name of the entity and also the identifier.
 So we add that information into the definition file.
@@ -207,9 +208,9 @@ Now we are creating entities and we ensure that they are being deleted on a reas
 
 The first thing we should focus on is the overview, this is the view the user will see when it opens the entity
 
-!!!
+<!--
 TODO: [screen of a pihole entity overview]
-!!!
+-->
 
 Create a file named `dashboard.json` and reference it into the `definition.yml` file
 
@@ -275,9 +276,9 @@ adsBlockedToday:
 
 These queries will display in the following way in New Relic
 
-!!!
+<!--
 TODO [Images of how it looks in a few places in the UI ]
-!!!
+-->
 
 <details>
   <summary>Different sources of data</summary>
@@ -296,6 +297,7 @@ totalQueries:
 </details>
 
 You can check more information on [golden metrics configuration options in our docs][golden_metrics]
+You can also define [golden tags for your type][golden_tags]
 
 ## Summary metrics
 
@@ -329,9 +331,9 @@ adsBlockedToday:
       eventId: entity.guid
 ```
 
-!!!
+<!--
 TODO: [image of the list view displaying these metrics]
-!!!
+-->
 
 As you can see the configurations are mostly the same as the golden metrics.
 
@@ -370,4 +372,5 @@ This can be changed if you think that is not the best place for your new type bu
 [synthesis]: synthesis.md
 [lifecycle]: lifecycle.md
 [golden_metrics]: golden_metrics.md
+[golden_tags]: golden_tags.md
 [summary_metrics]: summary_metrics.md

@@ -25,6 +25,7 @@ If you are looking onto the specifications of each feature review the appropiate
 - [Synthesis](docs/synthesis.md)
 - [Lifecycle](docs/lifecycle.md)
 - [Golden Metrics](docs/golden_metrics.md)
+- [Golden Tags](docs/golden_tags.md)
 - [Summary Metrics](docs/summary_metrics.md)
 
 ## Testing and validation
