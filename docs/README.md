@@ -220,7 +220,7 @@ configuration:
   # ...
 ```
 
-The easiest way to create an overview is to [build a New Relic One dashboard](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/). Once the dashboard looks like your desired entity overview, [export it as json](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/dashboards-charts-import-export-data/#dashboards), and copy the content to the `dashboard.json` file.
+The easiest way to create a summary is to [build a New Relic One dashboard](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/). Once the dashboard looks like your desired entity summary, [export it as json](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/dashboards-charts-import-export-data/#dashboards), and copy the content to the `dashboard.json` file.
 
 <details>
   <summary>Different sources of data</summary>
@@ -235,7 +235,7 @@ dashboardTemplates:
 ```
 </details>
 
-You can check more information about [an entity's overview in our docs][entity_overview].
+You can check more information about [an entity's summary in our docs][entity_summary].
 
 ## Golden Metrics
 
