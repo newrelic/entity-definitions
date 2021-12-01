@@ -1,14 +1,12 @@
 # Golden Tags
 
-Golden Tags are the most important tags of an entity to display.
+Golden Tags are the most important tags an entity displays, they're used to show a quick preview of the entity.
 
-These are used when the user is seeing a quick preview of the entity.
-
-We recommend no more than 10 tags but 20 is the maximum to display.
+While we allow up to 20 tags, we recommend to use no more than 10.
 
 ## Defining golden tags
 
-Golden tags are defined under the `definition.yaml` file under `goldenTags`
+Golden tags are defined in the `definition.yaml` file, under `goldenTags`. Entities that don't have defined tags will simply not show them.
 
 ```yaml
 domain: APM
@@ -20,10 +18,9 @@ goldenTags:
 - Project
 ```
 
-Entities that don't have the defined tags will simply not show them.
-
 We recommend unifying tags to have a common structure between sources of data.
-If you have a case where multiple sources bring different tags, you can specify all of them, only the tags existing for that specific entity will be displayed.
+
+If multiple sources bring different tags, you can specify all of them, but only tags which exist for that specific entity will be displayed.
 
 ```yaml 
 goldenTags:
