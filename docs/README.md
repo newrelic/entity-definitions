@@ -228,7 +228,7 @@ When you have different sources of data you can create multiple dashboards for e
 
 ```yaml
 dashboardTemplates:
-  pihole-exportert:
+  pihole-exporter:
     template: pihole-exporter-dashboard.json
   pihole-windows:
     template: pihole-windows.json
