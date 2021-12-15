@@ -1,0 +1,892 @@
+{
+  "name": "VPC Network",
+  "description": null,
+  "pages": [
+    {
+      "name": "VPC Network",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 2
+          },
+          "title": "VPC Network Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT latest(device_name) AS 'VPC Name', rate(count(*),1 second) as 'Flows per Second', latest(timestamp) as 'Last Update', uniqueCount(src_, dst_addr) as 'Observed IP Addresses', uniqueCount(src_endpoint, dst_endpoint) as 'Observed Endpoint Tuples'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Flow Bytes",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS 'Ingress Bytes', sum(out_bytes*sample_rate) AS 'Egress Bytes' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 1,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Flow Packets",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_pkts*sample_rate) AS 'Ingress Packets', sum(out_pkts*sample_rate) AS 'Egress Packets' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Observed Applications",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(application) AS 'Applications' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Inbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET application LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Inbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET application LIMIT 25 TIMESERIES 5 MINUTES "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 8,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Outbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET application LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "layout": {
+            "column": 10,
+            "row": 4,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Outbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET application LIMIT 25 TIMESERIES 5 MINUTES "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Sources",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(src_addr) AS 'Sources' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Sources",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET src_addr LIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 7,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Sources",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET src_addr LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Destinations",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(dst_addr) AS 'Destinations' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 10,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Destinations",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET dst_addr LIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 10,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Destinations",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET dst_addr LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Protocols",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(protocol) AS 'Protocols' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Inbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET protocol LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 13,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Inbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET protocol LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 8,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Outbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET protocol LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 10,
+            "row": 13,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Outbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET protocol LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Geo Region Conversations",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(src_geo, dst_geo) AS 'Geo Conversations' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 16,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Inbound Geo Regions",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET src_geo LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 16,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Inbound Geo Regions",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET src_geo LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 8,
+            "row": 16,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Outbound Geo Regions",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET dst_geo LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 10,
+            "row": 16,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Outbound Geo Regions",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET dst_geo LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 19,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Autonomous System Conversations",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(src_as, dst_as) AS 'Autonomous System Conversations' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 19,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Inbound Autonomous Systems",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET src_as_name LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 19,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Inbound Autonomous Systems",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(in_bytes*sample_rate) AS Bytes FACET src_as_name LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 8,
+            "row": 19,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Outbound Autonomous Systems",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET dst_as_name LIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 10,
+            "row": 19,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Outbound Autonomous Systems",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT sum(out_bytes*sample_rate) AS Bytes FACET dst_as_name LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 22,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Devices with most outbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(dst_addr) AS 'Destination IPS', uniqueCount(l4_dst_port) AS 'Outbound Ports' FACET src_addr AS 'Source IP' LIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 22,
+            "height": 3,
+            "width": 8
+          },
+          "title": "Devices with most outbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(dst_addr) AS 'Destinations' FACET src_addr AS 'Source' LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 25,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Devices with most inbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(src_addr) AS 'Source IPS', uniqueCount(l4_dst_port) AS 'Incoming Ports' FACET dst_addr AS 'Destination IP' LIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 25,
+            "height": 3,
+            "width": 8
+          },
+          "title": "Devices with most inbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KFlow SELECT uniqueCount(src_addr) AS 'Sources' FACET dst_addr AS 'Destination' LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

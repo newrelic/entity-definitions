@@ -1,33 +1,39 @@
-endpoints:
-  title: Endpoints
+sources:
+  title: Unique Sources
   unit: COUNT
-  query:
-    select: uniqueCount(ip_address)
-    from: Metric
-    where: "metricName LIKE 'kentik.rollup.vpc.%.bytes'"
-    eventId: entity.guid
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: uniqueCount(src_endpoint)
+      from: KFlow
+      where: "provider = 'kentik-vpc'"
+      eventId: entity.guid
 
-conversations:
-  title: Conversations
+destinations:
+  title: Unique Destinations
   unit: COUNT
-  query:
-    select: uniqueCount(tuple(ip_address,port))
-    from: Metric
-    where: "metricName LIKE 'kentik.rollup.vpc.%.bytes'"
-    eventId: entity.guid
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: uniqueCount(dst_endpoint)
+      from: KFlow
+      where: "provider = 'kentik-vpc'"
+      eventId: entity.guid
 
-transmitBps:
-  title: Transmit (bps)
-  unit: BYTES_PER_SECOND
-  query:
-    select: rate(sum(kentik.rollup.vpc.xmt.bytes)*8, 1 second)
-    from: Metric
-    eventId: entity.guid
+egressBytes:
+  title: Egress Bytes
+  unit: BYTES
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: sum(out_bytes*sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-vpc' AND flow_direction = 'egress'"
+      eventId: entity.guid
 
-receiveBps:
-  title: Receive (bps)
-  unit: BYTES_PER_SECOND
-  query:
-    select: rate(sum(kentik.rollup.vpc.rcv.bytes)*8, 1 second)
-    from: Metric
-    eventId: entity.guid
+ingressBytes:
+  title: Ingress Bytes
+  unit: BYTES
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: sum(in_bytes*sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-vpc' AND flow_direction = 'ingress'"
+      eventId: entity.guid

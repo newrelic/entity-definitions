@@ -1,9 +1,53 @@
 systemLoad:
   title: System Load
-  query:
-    select: sum(datadog.system.load.15)
+  queries:
+    datadog:
+      select: sum(datadog.system.load.15)
+    flexagent:
+      select: latest(loadAverageFifteenMinute)
+      from: FlexSystemSample
+      eventId: entity.guid
+
+cpuPercent:
+  title: CPU Percent
+  unit: PERCENTAGE
+  queries:
+    datadog:
+      select: max(datadog.system.cpu.system)
+    flexagent:
+      select: latest(cpuPercent)
+      from: FlexSystemSample
+      eventId: entity.guid
 
 systemMemory:
   title: System Memory
-  query:
-    select: sum(datadog.system.mem.total) - sum(datadog.system.mem.usable)
+  unit: BYTES
+  queries:
+    datadog:
+      select: sum(datadog.system.mem.total) - sum(datadog.system.mem.usable)
+    flexagent:
+      select: latest(memoryFreeBytes)
+      from: FlexSystemSample
+      eventId: entity.guid
+
+memoryPercent:
+  title: Memory Percent
+  unit: PERCENTAGE
+  queries:
+    datadog:
+      select: ((sum(datadog.system.mem.total) - sum(datadog.system.mem.usable))/sum(datadog.system.mem.total)) * 100
+    flexagent:
+      select: latest(memoryUsedPercent)
+      from: FlexSystemSample
+      eventId: entity.guid
+
+diskPercent:
+  title: Disk Percent
+  unit: PERCENTAGE
+  queries:
+    datadog:
+      select: max(datadog.system.disk.system)
+    flexagent:
+      select: latest(diskUsedPercent)
+      from: FlexSystemSample
+      eventId: entity.guid
