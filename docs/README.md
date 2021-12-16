@@ -17,6 +17,14 @@ Before starting this journey you need a clear understanding of the main concepts
  * If entities are a new concept to you, check our documentation on [what's an entity](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/what-entity-new-relic/).
  * You can also read about our [GUID and how it's composed][guid_spec] to better understand some concepts.
 
+## Quick reference
+
+Overall, these are the files you can provide to configure your new entity:
+* `definition.yml` to define the entity type and main properties **(required)**
+* `dashboard.json` to configure how the new entity would look like in New Relic One
+* `golden_metrics.yml` to define the golden metrics for the entity type
+* `summary_metrics.yml` to define the summary metrics for the entity type
+
 ## The PiHole entity
 
 For example, let's create a [PiHole](https://pi-hole.net/) entity. This is an actual New Relic entity, and you can read more [here](https://github.com/newrelic/entity-definitions/tree/main/definitions/ext-pihole).
