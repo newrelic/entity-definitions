@@ -50,8 +50,9 @@ errorRate:
   unit: PERCENTAGE
   queries:
     opentelemetry:
-      select: filter(count(*), where error.message IS NOT NULL) / count(*) * 100
+      select: filter(count(*), where otel.status_code = 'ERROR') / count(*) * 100
       from: Span
+      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
       eventId: entity.guid
     kamon-agent:
       select: filter(sum(http.server.requests), where http.status_code = '5xx') / sum(http.server.requests) * 100
