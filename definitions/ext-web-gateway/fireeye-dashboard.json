@@ -1,0 +1,333 @@
+{
+  "name": "FireEye Web Gateway",
+  "description": null,
+  "pages": [
+    {
+      "name": "FireEye Web Gateway",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 5,
+            "width": 4
+          },
+          "title": "Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID',  latest(hardware_model) AS 'Hardware Model', latest(serial_number) AS 'Serial Number', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', WHERE instrumentation.name = 'fireeye'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 1,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.CPU) AS 'CPU Utilization %' WHERE instrumentation.name = 'fireeye'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 1,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Memory Utilization %' WHERE instrumentation.name = 'fireeye'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "height": 4,
+            "width": 4
+          },
+          "title": "CPU Utilization Timeline",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.CPU) AS 'Average', min(kentik.snmp.CPU) AS 'Min', max(kentik.snmp.CPU) AS 'Max' WHERE instrumentation.name = 'fireeye' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Memory Utilization Timeline",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.MemoryUtilization) AS 'Average', min(kentik.snmp.MemoryUtilization) AS 'Min', max(kentik.snmp.MemoryUtilization) AS 'Max' WHERE instrumentation.name = 'fireeye' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "height": 4,
+            "width": 2
+          },
+          "title": "Health Checks",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.feSystemStatus) AS 'System Status', latest(feTemperatureIsHealthy) AS 'Temp Healthy?', latest(feRaidIsHealthy) AS 'RAID Healthy?', latest(fePowerSupplyOverallIsHealthy) AS 'Power Supply Healthy?', latest(feFanOverallIsHealthy) AS 'Fans Healthy?', latest(feProductLicenseActive) AS 'Active License?'  WHERE instrumentation.name = 'fireeye' LIMIT MAX"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 3,
+            "row": 6,
+            "height": 4,
+            "width": 2
+          },
+          "title": "Physical Disk Inventory",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(fePhysicalDiskIsHealthy) AS 'Healthy?' FACET fePhysicalDiskName AS 'Disk Name' WHERE instrumentation.name = 'fireeye' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 6,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Email Counters",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.feTotalEmailCount) AS 'Total Emails', latest(kentik.snmp.feAnalyzedEmailCount) AS 'Analyzed Emails', latest(kentik.snmp.feInfectedEmailCount) AS 'Infected Emails', latest(kentik.snmp.feDeferredEmailCount) AS 'Deferred Emails', latest(kentik.snmp.feHoldQueueEmailCount) AS 'Queued Emails' WHERE instrumentation.name = 'fireeye' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 6,
+            "height": 4,
+            "width": 4
+          },
+          "title": "URL Counters",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.feTotalUrlCount) AS 'Total URLs', latest(kentik.snmp.feAnalyzedUrlCount) AS 'Analyzed URLs', latest(kentik.snmp.feInfectedUrlCount) AS 'Infected URLs' WHERE instrumentation.name = 'fireeye' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Quarantine Usage %",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.feeQuarantineUsage) AS 'Quarantine Used %' WHERE instrumentation.name = 'fireeye' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Attachment Counters",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.feTotalAttachmentCount) AS 'Total Attachments', latest(kentik.snmp.feAnalyzedAttachmentCount) AS 'Analyzed Attachments', latest(kentik.snmp.feInfectedAttachmentCount) AS 'Infected Attachments' WHERE instrumentation.name = 'fireeye' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 10,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Object Analysis Counters",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.feTotalObjectAnalyzedCount) AS 'Analyzed Objects', latest(kentik.snmp.feTotalMaliciousObjectCount) AS 'Malicious Objects' WHERE instrumentation.name = 'fireeye' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
