@@ -18,8 +18,9 @@ errorRate:
   title: Error rate (%)
   queries:
     opentelemetry:
-      select: (filter(count(*), where error.message IS NOT NULL) * 100) / count(*)
+      select: (filter(count(*), WHERE otel.status_code = 'ERROR') * 100) / count(*)
       from: Span
+      where: span.kind IN ('server', 'consumer') OR kind IN ('server', 'consumer')
     kamon-agent:
       select: (filter(sum(http.server.requests), where http.status_code = '5xx') * 100) / sum(http.server.requests)
       from: Metric
