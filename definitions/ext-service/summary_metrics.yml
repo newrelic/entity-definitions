@@ -50,8 +50,8 @@ errorRate:
   unit: PERCENTAGE
   queries:
     opentelemetry:
-      select: filter(count(*), where error.message IS NOT NULL) / count(*) * 100
-      from: Span
+      select: average(newrelic.goldenmetrics.ext.service.errorRate)
+      from: Metric
       eventId: entity.guid
     kamon-agent:
       select: filter(sum(http.server.requests), where http.status_code = '5xx') / sum(http.server.requests) * 100
