@@ -1,0 +1,27 @@
+domain: EXT
+type: SAP_IDOC
+goldenTags:
+    - instrumentation.provider
+    - sap.functional_area
+
+synthesis:
+  rules:
+    # Telemetry from New Relic SAP integration
+    # SAP_EID in format of SYS_ID/MESSAGE_TYPE
+  - identifier: SAP_EID
+    name: MESSAGE_TYPE_DESCRIPTION
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: SAP_ETYPE
+        value: IDOC
+
+    tags:
+      sap.functional_area:
+
+dashboardTemplates:
+  SAP:
+    template: dashboard.json
+    
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
