@@ -46,7 +46,7 @@ storageUsage:
       from: StorageSample
       eventId: entityGuid
       eventName: entityName
-networkTransmitTraffic:
+networkTrafficTx:
   title: Network Transmit Traffic (B/s)
   unit: BYTES_PER_SECOND
   queries:
@@ -60,14 +60,7 @@ networkTransmitTraffic:
       from: NetworkSample
       eventId: entityGuid
       eventName: entityName
-    opentelemetry:
-      # emulate a rate of 1 second in order to get bytes/second
-      select: sum(system.network.io / ((endTimestamp - timestamp) / 1000))
-      where: device != 'lo' AND direction='transmit'
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-networkReceiveTraffic:
+networkTrafficRx:
   title: Network Receive Traffic (B/s)
   unit: BYTES_PER_SECOND
   queries:
@@ -81,10 +74,3 @@ networkReceiveTraffic:
       from: NetworkSample
       eventId: entityGuid
       eventName: entityName
-    opentelemetry:
-      # emulate a rate of 1 second in order to get bytes/second
-      select: sum(system.network.io / ((endTimestamp - timestamp) / 1000))
-      where: device != 'lo' AND direction='receive'
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
