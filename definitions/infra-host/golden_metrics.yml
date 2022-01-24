@@ -46,23 +46,31 @@ storageUsage:
       from: StorageSample
       eventId: entityGuid
       eventName: entityName
-networkTraffic:
-  title: Network Traffic (B/s)
+networkTrafficTx:
+  title: Network Transmit Traffic (B/s)
   unit: BYTES_PER_SECOND
   queries:
     newRelic:
-      select: average(host.net.transmitBytesPerSecond) + average(host.net.receiveBytesPerSecond)
+      select: average(host.net.transmitBytesPerSecond)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     newRelicSample:
-      select: average(transmitBytesPerSecond) + average(receiveBytesPerSecond)
+      select: average(transmitBytesPerSecond)
       from: NetworkSample
       eventId: entityGuid
       eventName: entityName
-    opentelemetry:
-      select: rate(average(system.network.io), 1 second)
-      where: device != 'lo'
+networkTrafficRx:
+  title: Network Receive Traffic (B/s)
+  unit: BYTES_PER_SECOND
+  queries:
+    newRelic:
+      select: average(host.net.receiveBytesPerSecond)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
+    newRelicSample:
+      select: average(receiveBytesPerSecond)
+      from: NetworkSample
+      eventId: entityGuid
+      eventName: entityName
