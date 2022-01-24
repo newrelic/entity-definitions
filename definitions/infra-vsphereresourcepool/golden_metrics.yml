@@ -26,17 +26,31 @@ aggregatedCpuUsage:
       from: VSphereResourcePoolSample
       eventId: entityGuid
       eventName: entityName
-aggregatedMemoryUsage:
-  title: Aggregated memory usage (%)
-  unit: PERCENTAGE
+memoryUsage:
+  title: Memory usage (MiB)
+  unit: BYTES
   queries:
     newRelic:
-      select: average(vsphere.resourcePool.mem.usage) * 100 / (average(vsphere.resourcePool.mem.free) + average(vsphere.resourcePool.mem.usage))
+      select: average(vsphere.resourcePool.mem.usage)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     newRelicSample:
-      select: average(mem.usage) * 100 / (average(mem.free) + average(mem.usage))
+      select: average(mem.usage)
+      from: VSphereResourcePoolSample
+      eventId: entityGuid
+      eventName: entityName
+memoryFree:
+  title: Free memory (MiB)
+  unit: BYTES
+  queries:
+    newRelic:
+      select: average(vsphere.resourcePool.mem.free)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(mem.free)
       from: VSphereResourcePoolSample
       eventId: entityGuid
       eventName: entityName
