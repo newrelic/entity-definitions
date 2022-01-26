@@ -1,0 +1,770 @@
+{
+  "name": "NetApp Cluster",
+  "description": null,
+  "pages": [
+    {
+      "name": "NetApp Cluster",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 5,
+            "width": 4
+          },
+          "title": "Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select latest(device_name) AS 'Device Name',latest(src_addr) as 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 as 'Uptime (Days)', latest(timestamp) as 'Last Update', latest(PollingHealth), latest(productType) as 'Type', latest(productVendor) as 'Vendor', latest(productVersion) as 'Version', latest(productSerialNum) as 'Serial Number', latest(productCPUArch) as 'CPU Architecture', latest(kentik.snmp.cpuCount) as 'CPU Count' where instrumentation.name = 'netapp-cluster'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 1,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.CPU) AS 'CPU Utilization %' WHERE provider = 'kentik-nas'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 1,
+            "width": 2
+          },
+          "title": "Global Status",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kentik.snmp.miscGlobalStatus) FROM Metric FACET miscGlobalStatusMessage WHERE instrumentation.name = 'netapp-cluster'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 3
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 4
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 11,
+            "row": 1,
+            "height": 1,
+            "width": 2
+          },
+          "title": "Disk Failure Status",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kentik.snmp.diskFailedMessage) FROM Metric FACET diskFailedMessage WHERE instrumentation.name = 'netapp-cluster' "
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 1
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "height": 4,
+            "width": 4
+          },
+          "title": "CPU Utilization (%)",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE instrumentation.name = 'netapp-cluster' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "height": 1,
+            "width": 4
+          },
+          "title": "AutoSupport Status",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`kentik.snmp.autosupportStatus`) FROM Metric FACET autosupportStatusMessage WHERE instrumentation.name = 'netapp-cluster'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 3,
+            "height": 3,
+            "width": 4
+          },
+          "title": "AutoSupport Failed Send Counter",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.autosupportFailedSends) as 'AutoSupport Failed Sends' where instrumentation.name = 'netapp-cluster' timeseries 5 minutes"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Child Entity Counts",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select latest(kentik.snmp.enclNumber) AS 'Enclosures', latest(kentik.snmp.dfNumber) as 'File Systems', latest(kentik.snmp.volNumber) as 'Volumes', latest(kentik.snmp.aggrNumber) as 'Aggregates' where instrumentation.name = 'netapp-cluster'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 6,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Disks Counts",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.diskTotalCount) AS 'Total Disks'\n, latest(kentik.snmp.diskActiveCount) AS 'Active Disks', latest(kentik.snmp.spareNumber) as 'Total Spare Count', latest(kentik.snmp.diskSpareCount) AS 'Spare Disks Available', latest(kentik.snmp.otherDiskNumber) as 'Other Disks' WHERE instrumentation.name = 'netapp-cluster' compare with 1 day ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 6,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Potential Disk Issues",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.diskReconstructingCount) AS 'Reconstructing Disks', latest(kentik.snmp.diskReconstructingParityCount) AS 'Reconstructing Parity Disks', latest(kentik.snmp.diskVerifyingParityCount) AS 'Verifying Parity Disks', latest(kentik.snmp.diskScrubbingCount) AS 'Scrubbing Disks', latest(kentik.snmp.diskAddingSpareCount) AS 'Adding Spare Disks', latest(kentik.snmp.diskPrefailedCount) as 'Prefailed Disks', latest(kentik.snmp.outOfDateDiskCount) as 'Out of Date Disks'  WHERE instrumentation.name = 'netapp-cluster'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Cluster Failover Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kentik.snmp.cfState) as 'State', latest(kentik.snmp.cfPartnerName) as 'Partner', latest(kentik.snmp.cfPartnerStatus) as 'Partner Status', latest(kentik.snmp.cfInterconnectStatus) as 'Interconnect Status' FROM Metric where instrumentation.name = 'netapp-cluster'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "height": 3,
+            "width": 8
+          },
+          "title": "High Availability Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(haState) as 'State', latest(haPartnerStatus) as 'Partner Status', latest( haInterconnectStatus) as 'Interconnect Status', latest(haCannotTakeoverCause) as 'Cannot Take Over Cause' From Metric Facet Index, haNodeName as 'Node', haPartnerName as 'Partner' WHERE instrumentation.name = 'netapp-cluster' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 4,
+            "width": 8
+          },
+          "title": "File System Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select latest(kentik.snmp.dfPerCentKBytesCapacity) as 'Used %', latest(kentik.snmp.df64TotalKBytes)/1000 as 'Total Megabytes', latest(kentik.snmp.df64TotalReservedKBytes)/1000 as 'Reserved Megabytes', latest(kentik.snmp.dfPerCentInodeCapacity) as 'Inodes Used %', latest(kentik.snmp.dfMaxFilesAvail) as 'Max Files Available', latest(kentik.snmp.dfMaxFilesUsed) as 'Files In Use', latest(kentik.snmp.dfPlexCount) as 'Plex Count', latest(kentik.snmp.dfPerCentSaved) as 'Block Dedupe Savings %', latest(dfStatus ) as 'Status', latest(dfMirrorStatus ) as 'Mirror Status', latest(dfStateOnline) as 'Online' where instrumentation.name = 'netapp-cluster' facet Index, dfFileSys as 'File System', dfType as 'Type', dfVserver as 'Virtual Server', dfMountedOn as 'Mounted On' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 13,
+            "height": 4,
+            "width": 4
+          },
+          "title": "File System Usage",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select latest(kentik.snmp.dfPerCentKBytesCapacity) as 'Used %' where instrumentation.name = 'netapp-cluster' facet Index, dfFileSys as 'File System' limit 10 timeseries 5 minutes"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "height": 4,
+            "width": 12
+          },
+          "title": "Volume Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kentik.snmp.volState) AS 'State', latest(kentik.snmp.volStatus) AS 'Status'  FROM Metric FACET Index, volName as 'Name', volFSID, volOptions, volUUID, volAggrName, volType as 'Type', volClone WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'vol'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 21,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Volume Quotas",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(qvStateStat) as 'Quota Status', latest(kentik.snmp.qvStateInitPercent) as 'Quota Computation while Initializing' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'qvState' facet Index, qvStateName as 'Volume Name', qvStateVolume as 'Volume ID', qvStateVserver as 'Virtual Server' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 7,
+            "row": 21,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Spare Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(spareStatus) as 'Status', latest(kentik.snmp.spareTotalMb) as 'Total Megabytes' FROM Metric facet Index, spareDiskName as 'Disk', spareShelf as 'Shelf', spareBay as 'Bay', spareDiskRPM as 'RPM', spareDiskType as 'Type'  WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'spare' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 24,
+            "height": 4,
+            "width": 12
+          },
+          "title": "Enclosure Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(enclContactState) as 'State', latest(kentik.snmp.enclDisksPresent) as 'Disks Present', latest(kentik.snmp.enclPowerSuppliesFailed) as 'List of Failed Power Supplies', latest(kentik.snmp.enclFansFailed) as 'List of Failed Fans', latest(kentik.snmp.enclTempSensorsOverTempFail) as 'List of Over Temp Sensors', latest(kentik.snmp.enclTempSensorsUnderTempFail) as 'List of Under Temp Sensors', latest(kentik.snmp.enclElectronicsFailed) as 'List of Failed Electronics', latest(kentik.snmp.enclVoltSensorsOverVoltFail) as 'List of Over Volt Sensors', latest(kentik.snmp.enclVoltSensorsUnderVoltFail) as 'List of Under Volt Sensors', latest(kentik.snmp.enclCurSensorsOverCurFail) as 'List of Over Current Sensors' FROM Metric facet Index, enclNodeName as 'Node', enclChannelShelfAddr as 'Address', enclProductModel as 'Model', enclProductSerialNo as Serial_Number, enclNumberDiskBays as 'Disk Bays' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'encl' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 28,
+            "height": 4,
+            "width": 5
+          },
+          "title": "Consistency Point Operations Counters",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select latest(kentik.snmp.cpTotalOps) as 'Total', latest(kentik.snmp.cpFromTimerOps) as 'Caused by Timer', latest(kentik.snmp.cpFromSnapshotOps) as 'Caused by Snapshot', latest(kentik.snmp.cpFromLowWaterOps) as 'Caused by Low Water Mark', latest(kentik.snmp.cpFromHighWaterOps) as 'Caused by High Water Mark', latest(kentik.snmp.cpFromLogFullOps) as 'Caused by nv-log Full', latest(kentik.snmp.cpFromCpOps) as 'Back to Back', latest(kentik.snmp.cpFromFlushOps) as 'Caused by Flush', latest(kentik.snmp.cpFromSyncOps) as 'Caused by Sync', latest(kentik.snmp.cpFromCpDeferredOps) as 'Deferred', latest(kentik.snmp.cpFromLowDatavecsOps) as 'Caused by lowdatavecs' where instrumentation.name = 'netapp-cluster'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 6,
+            "row": 28,
+            "height": 4,
+            "width": 7
+          },
+          "title": "Consistency Point Operations Over Time",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select latest(kentik.snmp.cpTotalOps), latest(kentik.snmp.cpFromTimerOps), latest(kentik.snmp.cpFromSnapshotOps), latest(kentik.snmp.cpFromLowWaterOps), latest(kentik.snmp.cpFromHighWaterOps), latest(kentik.snmp.cpFromLogFullOps), latest(kentik.snmp.cpFromCpOps), latest(kentik.snmp.cpFromFlushOps), latest(kentik.snmp.cpFromSyncOps), latest(kentik.snmp.cpFromCpDeferredOps), latest(kentik.snmp.cpFromLowDatavecsOps) where instrumentation.name = 'netapp-cluster' TIMESERIES 5 minutes limit max"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bullet"
+          },
+          "layout": {
+            "column": 1,
+            "row": 32,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Raid-V Usage",
+          "rawConfiguration": {
+            "limit": 100,
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kentik.snmp.raidVUsedMb)/latest(kentik.snmp.raidVTotalMb)*100 AS 'Raid-V Used %' FROM Metric"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 5,
+            "row": 32,
+            "height": 3,
+            "width": 8
+          },
+          "title": "RAID V Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(raidVStatus) as 'Status', latest(kentik.snmp.raidVTotalMb) as 'Total Megabytes', latest(kentik.snmp.raidVUsedMb) as 'Used Megabytes', latest(kentik.snmp.raidVCompletionPerCent) as 'Completion %', latest(raidVDiskNumber) as 'Disk Count', latest(raidVGroupNumber) as 'RAID Group Count' FROM Metric facet Index, raidVDiskName as 'Disk', raidVShelf as 'Shelf', raidVBay as 'Bay'  WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'raidV' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bullet"
+          },
+          "layout": {
+            "column": 1,
+            "row": 35,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Raid-P Usage",
+          "rawConfiguration": {
+            "limit": 100,
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kentik.snmp.raidPUsedMb)/latest(kentik.snmp.raidPTotalMb)*100 AS 'Raid-P Used %' FROM Metric"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 5,
+            "row": 35,
+            "height": 3,
+            "width": 8
+          },
+          "title": "RAID P Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(raidPStatus) as 'Status', latest(kentik.snmp.raidPTotalMb) as 'Total Megabytes', latest(kentik.snmp.raidPUsedMb) as 'Used Megabytes', latest(kentik.snmp.raidPCompletionPerCent) as 'Completion %', latest(raidPDiskNumber) as 'Disk Count', latest(raidPGroupNumber) as 'RAID Group Count' FROM Metric facet Index, raidPDiskName as 'Disk', raidPShelf as 'Shelf', raidPBay as 'Bay'  WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'raidP' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 38,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Aggregate Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kentik.snmp.aggrState) AS 'State', latest(kentik.snmp.aggrStatus) as 'Status' FROM Metric facet Index, aggrName, aggrType WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'aggr'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 7,
+            "row": 38,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Qtree Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(qtreeStatus) AS 'Status' FROM Metric FACET Index, qtreeName as 'Name', qtreeVolumeName as 'Volume', qtreeStyle as 'Style', qtreeOplock as 'Oplock' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'vol'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 41,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Snapvault Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(snapvault_state) as 'State', latest(kentik.snmp.svTotalFailures) as 'Failures Count' FROM Metric facet Index, snapvault_destination as 'Destination' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'snapvaultStatus' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 7,
+            "row": 41,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Snapmirror Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(snapmirrorStatus) as 'Status',latest(snapmirrorState) as 'State', latest(kentik.snmp.snapmirrorMirrorTimestamp) as 'Last Transfer Timestamp', latest(kentik.snmp.snapmirrorLastTransType) as 'Last Transfer Type', latest(kentik.snmp.snapmirrorLastTransMBs) as 'Last Transfer MB', latest(kentik.snmp.snapmirrorLastTransTimeSeconds) as 'Last Transfer Seconds', latest(kentik.snmp.snapmirrorTotalFailures) as 'Failures Count' FROM Metric facet Index, snapmirrorSrc as 'Source', snapmirrorDst as 'Destination' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'snapmirrorStatus' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 44,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Plex Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(plexStatus) as 'Status', latest(kentik.snmp.plexPercentResyncing) as 'Resyncing %' FROM Metric facet Index, plexName as 'Name', plexVolName as 'Volume' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'plex' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 44,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Network Traffic Over Time",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.if64InOctets) AS 'RX Bytes', latest(kentik.snmp.if64OutOctets) AS 'TX Bytes' WHERE instrumentation.name = 'netapp-cluster' TIMESERIES 5 minutes"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
