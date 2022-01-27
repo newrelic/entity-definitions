@@ -1,0 +1,31 @@
+domain: EXT
+type: SAP_JOB
+goldenTags:
+  - instrumentation.provider
+  - sap.functional_area
+  - sap.system
+
+synthesis:
+  rules:
+    # Telemetry from New Relic SAP intergraion
+    # SAP_EID in SYS_ID/JOB_NAME format
+  - identifier: SAP_EID 
+    name: SAP_EID
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: SAP_ETYPE
+      value: JOB
+    tags:
+      sap.functional_area:
+      SYS_ID:
+        entityTagName: sap.system
+      HOST_NAME:
+        entityTagName: host
+
+dashboardTemplates:
+  SAP:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
