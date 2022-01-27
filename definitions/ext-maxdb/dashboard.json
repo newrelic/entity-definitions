@@ -1,0 +1,119 @@
+{
+  "name": "EXT-MAXDB",
+  "description": null,
+  "pages": [
+    {
+      "name": "RFC",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Trend - DB Data Space Usage %",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.SPACE.DATA.USAGE) as 'Data Space Usage' SINCE 1 day ago TIMESERIES Auto"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Trend - DB Log Space Usage %",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.SPACE.LOG.USAGE) as 'Log Space Usage' SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Trend - Response Time (seconds)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(NR.SAP.SYSTEM.PROCESS) / 1000 as 'Response Time' FROM Metric WHERE KEY_FIGURE = 'DB Time' SINCE 1 day ago TIMESERIES Auto"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "DB Activity (calls)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT derivative(NR.SAP.DB.ACTIVITY, 1 second) WHERE metricName = 'NR.SAP.DB.ACTIVITY' AND KEY_FIGURE in ('SELECTS', 'INSERTS', 'UPDATES', 'DELETES') FACET KEY_FIGURE SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
