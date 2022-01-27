@@ -64,7 +64,7 @@ When multiple sources of data exist, provide a query for each source. Otherwise 
 | where |   No    | empty string | In the event you need a more granular `WHERE` clause added to the query, use this field. For example, `provider='Alb'`. |
 | facet |   No    | empty string | An extra facet by a specific field to be added to the default facet by `entityName`. |
 | eventId |   No    | `entity.guid` | The event attribute used to filter the entity. We recommend to use the default `entity.guid`, which is generated automatically as part of the entity synthesis. |
-| eventName |   No    | `entity.name` | The name of the field in the event that references the entity name. By default, `entity.guid`, which is generated automatically as part of the entity synthesis. |
+| eventName |   No    | `entity.name` | The name of the field in the event that references the entity name. By default, `entity.name`, which is generated automatically as part of the entity synthesis. |
 
 ### Metric Unit
 
