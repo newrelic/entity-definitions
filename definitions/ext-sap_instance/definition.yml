@@ -1,0 +1,30 @@
+domain: EXT
+type: SAP_INSTANCE
+goldenTags:
+  - instrumentation.provider
+  - sap.functional_area
+  - sap.system
+
+synthesis:
+  rules:
+  # Telemetry from New Relic SAP integration
+  - identifier: SAP_EID 
+    name: INSTANCE
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: SAP.ETYPE
+      value: INSTANCE
+    tags:
+      sap.functional_area:
+      SYS_ID:
+        entityTagName: sap.system
+      HOST_NAME:
+        entityTagName: host
+
+dashboardTemplates:
+  SAP:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
