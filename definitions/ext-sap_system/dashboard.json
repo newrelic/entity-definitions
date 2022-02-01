@@ -1,0 +1,152 @@
+{
+  "name": "EXT-SAP_SYSTEM",
+  "description": null,
+  "pages": [
+    {
+      "name": "System",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Trend - Users Logged In",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(NR.SAP.SYSTEM.USER.LOGON) as 'Number Loggon' SINCE 1 day ago TIMESERIES 10 minutes"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Trend  -  Dialog Response Time (seconds)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.DIALOG.RESPONSE_TIME) / 1000 as 'RESPONSE TIME' SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Trend - Error (count)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log SELECT count(*) as 'Errors' WHERE level = 'Error' SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Trend - Enqueue Entries",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.ENQUEUE.INFORMATION) SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 4,
+            "width": 12
+          },
+          "title": "Error Logs",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log SELECT CATEGORY,SUBCATEGORY, message, level, INSTANCE, HOST_NAME SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
