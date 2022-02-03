@@ -30,7 +30,7 @@ If you have experience with the repo and are looking for a specific section docu
 - [Golden Tags](docs/golden_tags.md)
 - [Summary Metrics](docs/summary_metrics.md)
 
-## Testing and validation
+## Validation
 
 Whenever there's a contribution via pull request, some validations are automatically executed to verify that the provided definition meets the basic requirements:
 
@@ -44,6 +44,40 @@ docker-compose run validate-definitions
 ``` 
 
 Read more about the [current validations](/validator/README.md).
+
+## Testing
+
+You can test that the synthesis rules from your entity definition match the expected telemetry, thus generating the expected entities. In order to do this, we offer the possibility of adding test data that would simulate telemetry events. Whenever there's a contribution via pull request, the test data is checked against the synthesis rules, ensuring your changes match.
+
+### How to add testing data
+
+1. If it does not exist, create a folder named `test` under your entity definition directory. If it already exists, skip this step.
+
+i.e. `definitions/ext-pihole/tests/`
+
+2. Build test files that represent the telemetry data you expect from the entities you want to synthesize. Each file must comply:
+* The file name is the event name reported to New Relic. i.e. `Log`, `CustomEvent`
+* The file name has `.json` extension. i.e. `Log.json`, `CustomEvent.json`
+* The file content is a valid json that consists of an array of objects, where every object represents a data point from the telemetry
+
+3. Create your pull request normally and the test would be executed in the background. If the synthesis rules from the definition don't match the test data, a bot will let you know with an explanatory comment in the pull request.
+
+**Log.json**
+```
+[
+	{
+		"attribute1": "value1"
+	},
+	{
+		"attribute1": "value1",
+		"attribute2": "value2",
+		"attribute3": "value3"
+	}
+]
+```
+
+See [ext-pihole definition](https://github.com/newrelic/entity-definitions/tree/main/definitions/ext-pihole/tests/) for an example of test data.
+
 
 ## Support
 
