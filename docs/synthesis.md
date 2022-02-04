@@ -145,3 +145,19 @@ Also, if present in the telemetry, these attributes are also added to the entity
 - `instrumentation.provider`
 
 [guid_spec]: guid_spec.md
+
+### Legacy features
+
+This section is only relevant if you are configuring synthesis rules for an existing entity type.
+If you are creating a brand new entity type none of this features will be allowed.
+
+
+This features are defined under the rule using the `legacyFeatures` key.
+```
+    legacyFeatures:
+      overrideGuidType: true
+```
+
+| **Name** | **Type** | **Description**  |
+| -------- | -------- | ---------------- |
+| overrideGuidType | Boolean  | Defaults to `false`. If set to `true`, It will replace the entityType in the guid for the `NA` value. |
