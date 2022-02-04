@@ -1,0 +1,29 @@
+domain: EXT
+type: SAP_HTTPDEST
+goldenTags:
+  - instrumentation.provider
+  - sap.functional_area
+  - sap.system
+
+synthesis:
+  rules:
+    # Telemetry from New Relic SAP integration
+    # SAP_EID in HOST:PORT format
+  - identifier: SAP_EID
+    name: DESTINATION
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: SAP_ETYPE
+      value: HTTPDEST
+    tags:
+      sap.functional_area:
+      SYS_ID:
+        entityTagName: sap.system
+
+dashboardTemplates:
+  SAP:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
