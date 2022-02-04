@@ -29,7 +29,7 @@ synthesis:
   rules:
   - identifier: hostname
     name: hostname
-  	conditions:
+    conditions:
     - attribute: aws.az
       present: true
 ```
@@ -52,7 +52,7 @@ synthesis:
   rules:
   - identifier: hostname
     name: hostname
-  	conditions:
+    conditions:
     - attribute: aws.az
       value: "us-west-1"
 ```
@@ -63,7 +63,7 @@ synthesis:
   rules:
   - identifier: hostname
     name: hostname
-  	conditions:
+    conditions:
     - prefix: us-
 ```
 
