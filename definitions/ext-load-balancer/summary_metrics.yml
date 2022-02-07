@@ -5,12 +5,22 @@ ipAddress:
     key: device_ip
 
 cpuUtilization:
+cpuUtilization:
   title: CPU Utilization (%)
   unit: PERCENTAGE
-  query:
-    select: average(kentik.snmp.CPU)
-    from: Metric
-    where: "provider = 'kentik-load-balancer'"
+  queries:
+    # F5
+    kentik/f5:
+      select: average(kentik.snmp.CPU * 100)
+      from: Metric
+      where: "provider = 'kentik-load-balancer'"
+      eventId: entity.guid
+    # Most devices
+    kentik:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-load-balancer'"
+      eventId: entity.guid
 
 memoryUtilization:
   title: Memory Utilization (%)
