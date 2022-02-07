@@ -1,11 +1,18 @@
 cpuUtilization:
   title: CPU Utilization (%)
   unit: PERCENTAGE
-  query:
-    select: average(kentik.snmp.CPU)
-    from: Metric
-    where: "provider = 'kentik-load-balancer'"
-
+  queries:
+    # F5
+    kentik/f5:
+      select: average(kentik.snmp.CPU * 100)
+      from: Metric
+      where: "provider = 'kentik-load-balancer'"   
+    # Most devices
+    kentik:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-load-balancer'"
+      
 memoryUtilization:
   title: Memory Utilization (%)
   unit: PERCENTAGE
