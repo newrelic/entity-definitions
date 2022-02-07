@@ -31,7 +31,20 @@ synthesis:
     name: hostname
     conditions:
     - attribute: aws.az
+      present: true
 ```
+
+- Attribute must not exist
+```yaml
+synthesis:
+  rules:
+  - identifier: hostname
+    name: hostname
+    conditions:
+    - attribute: container.id
+      present: false
+```
+
 
 - Attribute must have value
 ```yaml
@@ -56,9 +69,10 @@ synthesis:
 
 | **Name** | **Type** | **Description**  |
 | -------- | -------- | ---------------- |
-| attribute | String  | Required. The name of the attribute to match in the data point. If only this field is defined the attribute must exist in the data point. |
-| value    | String   | Optional. Can't be mixed with `prefix`. The exact value the attribute must contain in order to match the data point. |
-| prefix | String | Optional. Can't be mixed with `value`. The attribute must start with this value. |
+| attribute | String  | Required. The name of the attribute to match in the data point. |
+| value    | String   | Optional. Can't be mixed with `prefix` or `present`. The exact value the attribute must contain in order to match the data point. |
+| prefix | String | Optional. Can't be mixed with `value` or `present`. The attribute must start with this value. |
+| present | Boolean | Optional. Defaults to true when no other condition is given. Can't be mixed with `value` or `prefix`. The attribute must be present or absent. |
 
 ### Tags
 
@@ -131,3 +145,19 @@ Also, if present in the telemetry, these attributes are also added to the entity
 - `instrumentation.provider`
 
 [guid_spec]: guid_spec.md
+
+### Legacy features
+
+This section is only relevant if you are configuring synthesis rules for an existing entity type.
+If you are creating a brand new entity type none of these features will be allowed.
+
+
+These features are defined under the rule using the `legacyFeatures` key.
+```
+    legacyFeatures:
+      overrideGuidType: true
+```
+
+| **Name** | **Type** | **Description**  |
+| -------- | -------- | ---------------- |
+| overrideGuidType | Boolean  | Defaults to `false`. If set to `true`, it will replace the entityType in the guid for the `NA` value. |
