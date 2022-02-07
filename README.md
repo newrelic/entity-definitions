@@ -58,7 +58,7 @@ You can test that the synthesis rules from your entity definition match the expe
 2. Build one or more test files that represent the telemetry data that would synthesize entities of your domain and type. Each file must comply:
 * The file name is the event name reported to New Relic. i.e. `Log`, `CustomEvent`
 * The file name has `.json` extension. i.e. `Log.json`, `CustomEvent.json`
-* The file content is a valid json that consists of an array of objects, where every object represents a data point from the telemetry
+* The file content is a valid json that consists of an array of objects, where every object represents a telemetry data point
 
   **Log.json**
 ```
