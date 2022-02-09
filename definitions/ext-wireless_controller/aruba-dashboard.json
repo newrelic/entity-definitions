@@ -18,7 +18,13 @@
             },
             "title": "Summary",
             "rawConfiguration": {
-              "dataFormatters": [],
+              "dataFormatters": [
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+                ],
               "nrqlQueries": [
                 {
                   "accountId": 0,
@@ -187,7 +193,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT latest(kentik.snmp.haActiveAPs) AS 'Active', latest(kentik.snmp.haStandbyAPs) AS 'Standby', latest(kentik.snmp.haTotalAPs) AS 'Total' WHERE instrumentation.name = 'aruba-wireless-controller' timeseries"
+                  "query": "FROM Metric SELECT latest(kentik.snmp.haActiveAPs) AS 'Active', latest(kentik.snmp.haStandbyAPs) AS 'Standby', latest(kentik.snmp.haTotalAPs) AS 'Total' WHERE instrumentation.name = 'aruba-wireless-controller' TIMESERIES 5 MINUTES"
                 }
               ]
             }
@@ -257,7 +263,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT latest(kentik.snmp.haActiveVapTunnels) AS 'Active', latest(kentik.snmp.haStandbyVapTunnels) AS 'Standby', latest(kentik.snmp.haTotalVapTunnels) AS 'Total', latest(kentik.snmp.haAPHbtTunnels) AS 'Heartbeat' WHERE instrumentation.name = 'aruba-wireless-controller' TIMESERIES "
+                  "query": "FROM Metric SELECT latest(kentik.snmp.haActiveVapTunnels) AS 'Active', latest(kentik.snmp.haStandbyVapTunnels) AS 'Standby', latest(kentik.snmp.haTotalVapTunnels) AS 'Total', latest(kentik.snmp.haAPHbtTunnels) AS 'Heartbeat' WHERE instrumentation.name = 'aruba-wireless-controller' TIMESERIES 5 MINUTES"
                 }
               ]
             }
@@ -310,7 +316,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT (latest(kentik.snmp.sysXStorageUsed) / latest(kentik.snmp.sysXStorageSize)) * 100 AS 'Utilization %'\nFACET sysXStorageName AS 'Name', sysXStorageType AS 'Type' WHERE instrumentation.name = 'aruba-wireless-controller' LIMIT MAX"
+                  "query": "FROM Metric SELECT (latest(kentik.snmp.sysXStorageUsed) / latest(kentik.snmp.sysXStorageSize)) * 100 AS 'Utilization %' FACET sysXStorageName AS 'Name', sysXStorageType AS 'Type' WHERE instrumentation.name = 'aruba-wireless-controller' LIMIT MAX"
                 }
               ]
             }
@@ -334,7 +340,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus) OR latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET device_name, if_name or if_interface_name AS 'Interface', if_Alias, if_Speed WHERE instrumentation.name = 'aruba-wireless-controller' LIMIT MAX"
+                  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus) OR latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET device_name, if_name or if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed AS 'Interface Speed' WHERE instrumentation.name = 'aruba-wireless-controller' LIMIT MAX"
                 }
               ]
             }
@@ -360,7 +366,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) AS 'RX %' FACET if_name or if_interface_name AS 'Interface' WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES LIMIT 10 "
                 }
               ],
               "yAxisLeft": {
@@ -389,7 +395,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'TX %' FACET if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'TX %' FACET if_name or if_interface_name AS 'Interface' WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES LIMIT 10 "
                 }
               ],
               "yAxisLeft": {
@@ -420,7 +426,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_name or if_interface_name AS 'Interface' WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES LIMIT 10 "
                 }
               ],
               "yAxisLeft": {
@@ -449,7 +455,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_name or if_interface_name AS 'Interface' WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES LIMIT 10 "
                 }
               ],
               "yAxisLeft": {
@@ -467,7 +473,7 @@
               "height": 3,
               "width": 6
             },
-            "title": "Receive Errors (count)",
+            "title": "Receive Errors %",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -478,7 +484,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT sum(kentik.snmp.ifInErrors) FACET if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                  "query": "FROM Metric SELECT max(kentik.snmp.ifInErrorPercent) FACET if_name or if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES LIMIT 10 "
                 }
               ],
               "yAxisLeft": {
@@ -496,7 +502,7 @@
               "height": 3,
               "width": 6
             },
-            "title": "Transmit Errors (count)",
+            "title": "Transmit Errors %",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -507,7 +513,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT sum(kentik.snmp.ifOutErrors) FACET if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                  "query": "FROM Metric SELECT max(kentik.snmp.ifOutErrorPercent) FACET if_name or if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
