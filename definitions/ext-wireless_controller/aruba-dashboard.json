@@ -1,0 +1,521 @@
+{
+    "name": "Aruba Wireless Controller",
+    "description": null,
+    "pages": [
+      {
+        "name": "Aruba Wireless Controller",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 5,
+              "width": 4
+            },
+            "title": "Summary",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(kentik.snmp.packet_loss) AS 'Packet Loss', latest(wlsxModelName) AS 'Model', latest(wlsxSwitchLicenseSerialNumber) AS 'Serial Number', latest(wlsxSwitchRole) AS 'Switch Role', latest(wlsxSysExtHwVersion) AS 'HW Version', latest(wlsxSysExtSwVersion) AS 'SW Version' WHERE instrumentation.name = 'aruba-wireless-controller'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "height": 1,
+              "width": 4
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE instrumentation.name = 'aruba-wireless-controller'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "height": 1,
+              "width": 4
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE instrumentation.name = 'aruba-wireless-controller'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 5,
+              "row": 2,
+              "height": 4,
+              "width": 4
+            },
+            "title": "CPU Utilization (%)",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE instrumentation.name = 'aruba-wireless-controller' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 9,
+              "row": 2,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Memory Utilization (%)",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE instrumentation.name = 'aruba-wireless-controller' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "height": 4,
+              "width": 2
+            },
+            "title": "AP Inventory",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.haActiveAPs) AS 'Active', latest(kentik.snmp.haStandbyAPs) AS 'Standby', latest(kentik.snmp.haTotalAPs) AS 'Total' WHERE instrumentation.name = 'aruba-wireless-controller'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.area"
+            },
+            "layout": {
+              "column": 3,
+              "row": 6,
+              "height": 4,
+              "width": 2
+            },
+            "title": "AP Inventory Changes",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.haActiveAPs) AS 'Active', latest(kentik.snmp.haStandbyAPs) AS 'Standby', latest(kentik.snmp.haTotalAPs) AS 'Total' WHERE instrumentation.name = 'aruba-wireless-controller' timeseries"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 5,
+              "row": 6,
+              "height": 4,
+              "width": 8
+            },
+            "title": "AP Summary",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.apSignalToNoiseRatio) AS 'Signal to Noise Ratio', max(kentik.snmp.apChannelNoise) AS 'Channel Noise' FACET Index, apESSID AS 'ESSID', apPhyType AS 'Physical Type', apCurrentChannel AS 'Current Channel', apLoadBalancing AS 'Load Balancing Enabled' WHERE instrumentation.name = 'aruba-wireless-controller' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 10,
+              "height": 4,
+              "width": 2
+            },
+            "title": "Tunnel Inventory",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.haActiveVapTunnels) AS 'Active', latest(kentik.snmp.haStandbyVapTunnels) AS 'Standby', latest(kentik.snmp.haTotalVapTunnels) AS 'Total', latest(kentik.snmp.haAPHbtTunnels) AS 'Heartbeat' WHERE instrumentation.name = 'aruba-wireless-controller'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.area"
+            },
+            "layout": {
+              "column": 3,
+              "row": 10,
+              "height": 4,
+              "width": 2
+            },
+            "title": "Tunnel Inventory Changes",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.haActiveVapTunnels) AS 'Active', latest(kentik.snmp.haStandbyVapTunnels) AS 'Standby', latest(kentik.snmp.haTotalVapTunnels) AS 'Total', latest(kentik.snmp.haAPHbtTunnels) AS 'Heartbeat' WHERE instrumentation.name = 'aruba-wireless-controller' TIMESERIES "
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.area"
+            },
+            "layout": {
+              "column": 5,
+              "row": 10,
+              "height": 4,
+              "width": 4
+            },
+            "title": "AP Users",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.wlsxNumOfUsers8021x) AS '802.1X', max(kentik.snmp.wlsxNumOfUsersCP) AS 'Captive Portal', max(kentik.snmp.wlsxNumOfUsersMAC) AS 'MAC', max(kentik.snmp.wlsxNumOfUsersStateful8021x) AS 'Stateful 802.1X', max(kentik.snmp.wlsxNumOfUsersVPN) AS 'VPN' WHERE instrumentation.name = 'aruba-wireless-controller' TIMESERIES 5 MINUTES LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 9,
+              "row": 10,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Storage Details",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Utilization %",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (latest(kentik.snmp.sysXStorageUsed) / latest(kentik.snmp.sysXStorageSize)) * 100 AS 'Utilization %'\nFACET sysXStorageName AS 'Name', sysXStorageType AS 'Type' WHERE instrumentation.name = 'aruba-wireless-controller' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 14,
+              "height": 3,
+              "width": 12
+            },
+            "title": "Interfaces Summary",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus) OR latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET device_name, if_name or if_interface_name AS 'Interface', if_Alias, if_Speed WHERE instrumentation.name = 'aruba-wireless-controller' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 17,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Receive Traffic %",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 7,
+              "row": 17,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Transmit Traffic %",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'TX %' FACET if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 20,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Receive Traffic Mbps",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 7,
+              "row": 20,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Transmit Traffic Mbps",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 23,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Receive Errors (count)",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT sum(kentik.snmp.ifInErrors) FACET if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 7,
+              "row": 23,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Transmit Errors (count)",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT sum(kentik.snmp.ifOutErrors) FACET if_interface_name WHERE provider = 'aruba-wireless-controller' TIMESERIES 5 MINUTES limit 10 "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

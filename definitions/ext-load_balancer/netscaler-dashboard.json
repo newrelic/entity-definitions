@@ -1,0 +1,390 @@
+{
+  "name": "Netscaler",
+  "description": null,
+  "pages": [
+    {
+      "name": "Netscaler",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 5,
+            "width": 4
+          },
+          "title": "Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(sysBuildVersion) as 'Build Version', latest(sysHardwareVersionDesc) as 'Hardware Description', latest(sysHardwareSerialNumber) as 'Serial Number' WHERE instrumentation.name = 'netscaler'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 1,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE instrumentation.name = 'netscaler'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 1,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE instrumentation.name = 'netscaler'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "height": 4,
+            "width": 4
+          },
+          "title": "CPU Utilization (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE instrumentation.name = 'netscaler' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Memory Utilization (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE instrumentation.name = 'netscaler' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "height": 5,
+            "width": 3
+          },
+          "title": "High Availability",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(haCurStatus) as 'HA Configured', latest(haCurState) as 'HA Status', latest(sysHighAvailabilityMode) as 'HA Mode', latest(haPeerState) as 'HA Peer State', latest(kentik.snmp.haTotStateTransitions) as 'HA State Transition Count', latest(kentik.snmp.haTimeofLastStateTransition)/8640000 as 'Days Since Last HA Transition' where instrumentation.name = 'netscaler'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 4,
+            "row": 6,
+            "height": 5,
+            "width": 4
+          },
+          "title": "Disk Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(kentik.snmp.sysHealthDiskSize) as 'Size (MB)', latest(kentik.snmp.sysHealthDiskPerusage) as 'Used %' facet sysHealthDiskName as 'Disk Name' where instrumentation.name = 'netscaler'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 8,
+            "row": 6,
+            "height": 5,
+            "width": 5
+          },
+          "title": "Interface Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(kentik.snmp.if_InBytes) as 'RX Bytes', latest(kentik.snmp.if_OutBytes) as 'TX Bytes'  facet if_interface_name, if_Speed where instrumentation.name = 'netscaler'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "height": 5,
+            "width": 4
+          },
+          "title": "Services Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(kentik.snmp.svcCount) as 'Services', latest(kentik.snmp.svcgroupCount) as 'Service Groups', latest(kentik.snmp.svcgroupmemCount) as 'Services Group Members', latest(kentik.snmp.syssvcCount) as 'Services Configured', latest(kentik.snmp.sysupsvcCount) as 'Services Up', latest(kentik.snmp.sysupvcitmCount) as 'Service Items Up' where instrumentation.name = 'netscaler' compare WITH 1 day ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 11,
+            "height": 5,
+            "width": 8
+          },
+          "title": "Services",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(kentik.snmp.svcCount) as 'Services', latest(kentik.snmp.svcgroupCount) as 'Service Groups', latest(kentik.snmp.svcgroupmemCount) as 'Services Group Members', latest(kentik.snmp.syssvcCount) as 'Services Configured', latest(kentik.snmp.sysupsvcCount) as 'Services Up', latest(kentik.snmp.sysupvcitmCount) as 'Service Items Up' where instrumentation.name = 'netscaler' TIMESERIES limit max"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "height": 5,
+            "width": 4
+          },
+          "title": "Servers and Vservers Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(kentik.snmp.serverCount) as 'Servers', latest(kentik.snmp.curConfigVservers) as 'Configured Vservers', latest(kentik.snmp.vsvrBindCount) as 'Vserver Bindings', latest(kentik.snmp.vsvrSvcGroupBindCount) as 'Virtual Server Service Group Bindings', latest(kentik.snmp.curConfigLbVservers) as 'Load Balanced Vservers', latest(kentik.snmp.curConfigGslbVservers) as 'GSLB Vservers' where instrumentation.name = 'netscaler' compare WITH 1 day ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 16,
+            "height": 5,
+            "width": 8
+          },
+          "title": "Servers and Vservers",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(kentik.snmp.serverCount) as 'Servers', latest(kentik.snmp.curConfigVservers) as 'Configured Vservers', latest(kentik.snmp.vsvrBindCount) as 'Vserver Bindings', latest(kentik.snmp.vsvrSvcGroupBindCount) as 'Virtual Server Service Group Bindings', latest(kentik.snmp.curConfigLbVservers) as 'Load Balanced Vservers', latest(kentik.snmp.curConfigGslbVservers) as 'GSLB Vservers' where instrumentation.name = 'netscaler' TIMESERIES limit max"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 21,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Spillovers",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(kentik.snmp.totSpilloverCount) as 'Spillover Count' where instrumentation.name = 'netscaler' compare with 1 day ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 4,
+            "row": 21,
+            "height": 3,
+            "width": 9
+          },
+          "title": "Spillover Timeseries",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(kentik.snmp.totSpilloverCount) as 'Spillover Count' where instrumentation.name = 'netscaler' TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

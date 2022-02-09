@@ -1,0 +1,116 @@
+{
+  "name": "Kentik Ping",
+  "description": null,
+  "pages": [
+    {
+      "name": "Kentik Ping",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 4,
+            "width": 3
+          },
+          "title": "Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(timestamp) AS 'Last Update', latest(src_as) AS 'AS Number', latest(src_as_name) AS 'AS Name', latest(src_geo) AS 'Country Code' WHERE provider = 'kentik-ping' AND device_name = 'failed-ping-test'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Ping Response Times",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.ping.AvgRttMs) AS 'Average', max(kentik.ping.MinRttMs) AS 'Min', max(kentik.ping.MaxRttMs) AS 'Max' WHERE provider = 'kentik-ping' TIMESERIES 5 MINUTES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 8,
+            "row": 1,
+            "height": 4,
+            "width": 2
+          },
+          "title": "Failed Pings Count",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT count(*) AS 'Failed Pings' WHERE provider = 'kentik-ping' AND kentik.ping.AvgRttMs[latest] = 0"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "height": 4,
+            "width": 3
+          },
+          "title": "Failed Pings Timeline",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT count(*) AS 'Failed Pings' WHERE provider = 'kentik-ping' AND kentik.ping.AvgRttMs[latest] = 0 TIMESERIES FACET device_name"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,51 +1,565 @@
 {
-	"name": "Kentik-Default",
+	"name": "Kentik Default",
 	"description": null,
 	"pages": [
-		{
-			"name": "Kentik-Default",
-			"description": null,
-			"widgets": [
+	  {
+		"name": "Kentik Default",
+		"description": null,
+		"widgets": [
+		  {
+			"visualization": {
+			  "id": "viz.markdown"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 1,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "",
+			"rawConfiguration": {
+			  "text": "# This device could be better!\n\nA **Kentik Default** device shows up when we either don't have enough information to match a known profile for a device (such as when a device uses the [generic Linux System OID](http://oid-info.com/get/1.3.6.1.4.1.8072.3.2.10)), or when we are missing a profile and need to make a new one \n\n[Open an issue](https://github.com/kentik/snmp-profiles/issues/new/choose) to request a new SNMP profile in order to resolve this.\n\n*This page shows the data we are currently collecting on this device.*"
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"layout": {
+			  "column": 6,
+			  "row": 1,
+			  "height": 7,
+			  "width": 3
+			},
+			"title": "Summary",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "nrqlQueries": [
 				{
-					"visualization": {
-						"id": "viz.markdown"
-					},
-					"layout": {
-						"column": 1,
-						"row": 1,
-						"height": 6,
-						"width": 12
-					},
-					"title": "",
-					"rawConfiguration": {
-						"text": "# This device needs attention!!!\n\n*The creation of entities from ktranslate data in New Relic has dependencies in the open source repositories of both [Kentik's snmp-profiles](https://github.com/kentik/snmp-profiles) and our [Entity Definitions](https://github.com/newrelic/entity-definitions) library. More additions are being added all the time and we always welcome PRs!*\n\nThe process to create an entity is as follows:\n \n 1. Data is processed by ktranslate and SysOIDs are matched to a pre-defined '[profile](https://github.com/kentik/snmp-profiles/tree/main/profiles/kentik_snmp)', which then transposes to the `provider` attribute in the data sent to New Relic. Devices with no match are set to `provider: kentik-default`.\n  2. On ingest, New Relic matches data from ktranslate based on the value of the `provider` attribute into a pre-defined entity definition. Devices where `provider: kentik-default` are synthesized in `Kentik Default` entities. *(which is what you are looking at right now)*\n\nTo remediate this, you will need to update your YAML config file for ktranslate to ensure the `mib_profile` value for this device matches a known profile. If none exist to match, you can [submit a pull request](https://github.com/kentik/snmp-profiles/compare) to ktranslate, or [open an issue](https://github.com/kentik/snmp-profiles/issues/new) if you need assistance. \n\nIf you also need a new entity type defined in New Relic, you can [submit a pull request](https://github.com/newrelic/entity-definitions/compare) to the entity definition repo, contact your New Relic account team or [ask for help in the Explorer's Hub](https://discuss.newrelic.com/c/full-stack-observability/465) and we'll be happy to assist!"
-					}
+				  "accountId": 0,
+				  "query": "FROM Metric select latest(device_name) AS 'Device Name',latest(src_addr) as 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 as 'Uptime (Days)', latest(timestamp) as 'Last Update', latest(PollingHealth) where provider in ('kentik-default','kentik-net-snmp')' SINCE 1 DAY AGO"
+				}
+			  ],
+			  "thresholds": []
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"layout": {
+			  "column": 9,
+			  "row": 1,
+			  "height": 1,
+			  "width": 2
+			},
+			"title": "Current CPU",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider in ('kentik-default','kentik-net-snmp')"
+				}
+			  ],
+			  "thresholds": [
+				{
+				  "alertSeverity": "WARNING",
+				  "value": 90
 				},
 				{
-					"visualization": {
-						"id": "viz.table"
-					},
-					"layout": {
-						"column": 1,
-						"row": 7,
-						"height": 2,
-						"width": 12
-					},
-					"title": "Device Summary",
-					"rawConfiguration": {
-						"dataFormatters": [],
-						"facet": {
-							"showOtherSeries": false
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM Metric SELECT latest(timestamp) AS 'Last Poll' FACET device_name AS 'Name', src_addr AS 'IP Address', SysObjectID, sysoid_profile AS 'ktranslate profile' WHERE provider = 'kentik-default' AND SysObjectID IS NOT NULL"
-							}
-						]
-					}
+				  "alertSeverity": "CRITICAL",
+				  "value": 95
 				}
-			]
-		}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"layout": {
+			  "column": 11,
+			  "row": 1,
+			  "height": 1,
+			  "width": 2
+			},
+			"title": "Current Memory",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE provider in ('kentik-default','kentik-net-snmp') "
+				}
+			  ],
+			  "thresholds": [
+				{
+				  "alertSeverity": "WARNING",
+				  "value": 90
+				},
+				{
+				  "alertSeverity": "CRITICAL",
+				  "value": 95
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 9,
+			  "row": 2,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "CPU Utilization (%)",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider in ('kentik-default','kentik-net-snmp') TIMESERIES "
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": false
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 11,
+			  "row": 2,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Memory Utilization (%)",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider in ('kentik-default','kentik-net-snmp') TIMESERIES "
+				}
+			  ],
+			  "yAxisLeft": {
+				"max": 100,
+				"min": 0,
+				"zero": false
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.table"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 4,
+			  "height": 8,
+			  "width": 5
+			},
+			"title": "Currently Collected Metrics",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT count(*) FACET `mib-name`, `mib-table`, metricName, objectIdentifier WHERE `mib-name` !='computed' AND `mib-name` IS NOT NULL AND provider in ('kentik-default','kentik-net-snmp') SINCE 1 DAY AGO LIMIT MAX"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 9,
+			  "row": 5,
+			  "height": 3,
+			  "width": 4
+			},
+			"title": "Running Processes Count",
+			"rawConfiguration": {
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "from Metric SELECT min(kentik.snmp.hrSystemProcesses) AS 'Min Process Count', average(kentik.snmp.hrSystemProcesses) AS 'Average Process Count', max(kentik.snmp.hrSystemProcesses) AS 'Max Process Count' where metricName = 'kentik.snmp.hrSystemProcesses' TIMESERIES "
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.table"
+			},
+			"layout": {
+			  "column": 6,
+			  "row": 8,
+			  "height": 4,
+			  "width": 7
+			},
+			"title": "Interfaces Summary",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus) AS 'Operational Status', sum(kentik.snmp.ifInErrors) AS 'RX Errors', sum(kentik.snmp.ifOutErrors) AS 'TX Errors' FACET if_name or if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed WHERE provider in ('kentik-default','kentik-net-snmp') LIMIT MAX"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.table"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 12,
+			  "height": 3,
+			  "width": 4
+			},
+			"title": "Storage Summary",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT round(latest(kentik.snmp.hrStorageUsed)*100/latest(kentik.snmp.hrStorageSize}.01) as 'Used %', round(latest(kentik.snmp.hrStorageSize)*1e-6,.01) as 'Disk Total MBytes', round(latest(kentik.snmp.hrStorageUsed)*1e-6,.01) as 'Used MBytes' where `mib-table` = 'hrStorage' facet storage_description limit max"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 5,
+			  "row": 12,
+			  "height": 3,
+			  "width": 4
+			},
+			"title": "Storage Used %",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT round(latest(kentik.snmp.hrStorageUsed)*100/latest(kentik.snmp.hrStorageSize}.01) as 'Used %' where `mib-table` = 'hrStorage' facet storage_description limit max timeseries"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"layout": {
+			  "column": 9,
+			  "row": 12,
+			  "height": 3,
+			  "width": 4
+			},
+			"title": "Top Storage Used %",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "select round(max(`Used %`}.01)   from ( FROM Metric SELECT (latest(kentik.snmp.hrStorageUsed)*100/latest(kentik.snmp.hrStorageSize)) as 'Used %' where `mib-table` = 'hrStorage' facet storage_description limit max ) where `Used %` > 80 facet storage_description"
+				}
+			  ],
+			  "thresholds": [
+				{
+				  "alertSeverity": "WARNING",
+				  "value": 80
+				},
+				{
+				  "alertSeverity": "CRITICAL",
+				  "value": 90
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.table"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 15,
+			  "height": 3,
+			  "width": 10
+			},
+			"title": "Disk Capacity Summary",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT round(latest(kentik.snmp.dskTotal)*1e-6,.01) as 'Disk Total MBytes', round(latest(kentik.snmp.dskUsed)*1e-6,.01) as 'Used MBytes', round(latest(kentik.snmp.dskPercent}.01) as 'Used %', round(latest(kentik.snmp.dskPercentNode}.01) as 'Inodes %' where `mib-table` = 'dsk' facet dsk_device, dsk_path, dsk_error_msg limit max"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"layout": {
+			  "column": 11,
+			  "row": 15,
+			  "height": 3,
+			  "width": 2
+			},
+			"title": "Top Disk Used %",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "select max(Used) from (FROM Metric SELECT latest(kentik.snmp.dskPercent) as Used where `mib-table` = 'dsk' facet dsk_device, dsk_path, dsk_error_msg limit max) where Used >= 80 facet dsk_path"
+				}
+			  ],
+			  "thresholds": [
+				{
+				  "alertSeverity": "WARNING",
+				  "value": 80
+				},
+				{
+				  "alertSeverity": "CRITICAL",
+				  "value": 90
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 18,
+			  "height": 3,
+			  "width": 7
+			},
+			"title": "Disk Used %",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.dskPercent) as 'Used %'where `mib-table` = 'dsk' facet dsk_path limit max timeseries"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 8,
+			  "row": 18,
+			  "height": 3,
+			  "width": 5
+			},
+			"title": "Disk Inodes Used %",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.dskPercentNode) as 'Inodes %' where `mib-table` = 'dsk' facet dsk_path limit max timeseries"
+				}
+			  ],
+			  "yAxisLeft": {
+				"max": 100,
+				"min": 0,
+				"zero": false
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.table"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 21,
+			  "height": 3,
+			  "width": 8
+			},
+			"title": "Disk IO",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.diskIOLA1) as 'Disk Total Load %', rate(latest(kentik.snmp.diskIOReads), 1 second) as 'Current Read IOPS', rate(latest(kentik.snmp.diskIOWrites), 1 second) as 'Current Write IOPS', rate(latest(kentik.snmp.diskIONReadX), 1 second) as 'Current Read Bytes/sec', rate(latest(kentik.snmp.diskIONWrittenX), 1 second) as 'Current Write Bytes/sec' where `mib-table` = 'diskIO' facet diskIO_device limit max"
+				}
+			  ]
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 9,
+			  "row": 21,
+			  "height": 3,
+			  "width": 4
+			},
+			"title": "Disk IO Load %",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.diskIOLA1) as 'Disk Total Load %' where `mib-table` = 'diskIO' facet diskIO_device limit max TIMESERIES "
+				}
+			  ],
+			  "yAxisLeft": {
+				"max": 100,
+				"min": 0,
+				"zero": false
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 1,
+			  "row": 24,
+			  "height": 3,
+			  "width": 6
+			},
+			"title": "Disk Bytes/Sec",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT rate(latest(kentik.snmp.diskIONReadX),1 second) as 'Read Bytes', rate(latest(kentik.snmp.diskIONWrittenX),1 second) as 'Write Bytes' where `mib-table` = 'diskIO' facet diskIO_device limit max TIMESERIES "
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"layout": {
+			  "column": 7,
+			  "row": 24,
+			  "height": 3,
+			  "width": 6
+			},
+			"title": "Disk IOPS",
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT rate(latest(kentik.snmp.diskIOReads),1 second) as 'Read IOPS', rate(latest(kentik.snmp.diskIOWrites),1 second) as 'Write IOPS' where `mib-table` = 'diskIO' facet diskIO_device limit max TIMESERIES "
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  }
+		]
+	  }
 	]
-}
+  }
