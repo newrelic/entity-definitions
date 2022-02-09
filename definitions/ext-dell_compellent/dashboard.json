@@ -48,7 +48,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (latest(usedSpace)/latest(availableSpace))*100  as 'Used %' FROM compellent_capacity_all WHERE objectType ='StorageCenterStorageUsage'  limit max TIMESERIES AUTO"
+                "query": "SELECT (latest(usedSpace)/latest(availableSpace))*100  as 'used %' FROM compellent_capacity_all WHERE objectType ='StorageCenterStorageUsage'  limit max TIMESERIES AUTO"
               }
             ],
             "yAxisLeft": {
@@ -80,6 +80,30 @@
             "yAxisLeft": {
               "zero": true
             }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 6,
+            "width": 12
+          },
+          "title": "Alerts",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM compellent_active_alerts SELECT latest(modifiedOnMinutesAgo),latest(createTime),latest(message),latest(active),latest(acknowledged),latest(category),latest(alertStatus), latest(alertDefinition), latest(controller.objectType) as 'Object type',latest(fruAlert),latest(maintenance), latest(modifiedOnUTC) facet scName,instanceId,modifiedOn  limit max"
+              }
+            ]
           }
         }
       ]
