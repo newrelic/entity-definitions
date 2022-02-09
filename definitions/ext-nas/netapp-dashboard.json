@@ -18,11 +18,17 @@
           },
           "title": "Summary",
           "rawConfiguration": {
-            "dataFormatters": [],
+            "dataFormatters": [
+              {
+                "name": "Uptime (Days)",
+                "precision": 2,
+                "type": "decimal"
+              }
+              ],
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select latest(device_name) AS 'Device Name',latest(src_addr) as 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 as 'Uptime (Days)', latest(timestamp) as 'Last Update', latest(PollingHealth), latest(productType) as 'Type', latest(productVendor) as 'Vendor', latest(productVersion) as 'Version', latest(productSerialNum) as 'Serial Number', latest(productCPUArch) as 'CPU Architecture', latest(kentik.snmp.cpuCount) as 'CPU Count' where instrumentation.name = 'netapp-cluster'"
+                "query": "FROM Metric select latest(device_name) AS 'Device Name',latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth), latest(productType) AS 'Type', latest(productVendor) AS 'Vendor', latest(productVersion) AS 'Version', latest(productSerialNum) AS 'Serial Number', latest(productCPUArch) AS 'CPU Architecture', latest(kentik.snmp.cpuCount) AS 'CPU Count' where instrumentation.name = 'netapp-cluster'"
               }
             ],
             "thresholds": []
@@ -44,7 +50,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(kentik.snmp.CPU) AS 'CPU Utilization %' WHERE provider = 'kentik-nas'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider = 'kentik-nas'"
               }
             ],
             "thresholds": [
@@ -166,7 +172,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(`kentik.snmp.autosupportStatus`) FROM Metric FACET autosupportStatusMessage WHERE instrumentation.name = 'netapp-cluster'"
+                "query": "SELECT latest(kentik.snmp.autosupportStatus) FROM Metric FACET autosupportStatusMessage WHERE instrumentation.name = 'netapp-cluster'"
               }
             ],
             "thresholds": [
@@ -195,7 +201,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(kentik.snmp.autosupportFailedSends) as 'AutoSupport Failed Sends' where instrumentation.name = 'netapp-cluster' timeseries 5 minutes"
+                "query": "FROM Metric SELECT latest(kentik.snmp.autosupportFailedSends) AS 'AutoSupport Failed Sends' WHERE instrumentation.name = 'netapp-cluster' TIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
@@ -219,7 +225,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select latest(kentik.snmp.enclNumber) AS 'Enclosures', latest(kentik.snmp.dfNumber) as 'File Systems', latest(kentik.snmp.volNumber) as 'Volumes', latest(kentik.snmp.aggrNumber) as 'Aggregates' where instrumentation.name = 'netapp-cluster'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.enclNumber) AS 'Enclosures', latest(kentik.snmp.dfNumber) AS 'File Systems', latest(kentik.snmp.volNumber) AS 'Volumes', latest(kentik.snmp.aggrNumber) AS 'Aggregates' WHERE instrumentation.name = 'netapp-cluster'"
               }
             ],
             "thresholds": []
@@ -235,7 +241,7 @@
             "height": 4,
             "width": 4
           },
-          "title": "Disks Counts",
+          "title": "Disk Counts",
           "rawConfiguration": {
             "dataFormatters": [],
             "facet": {
@@ -244,7 +250,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(kentik.snmp.diskTotalCount) AS 'Total Disks'\n, latest(kentik.snmp.diskActiveCount) AS 'Active Disks', latest(kentik.snmp.spareNumber) as 'Total Spare Count', latest(kentik.snmp.diskSpareCount) AS 'Spare Disks Available', latest(kentik.snmp.otherDiskNumber) as 'Other Disks' WHERE instrumentation.name = 'netapp-cluster' compare with 1 day ago"
+                "query": "FROM Metric SELECT latest(kentik.snmp.diskTotalCount) AS 'Total Disks', latest(kentik.snmp.diskActiveCount) AS 'Active Disks', latest(kentik.snmp.spareNumber) AS 'Total Spare Count', latest(kentik.snmp.diskSpareCount) AS 'Spare Disks Available', latest(kentik.snmp.otherDiskNumber) AS 'Other Disks' WHERE instrumentation.name = 'netapp-cluster' COMPARE WITH 1 DAY AGO"
               }
             ],
             "thresholds": []
@@ -296,7 +302,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kentik.snmp.cfState) as 'State', latest(kentik.snmp.cfPartnerName) as 'Partner', latest(kentik.snmp.cfPartnerStatus) as 'Partner Status', latest(kentik.snmp.cfInterconnectStatus) as 'Interconnect Status' FROM Metric where instrumentation.name = 'netapp-cluster'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.cfState) AS 'State', latest(kentik.snmp.cfPartnerName) AS 'Partner', latest(kentik.snmp.cfPartnerStatus) AS 'Partner Status', latest(kentik.snmp.cfInterconnectStatus) AS 'Interconnect Status' WHERE instrumentation.name = 'netapp-cluster'"
               }
             ],
             "thresholds": []
@@ -321,7 +327,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(haState) as 'State', latest(haPartnerStatus) as 'Partner Status', latest( haInterconnectStatus) as 'Interconnect Status', latest(haCannotTakeoverCause) as 'Cannot Take Over Cause' From Metric Facet Index, haNodeName as 'Node', haPartnerName as 'Partner' WHERE instrumentation.name = 'netapp-cluster' limit max"
+                "query": "FROM Metric SELECT latest(haState) AS 'State', latest(haPartnerStatus) AS 'Partner Status', latest( haInterconnectStatus) AS 'Interconnect Status', latest(haCannotTakeoverCause) AS 'Cannot Take Over Cause' FACET Index, haNodeName AS 'Node', haPartnerName AS 'Partner' WHERE instrumentation.name = 'netapp-cluster' LIMIT MAX"
               }
             ]
           }
@@ -345,7 +351,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select latest(kentik.snmp.dfPerCentKBytesCapacity) as 'Used %', latest(kentik.snmp.df64TotalKBytes)/1000 as 'Total Megabytes', latest(kentik.snmp.df64TotalReservedKBytes)/1000 as 'Reserved Megabytes', latest(kentik.snmp.dfPerCentInodeCapacity) as 'Inodes Used %', latest(kentik.snmp.dfMaxFilesAvail) as 'Max Files Available', latest(kentik.snmp.dfMaxFilesUsed) as 'Files In Use', latest(kentik.snmp.dfPlexCount) as 'Plex Count', latest(kentik.snmp.dfPerCentSaved) as 'Block Dedupe Savings %', latest(dfStatus ) as 'Status', latest(dfMirrorStatus ) as 'Mirror Status', latest(dfStateOnline) as 'Online' where instrumentation.name = 'netapp-cluster' facet Index, dfFileSys as 'File System', dfType as 'Type', dfVserver as 'Virtual Server', dfMountedOn as 'Mounted On' limit max"
+                "query": "FROM Metric SELECT latest(kentik.snmp.dfPerCentKBytesCapacity) AS 'Used %', latest(kentik.snmp.df64TotalKBytes)/1000 AS 'Total Megabytes', latest(kentik.snmp.df64TotalReservedKBytes)/1000 AS 'Reserved Megabytes', latest(kentik.snmp.dfPerCentInodeCapacity) AS 'Inodes Used %', latest(kentik.snmp.dfMaxFilesAvail) AS 'Max Files Available', latest(kentik.snmp.dfMaxFilesUsed) AS 'Files In Use', latest(kentik.snmp.dfPlexCount) AS 'Plex Count', latest(kentik.snmp.dfPerCentSaved) AS 'Block Dedupe Savings %', latest(dfStatus ) AS 'Status', latest(dfMirrorStatus ) AS 'Mirror Status', latest(dfStateOnline) AS 'Online' WHERE instrumentation.name = 'netapp-cluster' FACET Index, dfFileSys AS 'File System', dfType AS 'Type', dfVserver AS 'Virtual Server', dfMountedOn AS 'Mounted On' LIMIT MAX"
               }
             ]
           }
@@ -372,7 +378,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select latest(kentik.snmp.dfPerCentKBytesCapacity) as 'Used %' where instrumentation.name = 'netapp-cluster' facet Index, dfFileSys as 'File System' limit 10 timeseries 5 minutes"
+                "query": "FROM Metric SELECT latest(kentik.snmp.dfPerCentKBytesCapacity) AS 'Used %' WHERE instrumentation.name = 'netapp-cluster' FACET Index, dfFileSys AS 'File System' TIMESERIES 5 MINUTES LIMIT 10"
               }
             ],
             "yAxisLeft": {
@@ -399,7 +405,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kentik.snmp.volState) AS 'State', latest(kentik.snmp.volStatus) AS 'Status'  FROM Metric FACET Index, volName as 'Name', volFSID, volOptions, volUUID, volAggrName, volType as 'Type', volClone WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'vol'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.volState) AS 'State', latest(kentik.snmp.volStatus) AS 'Status' FACET Index, volName AS 'Name', volFSID, volOptions, volUUID, volAggrName, volType AS 'Type', volClone WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'vol'"
               }
             ]
           }
@@ -423,7 +429,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(qvStateStat) as 'Quota Status', latest(kentik.snmp.qvStateInitPercent) as 'Quota Computation while Initializing' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'qvState' facet Index, qvStateName as 'Volume Name', qvStateVolume as 'Volume ID', qvStateVserver as 'Virtual Server' limit max"
+                "query": "FROM Metric SELECT latest(qvStateStat) AS 'Quota Status', latest(kentik.snmp.qvStateInitPercent) AS 'Quota Computation while Initializing' WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'qvState' FACET Index, qvStateName AS 'Volume Name', qvStateVolume AS 'Volume ID', qvStateVserver AS 'Virtual Server' LIMIT MAX"
               }
             ]
           }
@@ -447,7 +453,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(spareStatus) as 'Status', latest(kentik.snmp.spareTotalMb) as 'Total Megabytes' FROM Metric facet Index, spareDiskName as 'Disk', spareShelf as 'Shelf', spareBay as 'Bay', spareDiskRPM as 'RPM', spareDiskType as 'Type'  WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'spare' limit max"
+                "query": "FROM Metric SELECT latest(spareStatus) AS 'Status', latest(kentik.snmp.spareTotalMb) AS 'Total Megabytes' FACET Index, spareDiskName AS 'Disk', spareShelf AS 'Shelf', spareBay AS 'Bay', spareDiskRPM AS 'RPM', spareDiskType AS 'Type'  WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'spare' LIMIT MAX"
               }
             ]
           }
@@ -471,7 +477,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(enclContactState) as 'State', latest(kentik.snmp.enclDisksPresent) as 'Disks Present', latest(kentik.snmp.enclPowerSuppliesFailed) as 'List of Failed Power Supplies', latest(kentik.snmp.enclFansFailed) as 'List of Failed Fans', latest(kentik.snmp.enclTempSensorsOverTempFail) as 'List of Over Temp Sensors', latest(kentik.snmp.enclTempSensorsUnderTempFail) as 'List of Under Temp Sensors', latest(kentik.snmp.enclElectronicsFailed) as 'List of Failed Electronics', latest(kentik.snmp.enclVoltSensorsOverVoltFail) as 'List of Over Volt Sensors', latest(kentik.snmp.enclVoltSensorsUnderVoltFail) as 'List of Under Volt Sensors', latest(kentik.snmp.enclCurSensorsOverCurFail) as 'List of Over Current Sensors' FROM Metric facet Index, enclNodeName as 'Node', enclChannelShelfAddr as 'Address', enclProductModel as 'Model', enclProductSerialNo as Serial_Number, enclNumberDiskBays as 'Disk Bays' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'encl' limit max"
+                "query": "FROM Metric SELECT latest(enclContactState) AS 'State', latest(kentik.snmp.enclDisksPresent) AS 'Disks Present', latest(kentik.snmp.enclPowerSuppliesFailed) AS 'List of Failed Power Supplies', latest(kentik.snmp.enclFansFailed) AS 'List of Failed Fans', latest(kentik.snmp.enclTempSensorsOverTempFail) AS 'List of Over Temp Sensors', latest(kentik.snmp.enclTempSensorsUnderTempFail) AS 'List of Under Temp Sensors', latest(kentik.snmp.enclElectronicsFailed) AS 'List of Failed Electronics', latest(kentik.snmp.enclVoltSensorsOverVoltFail) AS 'List of Over Volt Sensors', latest(kentik.snmp.enclVoltSensorsUnderVoltFail) AS 'List of Under Volt Sensors', latest(kentik.snmp.enclCurSensorsOverCurFail) AS 'List of Over Current Sensors' FACET Index, enclNodeName AS 'Node', enclChannelShelfAddr AS 'Address', enclProductModel AS 'Model', enclProductSerialNo AS Serial_Number, enclNumberDiskBays AS 'Disk Bays' WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'encl' LIMIT MAX"
               }
             ]
           }
@@ -492,7 +498,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select latest(kentik.snmp.cpTotalOps) as 'Total', latest(kentik.snmp.cpFromTimerOps) as 'Caused by Timer', latest(kentik.snmp.cpFromSnapshotOps) as 'Caused by Snapshot', latest(kentik.snmp.cpFromLowWaterOps) as 'Caused by Low Water Mark', latest(kentik.snmp.cpFromHighWaterOps) as 'Caused by High Water Mark', latest(kentik.snmp.cpFromLogFullOps) as 'Caused by nv-log Full', latest(kentik.snmp.cpFromCpOps) as 'Back to Back', latest(kentik.snmp.cpFromFlushOps) as 'Caused by Flush', latest(kentik.snmp.cpFromSyncOps) as 'Caused by Sync', latest(kentik.snmp.cpFromCpDeferredOps) as 'Deferred', latest(kentik.snmp.cpFromLowDatavecsOps) as 'Caused by lowdatavecs' where instrumentation.name = 'netapp-cluster'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.cpTotalOps) AS 'Total', latest(kentik.snmp.cpFromTimerOps) AS 'Caused by Timer', latest(kentik.snmp.cpFromSnapshotOps) AS 'Caused by Snapshot', latest(kentik.snmp.cpFromLowWaterOps) AS 'Caused by Low Water Mark', latest(kentik.snmp.cpFromHighWaterOps) AS 'Caused by High Water Mark', latest(kentik.snmp.cpFromLogFullOps) AS 'Caused by nv-log Full', latest(kentik.snmp.cpFromCpOps) AS 'Back to Back', latest(kentik.snmp.cpFromFlushOps) AS 'Caused by Flush', latest(kentik.snmp.cpFromSyncOps) AS 'Caused by Sync', latest(kentik.snmp.cpFromCpDeferredOps) AS 'Deferred', latest(kentik.snmp.cpFromLowDatavecsOps) AS 'Caused by lowdatavecs' WHERE instrumentation.name = 'netapp-cluster'"
               }
             ],
             "thresholds": []
@@ -517,7 +523,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select latest(kentik.snmp.cpTotalOps), latest(kentik.snmp.cpFromTimerOps), latest(kentik.snmp.cpFromSnapshotOps), latest(kentik.snmp.cpFromLowWaterOps), latest(kentik.snmp.cpFromHighWaterOps), latest(kentik.snmp.cpFromLogFullOps), latest(kentik.snmp.cpFromCpOps), latest(kentik.snmp.cpFromFlushOps), latest(kentik.snmp.cpFromSyncOps), latest(kentik.snmp.cpFromCpDeferredOps), latest(kentik.snmp.cpFromLowDatavecsOps) where instrumentation.name = 'netapp-cluster' TIMESERIES 5 minutes limit max"
+                "query": "FROM Metric SELECT latest(kentik.snmp.cpTotalOps), latest(kentik.snmp.cpFromTimerOps), latest(kentik.snmp.cpFromSnapshotOps), latest(kentik.snmp.cpFromLowWaterOps), latest(kentik.snmp.cpFromHighWaterOps), latest(kentik.snmp.cpFromLogFullOps), latest(kentik.snmp.cpFromCpOps), latest(kentik.snmp.cpFromFlushOps), latest(kentik.snmp.cpFromSyncOps), latest(kentik.snmp.cpFromCpDeferredOps), latest(kentik.snmp.cpFromLowDatavecsOps) where instrumentation.name = 'netapp-cluster' TIMESERIES 5 MINUTES LIMIT MAX"
               }
             ],
             "yAxisLeft": {
@@ -541,7 +547,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kentik.snmp.raidVUsedMb)/latest(kentik.snmp.raidVTotalMb)*100 AS 'Raid-V Used %' FROM Metric"
+                "query": "FROM Metric SELECT latest(kentik.snmp.raidVUsedMb)/latest(kentik.snmp.raidVTotalMb)*100 AS 'Raid-V Used %'"
               }
             ]
           }
@@ -565,7 +571,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(raidVStatus) as 'Status', latest(kentik.snmp.raidVTotalMb) as 'Total Megabytes', latest(kentik.snmp.raidVUsedMb) as 'Used Megabytes', latest(kentik.snmp.raidVCompletionPerCent) as 'Completion %', latest(raidVDiskNumber) as 'Disk Count', latest(raidVGroupNumber) as 'RAID Group Count' FROM Metric facet Index, raidVDiskName as 'Disk', raidVShelf as 'Shelf', raidVBay as 'Bay'  WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'raidV' limit max"
+                "query": "FROM Metric SELECT latest(raidVStatus) AS 'Status', latest(kentik.snmp.raidVTotalMb) AS 'Total Megabytes', latest(kentik.snmp.raidVUsedMb) AS 'Used Megabytes', latest(kentik.snmp.raidVCompletionPerCent) AS 'Completion %', latest(raidVDiskNumber) AS 'Disk Count', latest(raidVGroupNumber) AS 'RAID Group Count' FACET Index, raidVDiskName AS 'Disk', raidVShelf AS 'Shelf', raidVBay AS 'Bay' WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'raidV' LIMIT MAX"
               }
             ]
           }
@@ -586,7 +592,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kentik.snmp.raidPUsedMb)/latest(kentik.snmp.raidPTotalMb)*100 AS 'Raid-P Used %' FROM Metric"
+                "query": "FROM Metric SELECT latest(kentik.snmp.raidPUsedMb)/latest(kentik.snmp.raidPTotalMb)*100 AS 'Raid-P Used %'"
               }
             ]
           }
@@ -610,7 +616,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(raidPStatus) as 'Status', latest(kentik.snmp.raidPTotalMb) as 'Total Megabytes', latest(kentik.snmp.raidPUsedMb) as 'Used Megabytes', latest(kentik.snmp.raidPCompletionPerCent) as 'Completion %', latest(raidPDiskNumber) as 'Disk Count', latest(raidPGroupNumber) as 'RAID Group Count' FROM Metric facet Index, raidPDiskName as 'Disk', raidPShelf as 'Shelf', raidPBay as 'Bay'  WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'raidP' limit max"
+                "query": "FROM Metric SELECT latest(raidPStatus) AS 'Status', latest(kentik.snmp.raidPTotalMb) AS 'Total Megabytes', latest(kentik.snmp.raidPUsedMb) AS 'Used Megabytes', latest(kentik.snmp.raidPCompletionPerCent) AS 'Completion %', latest(raidPDiskNumber) AS 'Disk Count', latest(raidPGroupNumber) AS 'RAID Group Count' FACET Index, raidPDiskName AS 'Disk', raidPShelf AS 'Shelf', raidPBay AS 'Bay'  WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'raidP' LIMIT MAX"
               }
             ]
           }
@@ -634,7 +640,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kentik.snmp.aggrState) AS 'State', latest(kentik.snmp.aggrStatus) as 'Status' FROM Metric facet Index, aggrName, aggrType WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'aggr'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.aggrState) AS 'State', latest(kentik.snmp.aggrStatus) AS 'Status' FACET Index, aggrName, aggrType WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'aggr'"
               }
             ]
           }
@@ -658,7 +664,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(qtreeStatus) AS 'Status' FROM Metric FACET Index, qtreeName as 'Name', qtreeVolumeName as 'Volume', qtreeStyle as 'Style', qtreeOplock as 'Oplock' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'vol'"
+                "query": "FROM Metric SELECT latest(qtreeStatus) AS 'Status' FACET Index, qtreeName as 'Name', qtreeVolumeName as 'Volume', qtreeStyle as 'Style', qtreeOplock as 'Oplock' WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'vol'"
               }
             ]
           }
@@ -682,7 +688,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(snapvault_state) as 'State', latest(kentik.snmp.svTotalFailures) as 'Failures Count' FROM Metric facet Index, snapvault_destination as 'Destination' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'snapvaultStatus' limit max"
+                "query": "FROM Metric SELECT latest(snapvault_state) AS 'State', latest(kentik.snmp.svTotalFailures) AS 'Failures Count' FACET Index, snapvault_destination AS 'Destination' WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'snapvaultStatus' LIMIT MAX"
               }
             ]
           }
@@ -706,7 +712,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(snapmirrorStatus) as 'Status',latest(snapmirrorState) as 'State', latest(kentik.snmp.snapmirrorMirrorTimestamp) as 'Last Transfer Timestamp', latest(kentik.snmp.snapmirrorLastTransType) as 'Last Transfer Type', latest(kentik.snmp.snapmirrorLastTransMBs) as 'Last Transfer MB', latest(kentik.snmp.snapmirrorLastTransTimeSeconds) as 'Last Transfer Seconds', latest(kentik.snmp.snapmirrorTotalFailures) as 'Failures Count' FROM Metric facet Index, snapmirrorSrc as 'Source', snapmirrorDst as 'Destination' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'snapmirrorStatus' limit max"
+                "query": "FROM Metric SELECT latest(snapmirrorStatus) AS 'Status',latest(snapmirrorState) AS 'State', latest(kentik.snmp.snapmirrorMirrorTimestamp) AS 'Last Transfer Timestamp', latest(kentik.snmp.snapmirrorLastTransType) AS 'Last Transfer Type', latest(kentik.snmp.snapmirrorLastTransMBs) AS 'Last Transfer MB', latest(kentik.snmp.snapmirrorLastTransTimeSeconds) AS 'Last Transfer Seconds', latest(kentik.snmp.snapmirrorTotalFailures) AS 'Failures Count' FACET Index, snapmirrorSrc AS 'Source', snapmirrorDst AS 'Destination' WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'snapmirrorStatus' LIMIT MAX"
               }
             ]
           }
@@ -730,7 +736,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(plexStatus) as 'Status', latest(kentik.snmp.plexPercentResyncing) as 'Resyncing %' FROM Metric facet Index, plexName as 'Name', plexVolName as 'Volume' WHERE instrumentation.name = 'netapp-cluster' and `mib-table` = 'plex' limit max"
+                "query": "FROM Metric SELECT latest(plexStatus) AS 'Status', latest(kentik.snmp.plexPercentResyncing) AS 'Resyncing %' FACET Index, plexName AS 'Name', plexVolName AS 'Volume' WHERE instrumentation.name = 'netapp-cluster' AND `mib-table` = 'plex' LIMIT MAX"
               }
             ]
           }
@@ -756,7 +762,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(kentik.snmp.if64InOctets) AS 'RX Bytes', latest(kentik.snmp.if64OutOctets) AS 'TX Bytes' WHERE instrumentation.name = 'netapp-cluster' TIMESERIES 5 minutes"
+                "query": "FROM Metric SELECT latest(kentik.snmp.if64InOctets) AS 'RX Bytes', latest(kentik.snmp.if64OutOctets) AS 'TX Bytes' WHERE instrumentation.name = 'netapp-cluster' TIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
