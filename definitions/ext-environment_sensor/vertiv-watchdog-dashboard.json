@@ -1,0 +1,258 @@
+{
+    "name": "Vertiv Watchdog",
+    "description": null,
+    "pages": [
+      {
+        "name": "Vertiv Watchdog",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 5,
+              "width": 3
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 1,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)' WHERE provider = 'kentik-watchdog'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 4,
+              "row": 1,
+              "height": 1,
+              "width": 4
+            },
+            "title": "Internal Temperature (F)",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Internal Temperature (F)",
+                  "precision": 1,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.internalTemp)/10 AS 'Internal Temperature (F)' WHERE provider = 'kentik-watchdog'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 80
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 85
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 8,
+              "row": 1,
+              "height": 1,
+              "width": 4
+            },
+            "title": "Temp Sensor Temperature (F)",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Temp Sensor Temperature (F)",
+                  "precision": 1,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.tempSensorTemp)/10 AS 'Temp Sensor Temperature (F)' WHERE provider = 'kentik-watchdog'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 80
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 85
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 4,
+              "row": 2,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Internal Temperature (F)",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.internalTemp)/10 FACET device_name WHERE provider = 'kentik-watchdog' TIMESERIES "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 8,
+              "row": 2,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Temp Sensor Temperature (F)",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.tempSensorTemp)/10 FACET device_name, tempSensorName WHERE provider = 'kentik-watchdog' TIMESERIES "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "height": 3,
+              "width": 3
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(productFriendlyName), latest(internalSerial), latest(productVersion), latest(productMacAddress) WHERE provider = 'kentik-watchdog'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 4,
+              "row": 6,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Internal Humidity",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.internalHumidity) FACET device_name WHERE provider = 'kentik-watchdog' TIMESERIES "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 8,
+              "row": 6,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Internal Dew Point",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.internalDewPoint) FACET device_name WHERE provider = 'kentik-watchdog' TIMESERIES "
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
