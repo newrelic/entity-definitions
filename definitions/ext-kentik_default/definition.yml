@@ -3,23 +3,39 @@ domain: EXT
 # Current list is defined in the 'Provider' type definition in ktranslate, found here:
 # https://github.com/kentik/ktranslate/blob/main/pkg/kt/types.go
 type: KENTIK_DEFAULT
+
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
+  rules:
+    # no snmp-profile matched
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-default
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      profile_message:
 
-  conditions:
-  - attribute: provider
-    value: kentik-default
-
-  tags:
-    src_addr:
-      multiValue: false
-    profile_message:
+    # ping_only device
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-ping
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
 
 dashboardTemplates:
-  kentik:
+  kentik/base:
     template: dashboard.json
+  kentik/ping:
+    template: ping-dashboard.json
 
 configuration:
   entityExpirationTime: FOUR_HOURS

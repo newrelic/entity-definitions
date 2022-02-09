@@ -1,0 +1,343 @@
+{
+  "name": "McAfee Web Gateway",
+  "description": null,
+  "pages": [
+    {
+      "name": "McAfee Web Gateway",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 5,
+            "width": 4
+          },
+          "title": "Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(kProductName) AS 'Product Name', latest(kProductVersion) AS 'Product Version', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health' WHERE instrumentation.name = 'mcafee-web-gateway'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 1,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'CPU Utilization %' WHERE instrumentation.name = 'mcafee-web-gateway'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 1,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Memory Utilization %' WHERE instrumentation.name = 'mcafee-web-gateway'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "height": 4,
+            "width": 4
+          },
+          "title": "CPU Utilization Timeline",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.CPU) AS 'Average', min(kentik.snmp.CPU) AS 'Min', max(kentik.snmp.CPU) AS 'Max' WHERE instrumentation.name = 'mcafee-web-gateway' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Memory Utilization Timeline",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.MemoryUtilization) AS 'Average', min(kentik.snmp.MemoryUtilization) AS 'Min', max(kentik.snmp.MemoryUtilization) AS 'Max' WHERE instrumentation.name = 'mcafee-web-gateway' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "height": 3,
+            "width": 4
+          },
+          "title": "URL Filter Categories - Top 10",
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Count of Hits",
+                "precision": null,
+                "type": "humanized"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.snmp.stCategoryCount) AS 'Count of Hits' FACET stCategoryName AS 'Name' WHERE instrumentation.name = 'mcafee-web-gateway' LIMIT 10"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 6,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Action Speed (ms) Timeline",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.snmp.stResolveHostViaDNS) AS 'DNS Resolution', max(kentik.snmp.stTimeConsumedByRuleEngine) AS 'Rule Engine', max(kentik.snmp.stTimeForTransaction) AS 'Transaction' WHERE instrumentation.name = 'mcafee-web-gateway' TIMESERIES 5 MINUTES LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 6,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Clients and Sockets Timeline",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.stClientCount) AS 'Connected Clients', latest(kentik.snmp.stConnectedSockets) AS 'Open Network Sockets' WHERE instrumentation.name = 'mcafee-web-gateway' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Connection Summary  Counters (resets with appliance)",
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Malware Infections Detected",
+                "precision": null,
+                "type": "humanized"
+              },
+              {
+                "name": "Legitimate Connections",
+                "precision": null,
+                "type": "humanized"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.stConnectionsLegitimate) AS 'Legitimate Connections', latest(kentik.snmp.stMalwareDetected) AS 'Malware Infections Detected' WHERE instrumentation.name = 'mcafee-web-gateway' SINCE 1 HOUR AGO COMPARE WITH 1 DAY AGO"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Connection Type Counters (resets with appliance)",
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "HTTPS Requests",
+                "precision": null,
+                "type": "humanized"
+              },
+              {
+                "name": "HTTP Requests",
+                "precision": null,
+                "type": "humanized"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.stHttpRequests) AS 'HTTP Requests', latest(kentik.snmp.stHttpsRequests) AS 'HTTPS Requests' WHERE instrumentation.name = 'mcafee-web-gateway' SINCE 1 HOUR AGO COMPARE WITH 1 DAY AGO"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Blocked Connection Counters (resets with appliance)",
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "URL Filter",
+                "precision": null,
+                "type": "humanized"
+              },
+              {
+                "name": "Media Filter",
+                "precision": null,
+                "type": "humanized"
+              },
+              {
+                "name": "Anti-Malware",
+                "precision": null,
+                "type": "humanized"
+              },
+              {
+                "name": "Total Blocks",
+                "precision": null,
+                "type": "humanized"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.stConnectionsBlocked) AS 'Total Blocks', latest(kentik.snmp.stBlockedByAntiMalware) AS 'Anti-Malware', latest(kentik.snmp.stBlockedByMediaFilter) AS 'Media Filter', latest(kentik.snmp.stBlockedByURLFilter) AS 'URL Filter'WHERE instrumentation.name = 'mcafee-web-gateway'SINCE 1 HOUR AGO COMPARE WITH 1 DAY AGO"
+              }
+            ],
+            "thresholds": []
+          }
+        }
+      ]
+    }
+  ]
+}
