@@ -18,11 +18,17 @@
           },
           "title": "Summary",
           "rawConfiguration": {
-            "dataFormatters": [],
+            "dataFormatters": [
+              {
+                "name": "Uptime (Days)",
+                "precision": 2,
+                "type": "decimal"
+              }
+              ],
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(sysBuildVersion) as 'Build Version', latest(sysHardwareVersionDesc) as 'Hardware Description', latest(sysHardwareSerialNumber) as 'Serial Number' WHERE instrumentation.name = 'netscaler'"
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(sysBuildVersion) AS 'Build Version', latest(sysHardwareVersionDesc) AS 'Hardware Description', latest(sysHardwareSerialNumber) AS 'Serial Number' WHERE instrumentation.name = 'netscaler'"
               }
             ],
             "thresholds": []
@@ -165,7 +171,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(haCurStatus) as 'HA Configured', latest(haCurState) as 'HA Status', latest(sysHighAvailabilityMode) as 'HA Mode', latest(haPeerState) as 'HA Peer State', latest(kentik.snmp.haTotStateTransitions) as 'HA State Transition Count', latest(kentik.snmp.haTimeofLastStateTransition)/8640000 as 'Days Since Last HA Transition' where instrumentation.name = 'netscaler'"
+                "query": "FROM Metric SELECT latest(haCurStatus) AS 'HA Configured', latest(haCurState) AS 'HA Status', latest(sysHighAvailabilityMode) AS 'HA Mode', latest(haPeerState) AS 'HA Peer State', latest(kentik.snmp.haTotStateTransitions) AS 'HA State Transition Count', latest(kentik.snmp.haTimeofLastStateTransition)/8640000 AS 'Days Since Last HA Transition' WHERE instrumentation.name = 'netscaler'"
               }
             ],
             "thresholds": []
@@ -190,7 +196,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(kentik.snmp.sysHealthDiskSize) as 'Size (MB)', latest(kentik.snmp.sysHealthDiskPerusage) as 'Used %' facet sysHealthDiskName as 'Disk Name' where instrumentation.name = 'netscaler'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.sysHealthDiskSize) AS 'Size (MB)', latest(kentik.snmp.sysHealthDiskPerusage) AS 'Used %' FACET sysHealthDiskName AS 'Disk Name' WHERE instrumentation.name = 'netscaler'"
               }
             ]
           }
@@ -214,7 +220,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(kentik.snmp.if_InBytes) as 'RX Bytes', latest(kentik.snmp.if_OutBytes) as 'TX Bytes'  facet if_interface_name, if_Speed where instrumentation.name = 'netscaler'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.if_InBytes) AS 'RX Bytes', latest(kentik.snmp.if_OutBytes) AS 'TX Bytes' FACET if_interface_name AS 'Interface Name', if_Speed AS 'Interface Speed' WHERE instrumentation.name = 'netscaler'"
               }
             ]
           }
@@ -238,7 +244,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(kentik.snmp.svcCount) as 'Services', latest(kentik.snmp.svcgroupCount) as 'Service Groups', latest(kentik.snmp.svcgroupmemCount) as 'Services Group Members', latest(kentik.snmp.syssvcCount) as 'Services Configured', latest(kentik.snmp.sysupsvcCount) as 'Services Up', latest(kentik.snmp.sysupvcitmCount) as 'Service Items Up' where instrumentation.name = 'netscaler' compare WITH 1 day ago"
+                "query": "FROM Metric SELECT latest(kentik.snmp.svcCount) AS 'Services', latest(kentik.snmp.svcgroupCount) AS 'Service Groups', latest(kentik.snmp.svcgroupmemCount) AS 'Services Group Members', latest(kentik.snmp.syssvcCount) AS 'Services Configured', latest(kentik.snmp.sysupsvcCount) AS 'Services Up', latest(kentik.snmp.sysupvcitmCount) AS 'Service Items Up' WHERE instrumentation.name = 'netscaler' COMPARE WITH 1 DAY AGO"
               }
             ],
             "thresholds": []
@@ -266,7 +272,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(kentik.snmp.svcCount) as 'Services', latest(kentik.snmp.svcgroupCount) as 'Service Groups', latest(kentik.snmp.svcgroupmemCount) as 'Services Group Members', latest(kentik.snmp.syssvcCount) as 'Services Configured', latest(kentik.snmp.sysupsvcCount) as 'Services Up', latest(kentik.snmp.sysupvcitmCount) as 'Service Items Up' where instrumentation.name = 'netscaler' TIMESERIES limit max"
+                "query": "FROM Metric SELECT latest(kentik.snmp.svcCount) AS 'Services', latest(kentik.snmp.svcgroupCount) AS 'Service Groups', latest(kentik.snmp.svcgroupmemCount) AS 'Services Group Members', latest(kentik.snmp.syssvcCount) AS 'Services Configured', latest(kentik.snmp.sysupsvcCount) AS 'Services Up', latest(kentik.snmp.sysupvcitmCount) AS 'Service Items Up' WHERE instrumentation.name = 'netscaler' TIMESERIES 5 MINUTES LIMIT MAX"
               }
             ],
             "yAxisLeft": {
@@ -293,7 +299,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(kentik.snmp.serverCount) as 'Servers', latest(kentik.snmp.curConfigVservers) as 'Configured Vservers', latest(kentik.snmp.vsvrBindCount) as 'Vserver Bindings', latest(kentik.snmp.vsvrSvcGroupBindCount) as 'Virtual Server Service Group Bindings', latest(kentik.snmp.curConfigLbVservers) as 'Load Balanced Vservers', latest(kentik.snmp.curConfigGslbVservers) as 'GSLB Vservers' where instrumentation.name = 'netscaler' compare WITH 1 day ago"
+                "query": "FROM Metric SELECT latest(kentik.snmp.serverCount) AS 'Servers', latest(kentik.snmp.curConfigVservers) AS 'Configured vServers', latest(kentik.snmp.vsvrBindCount) AS 'Vserver Bindings', latest(kentik.snmp.vsvrSvcGroupBindCount) AS 'Vserver Service Group Bindings', latest(kentik.snmp.curConfigLbVservers) AS 'Load Balanced Vservers', latest(kentik.snmp.curConfigGslbVservers) AS 'GSLB Vservers' WHERE instrumentation.name = 'netscaler' COMPARE WITH 1 DAY AGO"
               }
             ],
             "thresholds": []
@@ -321,7 +327,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(kentik.snmp.serverCount) as 'Servers', latest(kentik.snmp.curConfigVservers) as 'Configured Vservers', latest(kentik.snmp.vsvrBindCount) as 'Vserver Bindings', latest(kentik.snmp.vsvrSvcGroupBindCount) as 'Virtual Server Service Group Bindings', latest(kentik.snmp.curConfigLbVservers) as 'Load Balanced Vservers', latest(kentik.snmp.curConfigGslbVservers) as 'GSLB Vservers' where instrumentation.name = 'netscaler' TIMESERIES limit max"
+                "query": "FROM Metric SELECT latest(kentik.snmp.serverCount) AS 'Servers', latest(kentik.snmp.curConfigVservers) AS 'Configured Vservers', latest(kentik.snmp.vsvrBindCount) AS 'Vserver Bindings', latest(kentik.snmp.vsvrSvcGroupBindCount) AS 'Vserver Service Group Bindings', latest(kentik.snmp.curConfigLbVservers) AS 'Load Balanced Vservers', latest(kentik.snmp.curConfigGslbVservers) AS 'GSLB Vservers' WHERE instrumentation.name = 'netscaler' TIMESERIES 5 MINUTES LIMIT MAX"
               }
             ],
             "yAxisLeft": {
@@ -348,7 +354,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(kentik.snmp.totSpilloverCount) as 'Spillover Count' where instrumentation.name = 'netscaler' compare with 1 day ago"
+                "query": "FROM Metric SELECT latest(kentik.snmp.totSpilloverCount) AS 'Spillover Count' WHERE instrumentation.name = 'netscaler' COMPARE WITH 1 WEEK AGO"
               }
             ],
             "thresholds": []
@@ -376,7 +382,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(kentik.snmp.totSpilloverCount) as 'Spillover Count' where instrumentation.name = 'netscaler' TIMESERIES "
+                "query": "FROM Metric SELECT latest(kentik.snmp.totSpilloverCount) AS 'Spillover Count' WHERE instrumentation.name = 'netscaler' TIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
