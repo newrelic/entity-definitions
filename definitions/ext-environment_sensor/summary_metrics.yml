@@ -7,8 +7,16 @@ ipAddress:
 uptime:
   title: Uptime
   unit: SECONDS
-  query:
-    select: latest(kentik.snmp.Uptime)/100
-    from: Metric
-    where: "provider = 'kentik-netbotz'"
-    eventId: entity.guid
+  queries:
+    # APC Netbotz devices (default)
+    kentik/apc-netbotz:
+      select: latest(kentik.snmp.Uptime)/100
+      from: Metric
+      where: "provider = 'kentik-netbotz'"
+      eventId: entity.guid
+    # Vertiv Watchdog devices
+    kentik/watchdog:
+      select: latest(kentik.snmp.Uptime)/100
+      from: Metric
+      where: "provider = 'kentik-watchdog'"
+      eventId: entity.guid

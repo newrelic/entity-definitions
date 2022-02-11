@@ -11,13 +11,13 @@ synthesis:
     name: hostname
 ```
 
-| **Name** | **Type** | **Description**  |
-| -------- | -------- | ---------------- |
-| name    | String | Required. The attribute to use for the entity name. |
-| identifier| String| Required. Telemetry attribute to use as the entity identifier.|
-| encodeIdentifierInGUID | Boolean | Defaults to `false`. If true, the identifier value will be encoded to respect the [GUID limits][guid_spec]. |
-| conditions | List | Defaults to an empty list. The list of conditions to apply in the data point to match the rule. |
-| tags     | List   | Defaults to an empty list. The list of attributes to copy as entity tags if the rule matches. |
+| **Name** | **Type** | **Required** | **Description**  |
+| -------- | -------- | ------------ | ---------------- |
+| name    | String | Yes | The attribute to use for the entity name. |
+| identifier| String| Yes | Telemetry attribute to use as the entity identifier.|
+| encodeIdentifierInGUID | Boolean | No | If true, the identifier value will be encoded to respect the [GUID limits][guid_spec]. Defaults to `false`. |
+| conditions | List | No | The list of conditions to apply in the data point to match the rule. Defaults to an empty list. |
+| tags     | List   | No | The list of attributes to copy as entity tags if the rule matches. Defaults to an empty list. |
 
 ### Conditions
 
@@ -31,7 +31,20 @@ synthesis:
     name: hostname
     conditions:
     - attribute: aws.az
+      present: true
 ```
+
+- Attribute must not exist
+```yaml
+synthesis:
+  rules:
+  - identifier: hostname
+    name: hostname
+    conditions:
+    - attribute: container.id
+      present: false
+```
+
 
 - Attribute must have value
 ```yaml
@@ -54,11 +67,12 @@ synthesis:
     - prefix: us-
 ```
 
-| **Name** | **Type** | **Description**  |
-| -------- | -------- | ---------------- |
-| attribute | String  | Required. The name of the attribute to match in the data point. If only this field is defined the attribute must exist in the data point. |
-| value    | String   | Optional. Can't be mixed with `prefix`. The exact value the attribute must contain in order to match the data point. |
-| prefix | String | Optional. Can't be mixed with `value`. The attribute must start with this value. |
+| **Name** | **Type** | **Required** | **Description**  |
+| -------- | -------- | ------------ | ---------------- |
+| attribute | String  | Yes | The name of the attribute to match in the data point. |
+| value    | String   | No | The exact value the attribute must contain in order to match the data point. Can't be mixed with `prefix` or `present`.  |
+| prefix | String | No | The attribute must start with this value. Can't be mixed with `value` or `present`. |
+| present | Boolean | No | When `true` the attribute must be present, when `false` attribute must not exist in the data point. Defaults to true when no other condition is given. Can't be mixed with `value` or `prefix`.  |
 
 ### Tags
 
@@ -112,10 +126,10 @@ synthesis:
         entityTagName: container.state
 ```
 
-| **Name** | **Type** | **Description**  |
-| -------- | -------- | ---------------- |
-| multiValue | Boolean  | Defaults to `true`. If set to `false`, any update will replace all existing values in the tag, making it a tag with only one value. |
-| entityTagName | String | Defaults to the attribute name. If provided, the attribute value will be copied into a tag with this name. |
+| **Name** | **Type** | **Required** | **Description**  |
+| -------- | -------- | ------------ | ---------------- |
+| multiValue | Boolean  | No | If set to `false`, any update will replace all existing values in the tag, making it a tag with only one value. Defaults to `true`. |
+| entityTagName | String | No | If provided, the attribute value will be copied into a tag with this name. Defaults to the attribute name. |
 
 #### Default tags
 
@@ -131,3 +145,19 @@ Also, if present in the telemetry, these attributes are also added to the entity
 - `instrumentation.provider`
 
 [guid_spec]: guid_spec.md
+
+### Legacy features
+
+This section is only relevant if you are configuring synthesis rules for an existing entity type.
+If you are creating a brand new entity type none of these features will be allowed.
+
+
+These features are defined under the rule using the `legacyFeatures` key.
+```
+    legacyFeatures:
+      overrideGuidType: true
+```
+
+| **Name** | **Type** | **Required** | **Description**  |
+| -------- | -------- | ------------ | ---------------- |
+| overrideGuidType | Boolean  | No | If set to `true`, it will replace the entityType in the guid for the `NA` value. Defaults to `false`. |
