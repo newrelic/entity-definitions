@@ -148,7 +148,7 @@ Also, if present in the telemetry, these attributes are also added to the entity
 
 #### Prefixed tags
 
-This is a special section where specify prefixes which are part of the attributes name.
+This is a special section where specify prefixes.
 
 Every attribute name including any of the provided prefixes will get indexed as a tag, taking into account the following:
 * If there are multiple attributes matching against the same prefix, all of them will get indexed.
