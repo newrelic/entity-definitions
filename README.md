@@ -1,6 +1,6 @@
 [![Community Plus header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/Community_Plus.png)](https://opensource.newrelic.com/oss-category/#community-plus)
 
-# Entity Definitions 
+# Entity Definitions
 
 This repository holds all the entity types that exist in New Relic and their configurations.
 
@@ -30,18 +30,18 @@ If you have experience with the repo and are looking for a specific section docu
 - [Golden Tags](docs/golden_tags.md)
 - [Summary Metrics](docs/summary_metrics.md)
 
-## Testing and validation
+## Validation
 
 Whenever there's a contribution via pull request, some validations are automatically executed to verify that the provided definition meets the basic requirements:
 
-* The definition files are not malformed, incorrect or missing mandatory fields. 
-* The *identifier* cannot be extracted from an attribute with the same name for two different Domain-Types, unless conditions are set to differentiate them, so that the conditions from one entity are not a superset of the other. 
+* The definition files are not malformed, incorrect or missing mandatory fields.
+* The *identifier* cannot be extracted from an attribute with the same name for two different Domain-Types, unless conditions are set to differentiate them, so that the conditions from one entity are not a superset of the other.
 
 You can execute the validations locally using our dockerized validator:
 
 ```
 docker-compose run validate-definitions
-``` 
+```
 
 Remember that you may need to rebuild the images to pick up validation changes if you have run this in the past.
 
@@ -51,9 +51,43 @@ docker-compose build validate-definitions
 
 Read more about the [current validations](/validator/README.md).
 
+## Testing
+
+You can test that the synthesis rules from your entity definition match the expected telemetry, thus generating the expected entities. In order to do this, we offer the possibility of adding test data that would simulate telemetry events. Whenever there's a contribution via pull request, the test data is checked against the synthesis rules, ensuring your changes match.
+
+### How to add testing data
+
+1. If it does not exist, create a folder named `test` under your entity definition directory. If it already exists, skip this step.
+
+  i.e. `definitions/ext-pihole/tests/`
+
+2. Build one or more test files that represent the telemetry data that would synthesize entities of your domain and type. Each file must comply:
+* The file name is the event name reported to New Relic. i.e. `Log`, `CustomEvent`
+* The file name has `.json` extension. i.e. `Log.json`, `CustomEvent.json`
+* The file content is a valid json that consists of an array of objects, where every object represents a telemetry data point
+
+  **Log.json**
+```
+[
+	{
+		"attribute1": "value1"
+	},
+	{
+		"attribute1": "value1",
+		"attribute2": "value2",
+		"attribute3": "value3"
+	}
+]
+```
+
+3. Create your pull request normally and the test would be executed in the background. If the synthesis rules from the definition don't match the test data, a bot will let you know with an explanatory comment in the pull request.
+
+See [ext-pihole definition](https://github.com/newrelic/entity-definitions/tree/main/definitions/ext-pihole/tests/) for an example of test data.
+
+
 ## Support
 
-Is the information provided in the repository not enough to solve your doubts? Get in touch with the team by opening an issue! 
+Is the information provided in the repository not enough to solve your doubts? Get in touch with the team by opening an issue!
 
 **Other Support Channels**
 
