@@ -67,6 +67,13 @@
         },
         {
           "required": [
+            "name",
+            "compositeIdentifier",
+            "conditions"
+          ]
+        },
+        {
+          "required": [
             "rules"
           ]
         }
@@ -81,10 +88,20 @@
           "items": {
             "$id": "#/synthesis/rules/items",
             "type": "object",
-            "required": [
-              "name",
-              "identifier",
-              "conditions"
+            "oneOf": [{
+                "required": [
+                  "name",
+                  "identifier",
+                  "conditions"
+                ]
+              },
+              {
+                "required": [
+                  "name",
+                  "compositeIdentifier",
+                  "conditions"
+                ]
+              }
             ],
             "properties": {
               "name": {
@@ -104,6 +121,37 @@
                 "examples": [
                   "12345"
                 ]
+              },
+              "compositeIdentifier": {
+                "$id": "#/synthesis/rules/items/compositeIdentifier",
+                "type": "object",
+                "required": [
+                  "separator",
+                  "attributes"
+                ],
+                "properties": {
+                  "separator": {
+                    "$id": "#/synthesis/rules/items/compositeIdentifier/separator",
+                    "type": "string",
+                    "title": "The separator of the identifier",
+                    "description": "The separator to use between the different attributes",
+                    "examples": [
+                      "@",
+                      "/",
+                      "-"
+                    ]
+                  },
+                  "attributes": {
+                    "$id": "#/synthesis/rules/items/compositeIdentifier/attributes",
+                    "type": "array",
+                    "title": "list of attributes to use as identifier",
+                    "description": "The list of attributes to conform the identifier",
+                    "minItems": 2,
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
               },
               "encodeIdentifierInGUID": {
                 "$id": "#/synthesis/rules/items/encodeIdentifierInGUID",
@@ -243,6 +291,9 @@
         },
         "identifier": {
           "$ref": "#/synthesis/rules/items/identifier"
+        },
+        "compositeIdentifier": {
+          "$ref": "#/synthesis/rules/items/compositeIdentifier"
         },
         "encodeIdentifierInGUID": {
           "$ref": "#/synthesis/rules/items/encodeIdentifierInGUID"
