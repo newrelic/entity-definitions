@@ -25,8 +25,51 @@ synthesis:
     - identifier: host.id
       name: host.id
       encodeIdentifierInGUID: true
-      # This is a temporary condition to restrict synthesis for a particular set of telemetry data.
       conditions:
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: 'system.'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # This is a temporary condition to restrict synthesis for a particular set of telemetry data.
+        - attribute: nr.entity_type
+          value: host
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        - attribute: eventType
+          value: Log
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # This is a temporary condition to restrict synthesis for a particular set of telemetry data.
         - attribute: nr.entity_type
           value: host
       tags:
