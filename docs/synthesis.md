@@ -52,11 +52,11 @@ synthesis:
 
 There are a few drawbacks when using composite identifiers:
 
-In order to generate the entity and link the telemetry against that entity all the attributes defined as identifier must be present.
+- These attributes **must exist** in all the telemetry that needs to be associated with the entity.
+- The entity will **not be indexed** if one of these attributes don't exist.
+- When generating relationships, if the GUID of the entity is not present the attributes **must exist** to generate a relationship with another entity.
 
-Also when generating relationships between entities when the GUID is not in the telemetry this list of attributes must be present too.
-
-Keep in ind these caevats when considering using composite identifiers.
+Keep these caevats in mind when considering using composite identifiers.
 
 
 ### Conditions
