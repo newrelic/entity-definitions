@@ -2,7 +2,12 @@
 
 Synthesis is the process of creating entities from telemetry. Given some rules, we try to match them against all the telemetry in order to create entities and create tags for them. 
 
-Synthesis rules should be defined in the `definition.yaml` file, under a `synthesis.rules` section. A rule's requirement defines the telemetry attribute that provides the `identifier`, and the attribute that will be used as the `name` of the entity.
+Synthesis rules should be defined in the `definition.yaml` file, under a `synthesis.rules` section.
+
+A rule should define an `identifier` that will be a unique value for that domainType in one user account.
+It should also provide the attribute that defines the `name` of the entity.
+
+These two attributes **must be always present** on the telemetry in order to create an entity.
 
 ```yaml
 synthesis:
@@ -15,9 +20,56 @@ synthesis:
 | -------- | -------- | ------------ | ---------------- |
 | name    | String | Yes | The attribute to use for the entity name. |
 | identifier| String| Yes | Telemetry attribute to use as the entity identifier.|
+| compositeIdentifier| String| No | Set of attributes that will identify the telemetry. When this one is used identifier is not required.|
 | encodeIdentifierInGUID | Boolean | No | If true, the identifier value will be encoded to respect the [GUID limits][guid_spec]. Defaults to `false`. |
 | conditions | List | No | The list of conditions to apply in the data point to match the rule. Defaults to an empty list. |
 | tags     | List   | No | The list of attributes to copy as entity tags if the rule matches. Defaults to an empty list. |
+
+### Identifier
+
+As previously mentioned the identifier should be a unique value for that entityType in a specific user account.
+
+For example if a service identifier is the `serviceName` attribute, multiple applications reporting the same value under the same account will be treated as only one entity.
+
+The identifier is the most important piece of information of an entity since changing it means creating a new entity and hence not having the previous produced telemetry linked to the new entity.
+
+#### Composite identifier
+
+The general advice is to use only one attribute as the identifier but there are some situations where only one attribute is not enough to uniquely identify the entity.
+
+In these cases `compositeIdentifier` can be used to define multiple attributes as the identifier, and a separator between each attribute.
+
+```yaml
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - k8s.namespace
+        - k8s.deployment
+```
+
+If we take as an example the following data point
+
+```json
+{
+  "k8s.namespace": "team-one",
+  "k8s.deployment": "my-service"
+}
+```
+
+The `identifier` will be: `team-one/my-service`, notice the `/` is the `separator` property on the definition.
+Since this could easly reach the limits of this field we advise to always use `encodeIdentifierInGUID: true` so the identifier is hashed into a number within the limits.
+
+
+There are a few drawbacks when using composite identifiers:
+
+- These attributes **must exist** in all the telemetry that needs to be associated with the entity.
+- The entity will **not be indexed** if one of these attributes don't exist.
+- When generating relationships, if the GUID of the entity is not present the attributes **must exist** to generate a relationship with another entity.
+
+Keep these caevats in mind when considering using composite identifiers.
+
 
 ### Conditions
 
