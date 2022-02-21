@@ -38,7 +38,6 @@ The identifier is the most important piece of information of an entity since cha
 The general advice is to use only one attribute as the identifier but there are some situations where only one attribute is not enough to uniquely identify the entity.
 
 In these cases `compositeIdentifier` can be used to define multiple attributes as the identifier, and a separator between each attribute.
-Also we recommend to always set `encodeIdentifierInGUID: true` when using `compositeIdentifier`
 
 ```yaml
 synthesis:
@@ -49,6 +48,19 @@ synthesis:
         - k8s.namespace
         - k8s.deployment
 ```
+
+If we take as an example the following data point
+
+```json
+{
+  "k8s.namespace": "team-one",
+  "k8s.deployment": "my-service"
+}
+```
+
+The `identifier` will be: `team-one/my-service`, notice the `/` is the `separator` property on the definition.
+Since this could easly reach the limits of this field we advise to always use `encodeIdentifierInGUID: true` so the identifier is hashed into a number within the limits.
+
 
 There are a few drawbacks when using composite identifiers:
 
