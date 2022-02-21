@@ -31,12 +31,25 @@ function areSameConditions(condition1, condition2){
     return condition1.some(e1cond => condition2.some(e2cond => isEqual(e1cond, e2cond)));
 }
 
-function validateAndRecord(definition, identifier, conditions) {
-    if (ENTITY.has(identifier) && hasConflictingConditions(ENTITY.get(identifier), conditions) && hasDifferentDomainType(ENTITY.get(identifier), definition)) {
-        throw `Same entity ID criteria ${identifier} and condition assigned to different domain types.`
+function validateAndRecord(definition, identifier, compositeIdentifier, conditions) {
+    let key = identifier || buildKey(compositeIdentifier)
+
+    if ((
+            ENTITY.has(key) &&
+            hasConflictingConditions(ENTITY.get(key), conditions) &&
+            hasDifferentDomainType(ENTITY.get(key), definition)
+        ))
+    {
+        let conflictingType = ENTITY.get(key)
+
+        throw `The rule with identifier ${key} from ${definition.domain}-${definition.type} has same definition than a rule in ${conflictingType.domain}-${conflictingType.type}.`
     }
 
-    ENTITY.set(identifier, definition)
+    ENTITY.set(key, definition)
+}
+
+function buildKey(compositeIdentifier) {
+    return compositeIdentifier.attributes.join(compositeIdentifier.separator)
 }
 
 const RULES = [
@@ -47,15 +60,17 @@ const RULES = [
                 if(def.synthesis.rules !== undefined){
                     def.synthesis.rules.forEach( (rule) =>{
                         const identifier = rule.identifier
+                        const compositeIdentifier = rule.compositeIdentifier
                         const conditions = rule.conditions || []
 
-                        validateAndRecord(def, identifier, conditions);
+                        validateAndRecord(def, identifier, compositeIdentifier, conditions);
                     })
                 } else{
                     const identifier = def.synthesis.identifier
+                    const compositeIdentifier = def.synthesis.compositeIdentifier
                     const conditions = def.synthesis.conditions || []
 
-                    validateAndRecord(def, identifier, conditions);
+                    validateAndRecord(def, identifier, compositeIdentifier, conditions);
                 }
             }
         }

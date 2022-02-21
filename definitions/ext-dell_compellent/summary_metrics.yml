@@ -1,0 +1,25 @@
+diskCount:
+  title: Disk Count
+  unit: COUNT
+  query:
+    select: uniqueCount(name)
+    from: compellent_disks
+    eventId: entity.guid
+
+failedDriveCount:
+  title: Failed Drive Occurences
+  unit: COUNT
+  query:
+    select: count(status_code) as 'Drive Failures'
+    from: compellent_disks
+    where: status = 'Down'
+    eventId: entity.guid
+
+usedCapacityPercent:
+  title: Used Capacity %
+  unit: PERCENTAGE
+  query:
+    select: (sum(usedSpace)/sum(availableSpace))*100 as 'Avg Used %'
+    from: compellent_capacity_all
+    where: objectType = 'StorageCenterStorageUsage'
+    eventId: entity.guid

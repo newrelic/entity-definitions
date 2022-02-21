@@ -1,0 +1,121 @@
+{
+  "name": "Dell RPA Performance",
+  "description": null,
+  "pages": [
+    {
+      "name": "Dell RPA Performance",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 6,
+            "width": 2
+          },
+          "title": "Used Capacity %",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(usedCapacity/totalCapacity)*100 as '% Used%', latest(totalCapacity), latest(usedCapacity) from rpa_capacity "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "height": 2,
+            "width": 10
+          },
+          "title": "Node Health",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(statusID) FROM rpa_health WHERE key = 'rpasStatusesSet' LIMIT MAX FACET rpa TIMESERIES 5 minutes"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 3,
+            "row": 3,
+            "height": 2,
+            "width": 10
+          },
+          "title": "CG Transfer State",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(statusID) FROM rpa_health WHERE key = 'consistencyGroupsTransferState' FACET groupName,transferState LIMIT MAX  TIMESERIES 5 minutes"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 3,
+            "row": 5,
+            "height": 2,
+            "width": 10
+          },
+          "title": "Splitter Status",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(statusID) FROM rpa_health WHERE key = 'splittersStatusesSet' LIMIT MAX  FACET splitterName,splitterStatus  TIMESERIES 5 minutes"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

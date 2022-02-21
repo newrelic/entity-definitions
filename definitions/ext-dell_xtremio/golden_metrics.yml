@@ -1,0 +1,35 @@
+usedCapacityPercent:
+  title: Used Capacity %
+  unit: PERCENTAGE
+  query:
+    select: average(100 - `free-ud-ssd-space-in-percent`) as 'Used SSD %'
+    from: XIO_capacity
+    where: key = 'capacity'
+    eventId: entity.guid
+
+writeLatency:
+  title: Write Latency
+  unit: SECONDS
+  query:
+    select: average(avg__wr_latency)/1000 as 'Latency (sec)'
+    from: XIOPerformance
+    where: dataType = 'cluster'
+    eventId: entity.guid
+
+readLatency:
+  title: Read Latency
+  unit: SECONDS
+  query:
+    select: average(avg__rd_latency)/1000 as 'Latency (sec)'
+    from: XIOPerformance
+    where: dataType = 'cluster'
+    eventId: entity.guid
+
+packetDrops:
+  title: Packet Drops
+  unit: SECONDS
+  query:
+    select: latest(avg__packet_drop_ratio) as 'Packet Drop Ratio'
+    from: XIOPerformance
+    where: dataType = 'cluster'
+    eventId: entity.guid
