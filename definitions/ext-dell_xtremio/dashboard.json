@@ -1,0 +1,735 @@
+{
+  "name": "Dell XtremIO Performance",
+  "description": null,
+  "pages": [
+    {
+      "name": "Dell XtremIO Performance",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 2,
+            "width": 12
+          },
+          "title": "Capacity",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIO_capacity SELECT latest(name),latest(100 - `free-ud-ssd-space-in-percent`) as 'Used SSD %',latest(`free-ud-ssd-space-in-percent`) as 'Free SSD %',latest(`ud-ssd-space`)/1024/1024/1024 as 'UD Total SSD',latest(`ud-ssd-space` - `ud-ssd-space-in-use`)/1024/1024/1024 as 'Free SSD TB', latest(`ud-ssd-space-in-use`)/1024/1024/1024 as 'ud SSD used', latest(`logical-space-in-use`)/1024/1024/1024 as 'Logical used',latest(`useful-ssd-space-per-ssd`)/1024/1024/1024 as 'Usefull SSD space per SSD',latest(`vol-size`) /1024/1024/1024 as 'Vol Size',latest(`sys-health-state`),latest(`data-reduction-ratio`),latest(`compression-factor`),latest(`dedup-ratio`),latest(`dedup-space-in-use`)/1024/1024/1024 as 'Dedupe space used' where key = 'capacity' "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "height": 4,
+            "width": 12
+          },
+          "title": "Alerts",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIO_alerts SELECT latest(`alert-code`),latest(description),latest(`raise-time`), latest(receivedMinAgo),latest(`alert-state`),latest(`alert-type`),latest(`assoc-obj-name`),latest(`class-name`) facet index LIMIT  max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Network Alerts",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`sys-name`) as 'Array alias name',latest(`ib1-link-downed`),latest(`ib2-link-downed`),latest(`ib1-port-state`),latest(`ib2-port-state`),latest(`mgmt-link-health-level`),latest(`mgmt-port-state`),latest(`sas1-port-state`),latest(`sas2-port-state`),latest(`dedicated-ipmi-link-conn-state`),latest(`dedicated-ipmi-port-state`),latest(`ipmi-conn-error-reason`) from XIOscNetwork where dataType = 'network' where `ib1-link-downed` != 0  or `ib2-link-downed` != 0 or `ib1-port-state` != 'up' or `ib2-port-state` != 'up' or `mgmt-link-health-level` != 'level_1_clear' or `mgmt-port-state` != 'up' or `sas1-port-state` != 'up' or `sas2-port-state` != 'up' or `dedicated-ipmi-link-conn-state` != 'ok'  or `dedicated-ipmi-port-state` != 'up'    facet name as 'SC Node'  since 2 minutes ago  limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Hardware Alerts",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`sys-name`) as 'Array alias name',latest(`current-health-state`),latest(`node-health-state`),latest(`dimm-health-state`),latest(`fan-health-state`),latest(`journal-state`),latest(`low-ram-level`),latest(`node-journaling-health-state`),latest(`node-psu-dn`),latest(`remote-journal-health-state`),latest(systemMemoryBytes),latest(`temperature-health-state`) from XIOscController where   dataType = 'hardware'  where `current-health-state` != 'level_1_clear' or `node-health-state` != 'healthy' or `dimm-health-state`!= 'level_1_clear' or `fan-health-state` != 'level_1_clear' or `journal-state` != 'healthy' or `low-ram-level` != 'ok' or `node-journaling-health-state`!=  'healthy' or `node-psu-dn` != 'false' or `remote-journal-health-state` != 'healthy' or `temperature-health-state` != 'level_1_clear'  facet name as 'SC Node' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 2,
+            "width": 12
+          },
+          "title": "Network",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`sys-name`) as 'Array alias name',latest(`ib1-link-downed`),latest(`ib2-link-downed`),latest(`ib1-port-state`),latest(`ib2-port-state`),latest(`mgmt-link-health-level`),latest(`mgmt-port-state`),latest(`sas1-port-state`),latest(`sas2-port-state`),latest(`dedicated-ipmi-link-conn-state`),latest(`dedicated-ipmi-port-state`),latest(`ipmi-conn-error-reason`) from XIOscNetwork where dataType = 'network' facet name as 'SC Node' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Hardware",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`sys-name`) as 'Array alias name',latest(`current-health-state`),latest(`node-health-state`),latest(`dimm-health-state`),latest(`fan-health-state`),latest(`journal-state`),latest(`low-ram-level`),latest(`node-journaling-health-state`),latest(`node-psu-dn`),latest(`remote-journal-health-state`),latest(`sc-start-timestamp-display`) as 'Up Since',latest(systemMemoryBytes),latest(`temperature-health-state`) from XIOscController  where dataType = 'hardware' facet name as 'SC Node' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 18,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Cluster Avg Latency",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg__avg_latency)/1000 where dataType = 'cluster' timeseries auto limit max "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 18,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Cluster Read Latency (ms)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg__rd_latency)/1000   timeseries auto limit max WHERE dataType = 'cluster'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 18,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Cluster Write Latency (ms)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg__wr_latency)/1000 timeseries auto limit max WHERE dataType = 'cluster'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 21,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Volume Write Latency (ms)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(latest(avg_wr_latency)/1000, where avg_avg_latency not like '<nil>')  FROM XIOPerformance where dataType = 'volume' timeseries auto facet name  limit max "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 21,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Volume Read Latency (ms)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(latest(avg_rd_latency)/1000, where avg_rd_latency not like '<nil>')  FROM XIOPerformance where dataType = 'volume' timeseries auto facet name limit max "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 24,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Initiator Write Latency (ms)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(latest(avg_wr_latency)/1000, where avg_wr_latency not like '<nil>')  FROM XIOPerformance where dataType = 'initiator' timeseries auto facet name limit max "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 24,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Initiator Read Latency (ms)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(latest(avg_rd_latency)/1000, where avg_rd_latency not like '<nil>')  FROM XIOPerformance where dataType = 'initiator' timeseries auto facet name limit max"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 27,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Initiator Write BW (mb/s)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg_wr_bw)/1024 timeseries auto facet `name` limit max WHERE dataType = 'initiator' and avg_wr_bw != '<nil>'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 27,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Initiator Read BW (mb/s)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg_rd_bw)/1024 timeseries auto facet `name` limit max WHERE dataType = 'initiator' and avg_rd_bw != '<nil>'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 30,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Cluster Write IOPs",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg__wr_iops) timeseries auto limit max WHERE dataType = 'cluster'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 30,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Cluster Read IOPs",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg__rd_iops) timeseries auto limit max WHERE dataType = 'cluster'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 33,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Cluster Write BW (mb/s)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg__wr_bw)/1024 timeseries auto limit max WHERE dataType = 'cluster'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 33,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Cluster Read BW (mb/s)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg__rd_bw)/1024 timeseries auto limit max WHERE dataType = 'cluster'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 36,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Volume Write IOps",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg_wr_iops) timeseries auto facet `name` limit max WHERE dataType = 'volume' and avg_wr_iops != '<nil>'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 36,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Volume Read IOps",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg_rd_iops) timeseries auto facet `name` limit max WHERE dataType = 'volume' and avg_rd_iops != '<nil>'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 39,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Volume Write BW (mb/s)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg_wr_bw)/1024 timeseries auto facet `name` limit max WHERE dataType = 'volume' and avg_wr_bw != '<nil>'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 39,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Volume Read BW (mb/s)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg_rd_bw)/1024 timeseries auto facet `name` limit max WHERE dataType = 'volume' and avg_rd_bw != '<nil>'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 42,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Initiator Write IOps",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg_wr_iops) timeseries auto facet `name` limit max WHERE dataType = 'initiator' and avg_wr_iops != '<nil>'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 42,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Initiator Read IOps",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg_rd_iops) timeseries auto facet `name` limit max WHERE dataType = 'initiator' and avg_rd_iops != '<nil>'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 45,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Cluster Packet Drop Ratio",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XIOPerformance SELECT latest(avg__packet_drop_ratio) timeseries auto limit max WHERE dataType = 'cluster'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
