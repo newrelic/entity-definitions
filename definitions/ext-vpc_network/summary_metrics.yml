@@ -7,6 +7,10 @@ sources:
       from: KFlow
       where: "provider = 'kentik-vpc'"
       eventId: entity.guid
+    aws-kinesis-firehose/vpc-flow-logs:
+      select: uniqueCount(srcaddr)
+      from: Log
+      where: "provider = 'firehose-vpc'"
 
 destinations:
   title: Unique Destinations
@@ -17,6 +21,10 @@ destinations:
       from: KFlow
       where: "provider = 'kentik-vpc'"
       eventId: entity.guid
+    aws-kinesis-firehose/vpc-flow-logs:
+      select: uniqueCount(dstaddr)
+      from: Log
+      where: "provider = 'firehose-vpc'"
 
 egressBytes:
   title: Egress Bytes
@@ -27,6 +35,10 @@ egressBytes:
       from: KFlow
       where: "provider = 'kentik-vpc' AND flow_direction = 'egress'"
       eventId: entity.guid
+    aws-kinesis-firehose/vpc-flow-logs:
+      select: sum(bytes*sample_rate)
+      from: Log
+      where: "provider = 'firehose-vpc' and flow_direction = 'egress'"
 
 ingressBytes:
   title: Ingress Bytes
@@ -37,3 +49,7 @@ ingressBytes:
       from: KFlow
       where: "provider = 'kentik-vpc' AND flow_direction = 'ingress'"
       eventId: entity.guid
+    aws-kinesis-firehose/vpc-flow-logs:
+      select: sum(bytes*sample_rate)
+      from: Log
+      where: "provider = 'firehose-vpc' and flow_direction = 'egress'"
