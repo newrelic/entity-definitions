@@ -1,0 +1,195 @@
+{
+  "name": "AWS VPC Flow Logs",
+  "description": null,
+  "pages": [
+    {
+      "name": "AWS VPC Flow Logs",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 2,
+            "width": 3
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# VPC Flow Log Analytics\n---\n\n![](https://d0.awsstatic.com/logos/powered-by-aws.png)\n\n\n\n"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "height": 3,
+            "width": 9
+          },
+          "title": "Detected Anomalies",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM WatcherSignalDeviation SELECT facetAttribute AS 'Type', facetValue AS 'IP', status, title AS 'Anomaly', comparisonWindowStandardDeviation AS 'Z-Score', lookoutLink AS 'Explore via Lookout' WHERE status IN('STARTED','ONGOING','RESOLVED')"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "height": 2,
+            "width": 3
+          },
+          "title": "Detected Anomalies",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM WatcherSignalDeviation SELECT count(timestamp) AS 'Anomalies' COMPARE WITH 60 MINUTES AGO"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "lookout.dashable"
+          },
+          "layout": {
+            "column": 4,
+            "row": 4,
+            "height": 6,
+            "width": 9
+          },
+          "title": "AWS VPC Flow Logs via Kinesis Firehose",
+          "rawConfiguration": {
+            "autoRefresh": true,
+            "comparisonWindow": {
+              "begin_time": 1644928606408,
+              "duration": 3600000,
+              "end_time": 1644932206408,
+              "isFixed": false,
+              "label": "Preceding 60 minutes"
+            },
+            "dashboardReturnLink": "/lookout?duration=1800000&state=10416f52-be09-f35b-940f-c6e152584deb",
+            "evaluationWindow": {
+              "begin_time": 1644932206408,
+              "duration": 300000,
+              "end_time": 1644932506408,
+              "isFixed": false,
+              "label": "Last 5 minutes"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(packets) FROM Log FACET srcaddr"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT sum(bytes) FROM Log FACET srcaddr"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(dstaddr) FROM Log FACET srcaddr"
+              }
+            ],
+            "signalGroup": {
+              "name": "AWS VPC Flow Logs via Kinesis Firehose",
+              "signalTypes": [
+                {
+                  "facetAttribute": "srcaddr",
+                  "signalClass": {
+                    "eventType": "Log",
+                    "name": "Log : packets : sum",
+                    "selectClause": "sum(packets)",
+                    "whereClause": "`newrelic.source` = 'api.logs.awsFirehose'"
+                  }
+                },
+                {
+                  "facetAttribute": "srcaddr",
+                  "signalClass": {
+                    "eventType": "Log",
+                    "name": "Log : bytes : sum",
+                    "selectClause": "sum(bytes)",
+                    "whereClause": "`newrelic.source` = 'api.logs.awsFirehose'"
+                  }
+                },
+                {
+                  "facetAttribute": "srcaddr",
+                  "signalClass": {
+                    "eventType": "Log",
+                    "name": "Log : dstaddr : uniqueCount",
+                    "selectClause": "uniqueCount(dstaddr)",
+                    "whereClause": "`newrelic.source` = 'api.logs.awsFirehose'"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 2,
+            "width": 3
+          },
+          "title": "Bytes by Action",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log SELECT sum(bytes) AS 'Total Bytes' FACET action"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Rejected Pckt Count by Destination IP",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log SELECT sum(packets) AS 'Total Packets' WHERE action = 'REJECT' FACET dstaddr AS 'Destination IP'"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
