@@ -151,10 +151,10 @@ There are a few cases where you want the new value to actually replace the old o
 synthesis:
   rules:
     - identifier: entity.id
-  name: k8s.podName
-  tags:
-    k8s.status:
-      multiValue: false
+      name: k8s.podName
+      tags:
+        k8s.status:
+          multiValue: false
 ```
 
 - Rename tags
@@ -198,11 +198,33 @@ Also, if present in the telemetry, these attributes are also added to the entity
 
 [guid_spec]: guid_spec.md
 
+#### Prefixed tags
+
+Every attribute name including any of the provided prefixes will get indexed as a tag, taking into account the following:
+* If there are multiple attributes matching against the same prefix, all of them will get indexed.
+* The prefix gets removed from the final tag name.
+* Prefixed attributes take the lower precedence, meaning that after removing the prefix, if there's already a tag with the same name coming from the same telemetry datapoint, it will be discarded.
+* The prefix "tags." doesn't get specified as part of this structure, it still works independently and also takes a higher precedence over these prefixes. 
+
+> With a `label.` prefix as part of the `prefixedTags` list, and the telemetry containing any attribute prefixed with it,
+for instance, `label.name`, the final tag name will be `name`.
+
+Finally, notice the `prefixedTags` structure is not a nested child hanging from `tags`, but directly from `rules`.
+
+```yaml
+synthesis:
+  rules:
+    - identifier: entity.id
+      name: k8s.podName
+      prefixedTags:
+        example.:
+        example2_:
+```
+
 ### Legacy features
 
 This section is only relevant if you are configuring synthesis rules for an existing entity type.
 If you are creating a brand new entity type none of these features will be allowed.
-
 
 These features are defined under the rule using the `legacyFeatures` key.
 ```
