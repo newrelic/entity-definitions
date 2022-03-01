@@ -2,18 +2,30 @@ domain: EXT
 # Currently scoped to Meraki Cloud Controllers from Kentik Integration
 type: WIRELESS_CONTROLLER
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
+  rules:
+  # Cisco Meraki devices
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cloud-controller
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
 
-  conditions:
-  - attribute: provider
-    value: kentik-cloud-controller
-
-  tags:
-    src_addr:
-      entityTagName: device_ip
-      multiValue: false
+  # Aruba Mobility Controller devices
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-wireless-controller
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
 
 goldenTags:
 - device_ip
