@@ -1,0 +1,260 @@
+{
+    "name": "[NRTest] DcTrack",
+    "description": null,
+    "pages": [
+      {
+        "name": "[NRTest] PowerIQ",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 4,
+              "width": 3
+            },
+            "title": "Summary",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name',latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', round(latest(kentik.snmp.Uptime)/8640000, .01) AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) WHERE provider = 'kentik-dctrack'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 4,
+              "row": 1,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Interfaces Details",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface', if_Speed AS 'Interface Speed' WHERE provider = 'kentik-dctrack' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 8,
+              "row": 1,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Storage Details",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT round(latest(kentik.snmp.hrStorageUsed)*100/latest(kentik.snmp.hrStorageSize), .01) AS 'Used %', round(latest(kentik.snmp.hrStorageSize)*1e-6,.01) AS 'Total (MB)', round(latest(kentik.snmp.hrStorageUsed)*1e-6,.01) AS 'Used (MB)' WHERE provider = 'kentik-dctrack' FACET storage_description LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 5,
+              "height": 3,
+              "width": 3
+            },
+            "title": "Device Sensor Details",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(hrDeviceStatus) AS 'Current Status' FACET hrDeviceDescr AS 'Device' WHERE metricName = 'kentik.snmp.hrDeviceStatus' AND provider = 'kentik-dctrack' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 4,
+              "row": 5,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Running Processes Count",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.hrSystemProcesses) AS 'Min Process Count', average(kentik.snmp.hrSystemProcesses) AS 'Average Process Count', max(kentik.snmp.hrSystemProcesses) AS 'Max Process Count' WHERE provider = 'kentik-dctrack' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 8,
+              "row": 5,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Storage Summary",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT round(latest(kentik.snmp.hrStorageUsed)*100/latest(kentik.snmp.hrStorageSize), .01) AS 'Used %' WHERE provider = 'kentik-dctrack' FACET storage_description LIMIT MAX TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.stacked-bar"
+            },
+            "layout": {
+              "column": 1,
+              "row": 8,
+              "height": 3,
+              "width": 3
+            },
+            "title": "User Sessions",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.hrSystemNumUsers) AS 'User Sessions' FACET device_name WHERE provider = 'kentik-dctrack' TIMESERIES 5 MINUTES"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 4,
+              "row": 8,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Running Software",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "CPU Time (sec)",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "Memory (kb)",
+                  "precision": null,
+                  "type": "humanized"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.hrSWRunPerfMem) AS 'Memory (kb)', max(kentik.snmp.hrSWRunPerfCPU)/100 AS 'CPU Time (sec)', latest(hrSWRunStatus) AS 'Status' FACET hrSWRunName AS 'Name', hrSWRunPath AS 'Path' WHERE provider = 'kentik-dctrack' AND hrSWRunName IS NOT NULL LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 8,
+              "row": 8,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Partition Details",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Size (GB)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.hrPartitionSize)/1024/1024 AS 'Size (GB)' FACET hrPartitionLabel AS 'Partition' WHERE provider = 'kentik-dctrack' LIMIT MAX"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
