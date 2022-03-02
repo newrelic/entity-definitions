@@ -66,6 +66,13 @@ networkTrafficTx:
       from: NetworkSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      # emulate a rate of 1 second in order to get bytes/second
+      select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND direction='transmit'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 networkTrafficRx:
   title: Network Receive Traffic (B/s)
   unit: BYTES_PER_SECOND
@@ -80,3 +87,10 @@ networkTrafficRx:
       from: NetworkSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      # emulate a rate of 1 second in order to get bytes/second
+      select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND direction='receive'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
