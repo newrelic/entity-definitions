@@ -13,7 +13,7 @@ cpuUsage:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(1 - system.cpu.utilization) * 100
+      select: sum(1 - system.cpu.time) / sum((endTimestamp - timestamp) / 1000) * 100
       where: state = 'idle'
       from: Metric
       eventId: entity.guid
@@ -52,6 +52,11 @@ storageUsage:
       from: StorageSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: filter(sum(system.filesystem.usage), where state != 'free') / sum(system.filesystem.usage) * 100
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 networkTrafficTx:
   title: Network Transmit Traffic (B/s)
   unit: BYTES_PER_SECOND
