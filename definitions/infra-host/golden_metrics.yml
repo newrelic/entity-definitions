@@ -13,8 +13,8 @@ cpuUsage:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: sum(system.cpu.time) / sum((endTimestamp - timestamp) / 1000) * 100
-      where: state != 'idle'
+      select: average(1 - system.cpu.utilization) * 100
+      where: state = 'idle'
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -53,7 +53,9 @@ storageUsage:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: filter(sum(system.filesystem.usage), where state != 'free') / sum(system.filesystem.usage) * 100
+      select: average(system.filesystem.utilization) * 100
+      # squashfs will always have a utilization of 100%
+      where: type != 'squashfs'
       from: Metric
       eventId: entity.guid
       eventName: entity.name
