@@ -161,7 +161,7 @@ synthesis:
 
 You can also change the name of the tag to another value, rather than using the name in the attribute. In general, we suggest not to use this configuration unless you are trying to use more standard namings, since sometimes it's difficult for the user to see the difference between entity tags and telemetry attributes, and changing the names could cause even more confusion.
 
-A good use case for this feature is `CONTAINER`: A container has different sources (docker, kubernetes, etc.), and we rename the tags to use a standard naming instead of a "per source" name.
+A good use case for this feature is `CONTAINER`: A container has different sources (docker, kubernetes, etc.), and we rename the tags to use a standard naming and a "per source" name.
 
 ```yaml
 synthesis:
@@ -170,18 +170,18 @@ synthesis:
     name: docker.name
     tags:
       docker.state:
-        entityTagName: container.state
+        entityTagNames: [container.state, docker.state]
   - identifier: entity.id
     name: k8s.containerName
     tags:
       k8s.status:
-        entityTagName: container.state
+        entityTagNames: [container.state, k8s.status]
 ```
 
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
 | multiValue | Boolean  | No | If set to `false`, any update will replace all existing values in the tag, making it a tag with only one value. Defaults to `true`. |
-| entityTagName | String | No | If provided, the attribute value will be copied into a tag with this name. Defaults to the attribute name. |
+| entityTagNames | List<String> | No | If provided, the attribute value will be copied into a tag using each value of the list as the key. Defaults to list with the attribute name. |
 
 #### Default tags
 
