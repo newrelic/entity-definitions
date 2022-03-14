@@ -13,16 +13,91 @@
           "layout": {
             "column": 1,
             "row": 1,
-            "height": 4,
-            "width": 6
+            "height": 5,
+            "width": 3
           },
-          "title": "Total Test Locations",
+          "title": "Network Synthetic Summary",
           "rawConfiguration": {
             "dataFormatters": [],
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT uniqueCount(agent_name) FACET entity.name"
+                "query": "FROM Metric SELECT latest(entity.name) as 'Test Name', latest(test_type) as Type, uniqueCount(agent_name) as 'Agents', uniqueCount(src_addr) as 'Source IPs', uniqueCount(dst_addr) as 'Destination IPs' limit max since 1 day ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "height": 1,
+            "width": 3
+          },
+          "title": "Current Average Loss (%)",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round(average(kentik.synth.lost_pct)/1000,2) as 'Average Loss %' since 10 minutes ago compare with 1 day ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 1,
+            "width": 3
+          },
+          "title": "Average Latency (ms)",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round(average(kentik.synth.avg_rtt)/1000,2) as 'Average Latency (ms)' since 10 minutes ago compare with 1 day ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "height": 1,
+            "width": 3
+          },
+          "title": "Average Jitter (ms)",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round(average(kentik.synth.jit_rtt)/1000,2) as 'Average Jitter (ms)' since 10 minutes ago compare with 1 day ago"
               }
             ],
             "thresholds": []
@@ -33,72 +108,23 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 7,
-            "row": 1,
+            "column": 4,
+            "row": 2,
             "height": 4,
-            "width": 6
+            "width": 3
           },
-          "title": "Average Latency (ms)",
+          "title": "Loss (%) by Location",
           "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
             "legend": {
               "enabled": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(kentik.synth.avg_rtt)/1000 FACET entity.name TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": false
-            }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 1,
-            "row": 5,
-            "height": 4,
-            "width": 6
-          },
-          "title": "Average Jitter (ms)",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT average(kentik.synth.jit_rtt)/1000 FACET entity.name TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": false
-            }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 7,
-            "row": 5,
-            "height": 4,
-            "width": 6
-          },
-          "title": "Packet Loss (%)",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT latest(kentik.synth.lost_pct) FACET entity.name TIMESERIES"
+                "query": "FROM Metric SELECT average(kentik.synth.lost_pct)/1000 FACET agent_name as Location TIMESERIES limit max "
               }
             ],
             "yAxisLeft": {
@@ -106,6 +132,112 @@
               "min": 0,
               "zero": false
             }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 2,
+            "height": 4,
+            "width": 3
+          },
+          "title": "Latency (ms) by Location",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.synth.avg_rtt)/1000 FACET agent_name as Location TIMESERIES limit max "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 10,
+            "row": 2,
+            "height": 4,
+            "width": 3
+          },
+          "title": "Jitter (ms) by Location",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.synth.jit_rtt)/1000 FACET agent_name as Location TIMESERIES limit max "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "height": 4,
+            "width": 12
+          },
+          "title": "Path Details",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.synth.avg_rtt)/1000 as 'Peak Rtt (ms)', max(kentik.synth.jit_rtt)/1000 as 'Pea Jitter (ms)', max(kentik.synth.lost_pct) as 'Peak Loss (%)' facet agent_name, src_geo, src_cdn_int, src_addr, dst_addr, dst_cdn_int, dst_geo where entity.type = 'NETWORK_SYNTH' limit max "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 1,
+            "width": 6
+          },
+          "title": "Kentik Test Results Url",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT uniques(test_url) where entity.type = 'NETWORK_SYNTH' limit max since 1 day ago "
+              }
+            ]
           }
         }
       ]
