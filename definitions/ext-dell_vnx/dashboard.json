@@ -25,7 +25,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM vnx_capacity SELECT latest(poolSizeUsed/poolSizeTotal)*100 as 'Pool Used %',latest(poolSizeFree)/1024/1024/1024 as 'Free GB',latest(poolSizeTotal)/1024/1024/1024 as 'Total GB',latest(poolSizeUsed)/1024/1024/1024 as 'Used GB' where key = 'pool_capacity' facet poolName "
+                "query": "FROM vnx_capacity SELECT latest((sizeUsed / sizeTotal))*100 as 'Used %',latest(sizeFree)/1024/1024/1024 as 'Free',latest(sizeTotal)/1024/1024/1024 as 'Total',latest(sizeUsed)/1024/1024/1024 as 'Used',latest(snapSizeUsed) as 'Snap used',latest(health.descriptionIds) as 'Health'  where key = 'cluster_capacity' facet name"
               }
             ]
           }
@@ -48,7 +48,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM vnx_capacity SELECT latest((sizeUsed / sizeTotal))*100 as 'Used %'  WHERE key = 'cluster_capacity' TIMESERIES 5 minutes "
+                "query": "FROM vnx_capacity SELECT average((sizeUsed / sizeTotal))*100 as 'Used %'  WHERE key = 'cluster_capacity' TIMESERIES 5 minutes "
               }
             ],
             "yAxisLeft": {
