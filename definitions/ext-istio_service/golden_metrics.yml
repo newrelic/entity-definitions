@@ -3,16 +3,19 @@ throughput:
   query:
     select: rate(sum(istio_requests_total), 1 SECOND)
     from: Metric
+  kind: SUM
 errorRate:
   title: Error rate
   query:
     select: (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') * 100 ) / sum(istio_requests_total)
     where: reporter = 'destination'
     from: Metric
+  kind: GENERALIZED_AVERAGE
 responseTimeMs:
   title: Response time (ms)
   query:
     select: sum(istio_request_duration_milliseconds_sum) / count(istio_request_duration_milliseconds_count)
-    where: reporter = 'destination' 
+    where: reporter = 'destination'
     from: Metric
 
+  kind: PROMETHEUS_STYLE_AVERAGE

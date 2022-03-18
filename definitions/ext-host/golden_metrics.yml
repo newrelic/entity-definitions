@@ -8,6 +8,7 @@ systemLoad:
       from: FlexSystemSample
       eventId: entity.guid
 
+  kind: SUM
 cpuPercent:
   title: CPU Percent
   unit: PERCENTAGE
@@ -19,6 +20,7 @@ cpuPercent:
       from: FlexSystemSample
       eventId: entity.guid
 
+  kind: MAX
 systemMemory:
   title: System Memory
   unit: BYTES
@@ -35,7 +37,8 @@ memoryPercent:
   unit: PERCENTAGE
   queries:
     datadog:
-      select: ((sum(datadog.system.mem.total) - sum(datadog.system.mem.usable))/sum(datadog.system.mem.total)) * 100
+      select: ((sum(datadog.system.mem.total) - sum(datadog.system.mem.usable))/sum(datadog.system.mem.total))
+        * 100
     flexagent:
       select: latest(memoryUsedPercent)
       from: FlexSystemSample
@@ -51,3 +54,4 @@ diskPercent:
       select: latest(diskUsedPercent)
       from: FlexSystemSample
       eventId: entity.guid
+  kind: MAX

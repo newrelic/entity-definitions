@@ -12,9 +12,10 @@ Instances:
       from: GcpAppEngineServiceSample
       eventId: entityGuid
       eventName: entityName
+  kind: MAX
 Responses:
   title: Number of http responses
-  unit: COUNT 
+  unit: COUNT
   queries:
     gcp:
       select: sum(gcp.appengine.http.server.response_count)
@@ -26,12 +27,14 @@ Responses:
       from: GcpAppEngineServiceSample
       eventId: entityGuid
       eventName: entityName
+  kind: SUM
 ErrorRate:
   title: Error rate
   unit: PERCENTAGE
   queries:
     gcp:
-      select: filter(sum(gcp.appengine.http.server.response_count), WHERE response_code NOT LIKE '2%') * 100
+      select: filter(sum(gcp.appengine.http.server.response_count), WHERE response_code NOT LIKE '2%')
+        * 100
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -40,6 +43,7 @@ ErrorRate:
       from: GcpAppEngineServiceSample
       eventId: entityGuid
       eventName: entityName
+  kind: SUM
 latency:
   title: Latency
   unit: SECONDS
@@ -54,3 +58,4 @@ latency:
       from: GcpAppEngineServiceSample
       eventId: entityGuid
       eventName: entityName
+  kind: AVERAGE

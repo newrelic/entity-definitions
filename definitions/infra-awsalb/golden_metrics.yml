@@ -3,16 +3,19 @@ serverErrors4XxAnd5Xx:
   unit: COUNT
   queries:
     aws:
-      select: rate(sum(aws.applicationelb.HTTPCode_ELB_4XX_Count) + sum(aws.applicationelb.HTTPCode_ELB_5XX_Count), 1 minute)
+      select: rate(sum(aws.applicationelb.HTTPCode_ELB_4XX_Count) + sum(aws.applicationelb.HTTPCode_ELB_5XX_Count),
+        1 minute)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: rate(sum((provider.httpCodeElb4XXCount.Sum OR 0) + (provider.httpCodeElb5XXCount.Sum OR 0)),1 minute)
+      select: rate(sum((provider.httpCodeElb4XXCount.Sum OR 0) + (provider.httpCodeElb5XXCount.Sum OR
+        0)),1 minute)
       from: LoadBalancerSample
       where: provider='Alb'
       eventId: entityGuid
       eventName: entityName
+  kind: SUM
 activeConnections:
   title: Active Connections
   unit: COUNT
@@ -28,6 +31,7 @@ activeConnections:
       where: provider='Alb'
       eventId: entityGuid
       eventName: entityName
+  kind: SUM
 rejectedConnections:
   title: Rejected connections
   unit: COUNT
@@ -43,3 +47,4 @@ rejectedConnections:
       where: provider='Alb'
       eventId: entityGuid
       eventName: entityName
+  kind: SUM

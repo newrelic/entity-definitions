@@ -13,21 +13,25 @@ getThroughput:
       where: provider='ElastiCacheMemcachedNode'
       eventId: entityGuid
       eventName: entityName
+  kind: SUM
 getMisses:
   title: Get hit rate (%)
   unit: PERCENTAGE
   queries:
     aws:
-      select: (sum(aws.elasticache.GetHits) / (sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses))) * 100
+      select: (sum(aws.elasticache.GetHits) / (sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses)))
+        * 100
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: (sum(provider.getHits.Sum) / (sum(provider.getHits.Sum) + sum(provider.getMisses.Sum))) * 100
+      select: (sum(provider.getHits.Sum) / (sum(provider.getHits.Sum) + sum(provider.getMisses.Sum)))
+        * 100
       from: DatastoreSample
       where: provider='ElastiCacheMemcachedNode'
       eventId: entityGuid
       eventName: entityName
+  kind: GENERALIZED_AVERAGE
 evictedItems:
   title: Evicted items per sec
   unit: COUNT
@@ -43,6 +47,7 @@ evictedItems:
       where: provider='ElastiCacheMemcachedNode'
       eventId: entityGuid
       eventName: entityName
+  kind: SUM
 swapUsage:
   title: Swap Usage
   unit: BYTES
@@ -58,6 +63,7 @@ swapUsage:
       where: provider='ElastiCacheMemcachedNode'
       eventId: entityGuid
       eventName: entityName
+  kind: AVERAGE
 cpuUtilization:
   title: CPU utilization (%)
   unit: PERCENTAGE
@@ -73,6 +79,7 @@ cpuUtilization:
       where: provider='ElastiCacheMemcachedNode'
       eventId: entityGuid
       eventName: entityName
+  kind: AVERAGE
 currentConnections:
   title: Current connections
   unit: PERCENTAGE
@@ -88,3 +95,4 @@ currentConnections:
       where: provider='ElastiCacheMemcachedNode'
       eventId: entityGuid
       eventName: entityName
+  kind: AVERAGE

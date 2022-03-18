@@ -3,16 +3,19 @@ serverErrors4XxAnd5Xx:
   unit: COUNT
   queries:
     aws:
-      select: rate(sum(aws.applicationelb.HTTPCode_Target_4XX_Count) + sum(aws.applicationelb.HTTPCode_Target_5XX_Count), 1 minute)
+      select: rate(sum(aws.applicationelb.HTTPCode_Target_4XX_Count) + sum(aws.applicationelb.HTTPCode_Target_5XX_Count),
+        1 minute)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: rate(sum(`provider.httpCodeTarget4XXCount.Sum`) + sum(`provider.httpCodeTarget5XXCount.Sum`),1 minute)
+      select: rate(sum(`provider.httpCodeTarget4XXCount.Sum`) + sum(`provider.httpCodeTarget5XXCount.Sum`),1
+        minute)
       from: LoadBalancerSample
       where: provider='AlbTargetGroup'
       eventId: entityGuid
       eventName: entityName
+  kind: SUM
 unhealthyHosts:
   title: Unhealthy host count
   unit: COUNT
@@ -28,6 +31,7 @@ unhealthyHosts:
       where: provider='AlbTargetGroup'
       eventId: entityGuid
       eventName: entityName
+  kind: MAX
 responseTime:
   title: Average response time
   unit: SECONDS
@@ -43,6 +47,7 @@ responseTime:
       where: provider='AlbTargetGroup'
       eventId: entityGuid
       eventName: entityName
+  kind: AVERAGE
 requests:
   title: Requests
   unit: COUNT
@@ -58,3 +63,4 @@ requests:
       where: provider='AlbTargetGroup'
       eventId: entityGuid
       eventName: entityName
+  kind: SUM
