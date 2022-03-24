@@ -28,15 +28,16 @@ synthesis:
       conditions:
         - attribute: eventType
           value: MetricRaw
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
         # if service.name is present, it's a service, not a host
         - attribute: service.name
           present: false
         # if container.id is present, it's a container, not a host
         - attribute: container.id
           present: false
-        # This is a temporary condition to restrict synthesis for a particular set of telemetry data.
-        - attribute: nr.entity_type
-          value: host
       tags:
         cloud.provider:
         cloud.account.id:
@@ -55,19 +56,16 @@ synthesis:
       name: host.id
       encodeIdentifierInGUID: true
       conditions:
-        - attribute: newrelic.source
-          value: 'api.logs.otlp'
         - attribute: eventType
           value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
         # if service.name is present, it's a service, not a host
         - attribute: service.name
           present: false
         # if container.id is present, it's a container, not a host
         - attribute: container.id
           present: false
-        # This is a temporary condition to restrict synthesis for a particular set of telemetry data.
-        - attribute: nr.entity_type
-          value: host
       tags:
         cloud.provider:
         cloud.account.id:
