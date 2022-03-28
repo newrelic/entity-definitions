@@ -1,0 +1,26 @@
+clusterUsedPercent:
+  title: Cluster Used %
+  unit: PERCENTAGE
+  query:
+    select: latest((sizeUsed / sizeTotal))*100 as 'Used %'
+    from: vnx_capacity
+    where: key = 'cluster_capacity'
+    eventId: entity.guid
+
+failedDriveCount:
+  title: Drive Failures
+  unit: COUNT
+  query:
+    select: count(healthID)
+    from: vnx_drives
+    where: healthID != 5
+    eventId: entity.guid
+
+hardwareUnhealthy:
+  title: Hardware Status
+  unit: COUNT
+  query:
+    select: latest(healthID) as 'Status'
+    from: vnx_hardware
+    eventId: entity.guid
+  displayAsValue: true

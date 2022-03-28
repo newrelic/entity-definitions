@@ -1,0 +1,125 @@
+{
+    "name": "Cisco ASA Firewall",
+    "description": null,
+    "pages": [
+      {
+        "name": "Cisco ASA Firewall",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Device Uptime",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Total Hours",
+                  "precision": null,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Total Days",
+                  "precision": null,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(`kentik.snmp.Uptime`)/100/60/60/24 AS 'Total Days', latest(`kentik.snmp.Uptime`)/100/60/60 AS 'Total Hours' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "height": 4,
+              "width": 6
+            },
+            "title": "CPU Utilization %",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.CPU) AS 'CPU Utilization %' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 5,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Total Active Sessions",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.crasNumSessions) AS 'Active Sessions' SINCE 10 MINUTES AGO COMPARE WITH 1 DAY AGO"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 5,
+              "row": 5,
+              "height": 4,
+              "width": 6
+            },
+            "title": "Memory Utilization %",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.MemoryUtilization) AS 'Memory Utilization %' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

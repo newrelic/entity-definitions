@@ -1,9 +1,3 @@
-providerName:
-  tag:
-    key: instrumentation.provider
-  title: Provider
-  unit: STRING
-
 ipAddress:
   title: IP Address
   unit: STRING
@@ -11,55 +5,63 @@ ipAddress:
     key: device_ip
 
 cpuUtilization:
-  title: CPU Utilization (%)
+  title: CPU
   unit: PERCENTAGE
   queries:
-    kentik-router:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: average(kentik.snmp.CPU)
       from: Metric
       where: "provider = 'kentik-router'"
       eventId: entity.guid
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: average(mikrotik.system.cpu.load)
       from: Metric
       eventId: entity.guid
 
 memoryUtilization:
-  title: Memory Utilization (%)
+  title: Memory
   unit: PERCENTAGE
   queries:
-    kentik-router:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: average(kentik.snmp.MemoryUtilization)
       from: Metric
       where: "provider = 'kentik-router'"
       eventId: entity.guid
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
-      select: (1 - (average(mikrotik.system.memory.free) / average(mikrotik.system.memory.total))) * 100
+      select: average(mikrotik.system.memory.load)
       from: Metric
       eventId: entity.guid
 
 receiveErrors:
-  title: Receive Errors (count)
+  title: Receive Errors
   unit: COUNT
   queries:
-    kentik-router:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: sum(kentik.snmp.ifInErrors)
       from: Metric
       where: "provider = 'kentik-router'"
       eventId: entity.guid
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: sum(mikrotik.interface.ether1.rxerrorsps)
       from: Metric
       eventId: entity.guid
 
 transmitErrors:
-  title: Transmit Errors (count)
+  title: Transmit Errors
   unit: COUNT
   queries:
-    kentik-router:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: sum(kentik.snmp.ifOutErrors)
       from: Metric
       eventId: entity.guid
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: sum(mikrotik.interface.ether1.txerrorsps)
       from: Metric

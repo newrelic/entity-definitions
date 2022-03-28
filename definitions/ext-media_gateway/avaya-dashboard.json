@@ -1,0 +1,575 @@
+{
+    "name": "Avaya Media Gateway",
+    "description": null,
+    "pages": [
+      {
+        "name": "Avaya Media Gateway",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 6,
+              "width": 2
+            },
+            "title": "Summary",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name',latest(src_addr) AS 'Device IP', latest(tags.kentik.model) AS 'Model', round(latest(kentik.snmp.Uptime)/8640000, .01) AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile',  latest(timestamp) AS 'Last Update', latest(PollingHealth) WHERE provider = 'kentik-avaya-gateway'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 3,
+              "row": 1,
+              "height": 3,
+              "width": 2
+            },
+            "title": "Registration State",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.cmgRegistrationState) FACET cmgRegistrationState WHERE provider = 'kentik-avaya-gateway'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 2
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "height": 1,
+              "width": 4
+            },
+            "title": "Current CPU",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider = 'kentik-avaya-gateway'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "height": 1,
+              "width": 4
+            },
+            "title": "Current Memory",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE provider = 'kentik-avaya-gateway'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 5,
+              "row": 2,
+              "height": 5,
+              "width": 4
+            },
+            "title": "CPU Utilization (%)",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 9,
+              "row": 2,
+              "height": 5,
+              "width": 4
+            },
+            "title": "Memory Utilization (%)",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 3,
+              "row": 4,
+              "height": 3,
+              "width": 2
+            },
+            "title": "H.248 Link Status",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.cmgH248LinkStatus) FACET cmgH248LinkStatus WHERE provider = 'kentik-avaya-gateway'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 2
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 7,
+              "height": 4,
+              "width": 6
+            },
+            "title": "Hardware Sensors",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Latest Value",
+                  "precision": null,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.sensor_value) AS 'Latest Value', latest(sensor_status) FACET device_name, entity_description AS 'Sensor', sensor_units WHERE provider = 'kentik-avaya-gateway' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 7,
+              "row": 7,
+              "height": 4,
+              "width": 6
+            },
+            "title": "H.248 Configuration (Based on value of QoS Control)",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(cmgQosControl) AS 'QoS Control', latest(kentik.snmp.cmgRemoteSigDscp) AS 'Remote DiffServ', latest(kentik.snmp.cmgRemoteSig802Priority) AS 'Remote 802.1 Priority', latest(kentik.snmp.cmgLocalSigDscp) AS 'Local DiffServ', latest(kentik.snmp.cmgLocalSig802Priority) AS 'Local 802.1 Priority' WHERE provider = 'kentik-avaya-gateway'"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 11,
+              "height": 4,
+              "width": 6
+            },
+            "title": "DSP Core Status",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.cmgVoipDSPCoreTotalChannels) AS 'Total Channels', latest(kentik.snmp.cmgVoipDSPCoreChannelsInUse) AS 'Channels in Use', latest(cmgVoipDSPCoreAdminState) AS 'Admin State', latest(cmgVoipDSPCoreStatus) AS 'Core Status', latest(cmgVoipDSPCoreDemandTestResult) AS 'Last Test Result' WHERE provider = 'kentik-avaya-gateway'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 7,
+              "row": 11,
+              "height": 4,
+              "width": 6
+            },
+            "title": "VoIP Engines Status",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(cmgVoipCurrentIpAddress) AS 'IP Address', latest(kentik.snmp.cmgVoipTotalChannels) AS 'Total DSPs', latest(kentik.snmp.cmgVoipChannelsInUse) AS 'Channels in Use', latest(kentik.snmp.cmgVoipAverageOccupancy) AS 'Average Occupancy', latest(cmgVoipHyperactivity) AS 'Hyperactivity Status', latest(cmgVoipAdminState) AS 'Admin State', latest(cmgVoipDspStatus) AS 'DSP Status' WHERE provider = 'kentik-avaya-gateway' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 15,
+              "height": 2,
+              "width": 6
+            },
+            "title": "DSP Core Channel Usage (%)",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.cmgVoipDSPCoreChannelsInUse) / max(kentik.snmp.cmgVoipDSPCoreTotalChannels) * 100 AS 'Channels in Use' WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 7,
+              "row": 15,
+              "height": 2,
+              "width": 6
+            },
+            "title": "VoIP Channel Usage (%)",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.cmgVoipChannelsInUse) / max(kentik.snmp.cmgVoipTotalChannels) * 100 AS 'Channels in Use' WHERE provider = 'kentik-avaya-gateway' LIMIT MAX TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 17,
+              "height": 4,
+              "width": 12
+            },
+            "title": "Interface Details",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed WHERE provider = 'kentik-avaya-gateway' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.area"
+            },
+            "layout": {
+              "column": 1,
+              "row": 21,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Receive Traffic Mbps",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 5,
+              "row": 21,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Receive Traffic %",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) AS 'RX %' FACET if_interface_name WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 9,
+              "row": 21,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Receive Errors %",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.ifInErrorPercent) FACET if_interface_name WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.area"
+            },
+            "layout": {
+              "column": 1,
+              "row": 25,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Transmit Traffic Mbps",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 5,
+              "row": 25,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Transmit Traffic %",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) AS 'TX %' FACET if_interface_name WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 9,
+              "row": 25,
+              "height": 4,
+              "width": 4
+            },
+            "title": "Transmit Errors %",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.ifOutErrorPercent) FACET if_interface_name WHERE provider = 'kentik-avaya-gateway' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

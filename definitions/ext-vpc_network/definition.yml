@@ -1,24 +1,24 @@
 domain: EXT
-# VPC Networks received from Kentik VPC Flow Ingest
 type: VPC_NETWORK
 synthesis:
-  name: vpc_name
-  identifier: vpc_identification
-
-  conditions:
-  - attribute: provider
-    value: kentik-vpc
-
-  tags:
-    vpc_account:
-    vpc_region:
-    application_type:
-      entityTagName: vpc_type
-
-goldenTags:
-- vpc_account
-- vpc_region
+  rules:
+    # ktranslate
+    - identifier: device_name
+      name: device_name
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: provider
+        value: kentik-vpc
+    # aws kinesis firehose
+    - identifier: vpc_id
+      name: vpc_id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: provider
+          value: firehose-vpc
 
 dashboardTemplates:
-  newRelic:
-    template: dashboard.json
+  kentik/aws-vpc-flow-events:
+    template: kentik-aws-vpc-dashboard.json
+  aws-kinesis-firehose/vpc-flow-logs:
+    template: aws-kinesis-firehose-vpc-flow-logs-dashboard.json

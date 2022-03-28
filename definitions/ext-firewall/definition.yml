@@ -1,24 +1,44 @@
 domain: EXT
-# Firewall devices from Kentik using Metric API
-# Note this initial definition is limited to only Fortigate Firewalls using the FORTINET-FORTIGATE-MIB
-# Future firewall entities will need to be isolated in the definition
 type: FIREWALL
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
+  rules:
+  # Standard firewall devices from Kentik
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-firewall
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
 
-  conditions:
-  - attribute: provider
-    value: kentik-firewall
-
-  tags:
-    src_addr:
-      entityTagName: device_ip
+  # Cisco Firepower devices from Kentik
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-firepower
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
 
 goldenTags:
 - device_ip
 
 dashboardTemplates:
-  kentik:
-    template: dashboard.json
+  # Cisco ASA profiles (default)
+  kentik/cisco-asa:
+    template: cisco-asa-dashboard.json
+  # Palo Alto profiles
+  kentik/palo-alto:
+    template: palo-alto-dashboard.json
+  # Fortinet Fortigate profiles
+  kentik/fortinet-fortigate:
+    template: fortinet-fortigate-dashboard.json
+  # Cisco Firepower profiles
+  kentik/cisco-firepower:
+    template: cisco-firepower-dashboard.json

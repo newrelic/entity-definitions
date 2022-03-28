@@ -1,0 +1,323 @@
+{
+  "name": "Isilon Performance",
+  "description": null,
+  "pages": [
+    {
+      "name": "Isilon",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 2,
+            "width": 4
+          },
+          "title": "NFS Read/Write Latency",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(timeAvg)/1000 FROM IsilonNodeProtocol WHERE key = 'node.protostats.nfs3' TIMESERIES auto FACET opName WHERE opName = 'read' or opName = 'write'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 2,
+            "width": 4
+          },
+          "title": "NFS Client Top 50 opCount",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(opCount) FROM IsilonNodeClientProtoStats WHERE key = 'node.clientstats.proto.nfs3' TIMESERIES 1 minute FACET remoteAddr LIMIT 50"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 2,
+            "width": 4
+          },
+          "title": "NFS Top 50 Client Avg Latency",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(timeAvg)/1000 FROM IsilonNodeClientProtoStats WHERE key = 'node.clientstats.proto.nfs3' TIMESERIES 1 minute FACET remoteAddr LIMIT 50"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "height": 2,
+            "width": 4
+          },
+          "title": "SMB Read/Write Latency",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(timeAvg)/1000 FROM IsilonNodeProtocol WHERE key = 'node.protostats.smb2' TIMESERIES auto FACET opName WHERE opName = 'write' or opName = 'read'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 3,
+            "height": 2,
+            "width": 4
+          },
+          "title": "SMB Client Top 50 opCount",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(opCount) FROM IsilonNodeClientProtoStats WHERE key = 'node.clientstats.proto.smb2' TIMESERIES 1 minute FACET remoteAddr LIMIT 50"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 3,
+            "height": 2,
+            "width": 4
+          },
+          "title": "SMB Top 50 Client Avg Latency",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(timeAvg)/1000 FROM IsilonNodeClientProtoStats WHERE key = 'node.clientstats.proto.smb2' TIMESERIES 1 minute FACET remoteAddr LIMIT 50"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "SyncIQ Active Jobs",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(uniqueCount(total), WHERE total is not NULL) FROM IsilonSyncJobs WHERE state = 'running' FACET policy.name TIMESERIES AUTO LIMIT max"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Cluster CPU %",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (1000-latest(value))/10 as TOTAL FROM IsilonNode where dataType='cpu' WHERE key = 'cluster.cpu.idle.avg' TIMESERIES auto limit max"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Used HDD/SDD %",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(usage.pctUsedHdd) as 'HDD', latest(usage.pctUsedSsd) as 'SSD'  FROM  IsilonPools WHERE dataType = 'pool' and name not like 'Archive_Tier' and name not like 'Active_Tier'  and name not like 'SSD_SED_tier' TIMESERIES 2 minutes EXTRAPOLATE FACET name"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "height": 4,
+            "width": 12
+          },
+          "title": "Events",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(specifier.antime) as 'StartTime',latest(causes.0.0) as 'EventClass',latest(causes.0.1) as 'Event',latest(resolved),latest(severity) FROM  IsilonEvents  where resolved != 'true' where timeNoticed is NOT NULL and causes.0.0 not like 'SW_JOBENG_JOBSCHED_FAILED'  facet specifier.lnn as 'LNN',specifier.antime as 'Start time' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Ping Packet Loss",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(packetLoss) from isilonPing facet target  limit max TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

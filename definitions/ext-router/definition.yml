@@ -1,6 +1,4 @@
 domain: EXT
-
-# Leaving this ambiguous to allow future technical partners to use the same entity type with additional conditions
 type: ROUTER
 synthesis:
   rules:
@@ -14,9 +12,10 @@ synthesis:
     tags:
       src_addr:
         entityTagName: device_ip
-      instrumentation.provider:
+        multiValue: false
 
     # Mikrotik routers using Metric API
+    # https://github.com/OscarDCorbalan/mikrotik-newrelic/
   - identifier: mikrotik.serialnumber
     name: mikrotik.name
     encodeIdentifierInGUID: true
@@ -34,8 +33,14 @@ synthesis:
       mikrotik.currentfirmware:
         entityTagName: firmware
 
+goldenTags:
+- device_ip
+
+## Note - these dashboards are overwritten at the entity-ui layer by custom components built by the NR product team
 dashboardTemplates:
-  newRelic:
-    template: dashboard.json
+  # Cisco ASR profiles (default)
+  kentik/cisco-asr:
+    template: cisco-asr-dashboard.json
+  # Mikrotik Router from mikrotik-newrelic script
   mikrotik-router:
     template: mikrotik-dashboard.json

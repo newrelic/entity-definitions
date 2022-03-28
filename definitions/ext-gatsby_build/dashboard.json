@@ -1,0 +1,229 @@
+{
+  "name": "Gatsby v3",
+  "description": null,
+  "pages": [
+    {
+      "name": "Gatsby v3",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 2
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "![image](https://codingthesmartway.com/wp-content/uploads/2019/02/gatsby-logo.png)"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Latest Build Times (in s)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (latest(`bootstrapTime`) + latest(`instantiationTime`) + latest(`benchmarkStart`) + latest(`preInit`) + latest(`preBootstrap`) + latest(`preBuild`) + latest(`postBuild`))/1000 FROM Metric FACET buildId"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "logger.log-table-widget"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 7,
+            "width": 4
+          },
+          "title": "",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT `log_severity`,`timestamp`,`message` FROM Log WHERE message LIKE '%success%'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(capture(message, r'info Total nodes: (?P<nodes>\\d+).*')), latest(capture(message, r'info Total nodes:.*SitePage nodes: (?P<pages>\\d+).*')) FROM Log"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "height": 4,
+            "width": 6
+          },
+          "title": "BundleSize",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(gzipSize) FROM bundleSize FACET path "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 7,
+            "width": 2
+          },
+          "title": "Latest Build Metrics",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`bootstrapTime`)/1000, latest(`instantiationTime`)/1000, latest(`benchmarkStart`)/1000, latest(`preInit`)/1000, latest(`preBootstrap`)/1000, latest(`preBuild`)/1000, latest(`postBuild`)/1000 FROM Metric SINCE 12 hours AGO COMPARE WITH 30 minutes ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "layout": {
+            "column": 3,
+            "row": 8,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Build Times faceted by steps",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`bootstrapTime`), latest(`instantiationTime`), latest(`benchmarkStart`), latest(`preInit`), latest(`preBootstrap`), latest(`preBuild`), latest(`postBuild`) FROM Metric TIMESERIES 15 minutes"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 9,
+            "row": 8,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Plugins",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(duration.ms)  FROM Span FACET plugin WHERE plugin != 'gatsby-build-newrelic'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 3,
+            "row": 11,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Images by Type",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(otherImages), latest(gifs), latest(pngs), latest(jpgs) FROM Metric TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 9,
+            "row": 11,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Internal APIs sorted by Build Time Contribution (in s)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`duration.ms`)/1000 FROM Span FACET api LIMIT 1000"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
