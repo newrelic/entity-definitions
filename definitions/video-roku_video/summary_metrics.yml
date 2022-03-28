@@ -5,6 +5,7 @@ videoStartTime:
     select: percentile(timeSinceRequested - timeSinceStarted ,50)/1000
     from: RokuVideo
     where: actionName = 'CONTENT_START'
+    eventId: entity.guid
 
 interruptions:
   title: Interruptions (count)
@@ -12,6 +13,7 @@ interruptions:
   query:
     select: filter(count(*), WHERE actionName = 'CONTENT_BUFFER_START' and contentPlayhead > 0)
     from: RokuVideo
+    eventId: entity.guid
 
 rebufferTime:
   title: Median Rebuffer Time (Seconds)
@@ -19,6 +21,7 @@ rebufferTime:
   query:
     select: filter(percentile(timeSinceBufferBegin/1000, 50), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0)/1000
     from: RokuVideo
+    eventId: entity.guid
 
 contentErrors:
   title: Content Errors (count)
@@ -26,3 +29,4 @@ contentErrors:
   query:
     select: filter(count(*), WHERE actionName = 'CONTENT_ERROR')
     from: RokuVideo
+    eventId: entity.guid
