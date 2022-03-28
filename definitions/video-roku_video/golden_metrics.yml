@@ -1,5 +1,6 @@
 videoStartTime:
   title: Median Video Start Time (Seconds)
+  unit: seconds
   query:
     select: percentile(timeSinceRequested - timeSinceStarted ,50)/1000
     from: RokuVideo
@@ -7,18 +8,21 @@ videoStartTime:
 
 interruptions:
   title: Interruptions (count)
+  unit: count
   query:
     select: filter(count(*), WHERE actionName = 'CONTENT_BUFFER_START' and contentPlayhead > 0)
     from: RokuVideo
 
 rebufferTime:
   title: Median Rebuffer Time (Seconds)
+  unit: seconds
   query:
     select: filter(percentile(timeSinceBufferBegin/1000, 50), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0)/1000
     from: RokuVideo
 
 contentErrors:
   title: Content Errors (count)
+  unit: count
   query:
     select: filter(count(*), WHERE actionName = 'CONTENT_ERROR')
     from: RokuVideo
