@@ -1,0 +1,163 @@
+{
+  "name": "EXT-SAP_IDOC",
+  "description": null,
+  "pages": [
+    {
+      "name": "IDOC Trends",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Trend - Avg Processing Time (seconds)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.IDOC.PROCESS_TIME)/1000 SINCE 1 day ago TIMESERIES 1 hour"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Total IDOC Count",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_IDOC SELECT Count(*) AS 'Total Count', filter(uniqueCount(DOCNUM), WHERE STATUS_LIGHT = 'RED') AS 'Error Count' SINCE 1 day ago COMPARE WITH 1 day ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Total IDOCs - by Partner",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_IDOC SELECT count(*) FACET RECEIVER_PARTNER_NUMBER SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Error - by Partner",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_IDOC SELECT count(*) WHERE STATUS_LIGHT = 'RED' FACET PRN SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Error - by Status",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_IDOC SELECT count(*) WHERE STATUS_LIGHT = 'RED' FACET STATUS, STATUS_DESCRIPTION SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 12
+          },
+          "title": "IDOC Errors",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_IDOC SELECT DOCNUM, MESSAGE_TYPE, MESSAGE_TYPE_DESCRIPTION, STATUS_TEXT, STATUS, STATUS_DESCRIPTION, STATUS_GROUP, DIRECTION, CLIENT, MAX_IDOC_SEGMENT_NUMBER, OUTPUT_MODE, PRN, RECEIVER_PARTNER_NUMBER, RECEIVER_PARTNER_TYPE, RECEIVER_PORT, SENDER_PARTNER_NUMBER, SENDER_PARTNER_TYPE, SENDER_PORT, SYS_ID WHERE STATUS_LIGHT = 'RED' SINCE 1 day ago"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

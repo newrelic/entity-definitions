@@ -1,0 +1,85 @@
+{
+  "name": "IBM Queue Status",
+  "description": null,
+  "pages": [
+    {
+      "name": "IBM Queue Status",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Reporting Status",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM MQQueueSample SELECT latest(timestamp) as 'Last Reported' since 1 day ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 8
+          },
+          "title": "Queue Statistics",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM MQQueueSample SELECT latest(qDepth) as 'Current Queue Depth', latest(openInputCount) as 'Consumer Count', latest(openOutputCount) as 'Producer Count', latest(msgDeqCount) as 'Message Consumption Rate' LIMIT MAX since 5 minutes ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Queue Depth Trend vs Max",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM MQQueueSample SELECT latest(qDepth), latest(qDepthMax) since 1 hour ago TIMESERIES LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

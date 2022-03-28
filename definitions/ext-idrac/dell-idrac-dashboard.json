@@ -1,0 +1,186 @@
+{
+    "name": "Dell iDRAC",
+    "description": "",
+    "pages": [
+      {
+        "name": "Dell iDRAC",
+        "description": "",
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 4,
+              "width": 2
+            },
+            "title": "Device Uptime",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Total Days",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "Total Hours",
+                  "precision": null,
+                  "type": "humanized"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(`kentik.snmp.Uptime`)/100/60/60/24 AS 'Total Days', latest(`kentik.snmp.Uptime`)/100/60/60 AS 'Total Hours' WHERE provider = 'kentik-idrac'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 3,
+              "row": 1,
+              "height": 4,
+              "width": 5
+            },
+            "title": "Overall System State",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(systemStateAmperageStatusCombined) AS 'Amperage Status', latest(systemStateChassisIntrusionStatusCombined) AS 'Chassis Intrusion Status', latest(systemStateChassisStatus) AS 'Chassis Status', latest(systemStateCoolingDeviceStatusCombined) AS 'Cooling Device Status', latest(systemStateCoolingUnitStatusCombined) AS 'Cooling Unit Status', latest(systemStateCoolingUnitStatusRedundancy) AS 'Cooling Unit Redundancy', latest(systemStateMemoryDeviceStatusCombined) AS 'Memory Device Status', latest(systemStatePowerSupplyStatusCombined) AS 'Power Supply Status', latest(systemStatePowerUnitStatusCombined) AS 'Power Unit Status', latest(systemStatePowerUnitStatusRedundancy) AS 'Power Unit Redundancy', latest(systemStateProcessorDeviceStatusCombined) AS 'Processor Device Status', latest(systemStateTemperatureStatisticsStatusCombined) AS 'Temperature Statistics Status', latest(systemStateTemperatureStatusCombined) AS 'Temperature Status' WHERE provider = 'kentik-idrac'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 8,
+              "row": 1,
+              "height": 4,
+              "width": 5
+            },
+            "title": "Physical Disk State",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(physicalDiskState) AS 'Current State' FACET physicalDiskName WHERE metricName LIKE 'kentik.snmp.physicalDisk%' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 5,
+              "height": 4,
+              "width": 2
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(systemBIOSStatus) WHERE provider = 'kentik-idrac'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 3,
+              "row": 5,
+              "height": 4,
+              "width": 3
+            },
+            "title": "Controller Status",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(controllerRollUpStatus) AS 'Current Status' FACET controllerName WHERE metricName = 'kentik.snmp.controllerRollUpStatus'"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 6,
+              "row": 5,
+              "height": 4,
+              "width": 3
+            },
+            "title": "System Slot Status",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(systemSlotStatus) AS 'Current Status' FACET systemSlotSlotExternalSlotName AS 'Slot Name' WHERE provider = 'kentik-idrac'"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 9,
+              "row": 5,
+              "height": 4,
+              "width": 4
+            },
+            "title": "PCI Device Status",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(pCIDeviceStatus) AS 'Current Status' FACET pCIDeviceDescriptionName AS 'PCI Name' WHERE provider = 'kentik-idrac' LIMIT MAX"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+  

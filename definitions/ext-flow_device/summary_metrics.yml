@@ -1,33 +1,41 @@
-endpoints:
-  title: Endpoints
+ipAddress:
+  title: IP Address
+  unit: STRING
+  tag:
+    key: device_ip
+
+flowType:
+  title: Flow Type
+  unit: STRING
+  tag:
+    key: flow_type
+
+sources:
+  title: Sources
   unit: COUNT
-  query:
-    select: uniqueCount(ip_address)
-    from: Metric
-    where: "metricName LIKE 'kentik.rollup.bytes.%'"
-    eventId: entity.guid
+  queries:
+    kentik/netflow-events:
+      select: uniqueCount(src_addr)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
+      eventId: entity.guid
 
-conversations:
-  title: Conversations
+destinations:
+  title: Destinations
   unit: COUNT
-  query:
-    select: uniqueCount(tuple(ip_address,port))
-    from: Metric
-    where: "metricName LIKE 'kentik.rollup.bytes.%'"
-    eventId: entity.guid
+  queries:
+    kentik/netflow-events:
+      select: uniqueCount(dst_addr)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
+      eventId: entity.guid
 
-transmitBps:
-  title: Transmit (bps)
-  unit: BYTES_PER_SECOND
-  query:
-    select: rate(sum(kentik.rollup.bytes.xmt)*8, 1 second)
-    from: Metric
-    eventId: entity.guid
-
-receiveBps:
-  title: Receive (bps)
-  unit: BYTES_PER_SECOND
-  query:
-    select: rate(sum(kentik.rollup.bytes.rcv)*8, 1 second)
-    from: Metric
-    eventId: entity.guid
+packetsPerSecond:
+  title: Packets/sec
+  unit: COUNT
+  queries:
+    kentik/netflow-events:
+      select: sum(sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
+      eventId: entity.guid

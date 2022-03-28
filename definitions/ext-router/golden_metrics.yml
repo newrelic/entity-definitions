@@ -1,39 +1,55 @@
 cpuUtilization:
   title: CPU Utilization (%)
+  unit: PERCENTAGE
   queries:
-    kentik-router:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: average(kentik.snmp.CPU)
       from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: average(mikrotik.system.cpu.load)
       from: Metric
 
 memoryUtilization:
   title: Memory Utilization (%)
+  unit: PERCENTAGE
   queries:
-    kentik-router:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: average(kentik.snmp.MemoryUtilization)
       from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
-      select: (1 - (average(mikrotik.system.memory.free) / average(mikrotik.system.memory.total))) * 100
+      select: average(mikrotik.system.memory.load)
       from: Metric
 
 receiveErrors:
   title: Aggregate Receive Errors (count)
+  unit: COUNT
   queries:
-    kentik-router:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: sum(kentik.snmp.ifInErrors)
       from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: sum(mikrotik.interface.ether1.rxerrorsps)
       from: Metric
 
 transmitErrors:
   title: Aggregate Transmit Errors (count)
+  unit: COUNT
   queries:
-    kentik-router:
+    # Cisco ASR profiles (default)
+    kentik/cisco-asr:
       select: sum(kentik.snmp.ifOutErrors)
       from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
     mikrotik-router:
       select: sum(mikrotik.interface.ether1.txerrorsps)
       from: Metric

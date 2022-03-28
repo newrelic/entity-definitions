@@ -1,0 +1,29 @@
+domain: EXT
+type: SAP_QRFC
+goldenTags:
+  - instrumentation.provider
+  - sap.functional_area
+  - sap.system
+
+synthesis:
+  rules:
+    # Telemetry from New Relic SAP integration
+    # SAP_EID in SYS_ID/QNAME format
+  - identifier: SAP_EID
+    name: QUEUES
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: SAP_ETYPE
+      value: QRFC
+    tags:
+      sap.functional_area:
+      SYS_ID:
+        entityTagName: sap.system
+
+dashboardTemplates:
+  SAP:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
