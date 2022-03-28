@@ -50,7 +50,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) \nFacet CASES (\n  WHERE flow_direction = 'egress' as 'Egress Bytes',\n  WHERE flow_direction = 'ingress' as 'Ingress Bytes') \n TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate))\nFacet CASES (\n  WHERE flow_direction = 'egress' AND numeric(sample_rate) = 1 as 'Egress Bytes',\n  WHERE flow_direction = 'ingress' AND numeric(sample_rate) = 1 as 'Ingress Bytes',\n  WHERE flow_direction = 'egress' AND sample_rate > 1 as 'Egress Bytes (estimated)',\n  WHERE flow_direction = 'ingress' AND sample_rate > 1 as 'Ingress Bytes (estimated)'\n) \nTIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
@@ -80,7 +80,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows\nSELECT sum(packets*numeric(sample_rate))\nFacet CASES (\n  WHERE flow_direction = 'egress' as 'Egress Packets',\n  WHERE flow_direction = 'ingress' as 'Ingress Packets') \n TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(packets*numeric(sample_rate))\nFacet CASES (\n  WHERE flow_direction = 'egress' AND numeric(sample_rate) = 1 as 'Egress Packets',\n  WHERE flow_direction = 'ingress' AND numeric(sample_rate) = 1 as 'Ingress Packets',\n  WHERE flow_direction = 'egress' AND sample_rate > 1 as 'Egress Packets (estimated)',\n  WHERE flow_direction = 'ingress' AND sample_rate > 1 as 'Ingress Packets (estimated)'\n) \nTIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
@@ -136,7 +136,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes WHERE flow_direction = 'ingress' FACET application LIMIT 5"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
               }
             ]
           }
@@ -163,7 +163,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes WHERE flow_direction = 'ingress' FACET application LIMIT 25 TIMESERIES 5 MINUTES "
+                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET application, CASES(\n  WHERE sample_rate > 1 AS 'estimated',\n  WHERE sample_rate = 1 AS 'unsampled') \nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
@@ -190,7 +190,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes WHERE flow_direction = 'egress' FACET application LIMIT 5"
+                "query": "FROM Log_VPC_Flows \nSELECT sum(bytes*numeric(sample_rate)) AS Bytes \nWHERE flow_direction = 'egress' \nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5\n"
               }
             ]
           }
@@ -217,7 +217,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes WHERE flow_direction = 'egress' FACET application LIMIT 25 TIMESERIES 5 MINUTES "
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES "
               }
             ]
           }
@@ -270,7 +270,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes where flow_direction = 'ingress' FACET srcaddr LIMIT 25"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET srcaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25"
               }
             ]
           }
@@ -297,7 +297,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes where flow_direction = 'ingress' FACET srcaddr LIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET srcaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
@@ -350,7 +350,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes FACET dstaddr LIMIT 25"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nFACET dstaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25"
               }
             ]
           }
@@ -377,7 +377,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes FACET dstaddr LIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nFACET dstaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
@@ -430,7 +430,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes WHERE flow_direction = 'ingress' FACET protocol LIMIT 5"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
               }
             ]
           }
@@ -457,7 +457,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes where flow_direction = 'ingress' FACET protocol LIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
@@ -484,7 +484,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes WHERE flow_direction = 'egress' FACET protocol LIMIT 5"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
               }
             ]
           }
@@ -511,7 +511,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows SELECT sum(bytes*numeric(sample_rate)) AS Bytes WHERE flow_direction = 'egress' FACET protocol LIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
