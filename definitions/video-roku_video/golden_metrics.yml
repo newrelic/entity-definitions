@@ -2,7 +2,7 @@ videoStartTime:
   title: Median Video Start Time (Seconds)
   unit: SECONDS
   query:
-    select: percentile(timeSinceRequested - timeSinceStarted ,50)/1000
+    select: percentile(timeSinceRequested,50)/1000
     from: RokuVideo
     where: actionName = 'CONTENT_START'
 
@@ -10,19 +10,22 @@ interruptions:
   title: Interruptions (count)
   unit: COUNT
   query:
-    select: filter(count(*), WHERE actionName = 'CONTENT_BUFFER_START' and contentPlayhead > 0)
+    select: count(*)
     from: RokuVideo
+    where: actionName = 'CONTENT_BUFFER_START' and contentPlayhead > 0 and bufferType = 'connection'
 
 rebufferTime:
-  title: Median Rebuffer Time (Seconds)
+  title: Median Connection Rebuffer Time (Seconds)
   unit: SECONDS
   query:
-    select: filter(percentile(timeSinceBufferBegin/1000, 50), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0)/1000
+    select: percentile(timeSinceBufferBegin/1000, 50)
     from: RokuVideo
+    where: actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0 and bufferType = 'connection'
 
 contentErrors:
   title: Content Errors (count)
   unit: COUNT
   query:
-    select: filter(count(*), WHERE actionName = 'CONTENT_ERROR')
+    select: count(*) 
     from: RokuVideo
+    where: actionName = 'CONTENT_ERROR'
