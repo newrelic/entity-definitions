@@ -128,18 +128,34 @@ synthesis:
 
 ### Tags
 
-You can also define a set of attributes that can be copied into entity tags. These attributes will only be copied after a datapoint matches a rule.
+You can also define a set of attributes that can be copied into entity tags.
 
+These are global tags, and they are applied for the rule or every rule from a set of rules.
+
+Notice these tag definitions live under ```synthesis```.
+```yaml
+synthesis:
+  tags:
+    aws.az:
+```
+
+If the attribute `aws.az` is present in the data point that matched any rule, its value will be copied to an entity's tag named `aws.az`.
+
+And also there are specific tags for every rule. These attributes will only be copied after a datapoint matches a rule, and
+they take priority over the global tags, meaning **if the same tag is defined on both structures**, the specific tag  
+overrides the global tag.
+
+Notice these tag definitions live under ```rules``` for every rule.
 ```yaml
 synthesis:
   rules:
-  - identifier: hostname
-    name: hostname
+  - identifier: entity.id
+    name: k8s.containerName
     tags:
-      aws.az:
+      k8s.status:
 ```
 
-If the attribute `aws.az` is present in the data point that matched the rule, its value will be copied to an entity's tag named `aws.az`.
+If the attribute `k8s.status` is present in the data point that matched this specific rule, its value will be copied to an entity's tag named `k8s.status`.
 
 - One value per tag
 
