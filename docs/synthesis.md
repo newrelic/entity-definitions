@@ -141,7 +141,7 @@ synthesis:
 
 If the attribute `aws.az` is present in the data point that matched any rule, its value will be copied to an entity's tag named `aws.az`.
 
-And also there are specific tags for every rule. These attributes will only be copied after a datapoint matches a rule, and
+Also, there specific tags for each rule can be defined. These attributes will only be copied after a datapoint matches a rule.
 they take priority over the global tags, meaning **if the same tag is defined on both structures**, the specific tag  
 overrides the global tag.
 
