@@ -3,6 +3,7 @@
 
 latency:
   title: CDN Latency
+  unit: SECONDS
   displayAsValue: true
   query:
     select: average(duration)
@@ -10,7 +11,8 @@ latency:
 
 availability:
     title: CDN Availability
+    unit: PERCENTAGE 
     query:
-      select: percentage(count(*), where responseCode < 300)
+      select: (filter(count(*), where responseCode < 300) / count(*)) * 100
       from: CDN
       where: responseCode is NOT NULL
