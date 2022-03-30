@@ -2,9 +2,10 @@
 
 A `GUID` is the unique identifier for an entity. It's a [URL-safe Base64 encoded](https://tools.ietf.org/html/rfc3548#page-6), [no padding](https://tools.ietf.org/html/rfc7515#appendix-C) (`=`) value composed of 4 segments delimited by a pipe (`|`).
 
-The GUID `MXxBUE18QVBQTElDQVRJT058MjM` decodes into `1|APM|APPLICATION|23`
+The GUID `MXxBUE18QVBQTElDQVRJT058MjM` decodes into `1|APM|APPLICATION|23`.
 
 | **Segment** | **Purpose** | **Scope** | **Format** |
+|-------------|-------------|-----------|------------|
 | Account ID | Source account for the entity | Unique in all New Relic | Numeric `/\d{1,10}/` |
 | Domain | Domain of entity | Unique in all New Relic | Upper-case Alphanumeric (SCREAMING_SNAKE_CASE) `/[A-Z][A-Z0-9_]{2,14}/` |
 | Type | Type of the entity | Unique to the domain | Upper-case Alphanumeric (SCREAMING_SNAKE_CASE) `/[A-Z][A-Z0-9_]{2,49}/` |
