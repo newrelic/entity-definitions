@@ -131,7 +131,7 @@ synthesis:
 You can also define a set of attributes that can be copied into entity tags.
 
 These are global tags, and they are applied differently depending on the rule structure:
-1. There is only one rule living under ```synthesis```.
+1. There is only a unique rule living under ```synthesis```.
 2. There are multiple rules living under ```rules```.
 
 Notice these global tag definitions live under ```synthesis```.
