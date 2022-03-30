@@ -130,9 +130,11 @@ synthesis:
 
 You can also define a set of attributes that can be copied into entity tags.
 
-These are global tags, and they are applied for the rule or every rule from a set of rules.
+These are global tags, and they are applied differently depending on the rule structure:
+1. There is only one rule living under ```synthesis```.
+2. There are multiple rules living under ```rules```.
 
-Notice these tag definitions live under ```synthesis```.
+Notice these global tag definitions live under ```synthesis```.
 ```yaml
 synthesis:
   tags:
@@ -141,11 +143,13 @@ synthesis:
 
 If the attribute `aws.az` is present in the data point that matched any rule, its value will be copied to an entity's tag named `aws.az`.
 
-Also, there specific tags for each rule can be defined. These attributes will only be copied after a datapoint matches a rule.
-these rule specific tags take priority over the global tags, meaning **if the same tag is defined on both structures**, the rule specific tag  
-overrides the global tag.
+If there is only a unique rule living under ```synthesis```, those are its tags.
 
-Notice these tag definitions live under ```rules``` for every rule.
+But if there are multiple rules living under ```rules```, some specific tags for each rule can be defined. Notice that these attributes will only 
+be copied after a datapoint matches a rule, and they take priority over the global tags, meaning **if the same tag is defined on both structures**, 
+the rule specific tag overrides the global tag.
+
+These specific tag definitions live under ```rules``` for every rule.
 ```yaml
 synthesis:
   rules:
