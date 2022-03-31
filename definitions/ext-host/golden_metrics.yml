@@ -2,7 +2,7 @@ systemLoad:
   title: System Load
   queries:
     datadog:
-      select: sum(datadog.system.load.15)
+      select: latest(datadog.system.load.15)
     flexagent:
       select: latest(loadAverageFifteenMinute)
       from: FlexSystemSample
@@ -13,7 +13,7 @@ cpuPercent:
   unit: PERCENTAGE
   queries:
     datadog:
-      select: max(datadog.system.cpu.system)
+      select: latest(datadog.system.cpu.system)
     flexagent:
       select: latest(cpuPercent)
       from: FlexSystemSample
@@ -24,7 +24,7 @@ systemMemory:
   unit: BYTES
   queries:
     datadog:
-      select: sum(datadog.system.mem.total) - sum(datadog.system.mem.usable)
+      select: latest(datadog.system.mem.free)
     flexagent:
       select: latest(memoryFreeBytes)
       from: FlexSystemSample
@@ -35,7 +35,7 @@ memoryPercent:
   unit: PERCENTAGE
   queries:
     datadog:
-      select: ((sum(datadog.system.mem.total) - sum(datadog.system.mem.usable))/sum(datadog.system.mem.total)) * 100
+      select: latest(1 - datadog.system.mem.pct_usable) * 100 
     flexagent:
       select: latest(memoryUsedPercent)
       from: FlexSystemSample
@@ -46,7 +46,7 @@ diskPercent:
   unit: PERCENTAGE
   queries:
     datadog:
-      select: max(datadog.system.disk.system)
+      select: latest(datadog.system.disk.system)
     flexagent:
       select: latest(diskUsedPercent)
       from: FlexSystemSample
