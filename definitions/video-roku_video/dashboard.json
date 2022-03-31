@@ -1,0 +1,265 @@
+{
+  "name": "Roku Video Entity Dashboard",
+  "description": "",
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Devices Playing Video",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(uuid) from RokuVideo since 30 minutes ago TIMESERIES auto facet deviceModel"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Video Start Time (median)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM  RokuVideo SELECT median(timeSinceRequested-timeSinceStarted)/1000 as 'Seconds' where actionName = 'CONTENT_START' FACET deviceModel TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Video Start Failure Ratio",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT  filter(count(*), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead = 0) / filter(count(*), WHERE actionName = 'CONTENT_START' and contentPlayhead = 0) * 100 as 'Video Start Failure' facet deviceModel timeseries AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Rebuffer Time (median)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead != 0 facet deviceModel TIMESERIES auto"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Interruption Ratio",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_BUFFER_START' and contentPlayhead != 0) / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) as 'Interruption Ratio' facet deviceModel timeseries AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Content Error Ratio",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT filter(count(*), WHERE actionName ='CONTENT_ERROR') / filter(count(*), WHERE actionName IN ('CONTENT_START', 'CONTENT_NEXT')) * 100 as 'Content Error Ratio' facet deviceModel TIMESERIES auto"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Content Measured Bitrate (Median)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT percentile(contentMeasuredBitrate, 50) facet deviceModel TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Initial Buffer Time (Median)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT percentile(timeSinceBufferBegin/1000, 50) as 'seconds' WHERE actionName ='CONTENT_BUFFER_END' and contentPlayhead = 0 facet deviceModel TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Player Ready Time (Median)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuVideo SELECT percentile(timeSinceLoad, 50) as 'seconds' WHERE actionName ='PLAYER_READY' facet deviceModel TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
