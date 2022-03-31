@@ -1,21 +1,24 @@
 cpuUtilizationPercent:
   title: CPU Utilization (%)
+  unit: PERCENTAGE
   displayAsValue: true
   query:
-    select: 100-latest(cpu.idle)
+    select: min(100 - cpu.idle)
     from: '`unixMonitor:Stats`'
     eventId: entity.guid
 
 memoryUtilizationPercent:
   title: Memory Utilization (%)
+  unit: PERCENTAGE
   displayAsValue: true
   query:
-    select: (latest(memory.total) - latest(memory.free))/latest(memory.total) * 100
+    select: (sum(memory.used) / sum(memory.total)) * 100
     from: '`unixMonitor:Stats`'
     eventId: entity.guid
 
 diskUtilizationPercent:
   title: Disk Utilization (%)
+  unit: PERCENTAGE
   displayAsValue: true
   query:
     select: max(percentUsed)
