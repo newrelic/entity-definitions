@@ -1,0 +1,276 @@
+{
+  "name": "Roku System Entity Dashboard - WIP",
+  "description": "",
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
+    {
+      "name": "HTTP",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Devices",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(uuid) from RokuSystem TIMESERIES auto facet deviceModel"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "HTTP Error Ratio",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT filter(count(*), WHERE  actionName = 'HTTP_ERROR' OR httpCode >= 400) / filter(count(*), where actionName in ('HTTP_CONNECT', 'HTTP_REQUEST')) * 100 as '%'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 6,
+            "width": 4
+          },
+          "title": "HTTP by origUrl",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT count(*) where actionName like 'HTTP%' facet origUrl "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "HTTP Error Rate",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT filter(count(*), WHERE  actionName = 'HTTP_ERROR' OR httpCode >= 400) / filter(count(*), where actionName in ('HTTP_CONNECT', 'HTTP_REQUEST')) * 100 as 'HTTP Error Ratio' facet deviceModel timeseries auto"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "HTTP Errors",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM RokuSystem WHERE actionName='HTTP_ERROR' or httpCode >=400 FACET httpCode SINCE 1 month ago TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 12
+          },
+          "title": "HTTP First Byte and Transfer Time",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT percentile(firstByteTime, 50), percentile(transferTime, 50) timeseries auto"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Crash Ratio",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT filter(count(*), WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY')) / filter(count(*), WHERE actionName = 'APP_STARTED') * 100 as '%'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Crash Rate",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT (filter(count(*), WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY')) / filter(count(*), WHERE actionName = 'APP_STARTED')) as '%' facet deviceModel timeseries auto"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 9,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Crashes by Device Model",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT count(*) as 'Crashes' WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY') FACET deviceModel"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Crashes by Reason",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT count(*) as 'Crashes' WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY') FACET lastExitOrTerminationReason"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 5,
+            "row": 13,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Crashes by App Version, Build",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT count(*) as 'Crashes' WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY') FACET appVersion, appBuild"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 9,
+            "row": 13,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Crashes by App Version, Build",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM RokuSystem SELECT count(*) as 'Crashes' WHERE actionName = 'APP_STARTED' and lastExitOrTerminationReason IN ('EXIT_BRIGHTSCRIPT_TIMEOUT', 'EXIT_BRIGHTSCRIPT_CRASH', 'EXIT_OUT_OF_MEMORY') FACET appVersion, appBuild TIMESERIES auto"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
