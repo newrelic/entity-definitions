@@ -1,0 +1,106 @@
+{
+    "name": "Eagle-i",
+    "description": null,
+    "pages": [
+      {
+        "name": "Eagle-i",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 7,
+              "width": 3
+            },
+            "title": "Summary",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 1,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(invSerialNum) AS 'Serial Number', latest(invHwRevision) AS 'HW Revision', latest(invFwRevision) AS 'Firmware Revision', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update' WHERE provider = 'kentik-eagle-i'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 4,
+              "row": 1,
+              "height": 3,
+              "width": 5
+            },
+            "title": "Latest Sensor Readings",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.ipTHAValue)/10 AS 'Value' FACET ipTHAName AS 'Name', ipTHALocn AS 'Location' WHERE provider = 'kentik-eagle-i' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 4,
+              "row": 4,
+              "height": 4,
+              "width": 5
+            },
+            "title": "PDU Metrics",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Total Energy",
+                  "precision": null,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Volts",
+                  "precision": null,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Amps",
+                  "precision": null,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.pduRMSAmpsValue) AS 'Amps', latest(kentik.snmp.pduRMSVoltsValue) AS 'Volts', latest(kentik.snmp.pduTotalEnergyValue) AS 'Total Energy' FACET pduName WHERE provider = 'kentik-eagle-i' LIMIT MAX"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
