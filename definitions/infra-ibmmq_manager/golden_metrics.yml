@@ -2,25 +2,22 @@ connections_count:
   title: Connections
   unit: COUNT
   query:
-    select: latest(ibmmq_qmgr_connection_count) AS 'Connections'
+    select: average(ibmmq_qmgr_connection_count) AS 'Connections'
 
-queue_uncommitted_messages:
-  title: Uncommitted messages
+messages_count:
+  title: Messages
   unit: COUNT
   query:
-    select: latest(ibmmq_queue_uncommitted_messages) AS 'Uncommitted messages'
-    facet: queue
+    select: average(ibmmq_qmgr_published_to_subscribers_message_count) + average(ibmmq_qmgr_interval_mqput_mqput1_total_count) + average(ibmmq_qmgr_interval_destructive_get_total_count) AS 'Messages'
 
-queue_input_handles:
-  title: Queue input
+queue_count:
+  title: Queues
   unit: COUNT
   query:
-    select: latest(ibmmq_queue_input_handles) AS 'Queue input'
-    facet: queue
+    select: uniqueCount(queue) AS 'Queues'
 
-queue_output_handles:
-  title: Queue output
+errors_count:
+  title: Errors
   unit: COUNT
   query:
-    select: latest(ibmmq_queue_output_handles) AS 'Queue output'
-    facet: queue
+    select: average(ibmmq_qmgr_failed_browse_count) + average(ibmmq_qmgr_failed_mqcb_count) + average(ibmmq_qmgr_failed_mqclose_count) + average(ibmmq_qmgr_failed_mqconn_mqconnx_count) + average(ibmmq_qmgr_failed_mqget_count) + average(ibmmq_qmgr_failed_mqinq_count) + average(ibmmq_qmgr_failed_mqopen_count) + average(ibmmq_qmgr_failed_mqput1_count) + average(ibmmq_qmgr_failed_mqput_count) + average(ibmmq_qmgr_failed_mqset_count) + average(ibmmq_qmgr_failed_mqsubrq_count) + average(ibmmq_qmgr_failed_subscription_create_alter_resume_count) + average(ibmmq_qmgr_failed_subscription_delete_count) + average(ibmmq_qmgr_failed_topic_mqput_mqput1_count) AS 'Errors'
