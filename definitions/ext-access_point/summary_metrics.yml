@@ -4,8 +4,32 @@ ipAddress:
   tag:
     key: device_ip
 
-model:
-  title: Model
-  unit: STRING
-  tag:
-    key: device_model
+cpuUtilization:
+  title: CPU
+  unit: PERCENTAGE
+  queries:
+    kentik/aruba-access-point:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-wap'"
+      eventId: entity.guid
+    kentik/unifi-access-point:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-wap'"
+      eventId: entity.guid
+
+memoryUtilization:
+  title: Memory
+  unit: PERCENTAGE
+  queries:
+    kentik/aruba-access-point:
+      select: average(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-wap'"
+      eventId: entity.guid
+    kentik/unifi-access-point:
+      select: average(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-wap'"
+      eventId: entity.guid
