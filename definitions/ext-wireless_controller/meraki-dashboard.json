@@ -22,7 +22,7 @@
 						"nrqlQueries": [
 							{
 								"accountId": 0,
-								"query": "FROM Metric SELECT latest(SysName) AS 'Name', latest(SysDescr) AS 'Description' WHERE provider = 'kentik-cloud-controller'"
+								"query": "FROM Metric SELECT latest(SysName) AS 'Name', latest(SysDescr) AS 'Description', filter(uniqueCount(Index), where metricName = 'kentik.snmp.devStatus') as Devices WHERE provider = 'kentik-cloud-controller'"
 							}
 						],
 						"thresholds": []
@@ -38,7 +38,7 @@
 						"height": 4,
 						"width": 4
 					},
-					"title": "Connected Clients per AP",
+					"title": "Connected Clients per Device",
 					"rawConfiguration": {
 						"facet": {
 							"showOtherSeries": false
@@ -49,7 +49,7 @@
 						"nrqlQueries": [
 							{
 								"accountId": 0,
-								"query": "FROM Metric SELECT max(kentik.snmp.devClientCount) AS 'Connected Clients' FACET ap_name, ap_network_name LIMIT MAX TIMESERIES 5 MINUTES"
+								"query": "FROM Metric SELECT max(kentik.snmp.devClientCount) AS 'Connected Clients' FACET device or ap_name, device_network_name or ap_network_name LIMIT MAX TIMESERIES 5 MINUTES"
 							}
 						]
 					}
@@ -79,7 +79,7 @@
 						"nrqlQueries": [
 							{
 								"accountId": 0,
-								"query": "FROM Metric SELECT max(kentik.snmp.devInterfaceRecvBytes) + max(kentik.snmp.devInterfaceSentBytes) AS ' Total Bytes' FACET ap_name, interface_name, ap_network_name WHERE provider = 'kentik-cloud-controller' LIMIT MAX"
+								"query": "FROM Metric SELECT max(kentik.snmp.devInterfaceRecvBytes) + max(kentik.snmp.devInterfaceSentBytes) AS ' Total Bytes' FACET interface_device_mac, interface_name, interface_description WHERE provider = 'kentik-cloud-controller' LIMIT MAX"
 							}
 						]
 					}
@@ -94,7 +94,7 @@
 						"height": 4,
 						"width": 12
 					},
-					"title": "Access Points Inventory",
+					"title": "Device Inventory",
 					"rawConfiguration": {
 						"dataFormatters": [],
 						"facet": {
@@ -103,7 +103,7 @@
 						"nrqlQueries": [
 							{
 								"accountId": 0,
-								"query": "FROM Metric SELECT latest(kentik.snmp.devClientCount) AS 'Current Clients' FACET ap_name, ap_model, ap_serial, devStatus AS 'ap_status' LIMIT MAX"
+								"query": "FROM Metric SELECT latest(kentik.snmp.devClientCount) AS 'Current Clients' FACET device or ap_name, device_mac, device_model or ap_model, device_serial or ap_serial, devStatus AS 'device_status', device_network_name or ap_network_name LIMIT MAX"
 							}
 						]
 					}
