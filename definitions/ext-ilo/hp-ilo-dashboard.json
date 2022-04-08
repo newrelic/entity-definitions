@@ -1,0 +1,258 @@
+{
+  "name": "HP ILO Dashboard",
+  "description": null,
+  "pages": [
+    {
+      "name": "HP ILO Dashboard",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "date"
+              },
+              {
+                "name": "Uptime (Days)",
+                "precision": 1,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(cpqSiSysSerialNum) AS 'Serial Number', latest(cpqSiProductName) AS 'Product Name', latest(cpqSiSysProductId) AS 'Product ID', latest(cpqSeSysRomVer) AS 'ROM Version', latest(cpqSiFormFactor) AS 'Form Factor', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update' WHERE provider = 'kentik-hp-ilo'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "System Overview",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 8,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqHeResilientMemTypeActive) AS 'AMP Fault Tolerant Type', latest(cpqHeResilientMemStatus) AS 'AMP State', latest(cpqHeResilientMemCondition) AS 'AMP Condition', latest(cpqHeResilientMemHotPlug) AS 'AMP Hot-Pluggable', latest(cpqHeFltTolPwrSupplyCondition) AS 'Power Supply Condition', latest(cpqHeFltTolPwrSupplyStatus) AS 'Power Supply Status', latest(cpqHeAsrCondition) AS 'ASR Condition', latest(cpqHeAsrStatus) AS 'ASR Status', latest(cpqHeThermalCondition) AS 'Thermal Condition', latest(cpqHeThermalTempStatus) AS 'Thermal Status', latest(cpqHeThermalSystemFanStatus) AS 'Fan Status', latest(cpqHeThermalCpuFanStatus) AS 'CPU Fan Status', latest(cpqSeCpuCondition) AS 'CPU Overall Condition' WHERE provider = 'kentik-hp-ilo'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Processor Details",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqSeCpuStatus) AS 'Status', latest(cpqSeCpuLowPowerStatus) AS 'Low-Power Status'FACET cpqSeCpuName AS 'Name', cpqSeCpuSlot AS 'Slot', cpqSeCpuCore AS 'Cores'WHERE provider = 'kentik-hp-ilo' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Temp Sensor Details",
+          "layout": {
+            "column": 5,
+            "row": 5,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqHeTemperatureCondition) AS 'Condition', latest(kentik.snmp.cpqHeTemperatureCelsius) AS 'Temp (C)'FACET cpqHeTemperatureLocale AS 'Location' WHERE provider = 'kentik-hp-ilo' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Physical Drive Details",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqDaPhyDrvCondition) AS 'Overall Condition', latest(cpqDaPhyDrvSmartStatus) AS 'SMART Status', latest(cpqDaPhyDrvStatus) AS 'Status', latest(cpqDaPhyDrvConfigurationStatus) AS 'Config Status', latest(cpqDaPhyDrvSSDWearStatus) AS 'SSD Wear Status', latest(kentik.snmp.cpqDaPhyDrvRefHours) AS 'Ref Time (Hours)', latest(kentik.snmp.cpqDaPhyDrvCurrentTemperature) AS 'Temp (C)', latest(cpqDaPhyDrvAuthenticationStatus) AS 'Auth Status', latest(cpqDaPhyDrvMultipathAccess) AS 'Multipath Access'FACET cpqDaPhyDrvLocationString AS 'Location', cpqDaPhyDrvBay AS 'Bay', cpqDaPhyDrvModel AS 'Model', cpqDaPhyDrvFWRev AS 'Firmware', cpqDaPhyDrvSerialNum AS 'Serial', cpqDaPhyDrvType AS 'Type', cpqDaPhyDrvMediaType AS 'Media Type', cpqDaPhyDrvRotationalSpeed AS 'Speed', cpqDaPhyDrvSize AS 'Size (MB)', cpqDaPhyDrvSataVersion AS 'SATA Version', cpqDaPhyDrvHostConnector AS 'Host Connector', cpqDaPhyDrvEncryptionStatus AS 'Encryption'WHERE provider = 'kentik-hp-ilo' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Logical Drive Details",
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqDaLogDrvCondition) AS 'Overall Condition', latest(cpqDaLogDrvStatus) AS 'Status', latest(cpqDaLogDrvFaultTol) AS 'Fault Tolerance Mode', latest(cpqDaLogDrvMultipathAccess) AS 'Multipath Access'FACET cpqDaLogDrvIndex AS 'Index', cpqDaLogDrvSize AS 'Size (MB)', cpqDaLogDrvEncryptionStatus AS 'Encryption', cpqDaLogDrvHasAccel AS 'Acceleration', cpqDaLogDrvCacheVolAccelAssocType AS 'Association Type', cpqDaLogDrvSSDSmartPathStatus AS 'Smart Path Status'WHERE provider = 'kentik-hp-ilo' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cache Module Board Details",
+          "layout": {
+            "column": 1,
+            "row": 14,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqDaAccelCondition) AS 'Overall Condition', latest(cpqDaAccelStatus) AS 'Status', latest(cpqDaAccelBadData) AS 'Bad Data', latest(kentik.snmp.cpqDaAccelReadCachePercent) AS 'Read Cache %', latest(kentik.snmp.cpqDaAccelReadErrs) AS 'Read Errors', latest(kentik.snmp.cpqDaAccelWriteCachePercent) AS 'Write Cache %', latest(kentik.snmp.cpqDaAccelWriteErrs) AS 'Write Errors', latest(cpqDaAccelErrCode) AS 'Error Code', latest(cpqDaAccelBackupPowerSource) AS 'Backup Power', latest(cpqDaAccelBattery) AS 'Backup Power Status', latest(kentik.snmp.cpqDaAccelBoardCurrentTemp) AS 'Board Current Temp (C)', latest(kentik.snmp.cpqDaAccelCapacitorCurrentTemp) AS 'Capacitor Current Temp (C)'FACET cpqDaAccelSerialNumber AS 'Serial', cpqDaAccelTotalMemory AS 'Total Memory (Kb)'WHERE provider = 'kentik-hp-ilo' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Fan Details",
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqHeFltTolFanCondition) AS 'Condition', latest(cpqHeFltTolFanSpeed) AS 'Speed', latest(cpqHeFltTolFanHotPlug) AS 'Hot-Pluggable'FACET cpqHeFltTolFanLocale AS 'Location', cpqHeFltTolFanType AS 'Type', cpqHeFltTolFanPresent AS 'Present', cpqHeFltTolFanRedundant AS 'Redundant'WHERE provider = 'kentik-hp-ilo' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Power Supply Details",
+          "layout": {
+            "column": 1,
+            "row": 20,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqHeFltTolPowerSupplyCondition) AS 'Condition', latest(cpqHeFltTolPowerSupplyStatus) AS 'Status', latest(cpqHeFltTolPowerSupplyErrorCondition) AS 'Errors', latest(cpqHeFltTolPowerSupplyPresent) AS 'Present', latest(kentik.snmp.cpqHeFltTolPowerSupplyCapacityUsed) AS 'Used Watts', latest(kentik.snmp.cpqHeFltTolPowerSupplyMainVoltage) AS 'Volts', latest(cpqHeFltTolPowerSupplyRedundant) AS 'Redundancy', latest(cpqHeFltTolPowerSupplyHotPlug) AS 'Hot-Pluggable'FACET cpqHeFltTolPowerSupplyBay AS 'Bay', cpqHeFltTolPowerSupplyModel AS 'Model', cpqHeFltTolPowerSupplySerialNumber AS 'Serial', cpqHeFltTolPowerSupplyCapacityMaximum AS 'Max Capacity (Watts)'WHERE provider = 'kentik-hp-ilo' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Array Controller Details",
+          "layout": {
+            "column": 1,
+            "row": 23,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cpqDaCntlrCondition) AS 'Device Condition', latest(cpqDaCntlrStndIntr) AS 'Interface Status', latest(cpqDaCntlrCurrentRole) AS 'Current Role', latest(cpqDaCntlrBoardStatus) AS 'Board Status', latest(cpqDaCntlrBoardCondition) AS 'Board Condition', latest(cpqDaCntlrPartnerBoardStatus) AS 'Partner Status', latest(cpqDaCntlrPartnerBoardCondition) AS 'Partner Condition', latest(cpqDaCntlrDriveOwnership) AS 'Drive Ownership', latest(cpqDaCntlrRedundancyType) AS 'Redundancy Type', latest(cpqDaCntlrRedundancyError) AS 'Redundancy Error', latest(cpqDaCntlrAccessModuleStatus) AS 'Access Module Status', latest(cpqDaCntlrDaughterBoardType) AS 'Daughter Board Type', latest(kentik.snmp.cpqDaCntlrCurrentTemp) AS 'Current Temp (C)'FACET cpqDaCntlrHwLocation AS 'Location', cpqDaCntlrModel AS 'Model', cpqDaCntlrFWRev AS 'Firmware', cpqDaCntlrSerialNumber AS 'Serial', cpqDaCntlrOperatingMode AS 'Operating Mode'WHERE provider = 'kentik-hp-ilo' LIMIT MAX"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
