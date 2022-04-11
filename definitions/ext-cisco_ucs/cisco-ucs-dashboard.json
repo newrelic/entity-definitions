@@ -1,0 +1,505 @@
+{
+  "name": "Cisco UCS",
+  "description": null,
+  "pages": [
+    {
+      "name": "Cisco UCS",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 7
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Uptime (Days)",
+                "precision": 1,
+                "type": "decimal"
+              },
+              {
+                "name": "Last Update",
+                "type": "date"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update' WHERE provider = 'kentik-ucs'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Current Memory",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE provider = 'kentik-ucs'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "Rack Unit Temperature (C)",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 2,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.ambient_temp_c) AS 'Ambient Temp (C)', average(kentik.snmp.front_temp_c) AS 'Front Temp (C)', average(kentik.snmp.rear_temp_c) AS 'Rear Temp (C)', average(kentik.snmp.ioh1_temp_c) AS 'IOH1 Temp (C)' FACET cucsComputeRackUnitMbTempStatsDn AS 'Name' WHERE provider = 'kentik-ucs'  TIMESERIES 5 MINUTES LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Processor Temperature (C)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 2,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.cucsProcessorEnvStatsTemperature) AS 'Temp (C)' FACET cucsProcessorEnvStatsDn AS 'Name' WHERE provider = 'kentik-ucs' TIMESERIES 5 MINUTES LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Memory Temperature (C)",
+          "layout": {
+            "column": 11,
+            "row": 1,
+            "width": 2,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.cucsMemoryUnitEnvStatsTemperature) AS 'Temp (C)' FACET cucsMemoryUnitEnvStatsDn AS 'Name' WHERE provider = 'kentik-ucs' TIMESERIES 5 MINUTES LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Memory Utilization (%)",
+          "layout": {
+            "column": 4,
+            "row": 2,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-ucs' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Interfaces Summary",
+          "layout": {
+            "column": 4,
+            "row": 5,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "TX %",
+                "precision": 2,
+                "type": "decimal"
+              },
+              {
+                "name": "RX %",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed AS 'Interface Speed' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Equipment Health LEDs",
+          "layout": {
+            "column": 10,
+            "row": 5,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsEquipmentHealthLedState) AS 'State', latest(cucsEquipmentHealthLedOperState) AS 'Oper State' FACET cucsEquipmentHealthLedDn AS 'Name' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Compute Board Details",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsComputeBoardOperPower) AS 'Power State', latest(cucsComputeBoardOperState) AS 'State', latest(cucsComputeBoardOperability) AS 'Operability', latest(cucsComputeBoardPerf) AS 'Status', latest(cucsComputeBoardPower) AS 'Board Power', latest(cucsComputeBoardPresence) AS 'Presence', latest(cucsComputeBoardThermal) AS 'Thermal', latest(cucsComputeBoardVoltage) AS 'Voltage' FACET cucsComputeBoardDn AS 'Name', cucsComputeBoardVendor AS 'Vendor', cucsComputeBoardModel AS 'Model', cucsComputeBoardSerial AS 'Serial' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Compute Board Power Stats",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Input Voltage",
+                "precision": 2,
+                "type": "decimal"
+              },
+              {
+                "name": "Input Current",
+                "precision": 2,
+                "type": "decimal"
+              },
+              {
+                "name": "Consumed Power",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(numeric(cucsComputeMbPowerStatsConsumedPower)) AS 'Consumed Power', latest(numeric(cucsComputeMbPowerStatsInputCurrent)) AS 'Input Current', latest(numeric(cucsComputeMbPowerStatsInputVoltage)) AS 'Input Voltage' FACET cucsComputeMbPowerStatsDn AS 'Name' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Processor Details",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsProcessorUnitOperState) AS 'State', latest(cucsProcessorUnitOperability) AS 'Operability', latest(cucsProcessorUnitPerf) AS 'Status', latest(cucsProcessorUnitPower) AS 'Processor Power', latest(cucsProcessorUnitPresence) AS 'Presence' FACET cucsProcessorUnitDn AS 'Name', cucsProcessorUnitVendor AS 'Vendor', cucsProcessorUnitModel AS 'Model', cucsProcessorUnitArch AS 'Architecture', cucsProcessorUnitCores AS 'Cores', cucsProcessorUnitCoresEnabled AS 'Cores Enabled', cucsProcessorUnitThreads AS 'Threads' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Memory Details",
+          "layout": {
+            "column": 1,
+            "row": 20,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.cucsMemoryUnitCapacity)/1024 AS 'Capacity (GB)', latest(cucsMemoryUnitOperState) AS 'Oper State', latest(cucsMemoryUnitOperability) AS 'Operability', latest(cucsMemoryUnitPerf) AS 'Status', latest(cucsMemoryUnitPower) AS 'Power', latest(cucsMemoryUnitPresence) AS 'Presence' FACET cucsMemoryUnitDn AS 'Name', cucsMemoryUnitLocation AS 'Location', cucsMemoryUnitType AS 'Type' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Rack Unit Details",
+          "layout": {
+            "column": 1,
+            "row": 24,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsComputeRackUnitAdminPower) AS 'Admin Power', latest(cucsComputeRackUnitAdminState) AS 'Admin State', latest(cucsComputeRackUnitAssociation) AS 'Association', latest(cucsComputeRackUnitAvailability) AS 'Availability', latest(cucsComputeRackUnitCheckPoint) AS 'Checkpoint', latest(cucsComputeRackUnitOperPower) AS 'Oper Power', latest(cucsComputeRackUnitOperState) AS 'Oper State', latest(cucsComputeRackUnitOperability) AS 'Operability', latest(cucsComputeRackUnitPresence) AS 'Presence' FACET cucsComputeRackUnitDn AS 'Name', cucsComputeRackUnitVendor AS 'Vendor', cucsComputeRackUnitModel AS 'Model', cucsComputeRackUnitSerial AS 'Serial', cucsComputeRackUnitUuid AS 'UUID', cucsComputeRackUnitNumOfCpus AS 'CPUS', cucsComputeRackUnitNumOfCores AS 'Cores', cucsComputeRackUnitNumOfThreads AS 'Threads' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "PSU Details",
+          "layout": {
+            "column": 1,
+            "row": 28,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsEquipmentPsuOperState) AS 'Oper State', latest(cucsEquipmentPsuOperability) AS 'Operability', latest(cucsEquipmentPsuPerf) AS 'Status', latest(cucsEquipmentPsuPower) AS 'Power', latest(cucsEquipmentPsuPresence) AS 'Presence' FACET cucsEquipmentPsuDn AS 'Name', cucsEquipmentPsuModel AS 'Model', cucsEquipmentPsuSerial AS 'Serial' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Fan Details",
+          "layout": {
+            "column": 1,
+            "row": 32,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsEquipmentFanOperState) AS 'Oper State', latest(cucsEquipmentFanOperability) AS 'Operability', latest(cucsEquipmentFanPerf) AS 'Status', latest(cucsEquipmentFanPower) AS 'Power', latest(cucsEquipmentFanPresence) AS 'Presence' FACET cucsEquipmentFanDn AS 'Name', cucsEquipmentFanIntType AS 'Type' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Flex Flash Controller Details",
+          "layout": {
+            "column": 1,
+            "row": 36,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsStorageFlexFlashControllerControllerHealth) AS 'Health', latest(cucsStorageFlexFlashControllerControllerState) AS 'State', latest(cucsStorageFlexFlashControllerOperState) AS 'Oper State', latest(cucsStorageFlexFlashControllerOperability) AS 'Operability', latest(cucsStorageFlexFlashControllerPerf) AS 'Status', latest(cucsStorageFlexFlashControllerPower) AS 'Power', latest(cucsStorageFlexFlashControllerPresence) AS 'Presence', latest(cucsStorageFlexFlashControllerHasError) AS 'Has Error?', latest(cucsStorageFlexFlashControllerIsFormatFSMRunning) AS 'FSM Running?', latest(cucsStorageFlexFlashControllerOperatingMode) AS 'Operating Mode'FACET cucsStorageFlexFlashControllerDn AS 'Name', cucsStorageFlexFlashControllerType AS 'Controller Type', cucsStorageFlexFlashControllerVendor AS 'Vendor', cucsStorageFlexFlashControllerModel AS 'Model', cucsStorageFlexFlashControllerFlexFlashType AS 'Flash Type', cucsStorageFlexFlashControllerPhysicalDriveCount AS 'Physical Drives', cucsStorageFlexFlashControllerVirtualDriveCount AS 'Vitrual Drives' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Flex Flash Drive Details",
+          "layout": {
+            "column": 1,
+            "row": 40,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsStorageFlexFlashDriveState) AS 'State', latest(cucsStorageFlexFlashDriveOperability) AS 'Operability', latest(cucsStorageFlexFlashDrivePresence) AS 'Presence', latest(kentik.snmp.cucsStorageFlexFlashDriveSize) AS 'Size (MB)', latest(cucsStorageFlexFlashDriveOperationState) AS 'Oper State'FACET cucsStorageFlexFlashDriveDn AS 'DN Name', cucsStorageFlexFlashDriveName AS 'Name', cucsStorageFlexFlashDriveModel AS 'Model', cucsStorageFlexFlashDriveDriveType AS 'Type', cucsStorageFlexFlashDriveRWType AS 'R/W Type', cucsStorageFlexFlashDriveConnectionProtocol AS 'Protocol', cucsStorageFlexFlashDriveVisible AS 'Visible?', cucsStorageFlexFlashDriveRemovable AS 'Removable?' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Flex Flash Card Details",
+          "layout": {
+            "column": 1,
+            "row": 44,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(cucsStorageFlexFlashCardCardHealth) AS 'Health', latest(cucsStorageFlexFlashCardOperability) AS 'Operability', latest(cucsStorageFlexFlashCardPresence) AS 'Presence', latest(cucsStorageFlexFlashCardCardState) AS 'State', latest(cucsStorageFlexFlashCardCardSync) AS 'Sync', latest(kentik.snmp.cucsStorageFlexFlashCardSize) AS 'Size (MB)', latest(kentik.snmp.cucsStorageFlexFlashCardReadIOErrorCount) AS 'Read IO Errors', latest(kentik.snmp.cucsStorageFlexFlashCardWriteIOErrorCount) AS 'Write IO Errors' FACET cucsStorageFlexFlashCardDn AS 'Name', cucsStorageFlexFlashCardMode AS 'Mode', cucsStorageFlexFlashCardType AS 'Type', cucsStorageFlexFlashCardRevision AS 'Revision', cucsStorageFlexFlashCardSerial AS 'Serial', cucsStorageFlexFlashCardDrivesEnabled AS 'Drives Enabled' WHERE provider = 'kentik-ucs' LIMIT MAX"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
