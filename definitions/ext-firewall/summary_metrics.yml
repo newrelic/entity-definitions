@@ -8,73 +8,85 @@ cpuUtilization:
   title: CPU
   unit: PERCENTAGE
   queries:
-    kentik/cisco-asa:
-      select: max(kentik.snmp.CPU)
-      from: Metric
-      where: "provider = 'kentik-firewall'"
-      eventId: entity.guid
+    # Palo Alto firewalls
     kentik/palo-alto:
       select: max(kentik.snmp.hrProcessorLoad)
       from: Metric
       where: "provider = 'kentik-firewall'"
       eventId: entity.guid
+    # Fortinet Fortigate firewalls
     kentik/fortinet-fortigate:
       select: max(kentik.snmp.fgSysCpuUsage)
       from: Metric
       where: "provider = 'kentik-firewall'"
       eventId: entity.guid
+    # Cisco Firepower firewalls
     kentik/cisco-firepower:
       select: max(kentik.snmp.CPU)
       from: Metric
       where: "provider = 'kentik-firepower'"
+      eventId: entity.guid
+    # Other Kentik firewalls
+    kentik:
+      select: max(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
       eventId: entity.guid
 
 memoryUtilization:
   title: Memory
   unit: PERCENTAGE
   queries:
-    kentik/cisco-asa:
-      select: max(kentik.snmp.MemoryUtilization)
-      from: Metric
-      where: "provider = 'kentik-firewall'"
-      eventId: entity.guid
+    # Palo Alto firewalls
     kentik/palo-alto:
       select: (max(kentik.snmp.hrStorageUsed) / max(kentik.snmp.hrStorageSize)) * 100
       from: Metric
       where: "provider = 'kentik-firewall' AND storage_description LIKE '%Management Memory%'"
       eventId: entity.guid
+    # Fortinet Fortigate firewalls
     kentik/fortinet-fortigate:
       select: (max(kentik.snmp.fgSysMemUsage) / max(kentik.snmp.fgSysMemCapacity)) * 100
       from: Metric
       where: "provider = 'kentik-firewall'"
       eventId: entity.guid
+    # Cisco Firepower firewalls
     kentik/cisco-firepower:
       select: max(kentik.snmp.MemoryUtilization)
       from: Metric
       where: "provider = 'kentik-firepower'"
+      eventId: entity.guid
+    # Other Kentik firewalls
+    kentik:
+      select: max(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
       eventId: entity.guid
 
 sessionsTotal:
   title: Current Sessions
   unit: COUNT
   queries:
-    kentik/cisco-asa:
-      select: latest(kentik.snmp.crasNumSessions)
-      from: Metric
-      where: "provider = 'kentik-firewall'"
-      eventId: entity.guid
+    # Palo Alto firewalls
     kentik/palo-alto:
       select: max(kentik.snmp.panSessionActive)
       from: Metric
       where: "provider = 'kentik-firewall'"
       eventId: entity.guid
+    # Fortinet Fortigate firewalls
     kentik/fortinet-fortigate:
       select: max(kentik.snmp.fgSysSesCount) + max(kentik.snmp.fgSysSes6Count)
       from: Metric
       where: "provider = 'kentik-firewall'"
       eventId: entity.guid
+    # Cisco Firepower firewalls
     kentik/cisco-firepower:
       select: latest(kentik.snmp.crasNumSessions)
       from: Metric
       where: "provider = 'kentik-firepower'"
+      eventId: entity.guid
+    # Other Kentik firewalls
+    kentik:
+      select: latest(kentik.snmp.crasNumSessions)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
       eventId: entity.guid
