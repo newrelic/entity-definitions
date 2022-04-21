@@ -198,10 +198,14 @@ synthesis:
         entityTagNames: [container.state, k8s.status]
 ```
 
+- TTL tags
+
+
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
 | multiValue | Boolean  | No | If set to `false`, any update will replace all existing values in the tag, making it a tag with only one value. Defaults to `true`. |
 | entityTagNames | List<String> | No | If provided, the attribute value will be copied into a tag using each value of the list as the key. Defaults to list with the attribute name. |
+| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). |
 
 #### Default tags
 
