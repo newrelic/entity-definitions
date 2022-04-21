@@ -1,0 +1,397 @@
+{
+    "name": "IBM DataPower Gateway",
+    "description": null,
+    "pages": [
+      {
+        "name": "IBM DataPower Gateway",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 3,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                },
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health' WHERE provider = 'kentik-datapower-gateway'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "title": "Current CPU",
+            "layout": {
+              "column": 4,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider = 'kentik-datapower-gateway'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Memory",
+            "layout": {
+              "column": 8,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE provider = 'kentik-datapower-gateway'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "CPU Utilization (%)",
+            "layout": {
+              "column": 4,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-datapower-gateway' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Memory Utilization (%)",
+            "layout": {
+              "column": 8,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-datapower-gateway' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Accepted Connections",
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "width": 3,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.dpStatusConnectionsAcceptedOneMinute) AS 'Accepted Connections - Last 1 Minute' WHERE provider = 'kentik-datapower-gateway' COMPARE WITH 1 HOUR AGO"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "title": "Current System Usage",
+            "layout": {
+              "column": 4,
+              "row": 6,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.SystemUsage) AS 'Current System Usage %' WHERE provider = 'kentik-datapower-gateway'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current PSU Status",
+            "layout": {
+              "column": 8,
+              "row": 6,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.dpStatusEnvironmentalSensorsPowerSupply) AS 'Current PSU Status' FACET concat('Current PSU Status - ', dpStatusEnvironmentalSensorsPowerSupply) WHERE provider = 'kentik-datapower-gateway'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          {
+            "title": "Log Target Details",
+            "layout": {
+              "column": 4,
+              "row": 7,
+              "width": 8,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Pending",
+                  "precision": null,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Dropped",
+                  "precision": null,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Processed",
+                  "precision": null,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(dpStatusLogTargetStatusStatus) AS 'Status', latest(kentik.snmp.dpStatusLogTargetStatusEventsProcessed) AS 'Processed', latest(kentik.snmp.dpStatusLogTargetStatusEventsDropped) AS 'Dropped', latest(kentik.snmp.dpStatusLogTargetStatusEventsPending) AS 'Pending', latest(dpStatusLogTargetStatusErrorInfo) AS 'Error Info' FACET dpStatusLogTargetStatusLogTarget AS 'Log Target' WHERE provider = 'kentik-datapower-gateway' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "File System Utilization %",
+            "layout": {
+              "column": 1,
+              "row": 11,
+              "width": 5,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT ( ( average(kentik.snmp.dpStatusFilesystemStatusTotalEncrypted) - average(kentik.snmp.dpStatusFilesystemStatusFreeEncrypted) ) / average(kentik.snmp.dpStatusFilesystemStatusTotalEncrypted) ) * 100 AS 'Encrypted Utilization %', ( ( average(kentik.snmp.dpStatusFilesystemStatusTotalTemporary) - average(kentik.snmp.dpStatusFilesystemStatusFreeTemporary) ) / average(kentik.snmp.dpStatusFilesystemStatusTotalTemporary) ) * 100 AS 'Temporary Utilization %', ( ( average(kentik.snmp.dpStatusFilesystemStatusTotalInternal) - average(kentik.snmp.dpStatusFilesystemStatusFreeInternal) ) / average(kentik.snmp.dpStatusFilesystemStatusTotalInternal) ) * 100 AS 'Internal Utilization %' WHERE provider = 'kentik-datapower-gateway' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Current TCP Connections by State",
+            "layout": {
+              "column": 6,
+              "row": 11,
+              "width": 6,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.dpStatusTCPSummaryEstablished) AS 'Established', latest(kentik.snmp.dpStatusTCPSummaryListen) AS 'Listen', latest(kentik.snmp.dpStatusTCPSummaryClosed) AS 'Closed', latest(kentik.snmp.dpStatusTCPSummaryClosing) AS 'Closing', latest(kentik.snmp.dpStatusTCPSummaryClosedWait) AS 'Closed-Wait', latest(kentik.snmp.dpStatusTCPSummaryLastAck) AS 'Last-Ack', latest(kentik.snmp.dpStatusTCPSummarySynSent) AS 'Syn-Sent', latest(kentik.snmp.dpStatusTCPSummarySynReceived) AS 'Syn-Received', latest(kentik.snmp.dpStatusTCPSummaryFinWait1) AS 'Fin-Wait-1', latest(kentik.snmp.dpStatusTCPSummaryFinWait2) AS 'Fin-Wait-2', latest(kentik.snmp.dpStatusTCPSummaryTimeWait) AS 'Time-Wait'WHERE provider = 'kentik-datapower-gateway'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "title": "Network Summary",
+            "layout": {
+              "column": 1,
+              "row": 15,
+              "width": 11,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "TX Drops",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "TX Errors",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "TX Pps",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "TX Mbps",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "RX Drops",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "RX Errors",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "RX Pps",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "RX Mbps",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(dpStatusNetworkInterfaceStatusAdminStatus) AS 'Admin Status', latest(dpStatusNetworkInterfaceStatusOperStatus) AS 'Oper Status', rate(max(kentik.snmp.dpStatusNetworkInterfaceStatusRxHCBytes)/1000/1000, 1 SECOND) AS 'RX Mbps', rate(max(kentik.snmp.dpStatusNetworkInterfaceStatusRxHCPackets), 1 SECOND) AS 'RX Pps', latest(kentik.snmp.dpStatusNetworkInterfaceStatusRxErrors2) AS 'RX Errors', latest(kentik.snmp.dpStatusNetworkInterfaceStatusRxDrops2) AS 'RX Drops', rate(max(kentik.snmp.dpStatusNetworkInterfaceStatusTxHCBytes)/1000/1000, 1 SECOND) AS 'TX Mbps', rate(max(kentik.snmp.dpStatusNetworkInterfaceStatusTxHCPackets), 1 SECOND) AS 'TX Pps', latest(kentik.snmp.dpStatusNetworkInterfaceStatusTxErrors2) AS 'TX Errors', latest(kentik.snmp.dpStatusNetworkInterfaceStatusTxDrops2) AS 'TX Drops'FACET dpStatusNetworkInterfaceStatusName AS 'Name', dpStatusNetworkInterfaceStatusInterfaceType AS 'Type', dpStatusNetworkInterfaceStatusIP AS 'IP', dpStatusNetworkInterfaceStatusMACAddress AS 'MAC' WHERE provider = 'kentik-datapower-gateway' LIMIT MAX"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
