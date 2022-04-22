@@ -1,0 +1,151 @@
+{
+  "name": "Cisco APIC",
+  "description": null,
+  "pages": [
+    {
+      "name": "Cisco APIC",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "date"
+              },
+              {
+                "name": "Uptime (Days)",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health' WHERE provider = 'kentik-cisco-apic'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Current CPU Utilization (%)",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider = 'kentik-cisco-apic'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "PSU Status",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 5,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redundancy_oper_mode) AS 'Operational Status' FACET entity_name AS 'PSU Name', entity_serial AS 'Serial Number', entity_model AS 'Model', redundancy_admin_mode AS 'Admin Status' WHERE provider = 'kentik-cisco-apic' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "CPU Utilization (%)",
+          "layout": {
+            "column": 3,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-cisco-apic' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Sensor Details",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 11,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.entSensorValue) AS 'Value' FACET entity_name AS 'Sensor Name', entity_sensor_type AS 'Sensor Units', entity_sensor_status AS 'Sensor Status' WHERE provider = 'kentik-cisco-apic' LIMIT MAX"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
