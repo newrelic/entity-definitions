@@ -1,0 +1,419 @@
+{
+  "name": "Browser Video Entity Dashboard",
+  "description": null,
+
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Video Attempts",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Attempts",
+                "precision": null,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(viewId) as 'Attempts' FROM PageAction where actionName = 'CONTENT_REQUEST' since 1 week ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Video Plays",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Plays",
+                "precision": null,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT filter(uniqueCount(viewId), where actionName = 'CONTENT_START') - filter(uniqueCount(viewId), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead <1000) as 'Plays' since 1 week ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Median Video Start Time",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 2,
+            "height": 4
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT percentile(timeSinceRequested/1000, 50) as 'seconds' WHERE actionName = 'CONTENT_START' since 7 days ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Connection Buffering Ratio",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT filter(sum(timeSinceBufferBegin/1000), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0 and bufferType = 'connection') / sum(playtimeSinceLastEvent/1000) as '%' "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Video Start Failure %",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT (filter(uniqueCount(viewId), where actionName = 'CONTENT_ERROR' AND totalPlaytime < 1000) / filter(uniqueCount(viewId), where actionName = 'CONTENT_REQUEST')) *100 as '%' since 1 week ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Video Playback Failure %",
+          "layout": {
+            "column": 11,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT (filter(uniqueCount(viewId), where actionName = 'CONTENT_ERROR' AND totalPlaytime > 1000) / filter(uniqueCount(viewId), where totalPlaytime > 1000)) *100 as '%' since 1 week ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Total Playtime",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "minutes",
+                "precision": null,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(playtimeSinceLastEvent/60000) as 'minutes' FROM PageAction WHERE contentPlayhead is not null since 1 week ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Exits Before Video Start",
+          "layout": {
+            "column": 3,
+            "row": 3,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT filter(count(*), WHERE actionName = 'CONTENT_REQUEST') - filter(count(*), WHERE actionName = 'CONTENT_START') as 'Exits' since 7 days ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Total Connection Buffering Time",
+          "layout": {
+            "column": 7,
+            "row": 3,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT sum(timeSinceBufferBegin/1000) as 'Seconds' WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0 and bufferType = 'connection' since 1 week ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Video Start Failures",
+          "layout": {
+            "column": 9,
+            "row": 3,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT uniqueCount(viewId) as 'VSFs' WHERE actionName = 'CONTENT_ERROR' and contentPlayhead <1000 since 7 days ago "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Video Playback Failures",
+          "layout": {
+            "column": 11,
+            "row": 3,
+            "width": 2,
+            "height": 2
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT uniqueCount(viewId) as 'VPFs' where actionName = 'CONTENT_ERROR' AND totalPlaytime > 1000 "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Video Start Time Trend",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 6,
+            "height": 4
+          },
+
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT percentile(timeSinceRequested/1000, 50), percentile(timeSinceRequested/1000, 75), percentile(timeSinceRequested/1000, 95) WHERE actionName = 'CONTENT_START' since 7 days ago TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Connection Buffering Ratio Trend",
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "width": 6,
+            "height": 4
+          },
+
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT filter(sum(timeSinceBufferBegin/1000), WHERE actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0 and bufferType = 'connection') / sum(playtimeSinceLastEvent/1000) as '%' TIMESERIES since 1 week ago "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Video Start Failure % Trend",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT (filter(uniqueCount(viewId), where actionName = 'CONTENT_ERROR' AND totalPlaytime < 1000) / filter(uniqueCount(viewId), where actionName = 'CONTENT_REQUEST')) *100 as '%' since 1 week ago TIMESERIES  "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Video Playback Failure % Trend",
+          "layout": {
+            "column": 5,
+            "row": 9,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM PageAction SELECT (filter(uniqueCount(viewId), where actionName = 'CONTENT_ERROR' AND totalPlaytime > 1000) / filter(uniqueCount(viewId), where totalPlaytime > 1000)) *100 as '%' since 1 week ago TIMESERIES  "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Playtime",
+          "layout": {
+            "column": 9,
+            "row": 9,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(playtimeSinceLastEvent/60000) as 'minutes' FROM PageAction WHERE contentPlayhead is not null TIMESERIES since 1 week ago "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
