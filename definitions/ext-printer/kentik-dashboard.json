@@ -1,0 +1,361 @@
+{
+  "name": "Kyocera Printer",
+  "description": null,
+  "pages": [
+    {
+      "name": "Kyocera Printer",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "recent-relative"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name',latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) WHERE provider = 'kentik-printer'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Printer Alert States",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 9,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.kcprtAlertStateCode) facet Index, kcprtAlertStateDisplay where instrumentation.name = 'kyocera-printer' and `mib-table` = 'kcprtAlertState' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Storage Devices",
+          "layout": {
+            "column": 4,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) as 'Utilization %', latest(kentik.snmp.MemoryTotal)/1000000 as 'Total MB', latest(kentik.snmp.MemoryUsed)/1000000 as 'Used MB' facet Index, kcprtMemoryDeviceType as 'Type', kcprtMemoryDeviceStatus as 'Status' where instrumentation.name = 'kyocera-printer' and `mib-table` = 'kcprtMemoryResource' limit max"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Storage Device Usage",
+          "layout": {
+            "column": 8,
+            "row": 4,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.MemoryUtilization) facet Index, kcprtMemoryDeviceLocation where instrumentation.name = 'kyocera-printer' and `mib-table` = 'kcprtMemoryResource' limit max TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Model and Serial",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(model), latest(serial) where instrumentation.name = 'kyocera-printer'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Interfaces Summary",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus)  OR latest(if_OperStatus) AS 'Operational Status', sum(kentik.snmp.ifInErrors) AS 'RX Errors', sum(kentik.snmp.ifOutErrors) AS 'TX Errors' FACET if_name or if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed WHERE instrumentation.name = 'kentik-printer' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Top 10 - Receive Traffic %",
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_interface_name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES limit 10"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Top 10 - Transmit Traffic %",
+          "layout": {
+            "column": 7,
+            "row": 11,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'TX %' FACET if_interface_name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES limit 10"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Top 10 - Receive Traffic Mbps",
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES limit 10"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Top 10 - Transmit Traffic Mbps",
+          "layout": {
+            "column": 7,
+            "row": 15,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES limit 10"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Top 10 - Receive Errors (count)",
+          "layout": {
+            "column": 1,
+            "row": 19,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(kentik.snmp.ifInErrors) FACET if_interface_name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES limit 10"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Top 10 - Transmit Errors (count)",
+          "layout": {
+            "column": 7,
+            "row": 19,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(kentik.snmp.ifOutErrors) FACET if_interface_name WHERE provider = 'kentik-router' TIMESERIES 5 MINUTES limit 10"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
