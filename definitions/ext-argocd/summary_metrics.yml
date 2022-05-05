@@ -19,15 +19,21 @@ operations:
     select: latest(argocd_app_info)
     where: operation != ''
     from: Metric
+    eventId: operation
+  unit: 'OPERATIONS_PER_SECOND'
 syncFailures:
   title: Sync Failures
   query:
     select: sum(argocd_app_sync_total)
     where: (phase = 'Error' OR phase = 'Failed')
     from: Metric
+    eventId: sync_status
+  unit: 'REQUESTS_PER_SECOND'
 healthStatus:
   title: Health Status
   query:
     select: (average(argocd_app_info) * cardinality(argocd_app_info))
     where: health_status != ''
     from: Metric
+    eventId: health_status
+  unit: 'REQUESTS_PER_SECOND'

@@ -1,6 +1,6 @@
 {
   "name": "ArgoCD",
-  "description": "",
+  "description": null,
   "pages": [
     {
       "name": "Overview",
@@ -103,7 +103,7 @@
           "layout": {
             "column": 1,
             "row": 4,
-            "width": 12,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -121,6 +121,36 @@
               {
                 "accountId" : 0,
                 "query": "SELECT (latest(argocd_app_info)) FROM Metric Facet operation Where operation != '' LIMIT MAX TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Pending kubectl run",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (average(argocd_kubectl_exec_pending) * cardinality(argocd_kubectl_exec_pending)) FROM Metric  FACET command LIMIT MAX TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -279,19 +309,29 @@
               "zero": true
             }
           }
-        }
-      ]
-    },
-    {
-      "name": "Controller Stats",
-      "description": null,
-      "widgets": [
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## Reconciliation"
+          }
+        },
         {
           "title": "Reconciliation Activity",
           "layout": {
-            "column": 1,
-            "row": 1,
-            "width": 12,
+            "column": 3,
+            "row": 13,
+            "width": 5,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -319,9 +359,9 @@
         {
           "title": "Reconciliation Performance",
           "layout": {
-            "column": 1,
-            "row": 4,
-            "width": 12,
+            "column": 8,
+            "row": 13,
+            "width": 5,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -338,48 +378,28 @@
           }
         },
         {
-          "title": "Pending kubectl run",
+          "title": "",
           "layout": {
             "column": 1,
-            "row": 7,
-            "width": 12,
+            "row": 16,
+            "width": 2,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.markdown"
           },
           "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "SELECT (average(argocd_kubectl_exec_pending) * cardinality(argocd_kubectl_exec_pending)) FROM Metric  FACET command LIMIT MAX TIMESERIES"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
+            "text": "## Git Requests"
           }
-        }
-      ]
-    },
-    {
-      "name": "Repo Server Stats",
-      "description": null,
-      "widgets": [
+        },
         {
           "title": "Git Requests (ls-remote)",
           "layout": {
-            "column": 1,
-            "row": 1,
-            "width": 6,
-            "height": 4
+            "column": 3,
+            "row": 16,
+            "width": 5,
+            "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -406,10 +426,10 @@
         {
           "title": "Git Requests (checkout)",
           "layout": {
-            "column": 7,
-            "row": 1,
-            "width": 6,
-            "height": 4
+            "column": 8,
+            "row": 16,
+            "width": 5,
+            "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -426,294 +446,6 @@
               {
                 "accountId" : 0,
                 "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'fetch')  FACET request_type LIMIT 100 TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Git Fetch Performance",
-          "layout": {
-            "column": 1,
-            "row": 5,
-            "width": 6,
-            "height": 4
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.heatmap"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "SELECT histogram(argocd_git_request_duration_seconds_bucket) FROM Metric WHERE request_type= 'fetch' FACET le"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Git LS-Remote Performance",
-          "layout": {
-            "column": 7,
-            "row": 5,
-            "width": 6,
-            "height": 4
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.heatmap"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "SELECT histogram(argocd_git_request_duration_seconds_bucket) FROM Metric WHERE request_type= 'ls-remote' FACET le"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "gRPC Server Stats",
-      "description": null,
-      "widgets": [
-        {
-          "title": "ApplicationService Requests",
-          "layout": {
-            "column": 1,
-            "row": 6,
-            "width": 6,
-            "height": 5
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "FROM Metric select rate(sum(grpc_server_handled_total), 1 minute) where (`label.app.kubernetes.io/name` = 'argocd-server' AND grpc_service ='application.ApplicationService') FACET grpc_code, grpc_method LIMIT MAX TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": false
-            }
-          }
-        },
-        {
-          "title": "ClusterService Requests",
-          "layout": {
-            "column": 7,
-            "row": 6,
-            "width": 6,
-            "height": 5
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "FROM Metric select rate(sum(grpc_server_handled_total), 1 minute) where (`label.app.kubernetes.io/name` = 'argocd-server' AND grpc_service ='cluster.ClusterService') FACET grpc_code, grpc_method LIMIT MAX TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "ProjectService Requests",
-          "layout": {
-            "column": 1,
-            "row": 11,
-            "width": 6,
-            "height": 5
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "FROM Metric select rate(sum(grpc_server_handled_total), 1 minute) where (`label.app.kubernetes.io/name` = 'argocd-server' AND grpc_service ='project.ProjectService') FACET grpc_code, grpc_method LIMIT MAX TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "RepositoryService Requests",
-          "layout": {
-            "column": 7,
-            "row": 11,
-            "width": 6,
-            "height": 5
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "FROM Metric select rate(sum(grpc_server_handled_total), 1 minute) where (`label.app.kubernetes.io/name` = 'argocd-server' AND grpc_service ='repository.RepositoryService') FACET grpc_code, grpc_method LIMIT MAX TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "SessionService Requests",
-          "layout": {
-            "column": 1,
-            "row": 16,
-            "width": 6,
-            "height": 5
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "FROM Metric select rate(sum(grpc_server_handled_total), 1 minute) where (`label.app.kubernetes.io/name` = 'argocd-server' AND grpc_service ='session.SessionService') FACET grpc_code, grpc_method LIMIT MAX TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "VersionService Requests",
-          "layout": {
-            "column": 7,
-            "row": 16,
-            "width": 6,
-            "height": 5
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "FROM Metric select rate(sum(grpc_server_handled_total), 1 minute) where (`label.app.kubernetes.io/name` = 'argocd-server' AND grpc_service ='version.VersionService') FACET grpc_code, grpc_method LIMIT MAX TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "AccountService Requests",
-          "layout": {
-            "column": 1,
-            "row": 21,
-            "width": 6,
-            "height": 5
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "FROM Metric select rate(sum(grpc_server_handled_total), 1 minute) where (`label.app.kubernetes.io/name` = 'argocd-server' AND grpc_service ='account.AccountService') FACET grpc_code, grpc_method LIMIT MAX TIMESERIES "
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "SettingsService Requests",
-          "layout": {
-            "column": 7,
-            "row": 21,
-            "width": 6,
-            "height": 5
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId" : 0,
-                "query": "FROM Metric select rate(sum(grpc_server_handled_total), 1 minute) where (`label.app.kubernetes.io/name` = 'argocd-server' AND grpc_service ='cluster.SettingsService') FACET grpc_code, grpc_method LIMIT MAX TIMESERIES "
               }
             ],
             "yAxisLeft": {
