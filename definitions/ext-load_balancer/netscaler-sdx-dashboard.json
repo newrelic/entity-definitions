@@ -1,0 +1,403 @@
+{
+    "name": "Netscaler SDX",
+    "description": null,
+    "pages": [
+      {
+        "name": "Netscaler SDX",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 4,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                },
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(systemProduct) AS 'Product Name', latest(systemBuildNumber) AS 'Build Number', latest(systemSerial) AS 'Serial Number', latest(systemBiosVersion) AS 'BIOS Version', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE provider = 'kentik-load-balancer'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "title": "Current CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization (%)' WHERE provider = 'kentik-load-balancer'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Memory Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization (%)' WHERE provider = 'kentik-load-balancer'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Memory Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "NetScaler Details",
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "width": 8,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(nsInstanceState) AS 'Device State', latest(nsHaMasterState) AS 'Master State', latest(nsNodeState) AS 'Node State', latest(nsHaSync) AS 'Sync State' FACET nsName AS 'Name', nsProfileName AS 'Profile', nsDescription AS 'Description', nsVersion AS 'Version' WHERE provider = 'kentik-load-balancer' AND nsDescription IS NOT NULL LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Hardware Resource Summary",
+            "layout": {
+              "column": 9,
+              "row": 6,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(hardwareResourceStatus) AS 'Status' FACET hardwareResourceName AS 'Name' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Software Resource Summary",
+            "layout": {
+              "column": 11,
+              "row": 6,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(softwareResourceStatus) AS 'Status' FACET softwareResourceName AS 'Name' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "IPMI Sensor Status",
+            "layout": {
+              "column": 1,
+              "row": 9,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(hmStatus) FACET hmName AS 'Name', hmUnit AS 'Unit' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Storage Repository Details",
+            "layout": {
+              "column": 5,
+              "row": 9,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Utilization (%)",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Total Bytes",
+                  "precision": null,
+                  "type": "humanized"
+                },
+                {
+                  "name": "Used Bytes",
+                  "precision": null,
+                  "type": "humanized"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (max(kentik.snmp.srUtilized)/max(kentik.snmp.srSize))*100 AS 'Utilization (%)', max(kentik.snmp.srUtilized) AS 'Used Bytes', max(kentik.snmp.srSize) AS 'Total Bytes', latest(srStatus) AS 'Status' FACET srName AS 'Name', srBayNumber AS 'Bay Number' WHERE provider = 'kentik-load-balancer'"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Instance HTTP Requests/sec",
+            "layout": {
+              "column": 9,
+              "row": 9,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.nsHttpReq) AS 'Instance HTTP Requests/sec' FACET nsName AS 'Name', nsDescription AS 'Description' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES LIMIT MAX"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Interface Details",
+            "layout": {
+              "column": 1,
+              "row": 12,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(if_OperStatus) FACET if_interface_name AS 'Interface', if_Alias AS 'Alias' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Receive Throughput (Bytes)",
+            "layout": {
+              "column": 5,
+              "row": 12,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.area"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.interfaceRxBytes) AS 'RX Bytes' FACET if_interface_name AS 'Interface', if_Alias AS 'Alias' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Transmit Throughput (Bytes)",
+            "layout": {
+              "column": 9,
+              "row": 12,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.area"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.interfaceTxBytes) AS 'TX Bytes' FACET if_interface_name AS 'Interface', if_Alias AS 'Alias' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES LIMIT MAX"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
