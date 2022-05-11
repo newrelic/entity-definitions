@@ -1,0 +1,506 @@
+{
+    "name": "Sonicwall SMA",
+    "description": null,
+    "pages": [
+      {
+        "name": "Sonicwall SMA",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 4,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                },
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(snwlSysModel) AS 'System Model', latest(snwlSysSerialNumber) AS 'Serial Number', latest(snwlSysFirmwareVersion) AS 'Firmware Version', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "title": "Current CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "width": 3,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization (%)' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Memory Utilization (%)",
+            "layout": {
+              "column": 8,
+              "row": 1,
+              "width": 3,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization (%)' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 2,
+              "width": 3,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Memory Utilization (%)",
+            "layout": {
+              "column": 8,
+              "row": 2,
+              "width": 3,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Interfaces Summary",
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "width": 10,
+              "height": 2
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "TX Error %",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "RX Error %",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "TX %",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "RX %",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(if_OperStatus) AS 'Operational Status', latest(if_Speed) AS 'Interface Speed', latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface' WHERE provider = 'kentik-firewall' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Licensed Users Utilization %",
+            "layout": {
+              "column": 1,
+              "row": 8,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "License Utilization %",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (max(kentik.snmp.currentlyLoggedIn) / max(kentik.snmp.maximumLicensedUsers)) * 100 AS 'License Utilization %' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                },
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 85
+                }
+              ]
+            }
+          },
+          {
+            "title": "Connections Timeline",
+            "layout": {
+              "column": 3,
+              "row": 8,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.currentlyLoggedIn) AS 'Users Logged In', max(kentik.snmp.currentConnections) AS 'Connections' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Current Log Utilization (%)",
+            "layout": {
+              "column": 6,
+              "row": 8,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.logUtilization) AS 'Current Log Utilization (%)' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                },
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                }
+              ]
+            }
+          },
+          {
+            "title": "Log Utilization %",
+            "layout": {
+              "column": 8,
+              "row": 8,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.logUtilization) WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0
+              }
+            }
+          },
+          {
+            "title": "Login and Access Denials (Resets Daily)",
+            "layout": {
+              "column": 1,
+              "row": 11,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Access Denials",
+                  "precision": null,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Login Denials",
+                  "precision": null,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.numOfLoginDenials) AS 'Login Denials', latest(kentik.snmp.numOfAccessDenials) AS 'Access Denials' WHERE provider = 'kentik-firewall' COMPARE WITH 1 HOUR AGO"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "title": "Last Denied Login",
+            "layout": {
+              "column": 5,
+              "row": 11,
+              "width": 6,
+              "height": 2
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(lastLoginDeniedUser) AS 'Last Denied User', latest(lastLoginDeniedTime) AS 'Last Login Denied Time' WHERE provider = 'kentik-firewall'"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Last Denied Access",
+            "layout": {
+              "column": 5,
+              "row": 13,
+              "width": 6,
+              "height": 2
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(lastAccessDeniedUser) AS 'Last Denied User', latest(lastAccessDeniedResource) AS 'Last Denied Resource', latest(lastAccessDeniedTime) AS 'Last Login Denied Time' WHERE provider = 'kentik-firewall'"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Tunnel Service State",
+            "layout": {
+              "column": 1,
+              "row": 15,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(tunnelServerState) AS 'Current Tunnel Service State' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "title": "Current Service States",
+            "layout": {
+              "column": 5,
+              "row": 15,
+              "width": 6,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.serviceState) FACET serviceDescription, serviceState WHERE provider = 'kentik-firewall' LIMIT MAX"
+                }
+              ],
+              "thresholds": [
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          {
+            "title": "Client Address Pools",
+            "layout": {
+              "column": 1,
+              "row": 18,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.tunnelServiceClientAddrPoolUtilization) AS 'Client Address Pool Utilization %' FACET tunnelServiceStartRangeOfClientAddrPool AS 'Pool Start', tunnelServiceEndRangeOfClientAddrPool AS 'Pool End' WHERE provider = 'kentik-firewall' LIMIT MAX"
+                }
+              ]
+            }
+          },
+          {
+            "title": "SSL Tunnels",
+            "layout": {
+              "column": 5,
+              "row": 18,
+              "width": 6,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(tunnelServiceSslTunnelUser) AS 'SSL Tunnel User', latest(tunnelServiceSslTunnelVIP) AS 'SSL Tunnel VIP', max(kentik.snmp.numOfTunnelServiceFlowsPerTunnel) AS 'SSL Tunnel Flows', latest(kentik.snmp.tunnelServiceSslTunnelUpTime)/6000 AS 'Tunnel Uptime (Mins)' WHERE provider = 'kentik-firewall' LIMIT MAX"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
