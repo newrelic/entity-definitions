@@ -1,0 +1,31 @@
+clusterName:
+  tag:
+    key: clusterName
+  title: Cluster
+  unit: STRING
+namespaceName:
+  tag:
+    key: namespaceName
+  title: Namespace
+  unit: STRING
+deploymentName:
+  tag:
+    key: deploymentName
+  title: Deployment
+  unit: STRING
+operations:
+  title: Operations
+  query:
+    select: latest(argocd_app_info)
+    where: operation != ''
+    from: Metric
+    eventId: operation
+  unit: 'OPERATIONS_PER_SECOND'
+syncFailures:
+  title: Sync Failures
+  query:
+    select: sum(argocd_app_sync_total)
+    where: (phase = 'Error' OR phase = 'Failed')
+    from: Metric
+    eventId: sync_status
+  unit: 'REQUESTS_PER_SECOND'
