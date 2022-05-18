@@ -33,10 +33,12 @@ docker-compose run sanitize-dashboards
 
 You can run it using `npm`:
 
-1. Install [NodeJS](https://nodejs.org/en/).
+1. Install [NodeJS](https://nodejs.org/en/) we use [nvm](https://github.com/nvm-sh/nvm) to keep nodejs versions up to date.
 2. Clone this repository.
-3. Run `npm --prefix validator install`.
-4. Run `npm --prefix validator run check`.
+4. If you are using nvm: `nvm install && nvm use`
+5. Ensure you have the latest npm version `npm install -g npm@latest`
+6. Run `npm --prefix validator install`.
+7. Run `npm --prefix validator run check`.
 
 You can also run each of the validation tools independently:
 

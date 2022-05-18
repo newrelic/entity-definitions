@@ -1,0 +1,459 @@
+{
+  "name": "ArgoCD",
+  "description": null,
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "![ArgoCD Logo](https://avatars1.githubusercontent.com/u/30269780?s=110&v=4)\n\n# ArgoCD\n\n\nFilter dashboard by `clusterName='<cluster_name>'`."
+          }
+        },
+        {
+          "title": "Applications",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT count('apps') as 'Apps' FROM (SELECT latest(argocd_app_info) AS 'apps' FROM Metric FACET name, clusterName LIMIT MAX)"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Repositories",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT count('repos') as 'Repos' FROM (SELECT latest(argocd_app_info) AS 'repos' FROM Metric FACET repo, clusterName LIMIT MAX) "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Applications Top 10",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric  SINCE 60 MINUTES AGO UNTIL NOW FACET name LIMIT 10 TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Operations",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (latest(argocd_app_info)) FROM Metric Facet operation Where operation != '' LIMIT MAX TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Pending kubectl run",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (average(argocd_kubectl_exec_pending) * cardinality(argocd_kubectl_exec_pending)) FROM Metric  FACET command LIMIT MAX TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "### Health Status"
+          }
+        },
+        {
+          "title": "Health Status",
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric WHERE NOT (health_status = '') FACET health_status LIMIT MAX TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Sync Status",
+          "layout": {
+            "column": 8,
+            "row": 7,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric WHERE NOT (health_status = '') SINCE 60 MINUTES AGO UNTIL NOW FACET sync_status LIMIT MAX TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "### Sync Status"
+          }
+        },
+        {
+          "title": "Sync Activity",
+          "layout": {
+            "column": 3,
+            "row": 10,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (sum(round(`Sync Total`)) * cardinality(round(`Sync Total`))) FROM (SELECT sum(argocd_app_sync_total) AS `Sync Total` FROM Metric  FACET dimensions() LIMIT 100 TIMESERIES ) TIMESERIES SINCE 30 minutes ago UNTIL now"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Sync Failures",
+          "layout": {
+            "column": 8,
+            "row": 10,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (average(round(`__result_1`)) * cardinality(round(`__result_1`))) FROM (SELECT sum(argocd_app_sync_total) AS `__result_0`, sum(argocd_app_sync_total) AS `__result_1` FROM Metric FACET dimensions() LIMIT 100 TIMESERIES where (phase = 'Error' OR phase = 'Failed' ))  FACET name LIMIT 100 TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## Reconciliation"
+          }
+        },
+        {
+          "title": "Reconciliation Activity",
+          "layout": {
+            "column": 3,
+            "row": 13,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT (average(argocd_app_reconcile_count) * cardinality(argocd_app_reconcile_count)) FROM Metric WHERE  (namespace = 'argocd')  FACET namespace LIMIT 100 TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Reconciliation Performance",
+          "layout": {
+            "column": 8,
+            "row": 13,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.heatmap"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT histogram(argocd_app_reconcile_bucket) FROM Metric FACET le "
+              }
+            ]
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## Git Requests"
+          }
+        },
+        {
+          "title": "Git Requests (ls-remote)",
+          "layout": {
+            "column": 3,
+            "row": 16,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'ls-remote')  FACET request_type LIMIT 100 TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Git Requests (checkout)",
+          "layout": {
+            "column": 8,
+            "row": 16,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId" : 0,
+                "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'fetch')  FACET request_type LIMIT 100 TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

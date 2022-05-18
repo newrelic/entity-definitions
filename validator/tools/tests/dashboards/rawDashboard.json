@@ -94,16 +94,17 @@
             "height": 3,
             "width": 4
           },
-          "title": "Packet Loss (%)",
+          "title": "Trailing commas test case",
           "rawConfiguration": {
+            "dataFormatters": ["one", "two",],
             "legend": {
-              "enabled": true
+              "enabled": true,
             },
             "nrqlQueries": [
               {
                 "accountId": 10,
                 "query": "FROM Metric SELECT latest(kentik.synth.lost_pct) FACET entity.name WHERE provider = 'kentik-network-synthetic' TIMESERIES"
-              }
+              },
             ],
             "yAxisLeft": {
               "max": 100,
@@ -112,6 +113,30 @@
             }
           },
           "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Regression test case to not accidentally break nrql queries with regex substitution 'Remove trailing commas'",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round(latest(kentik.snmp.hrStorageUsed)*100/latest(kentik.snmp.hrStorageSize),.01) AS 'Used %', round(latest(kentik.snmp.hrStorageSize)*1e-6,.01) AS 'Total MBytes', round(latest(kentik.snmp.hrStorageUsed)*1e-6,.01) AS 'Used MBytes' WHERE `mib-table` = 'hrStorage' FACET storage_description LIMIT MAX"
+              }
+            ]
+          }
         }
       ]
     }
