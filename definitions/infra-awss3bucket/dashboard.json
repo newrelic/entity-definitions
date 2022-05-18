@@ -1,0 +1,148 @@
+{
+  "name": "AWS S3 Bucket",
+  "description": null,
+  "pages": [{
+    "name": "AWS S3 Bucket",
+    "description": null,
+    "widgets": [
+      {
+        "title": "Requests",
+        "layout": {
+          "height": 3,
+          "width": 8,
+          "column": 0,
+          "row": 0
+        },
+        "visualization": {
+          "id": "viz.line"
+        },
+        "rawConfiguration": {
+          "legend": {
+            "enabled": true
+          },
+          "nrqlQueries": [
+            {
+              "accountId": 0,
+              "query": "SELECT sum(`provider.getRequests.Sum`) as 'GET', sum(`provider.putRequests.Sum`) as 'PUT', sum(`provider.headRequests.Sum`) as 'HEAD' FROM DatastoreSample WHERE provider='S3BucketRequests' TIMESERIES auto"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Errors",
+        "layout": {
+          "height": 3,
+          "width": 4,
+          "column": 8,
+          "row": 0
+        },
+        "visualization": {
+          "id": "viz.line"
+        },
+        "rawConfiguration": {
+          "legend": {
+            "enabled": true
+          },
+          "nrqlQueries": [
+            {
+              "accountId": 0,
+              "query": "SELECT sum(`provider.error4xxErrors.Sum`) as '4xx', sum(`provider.error5xxErrors.Sum`) as '5xx' FROM DatastoreSample WHERE provider='S3BucketRequests' TIMESERIES auto"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Traffic (bytes)",
+        "layout": {
+          "height": 3,
+          "width": 8,
+          "column": 0,
+          "row": 3
+        },
+        "visualization": {
+          "id": "viz.line"
+        },
+        "rawConfiguration": {
+          "legend": {
+            "enabled": true
+          },
+          "nrqlQueries": [
+            {
+              "accountId": 0,
+              "query": "SELECT sum(`provider.bytesDownloaded.Sum`) as 'Downloaded (bytes)', sum(`provider.bytesUoloaded.Sum`) as 'Uploaded (bytes)' FROM DatastoreSample WHERE provider='S3BucketRequests' TIMESERIES auto"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Average latency (ms)",
+        "layout": {
+          "height": 3,
+          "width": 4,
+          "column": 8,
+          "row": 3
+        },
+        "visualization": {
+          "id": "viz.line"
+        },
+        "rawConfiguration": {
+          "legend": {
+            "enabled": false
+          },
+          "nrqlQueries": [
+            {
+              "accountId": 0,
+              "query": "SELECT average(`provider.totalRequestLatency.Average`) as 'Average latency (ms)' FROM DatastoreSample WHERE provider='S3BucketRequests' TIMESERIES auto"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Bucket size (objects)",
+        "layout": {
+          "height": 3,
+          "width": 6,
+          "column": 0,
+          "row": 6
+        },
+        "visualization": {
+          "id": "viz.line"
+        },
+        "rawConfiguration": {
+          "legend": {
+            "enabled": false
+          },
+          "nrqlQueries": [
+            {
+              "accountId": 0,
+              "query": "SELECT average(`provider.numberOfObjects.Average`) as 'Bucket size (objects)' FROM DatastoreSample WHERE provider='S3Bucket' TIMESERIES 1 day"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Bucket size (bytes)",
+        "layout": {
+          "height": 3,
+          "width": 6,
+          "column": 6,
+          "row": 6
+        },
+        "visualization": {
+          "id": "viz.line"
+        },
+        "rawConfiguration": {
+          "legend": {
+            "enabled": false
+          },
+          "nrqlQueries": [
+            {
+              "accountId": 0,
+              "query": "SELECT average(`provider.bucketSizeBytes.Average`) as 'Bucket size (bytes)' FROM DatastoreSample WHERE provider='S3Bucket' TIMESERIES auto"
+            }
+          ]
+        }
+      }
+    ]
+  }]
+}
