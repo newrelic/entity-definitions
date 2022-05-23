@@ -3,12 +3,12 @@ getThroughput:
   unit: REQUESTS_PER_SECOND
   queries:
     aws:
-      select: rate(sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses), 1 second)
+      select: sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: rate(sum(provider.getHits.Sum) + sum(provider.getMisses.Sum), 1 second)
+      select: sum(provider.getHits.Sum) + sum(provider.getMisses.Sum)
       from: DatastoreSample
       where: provider='ElastiCacheMemcachedNode'
       eventId: entityGuid
@@ -18,12 +18,12 @@ getMisses:
   unit: PERCENTAGE
   queries:
     aws:
-      select: (sum(aws.elasticache.GetHits) / (sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses))) * 100
+      select: 100 * sum(aws.elasticache.GetHits) / (sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses))
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: (sum(provider.getHits.Sum) / (sum(provider.getHits.Sum) + sum(provider.getMisses.Sum))) * 100
+      select: 100 * sum(provider.getHits.Sum) / (sum(provider.getHits.Sum) + sum(provider.getMisses.Sum))
       from: DatastoreSample
       where: provider='ElastiCacheMemcachedNode'
       eventId: entityGuid
