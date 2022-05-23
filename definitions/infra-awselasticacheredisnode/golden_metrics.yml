@@ -8,7 +8,7 @@ readThroughput:
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: rate(sum(provider.cacheHits.Sum)+sum(provider.cacheMisses.Sum), 1 second)
+      select: sum(provider.cacheHits.Sum)+sum(provider.cacheMisses.Sum)
       from: DatastoreSample
       where: provider='ElastiCacheRedisNode'
       eventId: entityGuid
@@ -18,12 +18,12 @@ cacheHitRate:
   unit: PERCENTAGE
   queries:
     aws:
-      select: 100 * sum(aws.elasticache.CacheHits) / (sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses))
+      select: sum(aws.elasticache.CacheHits) / ((sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses)))
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: (sum(provider.cacheHits.Sum)/(sum(provider.cacheHits.Sum)+sum(provider.cacheMisses.Sum)))*100
+      select: 100 * sum(provider.cacheHits.Sum) / (sum(provider.cacheHits.Sum) + sum(provider.cacheMisses.Sum))
       from: DatastoreSample
       where: provider='ElastiCacheRedisNode'
       eventId: entityGuid
