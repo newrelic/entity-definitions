@@ -3,12 +3,12 @@ serverErrors4XxAnd5Xx:
   unit: COUNT
   queries:
     aws:
-      select: rate(sum(aws.applicationelb.HTTPCode_ELB_4XX_Count) + sum(aws.applicationelb.HTTPCode_ELB_5XX_Count), 1 minute)
+      select: sum(aws.applicationelb.HTTPCode_ELB_4XX_Count) + sum(aws.applicationelb.HTTPCode_ELB_5XX_Count)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: rate(sum((provider.httpCodeElb4XXCount.Sum OR 0) + (provider.httpCodeElb5XXCount.Sum OR 0)),1 minute)
+      select: sum(provider.httpCodeElb4XXCount.Sum) + sum(provider.httpCodeElb5XXCount.Sum)
       from: LoadBalancerSample
       where: provider='Alb'
       eventId: entityGuid
