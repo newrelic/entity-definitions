@@ -1,0 +1,29 @@
+domain: EXT
+type: MAXDB
+
+goldenTags:
+  - instrumentation.provider
+  - sap.system
+
+synthesis:
+  rules:
+    # Telemetry from New Relic SAP integration
+    # DB_ID in SYS_ID/DB format
+  - identifier: SAP_EID
+    name: SAP_EID
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: SAP_ETYPE
+      value: MAXDB
+    tags:
+      sap.functional_area:
+      SYS_ID:
+        entityTagName: sap.system
+
+dashboardTemplates:
+  SAP:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
