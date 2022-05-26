@@ -1,0 +1,29 @@
+domain: EXT
+type: SAP_ORACLE
+
+goldenTags:
+  - sap.system
+  - instrumentation.provider
+
+synthesis:
+  rules:
+    # Telemetry from New Relic SAP integration
+    # SAP_EID in SYS_ID/DB format
+  - identifier: SAP_EID
+    name: SAP_EID
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: SAP_ETYPE
+      value: ORACLE
+    tags:
+      sap.functional_area:
+      SYS_ID:
+        entityTagName: sap.system
+
+dashboardTemplates:
+  SAP:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
