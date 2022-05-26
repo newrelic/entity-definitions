@@ -1,0 +1,750 @@
+{
+    "name": "A10 Thunder",
+    "description": null,
+    "pages": [
+      {
+        "name": "A10 Thunder",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 4,
+              "height": 10
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                },
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(axSysSerialNumber) AS 'Serial', latest(axSysFirmwareVersion) AS 'Firmware', latest(axSysAFleXEngineVersion) AS 'Flex Engine', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE provider = 'kentik-load-balancer'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Current CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization (%)' WHERE provider = 'kentik-load-balancer'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Memory Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization (%)' WHERE provider = 'kentik-load-balancer'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Memory Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Current Disk Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 6,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Current Disk Utilization (%)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT ((max(kentik.snmp.axSysDiskTotalSpace) - max(kentik.snmp.axSysDiskFreeSpace))/max(kentik.snmp.axSysDiskTotalSpace)) * 100 AS 'Current Disk Utilization (%)' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Temperature (C)",
+            "layout": {
+              "column": 9,
+              "row": 6,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.axSysHwPhySystemTemp) AS 'Current Temperature (C)' WHERE provider = 'kentik-load-balancer'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 40
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 45
+                }
+              ]
+            }
+          },
+          {
+            "title": "Disk Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 7,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT ((max(kentik.snmp.axSysDiskTotalSpace) - max(kentik.snmp.axSysDiskFreeSpace))/max(kentik.snmp.axSysDiskTotalSpace)) * 100 AS 'Disk Utilization (%)' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Temperature (C)",
+            "layout": {
+              "column": 9,
+              "row": 7,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.axSysHwPhySystemTemp) AS 'Min Temperature', max(kentik.snmp.axSysHwPhySystemTemp) AS 'Max Temperature', average(kentik.snmp.axSysHwPhySystemTemp) AS 'Average Temperature' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "System Resource Utilization",
+            "layout": {
+              "column": 1,
+              "row": 11,
+              "width": 6,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Max Allowed",
+                  "type": "humanized"
+                },
+                {
+                  "name": "Current",
+                  "type": "humanized"
+                },
+                {
+                  "name": "Current %",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (latest(kentik.snmp.axAppGlobalAllowedCurrentValue)/latest(kentik.snmp.axAppGlobalAllowedMaxValue))*100 AS 'Current %', latest(kentik.snmp.axAppGlobalAllowedCurrentValue) AS 'Current', latest(kentik.snmp.axAppGlobalAllowedMaxValue) AS 'Max Allowed' FACET axAppGlobalSystemResourceName AS 'Resource' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Buffer Details",
+            "layout": {
+              "column": 7,
+              "row": 11,
+              "width": 6,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Buffer Utilization %",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.axAppGlobalAppPacketDrop) AS 'Buffer Drops', (latest(kentik.snmp.axAppGlobalBufferCurrentUsage)/latest(kentik.snmp.axAppGlobalBufferConfigLimit))*100 AS 'Buffer Utilization %'  WHERE provider = 'kentik-load-balancer' LIMIT MAX COMPARE WITH 2 HOURS AGO"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Connections",
+            "layout": {
+              "column": 7,
+              "row": 12,
+              "width": 6,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "L7 Requests",
+                  "type": "humanized"
+                },
+                {
+                  "name": "L4 Sessions",
+                  "type": "humanized"
+                },
+                {
+                  "name": "Current Connections",
+                  "type": "humanized"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.axAppGlobalTotalCurrentConnections) AS 'Current Connections', latest(kentik.snmp.axAppGlobalTotalL4Session) AS 'L4 Sessions', latest(kentik.snmp.axAppGlobalTotalL7Requests) AS 'L7 Requests' WHERE provider = 'kentik-load-balancer' LIMIT MAX COMPARE WITH 2 HOURS AGO"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Service Group Details",
+            "layout": {
+              "column": 1,
+              "row": 15,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(axServiceGroupDisplayStatus) AS 'Status' FACET axServiceGroupName AS 'Name', axServiceGroupType AS 'Type', axServiceGroupLbAlgorithm AS 'LB Algorithm' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Server Statuses",
+            "layout": {
+              "column": 5,
+              "row": 15,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(axServerEnabledState) AS 'Enabled State', latest(axServerMonitorState) AS 'Monitor Status' FACET axServerName AS 'Name' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Server Statistics",
+            "layout": {
+              "column": 9,
+              "row": 15,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Current Connections",
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.axServerStatServerCurConns) AS 'Current Connections', latest(kentik.snmp.axServerStatServerTotalCurrL7Reqs) AS 'Current L7 Requests', latest(axServerStatServerStatus) AS 'Status' FACET axServerStatName AS 'Name' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Virtual Server Status",
+            "layout": {
+              "column": 1,
+              "row": 19,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(axVirtualServerEnabled) AS 'Enabled', latest(axVirtualServerDisplayStatus) AS 'Status' FACET axVirtualServerName AS 'Name', axVirtualServerHAGroup AS 'HA Group' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Virtual Server Statistics",
+            "layout": {
+              "column": 5,
+              "row": 19,
+              "width": 8,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.axVirtualServerPortStatCurConns) AS 'Current Connections', latest(axVirtualServerStatPortStatus) AS 'Status', latest(axVirtualServerStatPortDisplayStatus) AS 'Display Status' FACET axVirtualServerPortStatName AS 'Name', axVirtualServerPortStatAddress AS 'IP Address', axVirtualServerStatPortNum AS 'Port Number', axVirtualServerStatPortType AS 'Port Type' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Power Supply Status",
+            "layout": {
+              "column": 1,
+              "row": 23,
+              "width": 2,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(axPowerSupplyStatus) AS 'Status' FACET axPowerSupplyName AS 'Name' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Current Voltage Total",
+            "layout": {
+              "column": 3,
+              "row": 23,
+              "width": 2,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.axPowerSupplyVoltageTotal) AS 'Current Voltage Total' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Power Supply Voltage Status",
+            "layout": {
+              "column": 5,
+              "row": 23,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(axPowerSupplyVoltageStatus) AS 'Status' FACET axPowerSupplyVoltageDescription AS 'Name' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "System Fan Status",
+            "layout": {
+              "column": 9,
+              "row": 23,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "RPM",
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(axFanStatus) AS 'Status', latest(kentik.snmp.axFanSpeed) AS 'RPM' FACET axFanName AS 'Name' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Total Throughput (Bytes)",
+            "layout": {
+              "column": 1,
+              "row": 27,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.axAppGlobalTotalThroughput) AS 'Throughput (bytes)' WHERE provider = 'kentik-load-balancer' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Interfaces Summary",
+            "layout": {
+              "column": 5,
+              "row": 27,
+              "width": 8,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(if_OperStatus) AS 'Operational Status', latest(if_Speed) AS 'Interface Speed', latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface' WHERE provider = 'kentik-load-balancer' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
