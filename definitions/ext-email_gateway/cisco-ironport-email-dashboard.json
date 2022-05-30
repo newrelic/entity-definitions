@@ -1,0 +1,578 @@
+{
+    "name": "Cisco IronPort",
+    "description": null,
+    "pages": [
+      {
+        "name": "Cisco IronPort",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 2,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                },
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE provider = 'kentik-ironport-email-appliance'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Current CPU Utilization (%)",
+            "layout": {
+              "column": 3,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization (%)' WHERE provider = 'kentik-ironport-email-appliance'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Memory Utilization (%)",
+            "layout": {
+              "column": 7,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization (%)' WHERE provider = 'kentik-ironport-email-appliance'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "CPU Utilization (%)",
+            "layout": {
+              "column": 3,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-ironport-email-appliance' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Memory Utilization (%)",
+            "layout": {
+              "column": 7,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-ironport-email-appliance' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Oldest Message in Queue (Mins)",
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Oldest Message in Queue (Mins)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.oldestMessageAge)/60 AS 'Oldest Message in Queue (Mins)' WHERE provider = 'kentik-ironport-email-appliance' COMPARE WITH 1 DAY AGO"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Interfaces Summary",
+            "layout": {
+              "column": 3,
+              "row": 6,
+              "width": 8,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "TX %",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "RX %",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(if_OperStatus) AS 'Operational Status', latest(if_Speed) AS 'Interface Speed', latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface' WHERE provider = 'kentik-ironport-email-appliance' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Work Queue Messages",
+            "layout": {
+              "column": 1,
+              "row": 9,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.workQueueMessages) AS 'Work Queue' WHERE provider = 'kentik-ironport-email-appliance' COMPARE WITH 1 DAY AGO"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "DNS Requests",
+            "layout": {
+              "column": 3,
+              "row": 9,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.pendingDNSRequests) AS 'Pending', latest(kentik.snmp.outstandingDNSRequests) AS 'Outstanding' WHERE provider = 'kentik-ironport-email-appliance' LIMIT MAX COMPARE WITH 1 DAY AGO"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Open Files or Sockets",
+            "layout": {
+              "column": 5,
+              "row": 9,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.openFilesOrSockets) AS 'Open Files or Sockets' WHERE provider = 'kentik-ironport-email-appliance' LIMIT MAX TIMESERIES 5 MINUTES COMPARE WITH 1 DAY AGO"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Mail Transfer Threads",
+            "layout": {
+              "column": 8,
+              "row": 9,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.mailTransferThreads) AS 'Mail Transfer Threads' WHERE provider = 'kentik-ironport-email-appliance' LIMIT MAX TIMESERIES 5 MINUTES COMPARE WITH 1 DAY AGO"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Temperature (C)",
+            "layout": {
+              "column": 1,
+              "row": 12,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.degreesCelsius) FACET temperatureName WHERE provider = 'kentik-ironport-email-appliance'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 35
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 40
+                }
+              ]
+            }
+          },
+          {
+            "title": "Power Supply Health",
+            "layout": {
+              "column": 3,
+              "row": 12,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(powerSupplyStatus) AS 'Status', latest(powerSupplyRedundancy) AS 'Redundancy' FACET powerSupplyName AS 'Name' WHERE provider = 'kentik-ironport-email-appliance'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Fan RPMs (0 = Failed)",
+            "layout": {
+              "column": 7,
+              "row": 12,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.fanRPMs) AS 'RPMs' FACET fanName AS 'Name' WHERE provider = 'kentik-ironport-email-appliance' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 100
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          {
+            "title": "Resource Availability",
+            "layout": {
+              "column": 1,
+              "row": 15,
+              "width": 5,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(queueAvailabilityStatus) AS 'Queue Availability', latest(memoryAvailabilityStatus) AS 'Memory Availability Status', latest(resourceConservationReason) AS 'Resource Conversation Reason' WHERE provider = 'kentik-ironport-email-appliance'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "RAID Status",
+            "layout": {
+              "column": 6,
+              "row": 15,
+              "width": 5,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(raidStatus) AS 'Status', latest(raidLastError) AS 'Last Error' FACET raidID AS 'RAID ID' WHERE provider = 'kentik-ironport-email-appliance' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Service Updates",
+            "layout": {
+              "column": 1,
+              "row": 18,
+              "width": 5,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.updates) AS 'Successes', max(kentik.snmp.updateFailures) AS 'Failures' FACET updateServiceName AS 'Service Name' WHERE provider = 'kentik-ironport-email-appliance' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Key Status",
+            "layout": {
+              "column": 6,
+              "row": 18,
+              "width": 5,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(keyIsPerpetual) AS 'Perpetual Key?', max(kentik.snmp.keySecondsUntilExpire) AS 'Seconds Until Expiration' FACET keyDescription AS 'Key Name' WHERE provider = 'kentik-ironport-email-appliance' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
