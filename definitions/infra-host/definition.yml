@@ -57,6 +57,36 @@ synthesis:
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
           value: Log
         - attribute: newrelic.source
           value: 'api.logs.otlp'
