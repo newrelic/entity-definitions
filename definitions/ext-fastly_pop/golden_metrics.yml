@@ -34,3 +34,30 @@ clientbps:
     where: fastly_datacenter IS NOT NULL
     eventId: entity.guid
     eventName: entity.name
+clients:
+  title: Unique Clients
+  displayAsValue: true
+  query:
+    select: uniqueCount(client_ip)
+    from: Log
+    where: "fastly_datacenter IS NOT NULL"
+    eventId: entity.guid
+    eventName: entity.name
+response:
+  title: Response OK Rate (%)
+  displayAsValue: true
+  query:
+    select: (filter(count(response), WHERE response ='OK')/count(response))*100
+    from: Log
+    where: "fastly_datacenter IS NOT NULL"
+    eventId: entity.guid
+    eventName: entity.name
+cacheHitRate:
+  title: Cache Hit Rate (%)
+  displayAsValue: true
+  query:
+    select: (filter(count(cache_status), WHERE cache_status ='HIT')/count(cache_status))*100
+    from: Log
+    where: "fastly_datacenter IS NOT NULL"
+    eventId: entity.guid
+    eventName: entity.name
