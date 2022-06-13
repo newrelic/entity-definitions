@@ -8,20 +8,20 @@ responseTimeMs:
   unit: SECONDS
   queries:
     opentelemetry:
-      select: average(duration.ms)
+      select: average(duration.ms) / 1000
       from: Span
       where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
       eventId: entity.guid
     kamon-agent:
-      select: average(http.server.requests)
+      select: average(http.server.requests) / 1000
       from: Metric
       eventId: entity.guid
     micrometer:
-      select: average(http.server.requests)
+      select: average(http.server.requests) / 1000
       from: Metric
       eventId: entity.guid
     pixie:
-      select: average(http.server.duration)
+      select: average(http.server.duration) / 1000
       from: Metric
       eventId: entity.guid
 throughput:
@@ -34,15 +34,15 @@ throughput:
       where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
       eventId: entity.guid
     kamon-agent:
-      select: rate(sum(http.server.requests), 1 minute)
+      select: rate(sum(http.server.requests), 1 second)
       from: Metric
       eventId: entity.guid
     micrometer:
-      select: rate(sum(http.server.requests), 1 minute)
+      select: rate(sum(http.server.requests), 1 second)
       from: Metric
       eventId: entity.guid
     pixie:
-      select: rate(count(http.server.duration), 1 minute)
+      select: rate(count(http.server.duration), 1 second)
       from: Metric
       eventId: entity.guid
 errorRate:
