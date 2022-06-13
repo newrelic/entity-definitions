@@ -32,7 +32,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE instrumentation.name = 'kentik-meraki' "
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' "
                 }
               ],
               "thresholds": []
@@ -69,7 +69,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT latest(SysDescr) as 'Description' where instrumentation.name = 'kentik-meraki'"
+                  "query": "FROM Metric SELECT latest(SysDescr) as 'Description'"
                 }
               ],
               "thresholds": []
@@ -94,71 +94,9 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET device_name, if_name or if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed AS 'Interface Speed' WHERE instrumentation.name = 'kentik-meraki' LIMIT MAX"
+                  "query": "FROM Metric SELECT latest(kentik.snmp.ifHCInOctets)*8/1000/1000 as 'RX Mbps', latest(kentik.snmp.ifHCOutOctets)*8/1000/1000 as 'TX Mbps', latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_name or if_interface_name AS 'Interface', if_Alias AS 'Interface Alias' LIMIT MAX"
                 }
               ]
-            }
-          },
-          {
-            "title": "Receive Traffic %",
-            "visualization": {
-              "id": "viz.line"
-            },
-            "layout": {
-              "column": 1,
-              "row": 7,
-              "width": 6,
-              "height": 4
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_name or if_interface_name WHERE provider = 'kentik-firepower' TIMESERIES 5 MINUTES LIMIT 10"
-                }
-              ],
-              "yAxisLeft": {
-                "max": 100,
-                "min": 0,
-                "zero": false
-              }
-            }
-          },
-          {
-            "title": "Transmit Traffic %",
-            "visualization": {
-              "id": "viz.line"
-            },
-            "layout": {
-              "column": 7,
-              "row": 7,
-              "width": 6,
-              "height": 4
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'RX %' FACET if_name or if_interface_name WHERE provider = 'kentik-firepower' TIMESERIES 5 MINUTES LIMIT 10"
-                }
-              ],
-              "yAxisLeft": {
-                "max": 100,
-                "min": 0,
-                "zero": false
-              }
             }
           },
           {
@@ -182,7 +120,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_name or if_interface_name WHERE provider = 'kentik-firepower' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_name or if_interface_name TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
@@ -211,7 +149,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_name or if_interface_name WHERE provider = 'kentik-firepower' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_name or if_interface_name TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
@@ -240,7 +178,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT max(kentik.snmp.ifInErrorPercent) FACET if_name or if_interface_name WHERE provider = 'kentik-firepower' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT max(kentik.snmp.ifInErrorPercent) FACET if_name or if_interface_name TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
@@ -271,7 +209,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT max(kentik.snmp.ifOutErrorPercent) FACET if_name or if_interface_name WHERE provider = 'kentik-firepower' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT max(kentik.snmp.ifOutErrorPercent) FACET if_name or if_interface_name TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
