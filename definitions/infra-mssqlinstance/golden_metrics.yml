@@ -41,23 +41,44 @@ waitTimeMs:
       eventId: entityGuid
       eventName: entityName
 availability:
-  query:
-    eventId: entityGuid
-    select: average(`activeConnections`)
-    from: MssqlInstanceSample
+  queries:
+    newRelic:
+      select: average(mssql.instance.activeConnections)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(activeConnections)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
   unit: COUNT
   title: Connections
 monitorStatus:
-  query:
-    eventId: entityGuid
-    select: average(`instance.transactionsPerSecond`)
-    from: MssqlInstanceSample
+  queries:
+    newRelic:
+      select: average(mssql.instance.instance.transactionsPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(`instance.transactionsPerSecond`)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
   unit: OPERATIONS_PER_SECOND
   title: Transactions
 sessionStatus:
-  query:
-    eventId: entityGuid
-    select: average(`stats.sqlCompilations`)
-    from: MssqlInstanceSample
+  queries:
+    newRelic:
+      select: average(mssql.instance.stats.sqlCompilations)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(`stats.sqlCompilations`)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
   unit: COUNT
   title: SQL (re-)compilations
