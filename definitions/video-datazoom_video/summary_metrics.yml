@@ -1,0 +1,34 @@
+videoStartTime:
+  title: Median Video Start Time (Seconds)
+  unit: SECONDS
+  query:
+    select: percentile(startup_duration_content_ms, 50) / 1000
+    from: Datazoom
+    where: actionName = 'playback_start'
+    eventId: entity.guid
+
+interruptions:
+  title: Interruptions (count)
+  unit: COUNT
+  query:
+    select: count(stall_count_content)
+    from: Datazoom
+    eventId: entity.guid
+
+rebufferTime:
+  title: Median Connection Rebuffer Time (Seconds)
+  unit: SECONDS
+  query:
+    select: percentile(time_since_last_buffer_start_content_ms, 50) / 1000
+    from: Datazoom
+    where: actionName = 'buffer_end'
+    eventId: entity.guid
+
+contentErrors:
+  title: Content Errors Rate (count)
+  unit: COUNT
+  query:
+    select: count(*) 
+    from: Datazoom
+    where: actionName = 'error' AND media_type = 'content'
+    eventId: entity.guid
