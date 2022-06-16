@@ -1,0 +1,917 @@
+{
+  "name": "Datazoom v3",
+  "description": null,
+
+  "pages": [
+    {
+      "name": "Datazoom v3",
+      "description": null,
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "![Datazoom logo](https://app.datazoom.io/images/datazoom-logo-med-new.svg)\n### &emsp;**The Video Data Platform**\n---\n\n#### &emsp;Learn more about Datazoom here — [datazoom.io](https://help.datazoom.io)"
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 8,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": " "
+          }
+        },
+        {
+          "title": "Content Completion Funnel",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 6
+          },
+
+          "visualization": {
+            "id": "viz.funnel"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT funnel(content_session_id, WHERE (actionName='media_request' AND media_type = 'content') as 'Playback Requested', WHERE (actionName='playback_start' AND media_type = 'content') as 'Playback Started', WHERE (actionName='milestone' AND media_type = 'content' AND milestone_percent = .1) as '1% Complete', WHERE (actionName='milestone' AND media_type = 'content' AND milestone_percent = .25) as '25% Complete', WHERE (actionName='milestone' AND media_type = 'content' AND milestone_percent = .50) as '50% Complete', WHERE (actionName='milestone' AND media_type = 'content' AND milestone_percent = .75) as '75% Complete', WHERE (actionName='milestone' AND media_type = 'content' AND milestone_percent = .9) as '90% Complete', WHERE (actionName='milestone' AND media_type = 'content' AND milestone_percent = .95) as '95% Complete',WHERE (actionName='playback_complete' AND media_type = 'content') as 'Playback Complete') FROM Datazoom"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Concurrent Viewers over time",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniquecount(app_session_id) as 'Viewers' FROM Datazoom TIMESERIES 1 minutes "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Unique App Session Id",
+          "layout": {
+            "column": 11,
+            "row": 4,
+            "width": 2,
+            "height": 1
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniquecount(app_session_id) as 'App Session' FROM Datazoom LIMIT MAX "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Unique Content Session Id",
+          "layout": {
+            "column": 11,
+            "row": 5,
+            "width": 2,
+            "height": 1
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniquecount(content_session_id) as 'Content Session' FROM Datazoom LIMIT MAX"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "View Ratio",
+          "layout": {
+            "column": 11,
+            "row": 6,
+            "width": 2,
+            "height": 1
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniquecount(content_session_id) / uniquecount(app_session_id) as 'Views per App Session' FROM Datazoom  LIMIT max\n"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Content Requests over time",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) AS 'Content Requests' FROM Datazoom WHERE (actionName = 'media_request' AND media_type = 'content') TIMESERIES 1 minutes  LIMIT MAX "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Content Requests",
+          "layout": {
+            "column": 11,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(Content_Requests) FROM (SELECT count(*)  AS 'Content_Requests' FROM Datazoom WHERE (actionName = 'media_request' AND media_type = 'content') facet city LIMIT MAX) "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Views by City",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniquecount(content_session_id) as 'Viewers' FROM Datazoom where (actionName = 'media_request' and media_type = 'content') facet city"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Content Starts over time",
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) AS 'Content Starts' FROM Datazoom WHERE (actionName = 'playback_start' AND media_type = 'content') TIMESERIES 1 minutes  LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Content Starts",
+          "layout": {
+            "column": 11,
+            "row": 10,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(Content_Starts) FROM (SELECT count(*)  AS 'Content_Starts' FROM Datazoom WHERE (actionName = 'playback_start' AND media_type = 'content') facet city LIMIT MAX)"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Views by Device",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniquecount(content_session_id) as 'Views' FROM Datazoom where (actionName = 'media_request' AND media_type = 'content') FACET device_type"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Content Minutes over time",
+          "layout": {
+            "column": 5,
+            "row": 13,
+            "width": 6,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(Minutes) FROM (SELECT max(playback_duration_content_ms)/60000 as 'Minutes'FROM Datazoom FACET content_session_id,city  LIMIT MAX TIMESERIES 1 minute) TIMESERIES 1 minute LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Content Minutes",
+          "layout": {
+            "column": 11,
+            "row": 13,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(Content_Minutes) FROM (SELECT max(playback_duration_content_ms)/60000 as 'Content_Minutes'FROM Datazoom FACET content_session_id,city LIMIT MAX) LIMIT MAX"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Bitrate (kbit/s)",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Average Bitrate",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(rendition_video_bitrate_kbps) /1000 AS 'Average Bitrate' FROM Datazoom where media_type = 'content' TIMESERIES 1 minute "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Bitrate (kbit/s)",
+          "layout": {
+            "column": 5,
+            "row": 16,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Average Bitrate",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(rendition_video_bitrate_kbps) /1000 AS 'Average Bitrate' FROM Datazoom"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Time to First Frame",
+          "layout": {
+            "column": 7,
+            "row": 16,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Time To First Frame",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(startup_duration_content_ms)/1000 as 'Time To First Frame' FROM Datazoom LIMIT MAX"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 2
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 5
+              }
+            ]
+          }
+        },
+        {
+          "title": "Stall Ratio Percent",
+          "layout": {
+            "column": 9,
+            "row": 16,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Avg Stall_Ratio_Percent",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(Stall_Ratio_Percent) FROM (SELECT max(stall_duration_content_ms) / max(playback_duration_content_ms) *100 as 'Stall_Ratio_Percent' FROM Datazoom FACET content_session_id LIMIT max)\n"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Exit Before Video Start",
+          "layout": {
+            "column": 11,
+            "row": 16,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (filter(count(*), WHERE actionName = 'media_request'AND media_type = 'content') - filter(count(*), WHERE actionName = 'playback_start'AND media_type = 'content')) / filter(count(*), WHERE actionName = 'playback_start'AND media_type = 'content')*100 as 'EBVS Percent' FROM Datazoom LIMIT max"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 10
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 20
+              }
+            ]
+          }
+        },
+        {
+          "title": "Content Error Percent",
+          "layout": {
+            "column": 1,
+            "row": 19,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(count(*), WHERE (actionName = 'error' AND media_type = 'content')) / filter(count(*), WHERE (actionName = 'media_request' AND media_type = 'content')) * 100 as 'percentage' FROM Datazoom TIMESERIES   auto"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Content Errors",
+          "layout": {
+            "column": 5,
+            "row": 19,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*)  AS 'Total Content Errors' FROM Datazoom WHERE (actionName = 'error' AND media_type = 'content') "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Content Error Percent",
+          "layout": {
+            "column": 7,
+            "row": 19,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Playback Failure Percent",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (filter(count(*), WHERE actionName = 'media_loaded' OR actionName = 'error' AND NOT actionName = 'playback_start' AND media_type = 'content')- uniquecount(content_session_id)) / (uniquecount(content_session_id))*100 as 'Playback Failure Percent' FROM Datazoom LIMIT max\n"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 5
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 10
+              }
+            ]
+          }
+        },
+        {
+          "title": "Content Error Messages",
+          "layout": {
+            "column": 9,
+            "row": 19,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "select  player_name, error_code, error_msg from Datazoom WHERE (actionName ='error' AND media_type = 'content')  LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Ad Completion Funnel",
+          "layout": {
+            "column": 1,
+            "row": 22,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.funnel"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT funnel(content_session_id, WHERE (actionName='media_request' AND media_type = 'ad') as 'Ad Requested', WHERE (actionName='playback_start' AND media_type = 'ad') as 'Ad Started', WHERE (actionName='milestone' AND media_type = 'ad' AND milestone_percent = .25) as '25% Complete', WHERE (actionName='milestone' AND media_type = 'ad' AND milestone_percent = .50) as '50% Complete', WHERE (actionName='milestone' AND media_type = 'ad' AND milestone_percent = .75) as '75% Complete', WHERE (actionName='playback_complete' AND media_type = 'ad') as 'Ad Complete') FROM Datazoom"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Ad Requests",
+          "layout": {
+            "column": 5,
+            "row": 22,
+            "width": 6,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) AS 'Ad Requests' FROM Datazoom WHERE (actionName = 'media_request' AND media_type = 'ad') TIMESERIES LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Ad Requests",
+          "layout": {
+            "column": 11,
+            "row": 22,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*)  AS 'Total Ad Requests' FROM Datazoom WHERE (actionName = 'media_request' AND media_type = 'ad') "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Ad Impressions by Device",
+          "layout": {
+            "column": 1,
+            "row": 25,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) as 'Ad Impressions' FROM Datazoom where (actionName = 'ad_impression')  FACET device_type"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Ad Starts",
+          "layout": {
+            "column": 5,
+            "row": 25,
+            "width": 6,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*)  AS 'Ad Starts' FROM Datazoom WHERE (actionName = 'playback_start' AND media_type = 'ad') TIMESERIES LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Ad Starts",
+          "layout": {
+            "column": 11,
+            "row": 25,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*)  AS 'Ad Starts' FROM Datazoom WHERE (actionName = 'playback_start' AND media_type = 'ad')"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 28,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": " "
+          }
+        },
+        {
+          "title": "Ad Minutes over time",
+          "layout": {
+            "column": 5,
+            "row": 28,
+            "width": 6,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(Minutes) FROM (SELECT max(playback_duration_ads_ms)/60000 as 'Minutes'FROM Datazoom FACET content_session_id  LIMIT MAX TIMESERIES) TIMESERIES 1 minute LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Ad Minutes",
+          "layout": {
+            "column": 11,
+            "row": 28,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(Ad_Minutes) FROM (SELECT max(playback_duration_ads_ms)/60000 as 'Ad_Minutes' FROM Datazoom FACET content_session_id LIMIT MAX)LIMIT MAX"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Ad Error Percent",
+          "layout": {
+            "column": 1,
+            "row": 31,
+            "width": 4,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(count(*), WHERE (actionName = 'error' AND media_type = 'ad')) / filter(count(*), WHERE (actionName = 'media_request' AND media_type = 'ad')) * 100 as 'percentage' FROM Datazoom TIMESERIES   auto"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Ad Errors",
+          "layout": {
+            "column": 5,
+            "row": 31,
+            "width": 2,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*)  AS 'Total Ad Errors' FROM Datazoom WHERE (actionName = 'error' AND media_type = 'ad') "
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Ad Error Messages",
+          "layout": {
+            "column": 7,
+            "row": 31,
+            "width": 6,
+            "height": 3
+          },
+
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "select error_code, error_msg, inner_error from Datazoom WHERE (actionName ='error' AND media_type = 'ad')  LIMIT MAX"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

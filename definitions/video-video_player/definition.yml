@@ -1,0 +1,37 @@
+domain: VIDEO
+# Represents the video player experience across one platform/player
+type: VIDEO_PLAYER
+
+synthesis:
+  rules:
+    #Datazoom integration player data
+    - identifier: configuration_name
+      name: configuration_name
+
+      encodeIdentifierInGUID: true
+
+      conditions:
+        - attribute: eventType
+          value: Datazoom
+        - attribute: player_name
+          present: true
+      
+      tags:
+        dz_sdk_version:
+          entityTagNames: [instrumentation.version]
+          ttl: P1D
+        eventType:
+          entityTagNames: [instrumentation.provider]
+          ttl: P1D
+        player_name:
+          ttl: P1D
+        player_version:
+          ttl: P1D
+
+dashboardTemplates:
+  Datazoom:
+    template: datazoom-dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
