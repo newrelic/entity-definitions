@@ -1,0 +1,672 @@
+{
+    "name": "Sophos XGS Firewall",
+    "description": null,
+    "pages": [
+      {
+        "name": "Sophos XGS Firewall",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 4,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                },
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(sfosDeviceType) AS 'Device Type', latest(sfosDeviceFWVersion) AS 'Firmware Version', latest(sfosIPSVersion) AS 'Snort Version', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Current CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization (%)' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Memory Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization (%)' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 2,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Memory Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 2,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Current Disk Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 5,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.sfosDiskPercentUsage) AS 'Current Disk Utilization (%)' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Swap Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 5,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.sfosSwapPercentUsage) AS 'Current Swap Utilization (%)' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "HA State",
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(sfosHAStatus) AS 'HA Enabled?', latest(sfosDeviceCurrentHAState) AS 'HA State', latest(sfosDevicePeerHAState) AS 'Peer HA State' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Disk Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 6,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.sfosDiskPercentUsage) AS 'Min Disk', max(kentik.snmp.sfosDiskPercentUsage) AS 'Max Disk', average(kentik.snmp.sfosDiskPercentUsage) AS 'Average Disk' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Swap Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 6,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.sfosSwapPercentUsage) AS 'Min Swap', max(kentik.snmp.sfosSwapPercentUsage) AS 'Max Swap', average(kentik.snmp.sfosSwapPercentUsage) AS 'Average Swap' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Active Captive Portal Users",
+            "layout": {
+              "column": 1,
+              "row": 9,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.sfosLiveUsersCount) AS 'Active Captive Portal Users' WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Active Captive Portal Users",
+            "layout": {
+              "column": 3,
+              "row": 9,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.sfosLiveUsersCount) AS 'Active Captive Portal Users' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Service Status",
+            "layout": {
+              "column": 5,
+              "row": 9,
+              "width": 4,
+              "height": 6
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(sfosApacheService) AS 'APACHE', latest(sfosASService) AS 'AS', latest(sfosAVService) AS 'AV', latest(sfosDatabaseService) AS 'DATABASE', latest(sfosDgdService) AS 'DEAD GATEWAY DETECTION', latest(sfosDNSService) AS 'DNS', latest(sfosDroutingService) AS 'DYNAMIC ROUTING', latest(sfosFtpService) AS 'FTP', latest(sfosGarnerService) AS 'GARNER', latest(sfosHAService) AS 'HA', latest(sfosHttpService) AS 'HTTP', latest(sfosImap4Service) AS 'IMAP4', latest(sfosIPSService) AS 'IPS', latest(sfosIPSecVpnService) AS 'IPSEC VPN', latest(sfosNetworkService) AS 'NETWORK', latest(sfosNtpService) AS 'NTP', latest(sfosPoP3Service) AS 'POP3', latest(sfosSmtpService) AS 'SMTP', latest(sfosSSHdService) AS 'SSHD', latest(sfosSSLVpnService) AS 'SSL VPN', latest(sfosTomcatService) AS 'TOMCAT'WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "License Registration Status",
+            "layout": {
+              "column": 9,
+              "row": 9,
+              "width": 4,
+              "height": 6
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(sfosBaseFWLicRegStatus) AS 'Base Firewall', latest(sfosCentralOrchestrationLicRegStatus) AS 'Central Orchestration', latest(sfosEnhancedPlusLicRegStatus) AS 'Enhanced Plus', latest(sfosEnhancedSupportLicRegStatus) AS 'Enhanced Support', latest(sfosMailProtectionLicRegStatus) AS 'Mail Protection', latest(sfosNetProtectionLicRegStatus) AS 'Net Protection', latest(sfosSandstromLicRegStatus) AS 'Sandstorm', latest(sfosWebProtectionLicRegStatus) AS 'Web Protection', latest(sfosWebServerProtectionLicRegStatus) AS 'Web Server Protection'WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "TCP Protocol Hits",
+            "layout": {
+              "column": 1,
+              "row": 12,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.area"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.sfosHTTPHits) AS 'HTTP', max(kentik.snmp.sfosFTPHits) AS 'FTP', max(kentik.snmp.sfosPOP3Hits) AS 'POP3', max(kentik.snmp.sfosImapHits) AS 'IMAP', max(kentik.snmp.sfosSmtpHits) AS 'SMTP' WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "IPSec Tunnel Summary",
+            "layout": {
+              "column": 1,
+              "row": 15,
+              "width": 12,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(sfosIPSecVpnConnMode) AS 'Connection Mode', latest(sfosIPSecVpnConnType) AS 'Connection Type', latest(sfosIPSecVpnLocalgwPort) AS 'Local Gateway Port', latest(kentik.snmp.sfosIPSecVpnActiveTunnel) AS 'Active Tunnel Count' FACET sfosIPSecVpnConnName AS 'Connection Name', sfosIPSecVpnConnDes AS 'Connection Description', sfosIPSecVpnPolicyName AS 'Policy Name'WHERE provider = 'kentik-firewall'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Interfaces Summary",
+            "layout": {
+              "column": 1,
+              "row": 19,
+              "width": 12,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(if_OperStatus) AS 'Operational Status', latest(if_Speed) AS 'Interface Speed', latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface' WHERE provider = 'kentik-firewall' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Top 10 - Receive Traffic %",
+            "layout": {
+              "column": 1,
+              "row": 23,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_interface_name WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Top 10 - Receive Traffic Mbps",
+            "layout": {
+              "column": 4,
+              "row": 23,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.area"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Top 10 - Transmit Traffic %",
+            "layout": {
+              "column": 7,
+              "row": 23,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'TX %' FACET if_interface_name WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Top 10 - Transmit Traffic Mbps",
+            "layout": {
+              "column": 10,
+              "row": 23,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.area"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE provider = 'kentik-firewall' TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

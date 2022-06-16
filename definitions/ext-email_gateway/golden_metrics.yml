@@ -1,12 +1,16 @@
-# This is a CPU Idle measurement, which needs to be subtracted from 100 to get CPU Utilization
 cpuUtilization:
   title: CPU
   unit: PERCENTAGE
   queries:
+    # This is a CPU Idle measurement, which needs to be subtracted from 100 to get CPU Utilization
     kentik/barracuda-email-gateway:
       select: latest(100 - kentik.snmp.CPU)
       from: Metric
       where: "provider = 'kentik-barracuda-email-gateway'"
+    kentik/cisco-ironport-email:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-ironport-email-appliance'"
 
 memoryUtilization:
   title: Memory
@@ -16,6 +20,10 @@ memoryUtilization:
       select: average(kentik.snmp.MemoryUtilization)
       from: Metric
       where: "provider = 'kentik-barracuda-email-gateway'"
+    kentik/cisco-ironport-email:
+      select: average(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-ironport-email-appliance'"
 
 emailLatency:
   title: Email Latency
@@ -25,3 +33,7 @@ emailLatency:
       select: average(kentik.snmp.avgEmailLatency) * 1000
       from: Metric
       where: "provider = 'kentik-barracuda-email-gateway'"
+    kentik/cisco-ironport-email:
+      select: max(kentik.snmp.oldestMessageAge)
+      from: Metric
+      where: "provider = 'kentik-ironport-email-appliance'"

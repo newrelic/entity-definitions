@@ -28,17 +28,32 @@ writeThroughput:
       where: provider='RdsDbInstance'
       eventId: entityGuid
       eventName: entityName
-latencyMs:
-  title: Latency (ms)
+readLatencySeconds:
+  title: Read Latency (s)
   unit: SECONDS
   queries:
     aws:
-      select: (average(aws.rds.ReadLatency) + average(aws.rds.WriteLatency)) * 1000
+      select: average(aws.rds.ReadLatency) * 1000
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: average(provider.readLatency.Average + provider.writeLatency.Average) * 1000
+      select: average(provider.readLatency.Average) * 1000
+      from: DatastoreSample
+      where: provider='RdsDbInstance'
+      eventId: entityGuid
+      eventName: entityName
+writeLatencySeconds:
+  title: Write Latency (s)
+  unit: SECONDS
+  queries:
+    aws:
+      select: average(aws.rds.WriteLatency) * 1000
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.writeLatency.Average) * 1000
       from: DatastoreSample
       where: provider='RdsDbInstance'
       eventId: entityGuid

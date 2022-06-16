@@ -17,12 +17,12 @@ errorRate:
   unit: PERCENTAGE
   queries:
     gcp:
-      select: filter(sum(gcp.spanner.api.request_count), WHERE status != 'OK') * 100 / sum(`api.Requests`)
+      select: 100 * filter(sum(gcp.spanner.api.request_count), WHERE status != 'OK') / sum(`api.Requests`)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: filter(sum(`api.Requests`), WHERE status != 'OK') * 100 / sum(`api.Requests`)
+      select: 100 * filter(sum(`api.Requests`), WHERE status != 'OK') / sum(`api.Requests`)
       from: GcpSpannerDatabaseSample
       eventId: entityGuid
       eventName: entityName

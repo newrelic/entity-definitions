@@ -69,19 +69,24 @@ sessionsTotal:
       where: "provider = 'kentik-firewall'"
     # Cisco Firepower firewalls
     kentik/cisco-firepower:
-      select: latest(kentik.snmp.crasNumSessions)
+      select: max(kentik.snmp.crasNumSessions)
       from: Metric
       where: "provider = 'kentik-firepower'"
     # Dell Sonicwall firewalls
     kentik/sonicwall-sma:
-      select: latest(kentik.snmp.currentConnections)
+      select: max(kentik.snmp.currentConnections)
       from: Metric
       where: "provider = 'kentik-firewall'"
     # Checkpoint firewalls
     kentik/checkpoint-firewall:
-      select: latest(kentik.snmp.fwNumConn)
+      select: max(kentik.snmp.fwNumConn)
       from: Metric
-      where: "provider = 'kentik-firepower'"  
+      where: "provider = 'kentik-firepower'"
+    # Sophos firewalls
+    kentik/xgs-firewall:
+      select: max(kentik.snmp.sfosLiveUsersCount)
+      from: Metric
+      where: "provider = 'kentik-firewall'"
     # Other Kentik firewalls
     kentik:
       select: max(kentik.snmp.crasNumSessions)

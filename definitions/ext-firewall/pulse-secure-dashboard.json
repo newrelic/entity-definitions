@@ -1,0 +1,404 @@
+{
+  "name": "Pulse Secure",
+  "description": null,
+  "pages": [
+    {
+      "name": "Pulse Secure",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "recent-relative"
+              },
+              {
+                "name": "Uptime (Days)",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE instrumentation.name = 'pulse-secure'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE instrumentation.name = 'pulse-secure'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE instrumentation.name = 'pulse-secure'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "CPU Utilization (%)",
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE instrumentation.name = 'pulse-secure' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Memory Utilization (%)",
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE instrumentation.name = 'pulse-secure' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Appliance Details",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 2,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT latest(product_name), latest(product_version), latest(esap_version), latest(licensed_capacity) where instrumentation.name = 'pulse-secure'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Storage Summary",
+          "layout": {
+            "column": 3,
+            "row": 6,
+            "width": 5,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round(latest(kentik.snmp.hrStorageUsed)*100/latest(kentik.snmp.hrStorageSize}.01) AS 'Used %', round(latest(kentik.snmp.hrStorageSize)*1e-6,.01) AS 'Total MBytes', round(latest(kentik.snmp.hrStorageUsed)*1e-6,.01) AS 'Used MBytes' WHERE instrumentation.name = 'pulse-secure' FACET storage_description LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Log and Disk utilization %",
+          "layout": {
+            "column": 8,
+            "row": 6,
+            "width": 5,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT max(kentik.snmp.logFullPercent) AS 'Log full %', max(kentik.snmp.diskFullPercent) AS 'Disk full %' where instrumentation.name = 'pulse-secure' limit max timeseries 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Connections",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT max(kentik.snmp.iveVPNTunnels) as 'Concurrent VPN Users', max(kentik.snmp.iveSSLConnections) AS 'SSL Connections' where instrumentation.name = 'pulse-secure' limit max TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Users",
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT max(kentik.snmp.iveTotalSignedInUsers) AS 'Total Signed In Users', max(kentik.snmp.signedInMailUsers) AS 'Signed In Mail Users', max(kentik.snmp.signedInWebUsers) AS 'Signed In Web Users', max(kentik.snmp.iveConcurrentUsers) AS 'Concurrent Licenses in Use - Node', max(kentik.snmp.clusterConcurrentUsers) AS 'Concurrent Licenses in Use - Cluster' where instrumentation.name = 'pulse-secure' limit max TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Temperature",
+          "layout": {
+            "column": 1,
+            "row": 14,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT max(kentik.snmp.iveTemperature) where instrumentation.name = 'pulse-secure' limit max TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Hits since last reboot",
+          "layout": {
+            "column": 7,
+            "row": 14,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT max(kentik.snmp.iveTotalHits) AS 'Total hits', max(kentik.snmp.iveFileHits) AS 'File hits', max(kentik.snmp.iveWebHits) AS 'Web hits', max(kentik.snmp.iveAppletHits) AS 'Applet hits', max(kentik.snmp.ivetermHits) AS 'Terminal hits', max(kentik.snmp.iveSAMHits) AS 'SAM hits', max(kentik.snmp.iveNCHits) AS 'Network connect hits', max(kentik.snmp.meetingHits) AS 'Meeting hits' where instrumentation.name = 'pulse-secure' limit max TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
