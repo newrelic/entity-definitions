@@ -59,9 +59,16 @@ unhealthyHosts:
       eventId: entityGuid
       eventName: entityName
 surgeQueueLength:
-  query:
-    eventId: entity.guid
-    select: max(aws.elb.SurgeQueueLength)
-    from: Metric
+  queries:
+      aws:
+        select: max(aws.elb.SurgeQueueLength)
+        from: Metric
+        eventId: entity.guid
+      awsSample:
+        select: max(`provider.surgeQueueLength.Maximum`)
+        from: LoadBalancerSample
+        where: provider='Elb'
+        eventId: entityGuid
+        eventName: entityName
   unit: COUNT
   title: Surge Queue Length
