@@ -44,9 +44,16 @@ rejectedConnections:
       eventId: entityGuid
       eventName: entityName
 requests:
-  query:
-    eventId: entity.guid
-    select: sum(aws.applicationelb.RequestCount.byAlb)
-    from: Metric
   unit: COUNT
   title: Requests
+  queries:
+    aws:
+      eventId: entity.guid
+      select: sum(aws.applicationelb.RequestCount.byAlb)
+      from: Metric
+    awsSample:
+      select: sum(provider.requestCount.Sum)
+      from: LoadBalancerSample
+      where: provider='Alb'
+      eventId: entityGuid
+      eventName: entityName

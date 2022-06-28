@@ -59,9 +59,16 @@ concurrentTlsFlows:
       eventId: entityGuid
       eventName: entityName
 consumedLcus:
-  query:
-    eventId: entity.guid
-    select: max(aws.networkelb.ConsumedLCUs)
-    from: Metric
+  queries:
+    aws:
+      eventId: entity.guid
+      select: max(aws.networkelb.ConsumedLCUs)
+      from: Metric
+    awsSample:
+      select: max(provider.consumedLcus.Maximum)
+      from: LoadBalancerSample
+      where: provider='Nlb'
+      eventId: entityGuid
+      eventName: entityName
   unit: COUNT
   title: Consumed LCUs
