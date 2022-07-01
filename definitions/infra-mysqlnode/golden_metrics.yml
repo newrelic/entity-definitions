@@ -14,7 +14,7 @@ queriesPerSecond:
       eventName: entityName
 slowQueriesPerMinute:
   title: Slow queries per minute
-  unit: OPERATIONS_PER_SECOND
+  unit: COUNT
   queries:
     newRelic:
       select: average(mysql.node.query.slowQueriesPerSecond) * 60
@@ -41,16 +41,29 @@ connectionsPerSecond:
       eventId: entityGuid
       eventName: entityName
 queriesQuestions:
-  query:
-    eventId: entityGuid
-    select: (average(`query.questionsPerSecond`) * 60) / 60
-    from: MysqlSample
+  queries:
+    newRelic:
+      select: average(mysql.node.query.questionsPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      eventId: entityGuid
+      select: average(`query.questionsPerSecond`)
+      from: MysqlSample
+      eventName: entityName
   unit: OPERATIONS_PER_SECOND
   title: Query questions
 threads:
-  query:
-    eventId: entityGuid
-    select: latest(`net.threadsConnected`)
-    from: MysqlSample
+  queries:
+    newRelic:
+      from: Metric
+      eventId: entity.guid
+      select: latest(`mysql.node.net.threadsConnected`)
+    newRelicSample:
+      eventId: entityGuid
+      eventName: entityName
+      select: latest(`net.threadsConnected`)
+      from: MysqlSample
   unit: COUNT
   title: Threads connected
