@@ -58,3 +58,31 @@ averageReadBytes:
       where: provider='EbsVolume'
       eventId: entityGuid
       eventName: entityName
+readTime:
+  queries:
+    aws:
+      eventId: entity.guid
+      select: sum(aws.ebs.VolumeTotalReadTime) / sum(aws.ebs.VolumeReadOps)
+      from: Metric
+    awsSample:
+      select: (sum(provider.volumeTotalReadTime.Sum) / sum(provider.volumeReadOps.Sum))
+      from: BlockDeviceSample
+      where: provider='EbsVolume'
+      eventId: entityGuid
+      eventName: entityName
+  unit: SECONDS
+  title: Read time
+writeTime:
+  queries:
+    aws:
+      eventId: entity.guid
+      select: sum(aws.ebs.VolumeTotalWriteTime) / sum(aws.ebs.VolumeWriteOps)
+      from: Metric
+    awsSample:
+      select: (sum(provider.volumeTotalReadTime.Sum) / sum(provider.volumeReadOps.Sum))
+      from: BlockDeviceSample
+      where: provider='EbsVolume'
+      eventId: entityGuid
+      eventName: entityName
+  unit: SECONDS
+  title: Write time
