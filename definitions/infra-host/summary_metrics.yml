@@ -3,26 +3,43 @@ agentVersion:
   unit: STRING
   tag:
     key: agentVersion
-cpuUsage:
-  goldenMetric: cpuUsage
-  title: CPU usage (%)
+cpuUtilizationPercentHost:
+  title: Host CPU utilization percent
   unit: PERCENTAGE
-  queries:
-    newRelic:
-      select: average(host.cpuPercent)
-      from: Metric
-      eventId: entity.guid
-    newRelicSample:
-      select: average(cpuPercent)
-      from: SystemSample
-      eventId: entityGuid
-    opentelemetry:
-      select: average(1 - system.cpu.utilization) * 100
-      where: state = 'idle'
-      from: Metric
-      eventId: entity.guid
+  query:
+    from: Metric
+    select: average(host.cpuPercent)
+    eventId: entity.guid
+  hidden: true
+cpuUtilizationPercentEc2:
+  title: EC2 CPU utilization percent
+  unit: PERCENTAGE
+  query:
+    from: Metric
+    select: average(aws.ec2.CPUUtilization)
+    eventId: entity.guid
+  hidden: true
+cpuUtilizationPercentAzure:
+  title: Azure CPU utilization percent
+  unit: PERCENTAGE
+  query:
+    from: Metric
+    select: average(azure.compute.virtualmachines.PercentageCPU)
+    eventId: entity.guid
+  hidden: true
+cpuUtilizationPercentGcp:
+  title: GCP CPU utilization percent
+  unit: PERCENTAGE
+  query:
+    from: Metric
+    select: average(gcp.compute.instance.cpu.utilization)
+    eventId: entity.guid
+  hidden: true
+cpuUtilizationPercent:
+  title: CPU utilization percent
+  unit: PERCENTAGE
+  derive: '@cpuUtilizationPercentEc2 || @cpuUtilizationPercentAzure || @cpuUtilizationPercentGcp || @cpuUtilizationPercentHost'
 memoryUsedPercent:
-  goldenMetric: memoryUsage
   title: Memory used percent
   unit: PERCENTAGE
   query:
@@ -30,7 +47,6 @@ memoryUsedPercent:
     select: average(host.memoryUsedPercent)
     eventId: entity.guid
 diskUsedPercent:
-  goldenMetric: storageUsage
   title: Disk used percent
   unit: PERCENTAGE
   query:
