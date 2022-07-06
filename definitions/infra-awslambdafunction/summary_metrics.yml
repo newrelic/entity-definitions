@@ -1,0 +1,38 @@
+providerAccountName:
+  title: AWS account
+  unit: STRING
+  tag:
+    key: providerAccountName
+region:
+  title: Region
+  unit: STRING
+  tag:
+    key: aws.awsRegion
+errorRate:
+  goldenMetric: errorRate
+  title: Error rate %
+  unit: PERCENTAGE
+  query:
+    select: sum(provider.errors.Sum) * 100 / sum(provider.invocations.Sum)
+    from: ServerlessSample
+    where: provider='LambdaFunction'
+    eventId: entityGuid
+totalInvocations:
+  goldenMetric: totalInvocations
+  title: Total Invocations
+  unit: COUNT
+  query:
+    select: rate(sum(provider.invocations.Sum),1 minute)
+    from: ServerlessSample
+    where: provider='LambdaFunction'
+    eventId: entityGuid
+duration99PercentileS:
+  goldenMetric: duration99PercentileS
+  title: Duration (99 percentile) (s)
+  unit: SECONDS
+  query:
+    select: max(provider.duration.Maximum) / 1000
+    from: ServerlessSample
+    where: provider='LambdaFunction'
+    eventId: entityGuid
+
