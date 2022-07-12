@@ -57,7 +57,7 @@ You can test that the synthesis rules from your entity definition match the expe
 
 ### How to add testing data
 
-1. If it does not exist, create a folder named `test` under your entity definition directory. If it already exists, skip this step.
+1. If it does not exist, create a folder named `tests` under your entity definition directory. If it already exists, skip this step.
 
   i.e. `definitions/ext-pihole/tests/`
 
