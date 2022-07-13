@@ -30,7 +30,7 @@ indexingRateReqsMin:
       eventName: entityName
 searchLatencyMs:
   title: Search latency (ms)
-  unit: SECONDS
+  unit: MS
   queries:
     aws:
       select: average(aws.es.SearchLatency.byCluster)
@@ -45,7 +45,7 @@ searchLatencyMs:
       eventName: entityName
 indexingLatencyMs:
   title: Indexing latency (ms)
-  unit: SECONDS
+  unit: MS
   queries:
     aws:
       select: average(aws.es.IndexingLatency.byCluster)
@@ -59,7 +59,7 @@ indexingLatencyMs:
       eventId: entityGuid
       eventName: entityName
 cpuUtilization:
-  title: CPU Utilization (%)
+  title: CPU utilization (%)
   unit: PERCENTAGE
   queries:
     aws:
@@ -84,6 +84,21 @@ jvmMemoryPressure:
       eventName: entity.name
     awsSample:
       select: max(`provider.JVMMemoryPressure.Maximum`)
+      from: DatastoreSample
+      where: provider='ElasticsearchCluster'
+      eventId: entityGuid
+      eventName: entityName
+documents:
+  title: Searchable documents
+  unit: COUNT
+  queries:
+    aws:
+      select: average(aws.es.SearchableDocuments)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.SearchableDocuments`)
       from: DatastoreSample
       where: provider='ElasticsearchCluster'
       eventId: entityGuid
