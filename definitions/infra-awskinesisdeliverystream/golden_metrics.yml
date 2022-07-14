@@ -18,12 +18,12 @@ getThroughput:
   unit: BYTES_PER_SECOND
   queries:
     aws:
-      select: sum(aws.firehose.DeliveryToElasticsearch.Bytes) + sum(aws.firehose.DeliveryToS3.Bytes) + sum(aws.firehose.DeliveryToRedshift.Bytes)
+      select: rate(sum(aws.firehose.DeliveryToElasticsearch.Bytes) + sum(aws.firehose.DeliveryToS3.Bytes) + sum(aws.firehose.DeliveryToRedshift.Bytes), 1 second)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     awsSample:
-      select: sum(provider.deliveryToElasticsearchBytes.Sum) + sum(provider.deliveryToS3Bytes.Sum) + sum(provider.deliveryToRedshiftBytes.Sum)
+      select: rate(sum(provider.deliveryToElasticsearchBytes.Sum) + sum(provider.deliveryToS3Bytes.Sum) + sum(provider.deliveryToRedshiftBytes.Sum), 1 second)
       from: QueueSample
       where: provider='KinesisDeliveryStream'
       eventId: entityGuid
