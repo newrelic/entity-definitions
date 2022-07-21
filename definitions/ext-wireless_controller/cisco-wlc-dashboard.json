@@ -1,0 +1,360 @@
+{
+    "name": "Cisco Wireless LAN Controller",
+    "description": null,
+    "pages": [
+      {
+        "name": "Cisco Wireless LAN Controller",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 4,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                },
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysLocation) AS 'Location', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE provider = 'kentik-wireless-controller'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Current CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization (%)' WHERE provider = 'kentik-wireless-controller'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "Current Memory Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "width": 4,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization (%)' WHERE provider = 'kentik-wireless-controller'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "CPU Utilization (%)",
+            "layout": {
+              "column": 5,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-wireless-controller' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Memory Utilization (%)",
+            "layout": {
+              "column": 9,
+              "row": 2,
+              "width": 4,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-wireless-controller' TIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Interfaces Summary",
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "width": 12,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(if_OperStatus) AS 'Operational Status', latest(if_Speed) AS 'Interface Speed', latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface', if_Description AS 'Description' WHERE provider = 'kentik-wireless-controller' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Access Point Inventory",
+            "layout": {
+              "column": 1,
+              "row": 9,
+              "width": 12,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(bsnAPOperationStatus) AS 'Status' FACET bsnAPName AS 'AP Name', bsnApIpAddress AS 'AP IP', bsnAPDot3MacAddress AS 'AP MAC', bsnAPModel AS 'AP Model', bsnAPSerialNumber AS 'AP Serial', Index WHERE provider = 'kentik-wireless-controller' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "AP Interface Statistics",
+            "layout": {
+              "column": 1,
+              "row": 13,
+              "width": 12,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (latest(kentik.snmp.bsnAPIfPoorSNRClients)/latest(kentik.snmp.bsnAPIfLoadNumOfClients) )*100 AS 'Poor SNR %', latest(bsnAPIfOperStatus) AS 'Status', latest(kentik.snmp.bsnAPIfLoadChannelUtilization) AS 'Channel Utilization', latest(kentik.snmp.bsnAPIfPoorSNRClients) AS 'Clients with Poor SNR', latest(kentik.snmp.bsnAPIfLoadNumOfClients) AS 'Total Clients', latest(kentik.snmp.bsnAPIfPhyTxPowerLevel) AS 'TX Power Level' FACET Index AS 'AP Index' WHERE provider = 'kentik-wireless-controller' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Extended Service Set Inventory",
+            "layout": {
+              "column": 1,
+              "row": 18,
+              "width": 12,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.bsnDot11EssNumberOfMobileStations) AS 'Number of Mobile Stations', latest(bsnDot11EssAdminStatus) AS 'Admin Status', latest(bsnDot11EssBroadcastSsid) AS 'Broadcast SSID', latest(bsnDot11EssQualityOfService) AS 'Quality of Service', latest(bsnDot11EssRadioPolicy) AS 'Radio Policy' FACET bsnDot11EssSsid AS 'SSID' WHERE provider = 'kentik-wireless-controller' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Interference Details",
+            "layout": {
+              "column": 1,
+              "row": 21,
+              "width": 12,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.bsnAPIfInterferenceUtilization) AS 'Interference %' FACET Index AS 'AP Index' WHERE provider = 'kentik-wireless-controller' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "RADIUS Server Statistics",
+            "layout": {
+              "column": 1,
+              "row": 26,
+              "width": 12,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "RTT (secs)",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Timeouts",
+                  "type": "decimal"
+                },
+                {
+                  "name": "Retransmissions",
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(kentik.snmp.bsnRadiusAuthClientAccessRetransmissions) AS 'Retransmissions', max(kentik.snmp.bsnRadiusAuthClientTimeouts) AS 'Timeouts', max(kentik.snmp.bsnRadiusAuthClientRoundTripTime)/100 AS 'RTT (secs)' FACET bsnRadiusAuthServerAddress AS 'RADIUS Server' WHERE provider = 'kentik-wireless-controller' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
