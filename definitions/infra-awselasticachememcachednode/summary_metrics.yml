@@ -4,6 +4,7 @@ providerAccountName:
   title: AWS account
   unit: STRING
 getThroughput:
+  goldenMetric: getThroughput
   query:
     eventId: entity.guid
     select: rate(sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses), 1 second)
@@ -11,6 +12,7 @@ getThroughput:
   unit: REQUESTS_PER_SECOND
   title: Get throughput
 getHitRatio:
+  goldenMetric: getMisses
   query:
     eventId: entity.guid
     select: sum(aws.elasticache.GetHits) / (sum(aws.elasticache.GetHits) + sum(aws.elasticache.GetMisses)) * 100
@@ -18,6 +20,7 @@ getHitRatio:
   unit: PERCENTAGE
   title: Get hit rate
 swapUsage:
+  goldenMetric: swapUsage
   query:
     eventId: entity.guid
     select: average(aws.elasticache.SwapUsage.byMemcachedNode)
