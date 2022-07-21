@@ -9,7 +9,7 @@ By proposing changes to this repository you can achieve the following:
 - Generate entities from a new source of data (telemetry, logs, etc)
 - Change how an entity is represented in different experiences via golden metrics ( [New Relic Lookout](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/new-relic-lookout-monitor-your-estate-glance/), [workloads](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/workloads/workloads-isolate-resolve-incidents-faster/), etc) and summary metrics ([entity explorer](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/new-relic-explorer-view-performance-across-apps-services-hosts/))
 - Modify the summary of an entity type
-- Modify the lifecycle of an entity and make them `alertable`
+- Modify the lifecycle of an entity and make them `alertable` (see [Lifecycle](docs/lifecycle.md) for more information about this attribute)
 
 ## Changelog
 
