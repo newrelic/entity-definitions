@@ -1,5 +1,6 @@
 executionTime:
   title: Execution time (ms)
+  unit: MS
   query:
     select: latest(average_execution_time_ms)
     from: db2
@@ -7,6 +8,7 @@ executionTime:
     eventName: database
 hitRatio:
   title: Hit ratio
+  unit: PERCENTAGE
   query:
     select: latest(total_hit_ratio_percent)
     from: db2
@@ -14,8 +16,16 @@ hitRatio:
     eventName: database
 errorRate:
   title: Error rate
+  unit: PERCENTAGE
   query:
     select: filter(count(errorCode), WHERE errorCode is NOT NULL)/count(*)*100
     from: db2
     eventId: entity.guid
     eventName: database
+tablespaceFree:
+  title: Tablespace free
+  unit: PERCENTAGE
+  query:
+    select: latest(100 - tbsp_utilization_percent) 
+    from: db2
+    eventId: entity.guid
