@@ -16,14 +16,41 @@ synthesis:
       conditions:
         - attribute: provider
           value: firehose-vpc
+    # gcp pubsub -> dataflow (DEST)
+    - compositeIdentifier:
+        separator: "/"
+        attributes:
+          - jsonPayload.dest_vpc.project_id
+          - jsonPayload.dest_vpc.vpc_name
+      name: jsonPayload.dest_vpc.vpc_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: jsonPayload.reporter
+          value: "DEST"
+    # gcp pubsub -> dataflow (SRC)
+    - compositeIdentifier:
+        separator: "/"
+        attributes:
+          - jsonPayload.src_vpc.project_id
+          - jsonPayload.src_vpc.vpc_name
+      name: jsonPayload.src_vpc.vpc_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: jsonPayload.reporter
+          value: "SRC"
+
 
 goldenTags:
   - sample_rate
   - account_id
   - region
+  - resource.labels.project_id
+  - resource.labels.subnetwork_id
 
 dashboardTemplates:
   kentik/aws-vpc-flow-events:
     template: kentik-aws-vpc-dashboard.json
   aws-kinesis-firehose/vpc-flow-logs:
     template: aws-kinesis-firehose-vpc-flow-logs-dashboard.json
+  gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+    template: gcp-pubsub-dataflow-vpc-flow-logs-dashboard.json
