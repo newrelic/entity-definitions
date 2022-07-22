@@ -13,7 +13,10 @@ sources:
       from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc'"
       eventId: entity.guid
-
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: uniqueCount(jsonPayload.connection.src_ip, jsonPayload.connection.src_port)
+      from: Log_VPC_Flows_GCP
+      eventId: entity.guid
 destinations:
   goldenMetric: destinations
   title: Unique destinations
@@ -29,7 +32,10 @@ destinations:
       from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc'"
       eventId: entity.guid
-
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: uniqueCount(jsonPayload.connection.dest_ip, jsonPayload.connection.dest_port)
+      from: Log_VPC_Flows_GCP
+      eventId: entity.guid
 egressBytes:
   goldenMetric: egressBytes
   title: Egress bytes
@@ -45,7 +51,11 @@ egressBytes:
       from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc' and flow_direction = 'egress'"
       eventId: entity.guid
-
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: sum(jsonPayload.bytes_sent)
+      from: Log_VPC_Flows_GCP
+      where: "jsonPayload.reporter = 'SRC'"
+      eventId: entity.guid
 ingressBytes:
   goldenMetric: ingressBytes
   title: Ingress bytes
@@ -61,7 +71,11 @@ ingressBytes:
       from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc' and flow_direction = 'ingress'"
       eventId: entity.guid
-
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: sum(jsonPayload.bytes_sent)
+      from: Log_VPC_Flows_GCP
+      where: "jsonPayload.reporter = 'DEST'"
+      eventId: entity.guid
 sampleRate:
   title: Sample rate
   unit: STRING

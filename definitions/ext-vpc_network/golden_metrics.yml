@@ -10,6 +10,9 @@ sources:
       select: uniqueCount(src_endpoint)
       from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc'"
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: uniqueCount(jsonPayload.connection.src_ip, jsonPayload.connection.src_port)
+      from: Log_VPC_Flows_GCP
 destinations:
   title: Unique destinations
   unit: COUNT
@@ -22,8 +25,9 @@ destinations:
       select: uniqueCount(dest_endpoint)
       from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc'"
-
-
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: uniqueCount(jsonPayload.connection.dest_ip, jsonPayload.connection.dest_port)
+      from: Log_VPC_Flows_GCP
 egressBytes:
   title: Egress bytes
   unit: BYTES
@@ -36,7 +40,10 @@ egressBytes:
       select: sum(bytes*numeric(sample_rate))
       from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc' and flow_direction = 'egress'"
-
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: sum(jsonPayload.bytes_sent)
+      from: Log_VPC_Flows_GCP
+      where: "jsonPayload.reporter = 'SRC'"
 ingressBytes:
   title: Ingress bytes
   unit: BYTES
@@ -49,4 +56,8 @@ ingressBytes:
       select: sum(bytes*numeric(sample_rate))
       from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc' and flow_direction = 'ingress'"
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: sum(jsonPayload.bytes_sent)
+      from: Log_VPC_Flows_GCP
+      where: "jsonPayload.reporter = 'DEST'"
 
