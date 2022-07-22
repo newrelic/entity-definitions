@@ -8,7 +8,7 @@ sources:
       where: "provider = 'kentik-vpc'"
     aws-kinesis-firehose/vpc-flow-logs:
       select: uniqueCount(src_endpoint)
-      from: Log_VPC_Flows
+      from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc'"
     gcp-pubsub-dataflow/vpc-flow-logs-gcp:
       select: uniqueCount(jsonPayload.connection.src_ip, jsonPayload.connection.src_port)
@@ -23,7 +23,7 @@ destinations:
       where: "provider = 'kentik-vpc'"
     aws-kinesis-firehose/vpc-flow-logs:
       select: uniqueCount(dest_endpoint)
-      from: Log_VPC_Flows
+      from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc'"
     gcp-pubsub-dataflow/vpc-flow-logs-gcp:
       select: uniqueCount(jsonPayload.connection.dest_ip, jsonPayload.connection.dest_port)
@@ -38,7 +38,7 @@ egressBytes:
       where: "provider = 'kentik-vpc' AND flow_direction = 'egress'"
     aws-kinesis-firehose/vpc-flow-logs:
       select: sum(bytes*numeric(sample_rate))
-      from: Log_VPC_Flows
+      from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc' and flow_direction = 'egress'"
     gcp-pubsub-dataflow/vpc-flow-logs-gcp:
       select: sum(jsonPayload.bytes_sent)
@@ -54,7 +54,7 @@ ingressBytes:
       where: "provider = 'kentik-vpc' AND flow_direction = 'ingress'"
     aws-kinesis-firehose/vpc-flow-logs:
       select: sum(bytes*numeric(sample_rate))
-      from: Log_VPC_Flows
+      from: Log_VPC_Flows_AWS
       where: "provider = 'firehose-vpc' and flow_direction = 'ingress'"
     gcp-pubsub-dataflow/vpc-flow-logs-gcp:
       select: sum(jsonPayload.bytes_sent)
