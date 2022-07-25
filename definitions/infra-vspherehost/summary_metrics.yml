@@ -1,18 +1,29 @@
-cpuUtilization:
+cpuUsage:
+  goldenMetric: cpuUsage
   query:
     eventId: entityGuid
     select: average(`cpu.percent`)
     from: VSphereHostSample
   unit: PERCENTAGE
-  title: CPU utilization
-memoryUtilization:
+  title: CPU usage (%)
+memoryFree:
+  goldenMetric: memoryFree
+  title: Free memory (MiB)
+  unit: BYTES
   query:
-    eventId: entityGuid
-    select: average(`mem.usage`/`mem.size`)*100
+    select: average(mem.free)
     from: VSphereHostSample
-  unit: PERCENTAGE
-  title: Memory utilization
+    eventId: entityGuid
+memorySize:
+  goldenMetric: memorySize
+  title: Memory size (MiB)
+  unit: BYTES
+  query:
+    select: average(mem.size)
+    from: VSphereHostSample
+    eventId: entityGuid
 vmCount:
+  goldenMetric: vmCount
   query:
     eventId: entityGuid
     select: latest(`vmCount`)
