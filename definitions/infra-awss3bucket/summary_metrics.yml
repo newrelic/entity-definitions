@@ -3,17 +3,44 @@ providerAccountName:
     key: providerAccountName
   title: AWS account
   unit: STRING
-size:
-  query:
-    eventId: entity.guid
-    select: average(aws.s3.BucketSizeBytes)
-    from: Metric
-  unit: BYTES
-  title: Bucket size
-objects:
-  query:
-    eventId: entity.guid
-    select: average(aws.s3.NumberOfObjects)
-    from: Metric
+requests:
+  goldenMetric: requests
+  title: Requests
   unit: COUNT
-  title: Objects
+  query:
+    select: sum(aws.s3.GetRequests) + sum(aws.s3.PutRequests) + sum(aws.s3.HeadRequests)
+    from: Metric
+    eventId: entity.guid
+errors4xxAnd5xx:
+  goldenMetric: errors4xxAnd5xx
+  title: Errors
+  unit: COUNT
+  query:
+    select: sum(`aws.s3.4xxErrors`) + sum(`aws.s3.5xxErrors`)
+    from: Metric
+    eventId: entity.guid
+latency:
+  goldenMetric: latency
+  title: Latency
+  unit: SECONDS
+  query:
+    select: average(aws.s3.TotalRequestLatency) / 1000
+    from: Metric
+    eventId: entity.guid
+bytesDownloaded:
+  goldenMetric: bytesDownloaded
+  title: Bytes downloaded
+  unit: BYTES
+  query:
+    select: sum(aws.s3.BytesDownloaded)
+    from: Metric
+    eventId: entity.guid
+bytesUploaded:
+  goldenMetric: bytesUploaded
+  title: Bytes uploaded
+  unit: BYTES
+  query:
+    select: sum(aws.s3.BytesUploaded)
+    from: Metric
+    eventId: entity.guid
+
