@@ -67,23 +67,6 @@ networkInGcp:
     select: average(gcp.compute.instance.network.received_bytes_count)
     eventId: entity.guid
   hidden: true
-networkInOtel:
-  title: "Network In Otel"
-  unit: BYTES_PER_SECOND
-  query:
-    select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
-    where: device != 'lo' AND direction='receive'
-    from: Metric
-    eventId: entity.guid
-  hidden: true
-networkOutHost:
-  title: "Network Out Host"
-  unit: BYTES_PER_SECOND
-  query:
-    from: Metric
-    select: average(host.net.transmitBytesPerSecond)
-    eventId: entity.guid
-  hidden: true
 networkOutEc2:
   title: "Network Out Ec2"
   unit: BYTES_PER_SECOND
@@ -142,9 +125,9 @@ networkTrafficTx:
   goldenMetric: networkTrafficTx
   title: Network transmit traffic (bytes/s)
   unit: BYTES_PER_SECOND
-  derive: '@networkOutHost || @networkOutEc2 || @networkOutAzure || @networkOutGcp || @networkOutOtel'
+  derive: '@networkOutHost || @networkOutEc2 || @networkOutAzure || @networkOutGcp'
 networkTrafficRx:
   goldenMetric: networkTrafficRx
   title: Network receive traffic (bytes/s)
   unit: BYTES_PER_SECOND
-  derive: '@networkInHost || @networkInEc2 || @networkInAzure || @networkInGcp || @networkInOtel'
+  derive: '@networkInHost || @networkInEc2 || @networkInAzure || @networkInGcp'
