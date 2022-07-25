@@ -1,7 +1,19 @@
 activeAccessPoints:
-  title: Active access points
+  title: Active APs
   unit: COUNT
-  query:
-    select: uniqueCount(ap_name)
-    from: Metric
-    where: "provider = 'kentik-cloud-controller' AND kentik.snmp.devStatus[latest] = 1"
+  queries:
+    # Meraki Cloud Controller
+    kentik/meraki-cloud-controller:
+      select: uniqueCount(ap_name)
+      from: Metric
+      where: "provider = 'kentik-cloud-controller' AND kentik.snmp.devStatus[latest] = 1"
+    # Aruba WC
+    kentik/aruba-wireless-controller:
+      select: max(kentik.snmp.haActiveAPs)
+      from: Metric
+      where: "provider = 'kentik-wireless-controller'"
+    # Cisco WLC
+    kentik/cisco-wlc:
+      select: uniqueCount(Index)
+      from: Metric
+      where: "provider = 'kentik-wireless-controller' AND bsnAPOperationStatus = 'associated'"
