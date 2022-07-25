@@ -3,149 +3,148 @@ agentVersion:
   unit: STRING
   tag:
     key: agentVersion
-cpuUtilizationPercentHost:
-  title: Host CPU utilization percent
+cpuUsageHost:
+  title: "CPU Usage Host"
   unit: PERCENTAGE
   query:
     from: Metric
     select: average(host.cpuPercent)
     eventId: entity.guid
   hidden: true
-cpuUtilizationPercentEc2:
-  title: EC2 CPU utilization percent
+cpuUsageEc2:
+  title: "CPU Usage Ec2"
   unit: PERCENTAGE
   query:
     from: Metric
     select: average(aws.ec2.CPUUtilization)
     eventId: entity.guid
   hidden: true
-cpuUtilizationPercentAzure:
-  title: Azure CPU utilization percent
+cpuUsageAzure:
+  title: "CPU Usage Azure"
   unit: PERCENTAGE
   query:
     from: Metric
     select: average(azure.compute.virtualmachines.PercentageCPU)
     eventId: entity.guid
   hidden: true
-cpuUtilizationPercentGcp:
-  title: GCP CPU utilization percent
+cpuUsageGcp:
+  title: "CPU Usage GCP"
   unit: PERCENTAGE
   query:
     from: Metric
     select: average(gcp.compute.instance.cpu.utilization)
     eventId: entity.guid
   hidden: true
-cpuUtilizationPercent:
-  title: CPU utilization percent
-  unit: PERCENTAGE
-  derive: '@cpuUtilizationPercentHost || @cpuUtilizationPercentEc2 || @cpuUtilizationPercentAzure || @cpuUtilizationPercentGcp'
-memoryUsedPercent:
-  title: Memory used percent
-  unit: PERCENTAGE
-  query:
-    from: Metric
-    select: average(host.memoryUsedPercent)
-    eventId: entity.guid
-diskUsedPercent:
-  title: Disk used percent
-  unit: PERCENTAGE
-  query:
-    from: Metric
-    select: average(host.diskUsedPercent)
-    eventId: entity.guid
 networkInHost:
-  title: Network in host
+  title: "Network In Host"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(host.net.receiveBytesPerSecond)
     eventId: entity.guid
   hidden: true
-networkOutHost:
-  title: Network out host
-  unit: BYTES_PER_SECOND
-  query:
-    from: Metric
-    select: average(host.net.transmitBytesPerSecond)
-    eventId: entity.guid
-  hidden: true
-networkTrafficHost:
-  title: Network traffic host
-  unit: BYTES_PER_SECOND
-  derive: '@networkInHost + @networkOutHost'
-  hidden: true
 networkInEc2:
-  title: Network in EC2
+  title: "Network In EC2"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(aws.ec2.NetworkIn)
     eventId: entity.guid
   hidden: true
-networkOutEc2:
-  title: Network out EC2
-  unit: BYTES_PER_SECOND
-  query:
-    from: Metric
-    select: average(aws.ec2.NetworkOut)
-    eventId: entity.guid
-  hidden: true
-networkTrafficEc2:
-  title: Network traffic EC2
-  unit: BYTES_PER_SECOND
-  derive: (@networkInEc2 + @networkOutEc2) / 60
-  hidden: true
 networkInAzure:
-  title: Network in Azure
+  title: "Network In Azure"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(azure.compute.virtualmachines.NetworkIn)
     eventId: entity.guid
   hidden: true
-networkOutAzure:
-  title: Network out Azure
-  unit: BYTES_PER_SECOND
-  query:
-    from: Metric
-    select: average(azure.compute.virtualmachines.NetworkOut)
-    eventId: entity.guid
-  hidden: true
-networkTrafficAzure:
-  title: Network traffic Azure
-  unit: BYTES_PER_SECOND
-  derive: (@networkInAzure + @networkOutAzure) / 60
-  hidden: true
 networkInGcp:
-  title: Network in GCP
+  title: "Network In GCP"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(gcp.compute.instance.network.received_bytes_count)
     eventId: entity.guid
   hidden: true
+networkInOtel:
+  title: "Network In Otel"
+  unit: BYTES_PER_SECOND
+  query:
+    select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
+    where: device != 'lo' AND direction='receive'
+    from: Metric
+    eventId: entity.guid
+  hidden: true
+networkOutHost:
+  title: "Network Out Host"
+  unit: BYTES_PER_SECOND
+  query:
+    from: Metric
+    select: average(host.net.transmitBytesPerSecond)
+    eventId: entity.guid
+  hidden: true
+networkOutEc2:
+  title: "Network Out Ec2"
+  unit: BYTES_PER_SECOND
+  query:
+    from: Metric
+    select: average(aws.ec2.NetworkOut)
+    eventId: entity.guid
+  hidden: true
+networkOutAzure:
+  title: "Network Out Azure"
+  unit: BYTES_PER_SECOND
+  query:
+    from: Metric
+    select: average(azure.compute.virtualmachines.NetworkOut)
+    eventId: entity.guid
+  hidden: true
 networkOutGcp:
-  title: Network out GCP
+  title: "Network Out GCP"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(gcp.compute.instance.network.sent_bytes_count)
     eventId: entity.guid
   hidden: true
-networkTrafficGcp:
-  title: Network traffic GCP
+networkOutOtel:
+  title: "Network Out Otel"
   unit: BYTES_PER_SECOND
-  derive: (@networkInGcp + @networkOutGcp) / 60
+  query:
+    select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
+    where: device != 'lo' AND direction='transmit'
+    from: Metric
+    eventId: entity.guid
   hidden: true
-networkTrafficOtel:
-  title: Network traffic OTEL
-  unit: BYTES_PER_SECOND
-  hidden: true
+cpuUsage:
+  goldenMetric: cpuUsage
+  title: CPU usage (%)
+  unit: PERCENTAGE
+  derive: '@cpuUsageHost || @cpuUsageEc2 || @cpuUsageAzure || @cpuUsageGcp'
+memoryUsage:
+  goldenMetric: memoryUsage
+  title: Memory usage (%)
+  unit: PERCENTAGE
   query:
     from: Metric
-    select: average(system.network.io)
+    select: average(host.memoryUsage)
     eventId: entity.guid
-networkTraffic:
-  title: Network traffic
+storageUsage:
+  goldenMetric: storageUsage
+  title: Storage usage (%)
+  unit: PERCENTAGE
+  query:
+    from: Metric
+    select: average(host.diskUsedPercent)
+    eventId: entity.guid
+networkTrafficTx:
+  goldenMetric: networkTrafficTx
+  title: Network transmit traffic (bytes/s)
   unit: BYTES_PER_SECOND
-  derive: '@networkTrafficHost || @networkTrafficOtel || @networkTrafficEc2 || @networkTrafficAzure || @networkTrafficGcp'
+  derive: '@networkOutHost || @networkOutEc2 || @networkOutAzure || @networkOutGcp || @networkOutOtel'
+networkTrafficRx:
+  goldenMetric: networkTrafficRx
+  title: Network receive traffic (bytes/s)
+  unit: BYTES_PER_SECOND
+  derive: '@networkInHost || @networkInEc2 || @networkInAzure || @networkInGcp || @networkInOtel'
