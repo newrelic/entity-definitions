@@ -67,6 +67,14 @@ networkInGcp:
     select: average(gcp.compute.instance.network.received_bytes_count)
     eventId: entity.guid
   hidden: true
+networkOutHost:
+  title: Network out host
+  unit: BYTES_PER_SECOND
+  query:
+    from: Metric
+    select: average(host.net.transmitBytesPerSecond)
+    eventId: entity.guid
+  hidden: true
 networkOutEc2:
   title: "Network Out Ec2"
   unit: BYTES_PER_SECOND
@@ -89,15 +97,6 @@ networkOutGcp:
   query:
     from: Metric
     select: average(gcp.compute.instance.network.sent_bytes_count)
-    eventId: entity.guid
-  hidden: true
-networkOutOtel:
-  title: "Network Out Otel"
-  unit: BYTES_PER_SECOND
-  query:
-    select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
-    where: device != 'lo' AND direction='transmit'
-    from: Metric
     eventId: entity.guid
   hidden: true
 cpuUsage:
