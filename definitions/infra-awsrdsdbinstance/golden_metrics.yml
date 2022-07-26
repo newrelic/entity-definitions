@@ -28,36 +28,6 @@ writeThroughput:
       where: provider='RdsDbInstance'
       eventId: entityGuid
       eventName: entityName
-readLatencySeconds:
-  title: Read latency (s)
-  unit: SECONDS
-  queries:
-    aws:
-      select: average(aws.rds.ReadLatency) * 1000
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: average(provider.readLatency.Average) * 1000
-      from: DatastoreSample
-      where: provider='RdsDbInstance'
-      eventId: entityGuid
-      eventName: entityName
-writeLatencySeconds:
-  title: Write latency (s)
-  unit: SECONDS
-  queries:
-    aws:
-      select: average(aws.rds.WriteLatency) * 1000
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    awsSample:
-      select: average(provider.writeLatency.Average) * 1000
-      from: DatastoreSample
-      where: provider='RdsDbInstance'
-      eventId: entityGuid
-      eventName: entityName
 databaseConnections:
   title: Database connections
   unit: COUNT
@@ -69,6 +39,36 @@ databaseConnections:
       eventName: entity.name
     awsSample:
       select: average(provider.databaseConnections.Average)
+      from: DatastoreSample
+      where: provider='RdsDbInstance'
+      eventId: entityGuid
+      eventName: entityName
+freeStorage:
+  unit: BYTES
+  title: Free storage
+  queries:
+    aws:
+      select: min(aws.rds.FreeStorageSpace)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: min(provider.freeStorageSpaceBytes.Minimum)
+      from: DatastoreSample
+      where: provider='RdsDbInstance'
+      eventId: entityGuid
+      eventName: entityName
+cpuUtilization:
+  unit: PERCENTAGE
+  title: CPU utilization
+  queries:
+    aws:
+      select: average(aws.rds.CPUUtilization)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.cpuUtilization.Average)
       from: DatastoreSample
       where: provider='RdsDbInstance'
       eventId: entityGuid
