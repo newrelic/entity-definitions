@@ -8,14 +8,24 @@ engine:
   tag:
     key: aws.engine
   title: Engine
-throughput:
-  query:
-    eventId: entity.guid
-    select: average(aws.rds.ReadThroughput) + average(aws.rds.WriteThroughput)
-    from: Metric
+readThroughput:
+  goldenMetric: readThroughput
+  title: Read throughput
   unit: BYTES
-  title: Throughput
+  query:
+    select: average(aws.rds.ReadThroughput)
+    from: Metric
+    eventId: entity.guid
+writeThroughput:
+  goldenMetric: writeThroughput
+  title: Write throughput
+  unit: BYTES
+  query:
+    select: average(aws.rds.WriteThroughput)
+    from: Metric
+    eventId: entity.guid
 freeStorage:
+  goldenMetric: freeStorage
   query:
     eventId: entity.guid
     select: min(aws.rds.FreeStorageSpace)
@@ -23,6 +33,7 @@ freeStorage:
   unit: BYTES
   title: Free storage
 cpuUtilization:
+  goldenMetric: cpuUtilization
   query:
     eventId: entity.guid
     select: average(aws.rds.CPUUtilization)
