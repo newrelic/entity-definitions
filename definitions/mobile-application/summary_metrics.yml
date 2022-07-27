@@ -3,10 +3,10 @@ appLaunchCount:
   unit: COUNT
   title: App launches
   query:
-    from: Mobile
-    select: uniqueCount(sessionId)
+    from: Metric
+    select: count(newrelic.timeslice.value)
+    where: metricTimesliceName = 'Session/Start'
     eventId: appId
-    eventObjectId: DOMAIN_IDS
 crashCount:
   goldenMetric: crashCount
   unit: COUNT
@@ -15,25 +15,33 @@ crashCount:
     from: MobileCrash
     select: count(*)
     eventId: appId
-    eventObjectId: DOMAIN_IDS
-httpResponseTime95S:
-  goldenMetric: httpResponseTime95S
-  title: HTTP response time (95%)
-  unit: SECONDS
+httpResponseTimeMs:
+  goldenMetric: httpResponseTimeMs
+  title: HTTP response time (ms)
+  unit: MS
   query:
-    from: MobileRequest
-    select: percentile(responseTime,95)
+    from: Metric
+    select: average(newrelic.timeslice.value) * 1000
+    where: metricTimesliceName = 'External/all'
     eventId: appId
-    eventObjectId: DOMAIN_IDS
-httpErrorsAndNetworkFailuresCount:
-  goldenMetric: httpErrorsAndNetworkFailuresCount
-  title: HTTP errors and network failures count
+networkFailuresCount:
+  goldenMetric: networkFailuresCount
+  title: Network errors count
   unit: COUNT
   query:
-    from: MobileRequestError
-    select: count(*)
+    from: Metric
+    select: average(`newrelic`.`timeslice.value`) as Network failures
+    where: metricTimesliceName = 'Mobile/FailedCallRate'
     eventId: appId
-    eventObjectId: DOMAIN_IDS
+httpErrorsCount:
+  goldenMetric: httpErrorsCount
+  title: HTTP errors count
+  unit: COUNT
+  query:
+    from: Metric
+    select: average(`newrelic`.`timeslice.value`) as HTTP errors
+    where: metricTimesliceName = 'Mobile/StatusErrorRate'
+    eventId: appId
 requestsPerMinute:
   goldenMetric: requestsPerMinute
   title: Requests per minute
@@ -42,4 +50,3 @@ requestsPerMinute:
     from: MobileRequest
     select: rate(count(*), 1 minute)
     eventId: appId
-    eventObjectId: DOMAIN_IDS
