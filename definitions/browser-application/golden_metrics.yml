@@ -1,5 +1,6 @@
 throughputPpm:
   title: Throughput (ppm)
+  unit: PAGES_PER_SECOND
   query:
     select: rate(count(*), 1 minute)
     from: PageView
@@ -7,6 +8,7 @@ throughputPpm:
     eventName: appName
 largestContentfulPaint75PercentileS:
   title: Largest contentful paint (75 percentile) (s)
+  unit: SECONDS
   query:
     select: percentile(largestContentfulPaint, 75)
     from: PageViewTiming
@@ -14,6 +16,7 @@ largestContentfulPaint75PercentileS:
     eventName: appName
 firstInputDelay75PercentileMs:
   title: First input delay (75 percentile) (ms)
+  unit: MS
   query:
     select: percentile(firstInputDelay, 75)
     from: PageViewTiming
@@ -21,8 +24,25 @@ firstInputDelay75PercentileMs:
     eventName: appName
 errors:
   title: Errors
+  unit: COUNT
   query:
     select: count(*)
     from: JavaScriptError
+    eventId: entityGuid
+    eventName: appName
+pageLoadSeconds:
+  title: Pageload time (s)
+  unit: SECONDS
+  query:
+    select: average(duration)
+    from: PageView
+    eventId: entityGuid
+    eventName: appName
+throughputAjax:
+  title: Ajax throughput (rpm)
+  unit: REQUESTS_PER_MINUTE
+  query:
+    select: rate(count(*), 1 minute)
+    from: AjaxRequest
     eventId: entityGuid
     eventName: appName
