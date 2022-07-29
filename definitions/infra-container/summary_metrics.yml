@@ -3,7 +3,7 @@ containerState:
   unit: STRING
   tag:
     key: container.state
-cpuUsedCoresContainer:
+cpuUsageContainer:
   title: Container CPU Core usage
   query:
     eventId: entityGuid
@@ -11,7 +11,7 @@ cpuUsedCoresContainer:
     select: average(cpuUsedCores)
   unit: COUNT
   hidden: true
-cpuUsedCoresK8s:
+cpuUsageK8s:
   title: K8s CPU Core usage
   query:
     eventId: entityGuid
@@ -19,11 +19,12 @@ cpuUsedCoresK8s:
     select: average(cpuUsedCores)
   unit: COUNT
   hidden: true
-cpuUsedCores:
-  title: CPU Used Cores
-  derive: '@cpuUsedCoresContainer || @cpuUsedCoresK8s'
+cpuUsage:
+  goldenMetric: cpuUsage
+  title: CPU usage (cores)
+  derive: '@cpuUsageContainer || @cpuUsageK8s'
   unit: COUNT
-cpuUtilizationPercentContainer:
+cpuUtilizationContainer:
   title: Container CPU utilization percent
   query:
     eventId: entityGuid
@@ -31,7 +32,7 @@ cpuUtilizationPercentContainer:
     select: average(cpuPercent)
   unit: PERCENTAGE
   hidden: true
-cpuUtilizationPercentK8s:
+cpuUtilizationK8s:
   title: K8s CPU utilization percent
   query:
     eventId: entityGuid
@@ -39,31 +40,33 @@ cpuUtilizationPercentK8s:
     select: average(cpuCoresUtilization)
   unit: PERCENTAGE
   hidden: true
-cpuUtilizationPercent:
-  derive: '@cpuUtilizationPercentContainer || @cpuUtilizationPercentK8s'
+cpuUtilization:
+  goldenMetric: cpuUtilization
+  derive: '@cpuUtilizationContainer || @cpuUtilizationK8s'
   unit: PERCENTAGE
-  title: CPU Utilization
-diskUsedContainer:
-  title: container disk usage
+  title: CPU utilization (%)
+storageUsageContainer:
+  title: container storage usage
   query:
     eventId: entityGuid
     from: ContainerSample
     select: average(ioTotalBytes)
   unit: BYTES
   hidden: true
-diskUsedK8s:
-  title: K8s disk usage
+storageUsageK8s:
+  title: K8s storage usage
   query:
     eventId: entityGuid
     from: K8sContainerSample
     select: average(fsUsedBytes)
   unit: BYTES
   hidden: true
-diskUsed:
-  title: Disk usage (bytes)
+storageUsage:
+  goldenMetric: storageUsage
+  title: Storage usage (bytes)
   unit: BYTES
-  derive: '@diskUsedContainer || @diskUsedK8s'
-memoryUsedContainer:
+  derive: '@storageUsageContainer || @storageUsageK8s'
+memoryUsageContainer:
   title: Container memory usage
   query:
     eventId: entityGuid
@@ -71,7 +74,7 @@ memoryUsedContainer:
     select: average(memoryUsageBytes)
   unit: BYTES
   hidden: true
-memoryUsedK8s:
+memoryUsageK8s:
   title: K8s memory usage
   query:
     eventId: entityGuid
@@ -79,12 +82,13 @@ memoryUsedK8s:
     select: average(memoryWorkingSetBytes)
   unit: BYTES
   hidden: true
-memoryUsed:
-  derive: '@memoryUsedContainer || @memoryUsedK8s'
+memoryUsage:
+  goldenMetric: memoryUsage
+  derive: '@memoryUsageContainer || @memoryUsageK8s'
   title: Memory usage (bytes)
   unit: BYTES
 networkTrafficRx:
-  title: Network Traffic RX
+  title: Network traffic RX
   query:
     eventId: entityGuid
     from: ContainerSample
@@ -92,7 +96,7 @@ networkTrafficRx:
   unit: BYTES_PER_SECOND
   hidden: true
 networkTrafficTx:
-  title: Network Traffic TX
+  title: Network traffic TX
   query:
     eventId: entityGuid
     from: ContainerSample

@@ -35,11 +35,13 @@ A summary metric can be either an **NRDB-query-based metric**, a **tag metric** 
 The unit of the metric must be a string with one of the following values:
 
 - REQUESTS_PER_SECOND
+- REQUESTS_PER_MINUTE
 - PAGES_PER_SECOND
 - MESSAGES_PER_SECOND
 - OPERATIONS_PER_SECOND
 - COUNT
 - SECONDS
+- MS
 - PERCENTAGE
 - BITS
 - BYTES

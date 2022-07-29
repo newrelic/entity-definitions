@@ -1,10 +1,11 @@
 ipAddress:
-  title: IP Address
+  title: IP address
   unit: STRING
   tag:
     key: device_ip
 
 cpuUtilization:
+  goldenMetric: cpuUtilization
   title: CPU
   unit: PERCENTAGE
   queries:
@@ -40,18 +41,19 @@ cpuUtilization:
       eventId: entity.guid
 
 memoryUtilization:
+  goldenMetric: memoryUtilization
   title: Memory
   unit: PERCENTAGE
   queries:
     # Palo Alto firewalls
     kentik/palo-alto:
-      select: (max(kentik.snmp.hrStorageUsed) / max(kentik.snmp.hrStorageSize)) * 100
+      select: (max(kentik.snmp.hrStorageUsed / kentik.snmp.hrStorageSize)) * 100
       from: Metric
       where: "provider = 'kentik-firewall' AND storage_description LIKE '%Management Memory%'"
       eventId: entity.guid
     # Fortinet Fortigate firewalls
     kentik/fortinet-fortigate:
-      select: (max(kentik.snmp.fgSysMemUsage) / max(kentik.snmp.fgSysMemCapacity)) * 100
+      select: (max(kentik.snmp.fgSysMemUsage / kentik.snmp.fgSysMemCapacity)) * 100
       from: Metric
       where: "provider = 'kentik-firewall'"
       eventId: entity.guid
@@ -69,7 +71,8 @@ memoryUtilization:
       eventId: entity.guid
 
 sessionsTotal:
-  title: Current Sessions
+  goldenMetric: sessionsTotal
+  title: Current sessions
   unit: COUNT
   queries:
     # Palo Alto firewalls
@@ -80,7 +83,7 @@ sessionsTotal:
       eventId: entity.guid
     # Fortinet Fortigate firewalls
     kentik/fortinet-fortigate:
-      select: max(kentik.snmp.fgSysSesCount) + max(kentik.snmp.fgSysSes6Count)
+      select: max(kentik.snmp.fgSysSesCount + kentik.snmp.fgSysSes6Count)
       from: Metric
       where: "provider = 'kentik-firewall'"
       eventId: entity.guid
