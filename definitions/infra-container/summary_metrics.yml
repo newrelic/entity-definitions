@@ -8,7 +8,7 @@ cpuUsageContainer:
   query:
     eventId: entityGuid
     from: ContainerSample
-    select: average(cpuUsedCores)
+    select: max(cpuUsedCores)
   unit: COUNT
   hidden: true
 cpuUsageK8s:
@@ -16,7 +16,7 @@ cpuUsageK8s:
   query:
     eventId: entityGuid
     from: K8sContainerSample
-    select: average(cpuUsedCores)
+    select: max(cpuUsedCores)
   unit: COUNT
   hidden: true
 cpuUsage:
@@ -29,7 +29,7 @@ cpuUtilizationContainer:
   query:
     eventId: entityGuid
     from: ContainerSample
-    select: average(cpuPercent)
+    select: max(cpuPercent)
   unit: PERCENTAGE
   hidden: true
 cpuUtilizationK8s:
@@ -37,7 +37,7 @@ cpuUtilizationK8s:
   query:
     eventId: entityGuid
     from: K8sContainerSample
-    select: average(cpuCoresUtilization)
+    select: max(cpuCoresUtilization)
   unit: PERCENTAGE
   hidden: true
 cpuUtilization:
@@ -50,7 +50,7 @@ storageUsageContainer:
   query:
     eventId: entityGuid
     from: ContainerSample
-    select: average(ioTotalBytes)
+    select: max(ioTotalBytes)
   unit: BYTES
   hidden: true
 storageUsageK8s:
@@ -58,7 +58,7 @@ storageUsageK8s:
   query:
     eventId: entityGuid
     from: K8sContainerSample
-    select: average(fsUsedBytes)
+    select: max(fsUsedBytes)
   unit: BYTES
   hidden: true
 storageUsage:
@@ -71,7 +71,7 @@ memoryUsageContainer:
   query:
     eventId: entityGuid
     from: ContainerSample
-    select: average(memoryUsageBytes)
+    select: max(memoryUsageBytes)
   unit: BYTES
   hidden: true
 memoryUsageK8s:
@@ -79,7 +79,7 @@ memoryUsageK8s:
   query:
     eventId: entityGuid
     from: K8sContainerSample
-    select: average(memoryWorkingSetBytes)
+    select: max(memoryWorkingSetBytes)
   unit: BYTES
   hidden: true
 memoryUsage:
@@ -92,7 +92,7 @@ networkTrafficRx:
   query:
     eventId: entityGuid
     from: ContainerSample
-    select: average(networkRxBytesPerSecond)
+    select: max(networkRxBytesPerSecond)
   unit: BYTES_PER_SECOND
   hidden: true
 networkTrafficTx:
@@ -100,10 +100,11 @@ networkTrafficTx:
   query:
     eventId: entityGuid
     from: ContainerSample
-    select: average(networkTxBytesPerSecond)
+    select: max(networkTxBytesPerSecond)
   unit: BYTES_PER_SECOND
   hidden: true
 networkTrafficTotal:
+  goldenMetric: networkTrafficTotal
   derive: '@networkTrafficRx + @networkTrafficTx'
   title: Network traffic (bytes per second)
   unit: BYTES_PER_SECOND
