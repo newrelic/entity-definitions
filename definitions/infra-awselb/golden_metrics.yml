@@ -29,7 +29,7 @@ latency:
       eventId: entityGuid
       eventName: entityName
 errorRate:
-  title: Error Rate
+  title: Error rate
   unit: PERCENTAGE
   queries:
     aws:
@@ -58,3 +58,17 @@ unhealthyHosts:
       where: provider='Elb'
       eventId: entityGuid
       eventName: entityName
+surgeQueueLength:
+  queries:
+      aws:
+        select: max(aws.elb.SurgeQueueLength)
+        from: Metric
+        eventId: entity.guid
+      awsSample:
+        select: max(`provider.surgeQueueLength.Maximum`)
+        from: LoadBalancerSample
+        where: provider='Elb'
+        eventId: entityGuid
+        eventName: entityName
+  unit: COUNT
+  title: Surge queue length

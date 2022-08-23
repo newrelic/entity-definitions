@@ -17,7 +17,7 @@ Other valid values are `FOUR_HOURS`, `DAILY`, `QUARTERLY`, and `MANUAL`.
 
 ## Alertable
 
-Another option is to attach alerts to an entity. An entity is `alertable` by default. 
+By default, an entity is `alertable` which means you want to attach alerts to it. You can choose to change this behaviour by adding the `alertable` attribute like in the example below.
 
 ```
 domain: EXT
@@ -28,6 +28,7 @@ configuration:
 ```
 
 If `alertable` is set to `true`, the entity's metadata includes the field `alertSeverity`, which is updated when the telemetry associated to this entity breaks an alerting condition.
+Please also note that changing the value of `alertable` to `false` also causes that entity to stop showing up in the Explorer (but it will still show up in the Global Search).
 
 <!--
 TODO: ADd an image of health using alertSeverity here?

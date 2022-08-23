@@ -1,151 +1,132 @@
 agentVersion:
-  title: Agent Version
+  title: Agent version
   unit: STRING
   tag:
     key: agentVersion
-cpuUtilizationPercentHost:
-  title: Host CPU Utilization Percent
+cpuUsageHost:
+  title: "CPU Usage Host"
   unit: PERCENTAGE
   query:
     from: Metric
     select: average(host.cpuPercent)
     eventId: entity.guid
   hidden: true
-cpuUtilizationPercentEc2:
-  title: EC2 CPU Utilization Percent
+cpuUsageEc2:
+  title: "CPU Usage Ec2"
   unit: PERCENTAGE
   query:
     from: Metric
     select: average(aws.ec2.CPUUtilization)
     eventId: entity.guid
   hidden: true
-cpuUtilizationPercentAzure:
-  title: Azure CPU Utilization Percent
+cpuUsageAzure:
+  title: "CPU Usage Azure"
   unit: PERCENTAGE
   query:
     from: Metric
     select: average(azure.compute.virtualmachines.PercentageCPU)
     eventId: entity.guid
   hidden: true
-cpuUtilizationPercentGcp:
-  title: GCP CPU Utilization Percent
+cpuUsageGcp:
+  title: "CPU Usage GCP"
   unit: PERCENTAGE
   query:
     from: Metric
     select: average(gcp.compute.instance.cpu.utilization)
     eventId: entity.guid
   hidden: true
-cpuUtilizationPercent:
-  title: CPU Utilization Percent
-  unit: PERCENTAGE
-  derive: '@cpuUtilizationPercentEc2 || @cpuUtilizationPercentAzure || @cpuUtilizationPercentGcp || @cpuUtilizationPercentHost'
-memoryUsedPercent:
-  title: Memory Used Percent
-  unit: PERCENTAGE
-  query:
-    from: Metric
-    select: average(host.memoryUsedPercent)
-    eventId: entity.guid
-diskUsedPercent:
-  title: Disk Used Percent
-  unit: PERCENTAGE
-  query:
-    from: Metric
-    select: average(host.diskUsedPercent)
-    eventId: entity.guid
 networkInHost:
-  title: Network In Host
+  title: "Network In Host"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(host.net.receiveBytesPerSecond)
     eventId: entity.guid
   hidden: true
-networkOutHost:
-  title: Network Out Host
-  unit: BYTES_PER_SECOND
-  query:
-    from: Metric
-    select: average(host.net.transmitBytesPerSecond)
-    eventId: entity.guid
-  hidden: true
-networkTrafficHost:
-  title: Network Traffic Host
-  unit: BYTES_PER_SECOND
-  derive: '@networkInHost + @networkOutHost'
-  hidden: true
 networkInEc2:
-  title: Network In EC2
+  title: "Network In EC2"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(aws.ec2.NetworkIn)
     eventId: entity.guid
   hidden: true
-networkOutEc2:
-  title: Network Out EC2
-  unit: BYTES_PER_SECOND
-  query:
-    from: Metric
-    select: average(aws.ec2.NetworkOut)
-    eventId: entity.guid
-  hidden: true
-networkTrafficEc2:
-  title: Network Traffic EC2
-  unit: BYTES_PER_SECOND
-  derive: (@networkInEc2 + @networkOutEc2) / 60
-  hidden: true
 networkInAzure:
-  title: Network In Azure
+  title: "Network In Azure"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(azure.compute.virtualmachines.NetworkIn)
     eventId: entity.guid
   hidden: true
-networkOutAzure:
-  title: Network Out Azure
-  unit: BYTES_PER_SECOND
-  query:
-    from: Metric
-    select: average(azure.compute.virtualmachines.NetworkOut)
-    eventId: entity.guid
-  hidden: true
-networkTrafficAzure:
-  title: Network Traffic Azure
-  unit: BYTES_PER_SECOND
-  derive: (@networkInAzure + @networkOutAzure) / 60
-  hidden: true
 networkInGcp:
-  title: Network In GCP
+  title: "Network In GCP"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(gcp.compute.instance.network.received_bytes_count)
     eventId: entity.guid
   hidden: true
+networkOutHost:
+  title: Network out host
+  unit: BYTES_PER_SECOND
+  query:
+    from: Metric
+    select: average(host.net.transmitBytesPerSecond)
+    eventId: entity.guid
+  hidden: true
+networkOutEc2:
+  title: "Network Out Ec2"
+  unit: BYTES_PER_SECOND
+  query:
+    from: Metric
+    select: average(aws.ec2.NetworkOut)
+    eventId: entity.guid
+  hidden: true
+networkOutAzure:
+  title: "Network Out Azure"
+  unit: BYTES_PER_SECOND
+  query:
+    from: Metric
+    select: average(azure.compute.virtualmachines.NetworkOut)
+    eventId: entity.guid
+  hidden: true
 networkOutGcp:
-  title: Network Out GCP
+  title: "Network Out GCP"
   unit: BYTES_PER_SECOND
   query:
     from: Metric
     select: average(gcp.compute.instance.network.sent_bytes_count)
     eventId: entity.guid
   hidden: true
-networkTrafficGcp:
-  title: Network Traffic GCP
-  unit: BYTES_PER_SECOND
-  derive: (@networkInGcp + @networkOutGcp) / 60
-  hidden: true
-networkTrafficOtel:
-  title: Network Traffic OTEL
-  unit: BYTES_PER_SECOND
-  hidden: true
+cpuUsage:
+  goldenMetric: cpuUsage
+  title: CPU usage (%)
+  unit: PERCENTAGE
+  derive: '@cpuUsageHost || @cpuUsageEc2 || @cpuUsageAzure || @cpuUsageGcp'
+memoryUsage:
+  goldenMetric: memoryUsage
+  title: Memory usage (%)
+  unit: PERCENTAGE
   query:
     from: Metric
-    select: average(system.network.io)
+    select: average(host.memoryUsedPercent)
     eventId: entity.guid
-networkTraffic:
-  title: Network Traffic
+storageUsage:
+  goldenMetric: storageUsage
+  title: Storage usage (%)
+  unit: PERCENTAGE
+  query:
+    from: Metric
+    select: average(host.diskUsedPercent)
+    eventId: entity.guid
+networkTrafficTx:
+  goldenMetric: networkTrafficTx
+  title: Network transmit traffic (bytes/s)
   unit: BYTES_PER_SECOND
-  derive: '@networkTrafficEc2 || @networkTrafficAzure || @networkTrafficGcp || @networkTrafficHost || @networkTrafficOtel'
+  derive: '@networkOutHost || @networkOutEc2 || @networkOutAzure || @networkOutGcp'
+networkTrafficRx:
+  goldenMetric: networkTrafficRx
+  title: Network receive traffic (bytes/s)
+  unit: BYTES_PER_SECOND
+  derive: '@networkInHost || @networkInEc2 || @networkInAzure || @networkInGcp'

@@ -1,24 +1,24 @@
 domain: INFRA
 type: HOST
 goldenTags:
-  - account
-  - windowsPlatform
-  - linuxDistribution
-  - aws.awsRegion
-  - aws.region
-  - aws.availabilityZone
-  - aws.accountId
-  - azure.regionName
-  - azure.subscriptionId
-  - azure.resourceGroup
-  - gcp.zone
-  - gcp.projectId
-  # opentelemetry semantic conventions for cloud instances
-  - cloud.provider
-  - cloud.account.id
-  - cloud.region
-  - cloud.availability_zone
-  - cloud.platform
+- account
+- windowsPlatform
+- linuxDistribution
+- aws.awsRegion
+- aws.region
+- aws.availabilityZone
+- aws.accountId
+- azure.regionName
+- azure.subscriptionId
+- azure.resourceGroup
+- gcp.zone
+- gcp.projectId
+# opentelemetry semantic conventions for cloud instances
+- cloud.provider
+- cloud.account.id
+- cloud.region
+- cloud.availability_zone
+- cloud.platform
 synthesis:
   rules:
     # opentelemetry host data from opentelemetry-collector
@@ -109,47 +109,6 @@ synthesis:
         host.image.id:
         host.image.version:
         instrumentation.provider:
-
-    # host information from log data
-    - identifier: host
-      name: host
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: 'service_name'
-          present: false
-        - attribute: 'container.name'
-          present: false
-        - attribute: eventType
-          value: Log
-        - attribute: newrelic.source
-          value: 'api.logs'
-
-    - identifier: hostname
-      name: hostname
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: 'service_name'
-          present: false
-        - attribute: 'container.name'
-          present: false
-        - attribute: eventType
-          value: Log
-        - attribute: newrelic.source
-          value: 'api.logs'
-
-    - identifier: host.name
-      name: host.name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: 'service_name'
-          present: false
-        - attribute: 'container.name'
-          present: false
-        - attribute: eventType
-          value: Log
-        - attribute: newrelic.source
-          value: 'api.logs'
-
 configuration:
   entityExpirationTime: DAILY
   alertable: true

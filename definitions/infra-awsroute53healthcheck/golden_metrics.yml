@@ -1,14 +1,30 @@
 health:
-  query:
-    eventId: entity.guid
-    select: min(aws.route53.HealthCheckStatus)
-    from: Metric
+  queries:
+    newRelic:
+      select: min(aws.route53.HealthCheckStatus)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: min(`provider.healthCheckStatus.Minimum`)
+      from: HealthCheckSample
+      where: provider='Route53HealthCheck'
+      eventId: entityGuid
+      eventName: entityName
   unit: COUNT
   title: Health status
 healthyCheckers:
-  query:
-    eventId: entity.guid
-    select: average(aws.route53.HealthCheckPercentageHealthy)
-    from: Metric
+  queries:
+    newRelic:
+      select: average(aws.route53.HealthCheckPercentageHealthy)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(`provider.healthCheckPercentageHealthy.Average`)
+      from: HealthCheckSample
+      where: provider='Route53HealthCheck'
+      eventId: entityGuid
+      eventName: entityName
   unit: PERCENTAGE
   title: Healthy checkers
