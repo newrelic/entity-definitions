@@ -1,23 +1,59 @@
 outputLoadCapacity:
   title: Output load capacity %
   unit: PERCENTAGE
-  query:
-    select: average(kentik.snmp.upsAdvOutputLoad)
-    from: Metric
-    where: "provider = 'kentik-ups'"
+  queries:
+    # APC UPS profiles (default)
+    kentik/apc_ups:
+      select: max(kentik.snmp.upsAdvOutputLoad)
+      from: Metric
+      where: "provider = 'kentik-ups'"
+    # Tripplite UPS profiles
+    kentik/tripplite-ups:
+      select: max(kentik.snmp.upsOutputPercentLoad)
+      from: Metric
+      where: "provider = 'kentik-ups'"
+    # Generic UPS profiles
+    kentik/ups:
+      select: max(kentik.snmp.upsOutputPercentLoad)
+      from: Metric
+      where: "provider = 'kentik-ups'"
 
 batteryTemperature:
   title: Battery temperature (celsius)
   unit: CELSIUS
-  query:
-    select: average(kentik.snmp.upsAdvBatteryTemperature)
-    from: Metric
-    where: "provider = 'kentik-ups'"
+  queries:
+    # APC UPS profiles (default)
+    kentik/apc_ups:
+      select: average(kentik.snmp.upsAdvBatteryTemperature)
+      from: Metric
+      where: "provider = 'kentik-ups'"
+    # Tripplite UPS profiles
+    kentik/tripplite-ups:
+      select: average(kentik.snmp.upsBatteryTemperature)
+      from: Metric
+      where: "provider = 'kentik-ups'"
+    # Generic UPS profiles
+    kentik/ups:
+      select: average(kentik.snmp.upsBatteryTemperature)
+      from: Metric
+      where: "provider = 'kentik-ups'"
 
 batteryTimeRemaining:
   title: Battery run time remaining
   unit: SECONDS
-  query:
-    select: latest(kentik.snmp.upsAdvBatteryRunTimeRemaining)*.01
-    from: Metric
-    where: "provider = 'kentik-ups'"
+  queries:
+    # APC UPS profiles (default)
+    kentik/apc_ups:
+      select: latest(kentik.snmp.upsAdvBatteryRunTimeRemaining)*.01
+      from: Metric
+      where: "provider = 'kentik-ups'"
+    # Tripplite UPS profiles
+    kentik/tripplite-ups:
+      select: latest(kentik.snmp.upsEstimatedMinutesRemaining)*60
+      from: Metric
+      where: "provider = 'kentik-ups'"
+    # Generic UPS profiles
+    kentik/ups:
+      select: latest(kentik.snmp.upsEstimatedMinutesRemaining)*60
+      from: Metric
+      where: "provider = 'kentik-ups'"
