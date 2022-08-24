@@ -1,14 +1,24 @@
 sendMessageRequests:
-  query:
-    eventId: entityGuid
-    select: (rate(sum(`topic.SendMessageOperation`), 1 minute)) / 60
-    from: GcpPubSubTopicSample
+  queries:
+    gpc:
+      eventId: entity.guid
+      select: (rate(sum(`gcp.pubsub.topic.send_message_operation_count`), 1 minute)) / 60
+      from: Metric 
+    gpcSample: 
+      eventId: entityGuid
+      select: (rate(sum(`topic.SendMessageOperation`), 1 minute)) / 60
+      from: GcpPubSubTopicSample
   unit: MESSAGES_PER_SECOND
   title: Send rate
-byteCost:
-  query:
-    eventId: entityGuid
-    select: sum(`topic.NumUnackedMessagesByRegion`)
-    from: GcpPubSubTopicSample
+unackedMessages:
+  queries:
+    gpc:
+      eventId: entity.guid
+      select: sum(`gcp.pubsub.subscription.num_unacked_messages_by_region`)
+      from: Metric 
+    gpcSample: 
+      eventId: entityGuid
+      select: sum(`topic.NumUnackedMessagesByRegion`)
+      from: GcpPubSubTopicSample
   unit: COUNT
   title: Unacknowledged messages
