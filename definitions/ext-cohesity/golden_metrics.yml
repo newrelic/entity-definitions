@@ -1,0 +1,52 @@
+ClusteDataCollectionValidation:
+  title: Cluster data collection validation
+  unit: COUNT
+  query:
+    select: uniqueCount(clusterCI)
+    from: cohesity
+    eventId: entity.guid
+
+IOsRead:
+  title: IOs read
+  unit: OPERATIONS_PER_SECOND
+  query:
+    select: latest(readIos)
+    from: cohesity
+    where: key = 'stats'
+    eventId: entity.guid
+
+IOsWrite:
+  title: IOs write
+  unit: OPERATIONS_PER_SECOND
+  query:
+    select: latest(writeIos)
+    from: cohesity
+    where: key = 'stats'
+    eventId: entity.guid
+
+usedCapacityPercent:
+  title: Used capacity %
+  unit: PERCENTAGE
+  query:
+    select: latest(localUsageBytes / totalCapacityBytes)*100 as 'Used %'
+    from: cohesity
+    where: key ='capacity'
+    eventId: entity.guid
+
+ReadGBs:
+  title: Read GBs
+  unit: BYTES_PER_SECOND
+  query:
+    select: latest(numBytesRead)/1024/1024/1024 as 'Read GB'
+    from: cohesity
+    where: key = 'stats'
+    eventId: entity.guid
+
+WriteGBs:
+  title: Write GBs
+  unit: BYTES_PER_SECOND
+  query:
+    select: latest(numBytesWritten)/1024/1024/1024 as 'Written GB'
+    from: cohesity
+    where: key = 'stats'
+    eventId: entity.guid
