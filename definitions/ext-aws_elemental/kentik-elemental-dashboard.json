@@ -167,25 +167,10 @@
           }
         },
         {
-          "title": "",
-          "layout": {
-            "column": 1,
-            "row": 5,
-            "width": 12,
-            "height": 1
-          },
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "# Interface Metrics"
-          }
-        },
-        {
           "title": "Interfaces Summary",
           "layout": {
             "column": 1,
-            "row": 6,
+            "row": 5,
             "width": 12,
             "height": 4
           },
@@ -199,7 +184,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT round(latest(kentik.snmp.IfInUtilization}.01) AS 'RX Utilization %', round((sum(kentik.snmp.ifInErrors)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX Error Rate %', round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX Discard Rate %', latest(if_Description) AS 'Description', latest(if_OperStatus) AS 'Operational Status', latest(if_Address) AS 'Address', latest(if_PhysAddress) AS 'Phys Address', latest(if_Index) AS 'Index', latest(if_Alias) AS 'Alias' WHERE instrumentation.name = 'elemental-device' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name'"
+                "query": "FROM Metric SELECT round(latest(kentik.snmp.IfInUtilization),.01) AS 'RX Utilization %', round((sum(kentik.snmp.ifInErrors)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX Error Rate %', round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX Discard Rate %', latest(if_Description) AS 'Description', latest(if_OperStatus) AS 'Operational Status', latest(if_Address) AS 'Address', latest(if_PhysAddress) AS 'Phys Address', latest(if_Index) AS 'Index', latest(if_Alias) AS 'Alias' WHERE instrumentation.name = 'elemental-device' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name'"
               }
             ],
             "platformOptions": {
@@ -211,7 +196,7 @@
           "title": "Rx Utilization %",
           "layout": {
             "column": 1,
-            "row": 10,
+            "row": 9,
             "width": 6,
             "height": 4
           },
@@ -243,7 +228,7 @@
           "title": "Tx Utilization %",
           "layout": {
             "column": 7,
-            "row": 10,
+            "row": 9,
             "width": 6,
             "height": 4
           },
@@ -272,12 +257,12 @@
           }
         },
         {
-          "title": "Dsk Utilization %",
+          "title": "Top 10 - Receive Traffic Mbps",
           "layout": {
             "column": 1,
-            "row": 14,
-            "width": 4,
-            "height": 3
+            "row": 13,
+            "width": 6,
+            "height": 4
           },
           "visualization": {
             "id": "viz.line"
@@ -292,7 +277,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(kentik.snmp.dskPercent) FACET dsk_device  where device_name = 'lonelemental03' TIMESERIES AUTO "
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE instrumentation.name = 'elemental-device' TIMESERIES 5 MINUTES limit 10"
               }
             ],
             "platformOptions": {
@@ -304,12 +289,12 @@
           }
         },
         {
-          "title": "Rx Discard Rate",
+          "title": "Top 10 - Transmit Traffic Mbps",
           "layout": {
-            "column": 9,
-            "row": 14,
-            "width": 4,
-            "height": 3
+            "column": 7,
+            "row": 13,
+            "width": 6,
+            "height": 4
           },
           "visualization": {
             "id": "viz.line"
@@ -324,7 +309,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX Discard Rate' WHERE device_name = 'lonelemental03' TIMESERIES FACET if_interface_name OR if_Name SINCE 30 MINUTES AGO"
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE instrumentation.name = 'elemental-device' TIMESERIES 5 MINUTES limit 10"
               }
             ],
             "platformOptions": {
@@ -332,6 +317,121 @@
             },
             "yAxisLeft": {
               "zero": true
+            }
+          }
+        },
+        {
+          "title": "Storage Summary",
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.hrStorageSize) as DiskSize, latest(kentik.snmp.hrStorageUsed) as DiskUsed, latest(kentik.snmp.hrStorageUsed) /latest(kentik.snmp.hrStorageSize) * 100 as 'Used %' facet storage_description  where instrumentation.name = 'elemental-device' and `mib-table` = 'hrStorage' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Dsk Utilization %",
+          "layout": {
+            "column": 7,
+            "row": 17,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.hrStorageUsed) / latest(kentik.snmp.hrStorageSize) * 100 as 'Used %' facet storage_description  where instrumentation.name = 'elemental-device' and `mib-table` = 'hrStorage' limit max TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "AWS Elemental MIB",
+          "layout": {
+            "column": 1,
+            "row": 21,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(databaseBackup), latest(firewallStatus), latest(httpdStatus), latest(mountPoints), latest(serviceStatus)"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "AWS Elemental MIB Timeline",
+          "layout": {
+            "column": 7,
+            "row": 21,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.databaseBackup), latest(kentik.snmp.firewallStatus), latest(kentik.snmp.httpdStatus), latest(kentik.snmp.mountPoints), latest(kentik.snmp.serviceStatus) timeseries 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
             }
           }
         }
