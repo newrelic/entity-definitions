@@ -1,5 +1,5 @@
 {
-  "name": "VPC Network",
+  "name": "GCP VPC Network",
   "description": null,
   "pages": [
     {
@@ -22,7 +22,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT latest(vpc_id) AS 'VPC Name', latest(instrumentation.provider) AS 'Flow Type', latest(sample_rate) as 'Sample Rate', rate(count(*),1 second) as 'Flows per Second', latest(timestamp) as 'Last Update', uniqueCount(srcaddr, dstaddr) as 'Observed IP Addresses', uniqueCount(src_endpoint, dest_endpoint) as 'Observed Endpoint Tuples'"
+                "query": "FROM Log_VPC_Flows_GCP SELECT filter(latest(jsonPayload.src_vpc.vpc_name), WHERE jsonPayload.reporter = 'SRC') OR filter(latest(jsonPayload.dest_vpc.vpc_name), WHERE jsonPayload.reporter = 'DEST') as 'VPC Name', rate(count(*),1 second) as 'Flows per Second', latest(timestamp) as 'Last Update', uniqueCount(jsonPayload.connection.src_ip, jsonPayload.connection.dest_ip) as 'Observed IP Addresses', uniqueCount(concat(jsonPayload.connection.dest_ip, ':', jsonPayload.connection.dest_port), concat(jsonPayload.connection.src_ip, ':', jsonPayload.connection.src_port)) as 'Observed Endpoint Tuples'"
               }
             ],
             "thresholds": []
@@ -50,7 +50,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate))\nFacet CASES (\n  WHERE flow_direction = 'egress' AND numeric(sample_rate) = 1 as 'Egress Bytes',\n  WHERE flow_direction = 'ingress' AND numeric(sample_rate) = 1 as 'Ingress Bytes',\n  WHERE flow_direction = 'egress' AND sample_rate > 1 as 'Egress Bytes (estimated)',\n  WHERE flow_direction = 'ingress' AND sample_rate > 1 as 'Ingress Bytes (estimated)'\n) \nTIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent))\nFacet CASES (\n  WHERE jsonPayload.reporter = 'SRC' as 'Egress Bytes',\n  WHERE jsonPayload.reporter = 'DEST' as 'Ingress Bytes') \nTIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
@@ -80,146 +80,12 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(packets*numeric(sample_rate))\nFacet CASES (\n  WHERE flow_direction = 'egress' AND numeric(sample_rate) = 1 as 'Egress Packets',\n  WHERE flow_direction = 'ingress' AND numeric(sample_rate) = 1 as 'Ingress Packets',\n  WHERE flow_direction = 'egress' AND sample_rate > 1 as 'Egress Packets (estimated)',\n  WHERE flow_direction = 'ingress' AND sample_rate > 1 as 'Ingress Packets (estimated)'\n) \nTIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.packets_sent))\nFacet CASES (\n  WHERE jsonPayload.reporter = 'SRC' as 'Egress Packets',\n WHERE jsonPayload.reporter = 'DEST' as 'Ingress Packets') \nTIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
               "zero": true
             }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 1,
-            "row": 4,
-            "height": 3,
-            "width": 2
-          },
-          "title": "Observed Applications",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(application) AS 'Applications' TIMESERIES 5 MINUTES"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.pie"
-          },
-          "layout": {
-            "column": 3,
-            "row": 4,
-            "height": 3,
-            "width": 2
-          },
-          "title": "Top 5 - Inbound Applications",
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
-              }
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.stacked-bar"
-          },
-          "layout": {
-            "column": 5,
-            "row": 4,
-            "height": 3,
-            "width": 3
-          },
-          "title": "Top 25 - Inbound Applications",
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": true
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET application, CASES(\n  WHERE sample_rate > 1 AS 'estimated',\n  WHERE sample_rate = 1 AS 'unsampled') \nLIMIT 25 TIMESERIES 5 MINUTES"
-              }
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.pie"
-          },
-          "layout": {
-            "column": 8,
-            "row": 4,
-            "height": 3,
-            "width": 2
-          },
-          "title": "Top 5 - Outbound Applications",
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS \nSELECT sum(bytes*numeric(sample_rate)) AS Bytes \nWHERE flow_direction = 'egress' \nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5\n"
-              }
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.stacked-bar"
-          },
-          "layout": {
-            "column": 10,
-            "row": 4,
-            "height": 3,
-            "width": 3
-          },
-          "title": "Top 25 - Outbound Applications",
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": true
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES "
-              }
-            ]
           }
         },
         {
@@ -240,7 +106,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(srcaddr) AS 'Sources' TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.src_ip) AS 'Sources' TIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
@@ -270,7 +136,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET srcaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'SRC'\nFACET jsonPayload.connection.src_ip\nLIMIT 25"
               }
             ]
           }
@@ -297,7 +163,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET srcaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'SRC'\nFACET jsonPayload.connection.src_ip\nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
@@ -320,7 +186,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(dstaddr) AS 'Destinations' TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.dest_ip) AS 'Destinations' TIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
@@ -350,7 +216,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nFACET dstaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nFACET jsonPayload.connection.dest_ip\nLIMIT 25"
               }
             ]
           }
@@ -377,7 +243,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nFACET dstaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nFACET jsonPayload.connection.dest_ip\nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
@@ -400,7 +266,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(protocol) AS 'Protocols' TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.protocol) AS 'Protocols' TIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
@@ -430,7 +296,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'DEST'\nFACET jsonPayload.connection.protocol\nLIMIT 5"
               }
             ]
           }
@@ -457,7 +323,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'DEST'\nFACET jsonPayload.connection.protocol\nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
@@ -484,7 +350,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'SRC'\nFACET jsonPayload.connection.protocol\nLIMIT 5"
               }
             ]
           }
@@ -511,7 +377,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'SRC'\nFACET jsonPayload.connection.protocol\nLIMIT 25 TIMESERIES 5 MINUTES"
               }
             ]
           }
@@ -535,7 +401,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(dstaddr) AS 'Destination IPS', uniqueCount(dstport) AS 'Outbound Ports' FACET srcaddr AS 'Source' LIMIT 25"
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.dest_ip) AS 'Destination IPS', uniqueCount(jsonPayload.connection.dest_port) AS 'Outbound Ports' FACET jsonPayload.connection.src_ip AS 'Source' LIMIT 25"
               }
             ]
           }
@@ -562,7 +428,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(dstaddr) FACET srcaddr LIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.dest_ip) FACET jsonPayload.connection.src_ip LIMIT 25 TIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
@@ -589,7 +455,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(dstport) AS 'Destination Ports', uniqueCount(srcaddr) AS 'Source IPS' FACET dstaddr AS 'Destination' LIMIT 25"
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.dest_port) AS 'Destination Ports', uniqueCount(jsonPayload.connection.src_ip) AS 'Source IPS' FACET jsonPayload.connection.dest_ip AS 'Destination' LIMIT 25"
               }
             ]
           }
@@ -616,7 +482,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(srcaddr) FACET dstaddr LIMIT 25 TIMESERIES 5 MINUTES"
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.src_ip) FACET jsonPayload.connection.dest_ip LIMIT 25 TIMESERIES 5 MINUTES"
               }
             ],
             "yAxisLeft": {
