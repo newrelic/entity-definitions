@@ -1,21 +1,68 @@
 activeSearches:
-  title: Active Searches
-  query:
-    select: sum(activeSearches)
-    from: ElasticsearchNodeSample
-    eventId: entityGuid
-    eventName: entityName
+  title: Active searches
+  unit: COUNT
+  queries:
+    newRelic:
+      select: sum(elasticsearch.node.activeSearches)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: sum(activeSearches)
+      from: ElasticsearchNodeSample
+      eventId: entityGuid
+      eventName: entityName
 missingDocumentRequests:
-  title: Missing Document Requests
-  query:
-    select: sum(get.requestsDocumentMissing)
-    from: ElasticsearchNodeSample
-    eventId: entityGuid
-    eventName: entityName
+  title: Missing document requests
+  unit: COUNT
+  queries:
+    newRelic:
+      select: sum(elasticsearch.node.get.requestsDocumentMissing)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: sum(get.requestsDocumentMissing)
+      from: ElasticsearchNodeSample
+      eventId: entityGuid
+      eventName: entityName
 fileStoreIOOperations:
-  title: File Store I/O Operations
-  query:
-    select: sum(fs.iOOperations)
-    from: ElasticsearchNodeSample
-    eventId: entityGuid
-    eventName: entityName
+  title: File store I/O operations
+  unit: COUNT
+  queries:
+    newRelic:
+      select: sum(elasticsearch.node.fs.ioOperations)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: sum(fs.iOOperations)
+      from: ElasticsearchNodeSample
+      eventId: entityGuid
+      eventName: entityName
+activeMerges:
+  queries:
+    newRelic:
+      eventId: entity.guid
+      select: average(`elasticsearch.node.merges.currentActive`)
+      from: Metric
+    newRelicSample:
+      eventId: entityGuid
+      eventName: entityName
+      from: ElasticsearchNodeSample
+      select: average(`merges.currentActive`)
+  unit: COUNT
+  title: Current active merges
+totalQueries:
+  title: Total queries
+  unit: COUNT
+  queries:
+    newRelic:
+      from: Metric
+      select: average(`elasticsearch.node.queriesTotal`)
+      eventId: entity.guid
+    newRelicSample:
+      eventId: entityGuid
+      eventName: entityName
+      select: average(`queriesTotal`)
+      from: ElasticsearchNodeSample

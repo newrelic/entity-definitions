@@ -1,57 +1,63 @@
 clientTimeToFirstByte:
-  title: Average Time to First Byte (ms)
+  title: Average time to first byte (ms)
   displayAsValue: true
   query:
-    select: average(fastly.client.ttfb.summary)/1000
-    from: Metric
-    where: service LIKE 'fastly%'
+    select: average(client_resp_ttfb)*1000
+    from: Log
+    where: fastly_datacenter IS NOT NULL
     eventId: entity.guid
-# ---
-# Query used to build the Logs-to-Metrics rule 
-# ---
-# FROM Log SELECT summary(`client_resp_ttfb`) AS 'fastly.client.resp.ttfb.summary' WHERE service LIKE 'fastly%' FACET `domain`, `fastly_region`, `fastly_datacenter`, `user_continent_code`, `user_region`, `user_country_code`, `user_agent`, `client_as_name`
-
     eventName: entity.name
 clientRoundTripTime:
-  title: Average Round Trip Time (ms)
+  title: Average round trip time (ms)
   displayAsValue: true
   query:
-    select: average(fastly.client.rtt.summary)/1000
-    from: Metric
-    where: service LIKE 'fastly%'
+    select: average(client_rtt_us)/1000
+    from: Log
+    where: fastly_datacenter IS NOT NULL
     eventId: entity.guid
-# ---
-# Query used to build the Logs-to-Metrics rule 
-# ---
-# FROM Log SELECT summary(`client_rtt_us`) AS 'fastly.client.rtt.summary' WHERE service LIKE 'fastly%' FACET `domain`, `fastly_region`, `fastly_datacenter`, `user_continent_code`, `user_region`, `user_country_code`, `user_agent`, `client_as_name`
-
     eventName: entity.name
 clientTimeElapsed:
-  title: Average Connection Duration (ms)
+  title: Average connection duration (ms)
   displayAsValue: true
   query:
-    select: average(fastly.client.duration.summary)/1000
-    from: Metric
-    where: service LIKE 'fastly%'
+    select: average(time_elapsed)/1000
+    from: Log
+    where: fastly_datacenter IS NOT NULL
     eventId: entity.guid
-# ---
-# Query used to build the Logs-to-Metrics rule 
-# ---
-# FROM Log SELECT summary(`time_elapsed`) AS 'fastly.client.duration.summary' WHERE service LIKE 'fastly%' FACET `domain`, `fastly_region`, `fastly_datacenter`, `user_continent_code`, `user_region`, `user_country_code`, `user_agent`, `client_as_name`
-
-
-# This section is disabled until client_rate_bps is added to the ingest
     eventName: entity.name
 clientbps:
-  title: Average Bits Per Second
+  title: Average client Mbps
   displayAsValue: true
   query:
-    select: average(fastly.client.bps.summary)
-    from: Metric
-    where: service LIKE 'fastly%'
+    select: average(client_rate_bps)/10e5
+    from: Log
+    where: fastly_datacenter IS NOT NULL
     eventId: entity.guid
-# ---
-# Query used to build the Logs-to-Metrics rule 
-# ---
-# FROM Log SELECT summary(`client_rate_bps`) AS 'fastly.client.bps.summary' WHERE service LIKE 'fastly%' FACET `domain`, `fastly_region`, `fastly_datacenter`, `user_continent_code`, `user_region`, `user_country_code`, `user_agent`, `client_as_name`
+    eventName: entity.name
+clients:
+  title: Unique clients
+  displayAsValue: true
+  query:
+    select: uniqueCount(client_ip)
+    from: Log
+    where: "fastly_datacenter IS NOT NULL"
+    eventId: entity.guid
+    eventName: entity.name
+response:
+  title: Response OK rate (%)
+  displayAsValue: true
+  query:
+    select: (filter(count(response), WHERE response ='OK')/count(response))*100
+    from: Log
+    where: "fastly_datacenter IS NOT NULL"
+    eventId: entity.guid
+    eventName: entity.name
+cacheHitRate:
+  title: Cache hit rate (%)
+  displayAsValue: true
+  query:
+    select: (filter(count(cache_status), WHERE cache_status ='HIT')/count(cache_status))*100
+    from: Log
+    where: "fastly_datacenter IS NOT NULL"
+    eventId: entity.guid
     eventName: entity.name

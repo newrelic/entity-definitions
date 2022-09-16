@@ -1,19 +1,42 @@
-httpResponseTime95S:
-  title: HTTP response time (95%) (s)
+appLaunchCountMetric:
+  title: App launches 
+  unit: COUNT
   query:
-    select: percentile(responseTime,95)
-    from: MobileRequest
-    eventId: entityGuid
+    select: count(newrelic.timeslice.value)
+    where: metricTimesliceName = 'Session/Start'
     eventName: appName
-httpErrorsAndNetworkFailures:
-  title: HTTP errors and network failures
+crashCount:
+  title: Crash count
+  unit: COUNT
   query:
     select: count(*)
-    from: MobileRequestError
+    from: MobileCrash
     eventId: entityGuid
     eventName: appName
+httpResponseTimeMsMetric:
+  title: HTTP response time (ms)
+  unit: MS
+  query:
+    select: average(newrelic.timeslice.value) * 1000
+    where: metricTimesliceName = 'External/all'
+    eventName: appName
+networkFailuresCountMetric:
+  title: Network failure count
+  unit: COUNT
+  query:
+    select: average(newrelic.timeslice.value)
+    where: metricTimesliceName = 'Mobile/FailedCallRate'
+    eventName: appName
+httpErrorsCountMetric:
+  title: HTTP error count
+  unit: COUNT
+  query:
+    select: average(newrelic.timeslice.value)
+    where: metricTimesliceName = 'Mobile/StatusErrorRate'
+    eventName: appName
 requestsPerMinute:
-  title: Requests per minute
+  title: Requests per minute (req/min)
+  unit: REQUESTS_PER_MINUTE
   query:
     select: rate(count(*), 1 minute)
     from: MobileRequest

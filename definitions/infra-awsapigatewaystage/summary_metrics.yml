@@ -1,23 +1,26 @@
 providerAccountName:
   tag:
     key: providerAccountName
-  title: AWS Account
+  title: AWS account
   unit: STRING
 requests:
+  goldenMetric: requests
   query:
     eventId: entity.guid
     select: sum(aws.apigateway.Count.byStage)
     from: Metric
   unit: COUNT
   title: Requests
-errors:
+errors4XxAnd5Xx:
+  goldenMetric: errors4XxAnd5Xx
   query:
     eventId: entity.guid
     select: sum(`aws.apigateway.5XXError.byStage`) + sum(`aws.apigateway.4XXError.byStage`)
     from: Metric
   unit: COUNT
   title: Errors
-latency:
+latencyMs:
+  goldenMetric: latencyMs
   query:
     eventId: entity.guid
     select: (average(aws.apigateway.Latency.byStage)) / 1000

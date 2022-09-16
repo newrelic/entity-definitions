@@ -1,21 +1,56 @@
 cpuUsage:
-  title: CPU Usage %
-  query:
-    select: average(cpu.overallUsagePercentage)
-    from: VSphereDatacenterSample
-    eventId: entityGuid
-    eventName: entityName
+  title: CPU usage %
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(vsphere.datacenter.cpu.overallUsagePercentage)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(cpu.overallUsagePercentage)
+      from: VSphereDatacenterSample
+      eventId: entityGuid
+      eventName: entityName
 memoryUsage:
   title: Memory usage (%)
-  query:
-    select: average(mem.usagePercentage)
-    from: VSphereDatacenterSample
-    eventId: entityGuid
-    eventName: entityName
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(vsphere.datacenter.mem.usagePercentage)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(mem.usagePercentage)
+      from: VSphereDatacenterSample
+      eventId: entityGuid
+      eventName: entityName
+memoryTotal:
+  title: Memory usage
+  unit: BYTES
+  queries:
+    newRelic:
+      select: (average(vsphere.datacenter.mem.usage)) * 1024 * 1204
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: (average(`mem.usage`)) * 1024 * 1204
+      from: VSphereDatacenterSample
+      eventId: entityGuid
+      eventName: entityName
 datastoreCapacityUtilizationGib:
   title: Datastore capacity utilization (GiB)
-  query:
-    select: average(datastore.totalUsedGiB)
-    from: VSphereDatacenterSample
-    eventId: entityGuid
-    eventName: entityName
+  unit: BYTES
+  queries:
+    newRelic:
+      select: average(vsphere.datacenter.datastore.totalUsedGiB)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(datastore.totalUsedGiB)
+      from: VSphereDatacenterSample
+      eventId: entityGuid
+      eventName: entityName

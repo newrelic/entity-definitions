@@ -1,32 +1,88 @@
 readAndWriteOperations:
-  title: Read and Write Operations
-  query:
-    select: sum((provider.volumeReadOps.Sum OR 0) + (provider.volumeWriteOps.Sum OR 0))
-    from: BlockDeviceSample
-    where: provider='EbsVolume'
-    eventId: entityGuid
-    eventName: entityName
+  title: Read and write operations
+  unit: COUNT
+  queries:
+    aws:
+      select: sum(aws.ebs.VolumeReadOps) + sum(aws.ebs.VolumeWriteOps)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.volumeReadOps.Sum) + sum(provider.volumeWriteOps.Sum)
+      from: BlockDeviceSample
+      where: provider='EbsVolume'
+      eventId: entityGuid
+      eventName: entityName
 readAndWriteQueueLength:
-  title: Read and Write Queue Length
-  query:
-    select: average(provider.volumeQueueLength.Average)
-    from: BlockDeviceSample
-    where: provider='EbsVolume'
-    eventId: entityGuid
-    eventName: entityName
-averageWriteTimeMs:
-  title: Average Write Time (ms)
-  query:
-    select: average(provider.volumeTotalWriteTime.Sum / provider.volumeWriteOps.Sum) * 1000
-    from: BlockDeviceSample
-    where: provider='EbsVolume'
-    eventId: entityGuid
-    eventName: entityName
-averageReadTimeMs:
-  title: Average Read Time (ms)
-  query:
-    select: average(provider.volumeTotalReadTime.Sum / provider.volumeReadOps.Sum) * 1000
-    from: BlockDeviceSample
-    where: provider='EbsVolume'
-    eventId: entityGuid
-    eventName: entityName
+  title: Read and write queue length
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.ebs.VolumeQueueLength)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.volumeQueueLength.Average)
+      from: BlockDeviceSample
+      where: provider='EbsVolume'
+      eventId: entityGuid
+      eventName: entityName
+averageWriteBytes:
+  title: Average write bytes
+  unit: BYTES 
+  queries:
+    aws:
+      select: average(aws.ebs.VolumeWriteBytes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.volumeWriteBytes.Average)
+      from: BlockDeviceSample
+      where: provider='EbsVolume'
+      eventId: entityGuid
+      eventName: entityName
+averageReadBytes:
+  title: Average read bytes
+  unit: BYTES 
+  queries:
+    aws:
+      select: average(aws.ebs.VolumeReadBytes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.volumeReadBytes.Average)
+      from: BlockDeviceSample
+      where: provider='EbsVolume'
+      eventId: entityGuid
+      eventName: entityName
+readTime:
+  queries:
+    aws:
+      eventId: entity.guid
+      select: sum(aws.ebs.VolumeTotalReadTime) / sum(aws.ebs.VolumeReadOps)
+      from: Metric
+    awsSample:
+      select: (sum(provider.volumeTotalReadTime.Sum) / sum(provider.volumeReadOps.Sum))
+      from: BlockDeviceSample
+      where: provider='EbsVolume'
+      eventId: entityGuid
+      eventName: entityName
+  unit: SECONDS
+  title: Read time
+writeTime:
+  queries:
+    aws:
+      eventId: entity.guid
+      select: sum(aws.ebs.VolumeTotalWriteTime) / sum(aws.ebs.VolumeWriteOps)
+      from: Metric
+    awsSample:
+      select: (sum(provider.volumeTotalReadTime.Sum) / sum(provider.volumeReadOps.Sum))
+      from: BlockDeviceSample
+      where: provider='EbsVolume'
+      eventId: entityGuid
+      eventName: entityName
+  unit: SECONDS
+  title: Write time

@@ -1,48 +1,90 @@
 readThroughput:
   title: Reads per sec
-  query:
-    select: rate(sum(provider.cacheHits.Sum)+sum(provider.cacheMisses.Sum), 1 second)
-    from: DatastoreSample
-    where: provider='ElastiCacheRedisNode'
-    eventId: entityGuid
-    eventName: entityName
+  unit: REQUESTS_PER_SECOND
+  queries:
+    aws:
+      select: rate(sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses), 1 second)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.cacheHits.Sum)+sum(provider.cacheMisses.Sum)
+      from: DatastoreSample
+      where: provider='ElastiCacheRedisNode'
+      eventId: entityGuid
+      eventName: entityName
 cacheHitRate:
   title: Cache hit rate (%)
-  query:
-    select: (sum(provider.cacheHits.Sum)/(sum(provider.cacheHits.Sum)+sum(provider.cacheMisses.Sum)))*100
-    from: DatastoreSample
-    where: provider='ElastiCacheRedisNode'
-    eventId: entityGuid
-    eventName: entityName
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: sum(aws.elasticache.CacheHits) / ((sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses)))
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: 100 * sum(provider.cacheHits.Sum) / (sum(provider.cacheHits.Sum) + sum(provider.cacheMisses.Sum))
+      from: DatastoreSample
+      where: provider='ElastiCacheRedisNode'
+      eventId: entityGuid
+      eventName: entityName
 evictedItems:
   title: Evicted items per sec
-  query:
-    select: rate(sum(`provider.evictions.Sum`), 1 second)
-    from: DatastoreSample
-    where: provider='ElastiCacheRedisNode'
-    eventId: entityGuid
-    eventName: entityName
+  unit: REQUESTS_PER_SECOND
+  queries:
+    aws:
+      select: rate(sum(aws.elasticache.Evictions.byRedisNode), 1 second)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: rate(sum(`provider.evictions.Sum`), 1 second)
+      from: DatastoreSample
+      where: provider='ElastiCacheRedisNode'
+      eventId: entityGuid
+      eventName: entityName
 swapUsage:
-  title: Swap Usage
-  query:
-    select: average(`provider.swapUsage.Average`)
-    from: DatastoreSample
-    where: provider='ElastiCacheRedisNode'
-    eventId: entityGuid
-    eventName: entityName
+  title: Swap usage
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.elasticache.SwapUsage.byRedisNode)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.swapUsage.Average`)
+      from: DatastoreSample
+      where: provider='ElastiCacheRedisNode'
+      eventId: entityGuid
+      eventName: entityName
 cpuUtilization:
   title: CPU utilization (%)
-  query:
-    select: average(provider.cpuUtilization.Average)
-    from: DatastoreSample
-    where: provider='ElastiCacheRedisNode'
-    eventId: entityGuid
-    eventName: entityName
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.rds.CPUUtilization)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.cpuUtilization.Average)
+      from: DatastoreSample
+      where: provider='ElastiCacheRedisNode'
+      eventId: entityGuid
+      eventName: entityName
 currentConnections:
   title: Current connections
-  query:
-    select: average(`provider.currConnections.Average`)
-    from: DatastoreSample
-    where: provider='ElastiCacheRedisNode'
-    eventId: entityGuid
-    eventName: entityName
+  unit: COUNT
+  queries:
+    aws:
+      select: average(aws.elasticache.CurrConnections.byRedisNode)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.currConnections.Average`)
+      from: DatastoreSample
+      where: provider='ElastiCacheRedisNode'
+      eventId: entityGuid
+      eventName: entityName

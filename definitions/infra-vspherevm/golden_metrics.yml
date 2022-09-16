@@ -1,21 +1,63 @@
 cpuUsage:
   title: CPU usage (%)
-  query:
-    select: average(cpu.hostUsagePercent)
-    from: VSphereVmSample
-    eventId: entityGuid
-    eventName: entityName
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(vsphere.vm.cpu.hostUsagePercent)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(cpu.hostUsagePercent)
+      from: VSphereVmSample
+      eventId: entityGuid
+      eventName: entityName
 memoryUsage:
-  title: Memory usage (%)
-  query:
-    select: average(mem.usage)*100/average(mem.size)
-    from: VSphereVmSample
-    eventId: entityGuid
-    eventName: entityName
+  title: Memory usage (MiB)
+  unit: BYTES
+  queries:
+    newRelic:
+      select: average(vsphere.vm.mem.usage)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(mem.usage)
+      from: VSphereVmSample
+      eventId: entityGuid
+      eventName: entityName
+memorySize:
+  title: Memory size (MiB)
+  unit: BYTES
+  queries:
+    newRelic:
+      select: average(vsphere.vm.mem.size)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(mem.size)
+      from: VSphereVmSample
+      eventId: entityGuid
+      eventName: entityName
 diskUsageMib:
   title: Disk usage (MiB)
+  unit: BYTES
+  queries:
+    newRelic:
+      select: average(vsphere.vm.disk.totalMiB)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(disk.totalMiB)
+      from: VSphereVmSample
+      eventId: entityGuid
+      eventName: entityName
+cpuAllocationlimit:
   query:
-    select: average(disk.totalMiB)
-    from: VSphereVmSample
     eventId: entityGuid
-    eventName: entityName
+    select: (latest(`cpu.allocationLimit`)) * 1000 * 1000
+    from: VSphereVmSample
+  unit: HERTZ
+  title: CPU allocation limit

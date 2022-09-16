@@ -1,8 +1,8 @@
 # Summary Metrics
 
-Summary metrics are data related to entities that describes how certain parameters are behaving based the on the available telemetry. 
+Summary metrics are data related to entities which describe how certain parameters behave, based on the available telemetry. 
 
-We recommend to add a maximum of 10 metrics per entityType.
+We recommend adding 3 metrics, and never more than 10. We also recommend defining them as a reference to a golden metric.
 
 ## Defining summary metrics
 
@@ -10,6 +10,7 @@ Summary metrics are defined in a map where each key is a camel-case name that de
 
 ```yaml
 memoryUsage:
+  goldenMetric: memoryUsage
   title: "A title explaining what the user is seeing"
   unit: PERCENTAGE
   query:
@@ -19,31 +20,28 @@ memoryUsage:
     eventId: entity.guid
 ```
  
-A summary metric can be either an **NRDB-query-based metric**, a **Tag metric** (summary tag), or a **Derived metric**, depending on the source of the information. 
-
-For this reason, exactly one of the `query`, `tag` and `derive` configuration needs to be
-provided. If less or more than one of them is found, the metric definition will not be valid.
+A summary metric can be either an **NRDB-query-based metric**, a **tag metric** (summary tag), or a **golden metric reference**, depending on the source of the information. Therefore, you need to configure exactly ONE out of `query` or `tag`. If an amount different to one is detected, the metric definition will not be valid. `query` can coexist with `goldenMetric` for the time being, but the former is being deprecated in favor of the latter.
 
 | **Name** | **Type**                      | **Description**                                            |
 | -------- | ----------------------------- | ---------------------------------------------------------- |
-| title    | String                        | The human-readable name of the metric                      |
-| unit     | [Metric Unit](#metric-unit)    | The unit of the metric                                     |
-| hidden     | Boolean   | If the metric is hidden it will not appear on any UI visualizations, but it can only be used to define intermediate metrics referenced by others. Defaults to false.  |
-| query    | [NRDB Query](#nrdb-query)     | The configuration for an NRDB-query-based metric                 |
-| tag      | [Tag](#tag)                    | The configuration for a tag metric        |
-| derive   | [Derive String](#derive-string) | The string to define a derived metric                      |
+| title    | String                        | The human-readable name of the metric.                     |
+| unit     | [Metric Unit](#metric-unit)    | The unit of the metric.                                   |
+| query    | [NRDB Query](#nrdb-query)     | The configuration for an NRDB-query-based metric (deprecated: use `goldenMetric` instead). |
+| tag      | [Tag](#tag)                    | The configuration for a tag metric.        |
+| goldenMetric | [Golden Metric Reference](#golden-metric-reference) | A reference to the [golden metric](golden_metrics.md) this summary metric should be based on. |
 
-
-### Metric Unit
+### Metric unit
 
 The unit of the metric must be a string with one of the following values:
 
 - REQUESTS_PER_SECOND
+- REQUESTS_PER_MINUTE
 - PAGES_PER_SECOND
 - MESSAGES_PER_SECOND
 - OPERATIONS_PER_SECOND
 - COUNT
 - SECONDS
+- MS
 - PERCENTAGE
 - BITS
 - BYTES
@@ -52,56 +50,44 @@ The unit of the metric must be a string with one of the following values:
 - HERTZ
 - APDEX
 - TIMESTAMP
-- STRING
+- STRING (Not supported for NRDB queries, please use tags instead)
+- CELSIUS
 
+### NRDB query
 
-### NRDB Query
-
-The `query` map contains the information that is used to define a NRDB-query-based metric:
+The `query` map contains the information used to define a NRDB-query-based metric:
 
 | **Name**      | **Type**                       | **Description**                                                                                  |
 | ------------- |------------------------------- | ------------------------------------------------------------------------------------------------ |
-| from          | String                         | A NRDB event, e.g. `SystemSample`, or `Metric`                                                  |
-| select        | String                         | What has to be selected from the given NRDB event, e.g `count(*)`                                |
-| where         | String                         | An *optional* NRQL filter, e.g. `foo = 'bar'`                                                    |
-| eventId       | String                         | The event attribute you want to facet and filter for, e.g. `entity.guid`                           |
+| from          | String                         | An NRDB event, for example `SystemSample`, or `Metric`.                                                  |
+| select        | String                         | What has to be selected from the given NRDB event, for example `count(*)`.                                |
+| where         | String                         | An *optional* NRQL filter, for example `foo = 'bar'`.                                                  |
+| eventId       | String                         | The event attribute you want to facet and filter for, for example `entity.guid`.                           |
+
+**Note**: `query` is deprecated: use `goldenMetric` instead.
 
 ### Tag
 
 | **Name** | **Type** | **Description**                                                                       |
 | -------- | -------- | ------------------------------------------------------------------------------------- |
-| key      | String   | The tag key you want to fetch the corresponding value for, e.g. `providerAccountName` |
+| key      | String   | The tag key you want to fetch the corresponding value for, for example `providerAccountName`. |
 
-### Derive string 
+### Golden metric reference
 
-The derive string can be used to derive a summary metric out of others.
-It is possible to reference other metrics using `@metricName`. Metrics can be added, subtracted, multiplied and divided by other metrics or numbers.
+In most cases, summary metrics definitions are the same as, or a subset of [golden metrics](golden_metrics.md) definitions. Because of that, a summary metric definition can reuse a golden metric definition by having a reference to it. For consistency, the key defining a summary metric and the key defining a golden metric should be the same. In the following example, the `memoryUsage` summary metric definition points to the `memoryUsage` golden metric definition:
+```yaml
+memoryUsage:
+  goldenMetric: memoryUsage
 
-Example: 
-
-    (@metricA * 100) / (@metricB + @metricC)
-
-If a derive metric references a metric that does not exist, it will result in an error.
-If a derive metric references a metric whose value is `null`, its value will be `null` too. E.g. 
-
-    @metricA + @metricB + 100
-
-If either `metricA` or `metricB` is null, the value of the derived metric will be `null` too.
-
-Aside from normal mathematical operations, the `||` (or) operator can be used, which
-returns the value of the first metric that has a value different than `null`. e.g. 
-
-    @metricA || 10
-
-It returns the value of `metricA` if it's not `null`, `10` otherwise.
-
+```
 
 ### Roll-up entities
 
-In the cases that the entity type can be ingested from different sources and you need to provide a different query implementation you can use `queries` instead of `query`
+When the entity type can be ingested from multiple sources, you'll be required to provide a different query implementation for each source. In this case, you should use `queries` instead of `query`:
 
 ```yaml
 memoryUsage:
+  goldenMetric: memoryUsage
   title: "A title explaining what the user is seeing (unit displayed in the dashboard)"
   unit: COUNT
   queries:
@@ -113,9 +99,22 @@ memoryUsage:
       from: NewRelicSample
 ```
 
-In this example `prometheus` and `newRelic` are the values the entity must have in the `instrumentation.provider` tag.
-The first tag value that matches with the entity will be the one used to build the queries.
+In this example, the entity must have `prometheus` and `newRelic` in the `instrumentation.provider` tag. The first tag value that matches the entity will be used to build the queries.
 
-Is also important to note that the semantics of the queries should match between each implementation. This includes things like average vs counts, units and other details.
+```yaml
+destinations:
+  goldenMetric: destinations
+  title: Unique Destinations
+  queries:
+    kentik/netflow-events:
+      select: uniqueCount(dst_addr)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
+```
 
-If no rule matches the `newRelic` one will be used.
+There's also the possibility to specify both provider and name in the form of `{provider}/{name}`.
+
+1.  Add the provider as a value of the `instrumentation.provider` tag. For example, provider: `kentik`.
+2.  Add the name of the provider in the `instrumentation.name` tag. For example, provider name: `netflow-events`.
+
+Note that query semantics (such as average vs counts, units, etc.) should match in each implementation. If no rule matches, the first one on the list will be used. In the example above, `prometheus` would be used.

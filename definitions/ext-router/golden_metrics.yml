@@ -1,27 +1,55 @@
 cpuUtilization:
-  title: CPU Utilization (%)
-  query:
-    select: average(kentik.snmp.CPU)
-    from: Metric
-    where: "provider = 'kentik-router'"
+  title: CPU utilization (%)
+  unit: PERCENTAGE
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
+    mikrotik-router:
+      select: average(mikrotik.system.cpu.load)
+      from: Metric
 
 memoryUtilization:
-  title: Memory Utilization (%)
-  query:
-    select: average(kentik.snmp.MemoryUtilization)
-    from: Metric
-    where: "provider = 'kentik-router'"
+  title: Memory utilization (%)
+  unit: PERCENTAGE
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: average(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
+    mikrotik-router:
+      select: average(mikrotik.system.memory.load)
+      from: Metric
 
 receiveErrors:
-  title: Aggregate Receive Errors (count)
-  query:
-    select: sum(kentik.snmp.ifInErrors)
-    from: Metric
-    where: "provider = 'kentik-router'"
+  title: Aggregate receive errors (count)
+  unit: COUNT
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: sum(kentik.snmp.ifInErrors)
+      from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
+    mikrotik-router:
+      select: sum(mikrotik.interface.ether1.rxerrorsps)
+      from: Metric
 
 transmitErrors:
-  title: Aggregate Transmit Errors (count)
-  query:
-    select: sum(kentik.snmp.ifOutErrors)
-    from: Metric
-    where: "provider = 'kentik-router'"
+  title: Aggregate transmit errors (count)
+  unit: COUNT
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: sum(kentik.snmp.ifOutErrors)
+      from: Metric
+      where: "provider = 'kentik-router'"
+    # Mikrotik Router from mikrotik-newrelic script
+    mikrotik-router:
+      select: sum(mikrotik.interface.ether1.txerrorsps)
+      from: Metric

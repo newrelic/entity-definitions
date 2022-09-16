@@ -1,0 +1,130 @@
+{
+    "name": "Cloudflare Hosts Summary",
+    "description": null,
+    "pages": [
+      {
+        "name": "Cloudflare Hosts Summary",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 2,
+              "width": 4
+            },
+            "title": "Request rate per minute",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(sum(cloudflare_request_total), 1 minute) AS 'Req/min' WHERE cloudflare_request_total IS NOT NULL"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "height": 2,
+              "width": 4
+            },
+            "title": "Error rate (%)",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT filter(sum(cloudflare_request_total), where http_status >= 500) / sum(cloudflare_request_total) * 100 AS '% of Errors' WHERE cloudflare_request_total IS NOT NULL"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "height": 2,
+              "width": 4
+            },
+            "title": "Avg Response Time (ms)",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(cloudflare_response_time_ms) AS 'Avg Response time in MS'"
+                }
+              ],
+              "thresholds": []
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.stacked-bar"
+            },
+            "layout": {
+              "column": 1,
+              "row": 3,
+              "height": 4,
+              "width": 12
+            },
+            "title": "Requests by status over time",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT rate(sum(cloudflare_request_total), 1 minute) WHERE cloudflare_request_total IS NOT NULL FACET http_status TIMESERIES "
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 7,
+              "height": 3,
+              "width": 12
+            },
+            "title": "Response time range over time",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(cloudflare_response_time_ms), min(cloudflare_response_time_ms), max(cloudflare_response_time_ms) TIMESERIES"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

@@ -1,8 +1,15 @@
 systemErrors:
   title: System errors
-  query:
-    select: sum(systemErrors.Total)
-    from: DatastoreSample
-    where: provider='DynamoDbRegion'
-    eventId: entityGuid
-    eventName: entityName
+  unit: COUNT
+  queries:
+    aws:
+      select: sum(aws.dynamodb.SystemErrors.byRegion)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.systemErrors.Sum)
+      from: DatastoreSample
+      where: provider='DynamoDbRegion'
+      eventId: entityGuid
+      eventName: entityName

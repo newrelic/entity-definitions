@@ -1,23 +1,26 @@
 providerAccountName:
   tag:
     key: providerAccountName
-  title: GCP Account
+  title: GCP account
   unit: STRING
 Instances:
+  goldenMetric: Instances
   query:
     eventId: entityGuid
     select: max(`system.Instances`)
     from: GcpAppEngineServiceSample
   unit: COUNT
   title: Number of instances
-Service responses:
+Responses:
+  goldenMetric: Responses
   query:
     eventId: entityGuid
     select: sum(`server.Responses`)
     from: GcpAppEngineServiceSample
   unit: COUNT
   title: Service responses
-errorRate:
+ErrorRate:
+  goldenMetric: ErrorRate
   query:
     eventId: entityGuid
     select: filter(sum(`server.Responses`), WHERE response_code NOT LIKE '2%') * 100 / sum(`server.Responses`)
@@ -25,6 +28,7 @@ errorRate:
   unit: PERCENTAGE
   title: Error rate
 latency:
+  goldenMetric: latency
   query:
     eventId: entityGuid
     select: (average(`server.ResponseLatenciesMilliseconds`)) / 1000

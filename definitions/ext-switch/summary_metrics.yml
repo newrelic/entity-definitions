@@ -1,41 +1,65 @@
 ipAddress:
-  title: Switch IP Address
+  title: IP address
   unit: STRING
   tag:
-    key: src_addr
+    key: device_ip
 
 cpuUtilization:
-  title: CPU Utilization (%)
+  goldenMetric: cpuUtilization
+  title: CPU
   unit: PERCENTAGE
-  query:
-    select: average(kentik.snmp.CPU)
-    from: Metric
-    where: "provider = 'kentik-switch'"
-    eventId: entity.guid
+  queries:
+    # Arista switches
+    kentik/arista:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-switch' AND Index = '.1'"
+      eventId: entity.guid
+    # Most devices
+    kentik:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-switch'"
+      eventId: entity.guid
 
 memoryUtilization:
-  title: Memory Utilization (%)
+  goldenMetric: memoryUtilization
+  title: Memory
   unit: PERCENTAGE
-  query:
-    select: average(kentik.snmp.MemoryUtilization)
-    from: Metric
-    where: "provider = 'kentik-switch'"
-    eventId: entity.guid
+  queries:
+    # Arista switches
+    kentik/arista:
+      select: average(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-switch' AND storage_description = 'RAM'"
+      eventId: entity.guid
+    # Most devices
+    kentik:
+      select: average(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-switch'"
+      eventId: entity.guid
 
 receiveErrors:
-  title: Receive Errors (count)
+  goldenMetric: receiveErrors
+  title: Receive errors
   unit: COUNT
-  query:
-    select: sum(kentik.snmp.ifInErrors)
-    from: Metric
-    where: "provider = 'kentik-switch'"
-    eventId: entity.guid
+  queries:
+    # All Kentik switches
+    kentik:
+      select: sum(kentik.snmp.ifInErrors)
+      from: Metric
+      where: "provider = 'kentik-switch'"
+      eventId: entity.guid
 
 transmitErrors:
-  title: Transmit Errors (count)
+  goldenMetric: transmitErrors
+  title: Transmit errors
   unit: COUNT
-  query:
-    select: sum(kentik.snmp.ifOutErrors)
-    from: Metric
-    where: "provider = 'kentik-switch'"
-    eventId: entity.guid
+  queries:
+    # All Kentik switches
+    kentik:
+      select: sum(kentik.snmp.ifOutErrors)
+      from: Metric
+      where: "provider = 'kentik-switch'"
+      eventId: entity.guid

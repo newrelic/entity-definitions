@@ -1,25 +1,63 @@
-endpoints:
-  title: Total IP Address Endpoints
-  query:
-    select: uniqueCount(ip_address)
-    from: Metric
-    where: "metricName LIKE 'kentik.rollup.vpc.%.bytes'"
+sources:
+  title: Unique sources
+  unit: COUNT
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: uniqueCount(src_endpoint)
+      from: KFlow
+      where: "provider = 'kentik-vpc'"
+    aws-kinesis-firehose/vpc-flow-logs:
+      select: uniqueCount(src_endpoint)
+      from: Log_VPC_Flows_AWS
+      where: "provider = 'firehose-vpc'"
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: uniqueCount(jsonPayload.connection.src_ip, jsonPayload.connection.src_port)
+      from: Log_VPC_Flows_GCP
+destinations:
+  title: Unique destinations
+  unit: COUNT
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: uniqueCount(dst_endpoint)
+      from: KFlow
+      where: "provider = 'kentik-vpc'"
+    aws-kinesis-firehose/vpc-flow-logs:
+      select: uniqueCount(dest_endpoint)
+      from: Log_VPC_Flows_AWS
+      where: "provider = 'firehose-vpc'"
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: uniqueCount(jsonPayload.connection.dest_ip, jsonPayload.connection.dest_port)
+      from: Log_VPC_Flows_GCP
+egressBytes:
+  title: Egress bytes
+  unit: BYTES
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: sum(out_bytes*sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-vpc' AND flow_direction = 'egress'"
+    aws-kinesis-firehose/vpc-flow-logs:
+      select: sum(bytes*numeric(sample_rate))
+      from: Log_VPC_Flows_AWS
+      where: "provider = 'firehose-vpc' and flow_direction = 'egress'"
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: sum(jsonPayload.bytes_sent)
+      from: Log_VPC_Flows_GCP
+      where: "jsonPayload.reporter = 'SRC'"
+ingressBytes:
+  title: Ingress bytes
+  unit: BYTES
+  queries:
+    kentik/aws-vpc-flow-events:
+      select: sum(in_bytes*sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-vpc' AND flow_direction = 'ingress'"
+    aws-kinesis-firehose/vpc-flow-logs:
+      select: sum(bytes*numeric(sample_rate))
+      from: Log_VPC_Flows_AWS
+      where: "provider = 'firehose-vpc' and flow_direction = 'ingress'"
+    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
+      select: sum(jsonPayload.bytes_sent)
+      from: Log_VPC_Flows_GCP
+      where: "jsonPayload.reporter = 'DEST'"
 
-conversations:
-  title: Total Conversations (Endpoint:Port)
-  query:
-    select: uniqueCount(tuple(ip_address,port))
-    from: Metric
-    where: "metricName LIKE 'kentik.rollup.vpc.%.bytes'"
-
-transmitMbps:
-  title: Transmit (Mbps)
-  query:
-    select: rate(sum(kentik.rollup.vpc.xmt.bytes)*8/1000/1000, 1 second) AS 'Mbps'
-    from: Metric
-
-receiveMbps:
-  title: Receive (Mbps)
-  query:
-    select: rate(sum(kentik.rollup.vpc.rcv.bytes)*8/1000/1000, 1 second) AS 'Mbps'
-    from: Metric

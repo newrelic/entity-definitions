@@ -1,16 +1,37 @@
 cpuUsage:
   title: CPU usage (%)
-  query:
-    select: average(provider.cpuUtilization.Average)
-    from: ComputeSample
-    where: provider='EcsCluster'
-    eventId: entityGuid
-    eventName: entityName
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.ecs.CPUUtilization.byCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.cpuUtilization.Average)
+      from: ComputeSample
+      where: provider='EcsCluster'
+      eventId: entityGuid
+      eventName: entityName
 memoryUsage:
   title: Memory usage (%)
+  unit: PERCENTAGE 
+  queries:
+    aws:
+      select: average(aws.ecs.MemoryUtilization.byCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.memoryUtilization.Average)
+      from: ComputeSample
+      where: provider='EcsCluster'
+      eventId: entityGuid
+      eventName: entityName
+runningTasksCount:
   query:
-    select: average(provider.memoryUtilization.Average)
-    from: ComputeSample
-    where: provider='EcsCluster'
-    eventId: entityGuid
-    eventName: entityName
+    eventId: entity.guid
+    from: Metric
+    select: latest(`aws.ecs.runningTasksCount.byCluster`)
+  title: Running tasks
+  unit: COUNT

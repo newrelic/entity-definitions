@@ -1,0 +1,496 @@
+{
+  "name": "GCP VPC Network",
+  "description": null,
+  "pages": [
+    {
+      "name": "VPC Network",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 2
+          },
+          "title": "VPC Network Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT filter(latest(jsonPayload.src_vpc.vpc_name), WHERE jsonPayload.reporter = 'SRC') OR filter(latest(jsonPayload.dest_vpc.vpc_name), WHERE jsonPayload.reporter = 'DEST') as 'VPC Name', rate(count(*),1 second) as 'Flows per Second', latest(timestamp) as 'Last Update', uniqueCount(jsonPayload.connection.src_ip, jsonPayload.connection.dest_ip) as 'Observed IP Addresses', uniqueCount(concat(jsonPayload.connection.dest_ip, ':', jsonPayload.connection.dest_port), concat(jsonPayload.connection.src_ip, ':', jsonPayload.connection.src_port)) as 'Observed Endpoint Tuples'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Flow Bytes",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent))\nFacet CASES (\n  WHERE jsonPayload.reporter = 'SRC' as 'Egress Bytes',\n  WHERE jsonPayload.reporter = 'DEST' as 'Ingress Bytes') \nTIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 1,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Flow Packets",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.packets_sent))\nFacet CASES (\n  WHERE jsonPayload.reporter = 'SRC' as 'Egress Packets',\n WHERE jsonPayload.reporter = 'DEST' as 'Ingress Packets') \nTIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Sources",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.src_ip) AS 'Sources' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Sources",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'SRC'\nFACET jsonPayload.connection.src_ip\nLIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 7,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Sources",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'SRC'\nFACET jsonPayload.connection.src_ip\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Destinations",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.dest_ip) AS 'Destinations' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 10,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Destinations",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nFACET jsonPayload.connection.dest_ip\nLIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 10,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Destinations",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nFACET jsonPayload.connection.dest_ip\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Protocols",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.protocol) AS 'Protocols' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Inbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'DEST'\nFACET jsonPayload.connection.protocol\nLIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 13,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Inbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'DEST'\nFACET jsonPayload.connection.protocol\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 8,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Outbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'SRC'\nFACET jsonPayload.connection.protocol\nLIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 10,
+            "row": 13,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Outbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'SRC'\nFACET jsonPayload.connection.protocol\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 22,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Devices with most outbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.dest_ip) AS 'Destination IPS', uniqueCount(jsonPayload.connection.dest_port) AS 'Outbound Ports' FACET jsonPayload.connection.src_ip AS 'Source' LIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 22,
+            "height": 3,
+            "width": 8
+          },
+          "title": "Devices with most outbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.dest_ip) FACET jsonPayload.connection.src_ip LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 25,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Devices with most inbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.dest_port) AS 'Destination Ports', uniqueCount(jsonPayload.connection.src_ip) AS 'Source IPS' FACET jsonPayload.connection.dest_ip AS 'Destination' LIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 25,
+            "height": 3,
+            "width": 8
+          },
+          "title": "Devices with most inbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(jsonPayload.connection.src_ip) FACET jsonPayload.connection.dest_ip LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

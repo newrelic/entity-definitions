@@ -1,0 +1,31 @@
+videoStartTime:
+  title: Median video start time (seconds)
+  unit: SECONDS
+  query:
+    select: percentile(timeSinceRequested, 50) / 1000
+    from: MobileVideo
+    where: actionName = 'CONTENT_START'
+
+interruptions:
+  title: Interruptions (count)
+  unit: COUNT
+  query:
+    select: count(*)
+    from: MobileVideo
+    where: actionName = 'CONTENT_BUFFER_START' and contentPlayhead > 0 and bufferType = 'connection'
+
+rebufferTime:
+  title: Median connection rebuffer time (seconds)
+  unit: SECONDS
+  query:
+    select: percentile(timeSinceBufferBegin, 50) / 1000
+    from: MobileVideo
+    where: actionName = 'CONTENT_BUFFER_END' and contentPlayhead > 0 and bufferType = 'connection'
+
+contentErrors:
+  title: Content errors (count)
+  unit: COUNT
+  query:
+    select: count(*) 
+    from: MobileVideo
+    where: actionName = 'CONTENT_ERROR'

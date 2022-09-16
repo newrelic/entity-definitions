@@ -1,0 +1,196 @@
+{
+	"name": "Kentik - UPS",
+	"description": null,
+	"pages": [
+		{
+			"name": "Kentik - UPS",
+			"description": null,
+			"widgets": [
+				{
+					"visualization": {
+						"id": "viz.bar"
+					},
+					"layout": {
+						"column": 1,
+						"row": 1,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Device Uptime (Hours)",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(`kentik.snmp.Uptime`)/100/60/60 AS 'Hours' WHERE provider = 'kentik-ups' LIMIT MAX"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.bar"
+					},
+					"layout": {
+						"column": 5,
+						"row": 1,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Time Currently Running on Battery (mins)",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.upsSecondsOnBattery)/60 AS 'Time on Battery (mins)' WHERE provider = 'kentik-ups'"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.bar"
+					},
+					"layout": {
+						"column": 9,
+						"row": 1,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Battery Run Time Remaining (mins)",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.upsEstimatedMinutesRemaining) AS 'Battery Run Time Remaining (mins)' WHERE provider = 'kentik-ups'"
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.line"
+					},
+					"layout": {
+						"column": 1,
+						"row": 4,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Output Load Capacity %",
+					"rawConfiguration": {
+						"facet": {
+							"showOtherSeries": false
+						},
+						"legend": {
+							"enabled": true
+						},
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT max(kentik.snmp.upsOutputPercentLoad) AS 'Output Load %' FACET Index WHERE provider = 'kentik-ups' TIMESERIES 5 MINUTES"
+							}
+						],
+						"yAxisLeft": {
+							"max": 100,
+							"min": 0,
+							"zero": false
+						}
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 5,
+						"row": 4,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Battery Capacity Status (1 == Unknown, 2 == Normal, 3 == Low, 4 == Depleted)",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.upsBatteryStatus) AS 'Battery Status' WHERE provider = 'kentik-ups'"
+							}
+						],
+						"thresholds": [
+							{
+								"alertSeverity": "WARNING",
+								"value": 3
+							},
+							{
+								"alertSeverity": "CRITICAL",
+								"value": 4
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 7,
+						"row": 4,
+						"height": 3,
+						"width": 2
+					},
+					"title": "Active Alarm Conditions (Count)",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.upsAlarmsPresent) AS 'Active Alarm Conditions' WHERE provider = 'kentik-ups'"
+							}
+						],
+						"thresholds": [
+							{
+								"alertSeverity": "WARNING",
+								"value": 0.5
+							},
+							{
+								"alertSeverity": "CRITICAL",
+								"value": 0.9
+							}
+						]
+					}
+				},
+				{
+					"visualization": {
+						"id": "viz.billboard"
+					},
+					"layout": {
+						"column": 9,
+						"row": 4,
+						"height": 3,
+						"width": 4
+					},
+					"title": "Battery Temperature",
+					"rawConfiguration": {
+						"dataFormatters": [],
+						"nrqlQueries": [
+							{
+								"accountId": 0,
+								"query": "FROM Metric SELECT latest(kentik.snmp.upsBatteryTemperature) AS 'Celsius', (latest(kentik.snmp.upsBatteryTemperature)*1.8) + 32 AS 'Fahrenheit' WHERE provider = 'kentik-ups'"
+							}
+						],
+						"thresholds": []
+					}
+				}
+			]
+		}
+	]
+}

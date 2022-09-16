@@ -1,0 +1,26 @@
+hitRate:
+  queries:
+    newrelic:
+      from: Metric
+      select: sum(`azure.cache.redis.cachehits0`)* 100 / (sum(`azure.cache.redis.cachehits0`) + sum(`azure.cache.redis.cachemisses0`))
+      eventId: entity.guid
+    newrelicSample:
+      eventName: entityName
+      eventId: entityGuid
+      select: (sum(`cacheHits.Total`) * 100) / (sum(`cacheHits.Total`) + sum(`cacheMisses.Total`))
+      from: AzureRedisCacheShardSample
+  unit: PERCENTAGE
+  title: Hit rate
+operations:
+  queries:
+    newrelic:
+      from: Metric
+      select: max(`azure.cache.redis.operationsPerSecond0`)
+      eventId: entity.guid
+    newrelicSample:
+      eventName: entityName
+      eventId: entityGuid
+      select: max(`operationsPerSecond.Maximum`)
+      from: AzureRedisCacheShardSample
+  unit: OPERATIONS_PER_SECOND
+  title: Operations rate

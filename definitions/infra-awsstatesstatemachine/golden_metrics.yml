@@ -1,32 +1,60 @@
 successfulExecutions:
-  title: Successful Executions
-  query:
-    select: sum(`provider.executionsSucceeded.Sum`)
-    from: AwsStatesStateMachineSample
-    where: provider='AwsStatesStateMachine'
-    eventId: entityGuid
-    eventName: entityName
+  title: Successful executions
+  unit: COUNT
+  queries:
+    aws:
+      select: sum(aws.states.ExecutionsSucceeded)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(`provider.executionsSucceeded.Sum`)
+      from: AwsStatesStateMachineSample
+      where: provider='AwsStatesStateMachine'
+      eventId: entityGuid
+      eventName: entityName
 executionTimeMs:
-  title: Execution Time (ms)
-  query:
-    select: average(`provider.executionTime.Average`)
-    from: AwsStatesStateMachineSample
-    where: provider='AwsStatesStateMachine'
-    eventId: entityGuid
-    eventName: entityName
+  title: Execution time (ms)
+  unit: MS
+  queries:
+    aws:
+      select: average(aws.states.ExecutionTime)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.executionTime.Average`)
+      from: AwsStatesStateMachineSample
+      where: provider='AwsStatesStateMachine'
+      eventId: entityGuid
+      eventName: entityName
 failedExecutions:
-  title: Failed Executions
-  query:
-    select: sum(`provider.executionsFailed.Sum`)
-    from: AwsStatesStateMachineSample
-    where: provider='AwsStatesStateMachine'
-    eventId: entityGuid
-    eventName: entityName
+  title: Failed executions
+  unit: COUNT
+  queries:
+    aws:
+      select: sum(aws.states.ExecutionsFailed)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(`provider.executionsFailed.Sum`)
+      from: AwsStatesStateMachineSample
+      where: provider='AwsStatesStateMachine'
+      eventId: entityGuid
+      eventName: entityName
 errorRatio:
   title: Error ratio (%)
-  query:
-    select: sum(`provider.executionsFailed.Sum`)/sum(`provider.executionsStarted.Sum`) * 100
-    from: AwsStatesStateMachineSample
-    where: provider='AwsStatesStateMachine'
-    eventId: entityGuid
-    eventName: entityName
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: 100 * sum(aws.states.ExecutionsFailed) / sum(aws.states.ExecutionsStarted)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: 100 * sum(provider.executionsFailed.Sum) / sum(provider.executionsStarted.Sum)
+      from: AwsStatesStateMachineSample
+      where: provider='AwsStatesStateMachine'
+      eventId: entityGuid
+      eventName: entityName

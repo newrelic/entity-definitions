@@ -1,0 +1,48 @@
+domain: EXT
+type: WIRELESS_CONTROLLER
+synthesis:
+  rules:
+  # Cisco Meraki devices
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cloud-controller
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      kentik.model:
+        entityTagName: device_model
+        multiValue: false
+
+  # Traditional wireless controllers
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-wireless-controller
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      kentik.model:
+        entityTagName: device_model
+        multiValue: false
+
+goldenTags:
+- device_ip
+- device_model
+
+dashboardTemplates:
+  # Kentik Meraki Cloud Controller
+  kentik/meraki-cloud-controller:
+    template: meraki-dashboard.json
+  # Aruba WC
+  kentik/aruba-wireless-controller:
+    template: aruba-dashboard.json
+  # Cisco WLC
+  kentik/cisco-wlc:
+    template: cisco-wlc-dashboard.json

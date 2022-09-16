@@ -1,0 +1,18 @@
+# Determine metrics for generic cdn
+
+
+latency:
+  title: CDN latency
+  unit: SECONDS
+  displayAsValue: true
+  query:
+    select: average(duration)
+    from: CDN
+
+availability:
+    title: CDN availability
+    unit: PERCENTAGE 
+    query:
+      select: (filter(count(*), where responseCode < 300) / count(*)) * 100
+      from: CDN
+      where: responseCode is NOT NULL

@@ -1,21 +1,84 @@
 numberOfVmsInThisPool:
   title: Number of VMs in this pool
-  query:
-    select: average(vmCount)
-    from: VSphereResourcePoolSample
-    eventId: entityGuid
-    eventName: entityName
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(vsphere.resourcePool.vmCount)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(vmCount)
+      from: VSphereResourcePoolSample
+      eventId: entityGuid
+      eventName: entityName
 aggregatedCpuUsage:
   title: Aggregated CPU usage (%)
-  query:
-    select: average(cpu.overallUsage)
-    from: VSphereResourcePoolSample
-    eventId: entityGuid
-    eventName: entityName
-aggregatedMemoryUsage:
-  title: Aggregated memory usage (%)
-  query:
-    select: average(mem.usage)*100/(average(mem.free)+average(mem.usage))
-    from: VSphereResourcePoolSample
-    eventId: entityGuid
-    eventName: entityName
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(vsphere.resourcePool.cpu.overallUsage)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(cpu.overallUsage)
+      from: VSphereResourcePoolSample
+      eventId: entityGuid
+      eventName: entityName
+memoryUsage:
+  title: Memory usage (MiB)
+  unit: BYTES
+  queries:
+    newRelic:
+      select: average(vsphere.resourcePool.mem.usage)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(mem.usage)
+      from: VSphereResourcePoolSample
+      eventId: entityGuid
+      eventName: entityName
+memoryFree:
+  title: Free memory (MiB)
+  unit: BYTES
+  queries:
+    newRelic:
+      select: average(vsphere.resourcePool.mem.free)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(mem.free)
+      from: VSphereResourcePoolSample
+      eventId: entityGuid
+      eventName: entityName
+vmCount:
+  queries:
+    newRelic:
+      select: average(vsphere.resourcePool.vmCount)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(`vmCount`)
+      from: VSphereResourcePoolSample
+      eventId: entityGuid
+      eventName: entityName
+  unit: COUNT
+  title: Virtual machines count
+memSwapped:
+  queries:
+    newRelic:
+      select: average(vsphere.resourcePool.mem.swapped) * 1024 * 1204
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(`mem.swapped`) * 1024 * 1204
+      from: VSphereResourcePoolSample
+      eventId: entityGuid
+      eventName: entityName
+  unit: BYTES
+  title: Memory swapped

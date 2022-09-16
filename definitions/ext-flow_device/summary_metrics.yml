@@ -1,0 +1,44 @@
+ipAddress:
+  title: IP address
+  unit: STRING
+  tag:
+    key: device_ip
+
+flowType:
+  title: Flow type
+  unit: STRING
+  tag:
+    key: flow_type
+
+sources:
+  goldenMetric: sources
+  title: Sources
+  unit: COUNT
+  queries:
+    kentik/netflow-events:
+      select: uniqueCount(src_addr)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
+      eventId: entity.guid
+
+destinations:
+  goldenMetric: destinations
+  title: Destinations
+  unit: COUNT
+  queries:
+    kentik/netflow-events:
+      select: uniqueCount(dst_addr)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
+      eventId: entity.guid
+
+packetsPerSecond:
+  goldenMetric: packetsPerSecond
+  title: Packets/second
+  unit: COUNT
+  queries:
+    kentik/netflow-events:
+      select: sum(sample_rate)
+      from: KFlow
+      where: "provider = 'kentik-flow-device'"
+      eventId: entity.guid

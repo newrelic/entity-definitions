@@ -1,0 +1,34 @@
+throughput:
+  title: Throughput
+  query:
+    select: rate(sum(istio_requests_total), 1 SECOND)
+    from: Metric
+errorRate:
+  title: Error rate
+  query:
+    select: (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') * 100 ) / sum(istio_requests_total)
+    where: reporter = 'destination'
+    from: Metric
+responseTimeMs:
+  unit: MS
+  title: Response time (ms)
+  query:
+    select: sum(istio_request_duration_milliseconds_sum) / count(istio_request_duration_milliseconds_count)
+    where: reporter = 'destination' 
+    from: Metric
+throughputInbound:
+  title: Throughput (inbound)
+  unit: REQUESTS_PER_SECOND
+  query:
+    select: rate(sum(istio_requests_total), 1 SECOND)
+    where: reporter = 'destination'
+    from: Metric
+    eventId: entity.guid
+throughputOutbound:
+  title: Throughput (outbound)
+  unit: REQUESTS_PER_SECOND
+  query:
+    select: rate(sum(istio_requests_total), 1 SECOND)
+    where: reporter = 'source'
+    from: Metric
+    eventId: entity.guid

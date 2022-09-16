@@ -1,0 +1,630 @@
+{
+  "name": "VPC Network",
+  "description": null,
+  "pages": [
+    {
+      "name": "VPC Network",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 2
+          },
+          "title": "VPC Network Summary",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT latest(vpc_id) AS 'VPC Name', latest(instrumentation.provider) AS 'Flow Type', latest(sample_rate) as 'Sample Rate', rate(count(*),1 second) as 'Flows per Second', latest(timestamp) as 'Last Update', uniqueCount(srcaddr, dstaddr) as 'Observed IP Addresses', uniqueCount(src_endpoint, dest_endpoint) as 'Observed Endpoint Tuples'"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Flow Bytes",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate))\nFacet CASES (\n  WHERE flow_direction = 'egress' AND numeric(sample_rate) = 1 as 'Egress Bytes',\n  WHERE flow_direction = 'ingress' AND numeric(sample_rate) = 1 as 'Ingress Bytes',\n  WHERE flow_direction = 'egress' AND sample_rate > 1 as 'Egress Bytes (estimated)',\n  WHERE flow_direction = 'ingress' AND sample_rate > 1 as 'Ingress Bytes (estimated)'\n) \nTIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 1,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Flow Packets",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(packets*numeric(sample_rate))\nFacet CASES (\n  WHERE flow_direction = 'egress' AND numeric(sample_rate) = 1 as 'Egress Packets',\n  WHERE flow_direction = 'ingress' AND numeric(sample_rate) = 1 as 'Ingress Packets',\n  WHERE flow_direction = 'egress' AND sample_rate > 1 as 'Egress Packets (estimated)',\n  WHERE flow_direction = 'ingress' AND sample_rate > 1 as 'Ingress Packets (estimated)'\n) \nTIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Observed Applications",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(application) AS 'Applications' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Inbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Inbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET application, CASES(\n  WHERE sample_rate > 1 AS 'estimated',\n  WHERE sample_rate = 1 AS 'unsampled') \nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 8,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Outbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS \nSELECT sum(bytes*numeric(sample_rate)) AS Bytes \nWHERE flow_direction = 'egress' \nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5\n"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "layout": {
+            "column": 10,
+            "row": 4,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Outbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET application, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Sources",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(srcaddr) AS 'Sources' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Sources",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET srcaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 7,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Sources",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET srcaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Destinations",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(dstaddr) AS 'Destinations' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 10,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Destinations",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nFACET dstaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 10,
+            "height": 3,
+            "width": 5
+          },
+          "title": "Top 25 - Destinations",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nFACET dstaddr, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Protocols",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(protocol) AS 'Protocols' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Inbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 13,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Inbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'ingress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 8,
+            "row": 13,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Outbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 10,
+            "row": 13,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Outbound Protocols",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS\nSELECT sum(bytes*numeric(sample_rate)) AS Bytes\nWHERE flow_direction = 'egress'\nFACET protocol, CASES(\n  WHERE numeric(sample_rate) > 1 as 'estimated',\n  WHERE numeric(sample_rate) = 1 as 'unsampled'\n)\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 22,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Devices with most outbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(dstaddr) AS 'Destination IPS', uniqueCount(dstport) AS 'Outbound Ports' FACET srcaddr AS 'Source' LIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 22,
+            "height": 3,
+            "width": 8
+          },
+          "title": "Devices with most outbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(dstaddr) FACET srcaddr LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 25,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Devices with most inbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(dstport) AS 'Destination Ports', uniqueCount(srcaddr) AS 'Source IPS' FACET dstaddr AS 'Destination' LIMIT 25"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 25,
+            "height": 3,
+            "width": 8
+          },
+          "title": "Devices with most inbound partners",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows, Log_VPC_Flows_AWS SELECT uniqueCount(srcaddr) FACET dstaddr LIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

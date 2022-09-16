@@ -1,48 +1,90 @@
 CPUUtilization:
-  title: Max CPU Utilization
-  query:
-    select: max(`provider.cpuUtilization.Maximum`)
-    from: DatastoreSample
-    where: provider='RedshiftNode'
-    eventId: entityGuid
-    eventName: entityName
+  title: CPU utilization
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.redshift.CPUUtilization.byNode)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.cpuUtilization.Average`)
+      from: DatastoreSample
+      where: provider='RedshiftNode'
+      eventId: entityGuid
+      eventName: entityName
 DatabaseConnections:
-  title: Database Connections
-  query:
-    select: max(`provider.DatabaseConnections.Maximum`)
-    from: DatastoreSample
-    where: provider='RedshiftNode'
-    eventId: entityGuid
-    eventName: entityName
+  title: Database connections
+  unit: COUNT
+  queries:
+    aws:
+      select: max(aws.redshift.DatabaseConnections.byCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: max(`provider.DatabaseConnections.Maximum`)
+      from: DatastoreSample
+      where: provider='RedshiftNode'
+      eventId: entityGuid
+      eventName: entityName
 ReadLatency:
-  title: Max Read Latency
-  query:
-    select: max(`provider.ReadLatency.Maximum`)
-    from: DatastoreSample
-    where: provider='RedshiftNode'
-    eventId: entityGuid
-    eventName: entityName
+  title: Max read latency
+  unit: SECONDS
+  queries:
+    aws:
+      select: max(aws.es.ReadLatency)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: max(`provider.ReadLatency.Maximum`)
+      from: DatastoreSample
+      where: provider='RedshiftNode'
+      eventId: entityGuid
+      eventName: entityName
 WriteLatency:
-  title: Max Write Latency
-  query:
-    select: max(`provider.WriteLatency.Maximum`)
-    from: DatastoreSample
-    where: provider='RedshiftNode'
-    eventId: entityGuid
-    eventName: entityName
+  title: Max write latency
+  unit: SECONDS
+  queries:
+    aws:
+      select: max(aws.es.WriteLatency)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: max(`provider.WriteLatency.Maximum`)
+      from: DatastoreSample
+      where: provider='RedshiftNode'
+      eventId: entityGuid
+      eventName: entityName
 PercentageDiskSpace:
-  title: Max Percentage disk space used
-  query:
-    select: max(`provider.PercentageDiskSpaceUsed.Maximum`)
-    from: DatastoreSample
-    where: provider='RedshiftNode'
-    eventId: entityGuid
-    eventName: entityName
+  title: Disk usage
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.redshift.PercentageDiskSpaceUsed.byNode)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(`provider.PercentageDiskSpaceUsed.Average`)
+      from: DatastoreSample
+      where: provider='RedshiftNode'
+      eventId: entityGuid
+      eventName: entityName
 HealthStatus:
-  title: Cluster Health Status
-  query:
-    select: min(`provider.HealthStatus.Minimum`)
-    from: DatastoreSample
-    where: provider='RedshiftNode'
-    eventId: entityGuid
-    eventName: entityName
+  title: Cluster health status
+  unit: COUNT            
+  queries:
+    aws:
+      select: min(aws.redshift.HealthStatus.byCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: min(`provider.HealthStatus.Minimum`)
+      from: DatastoreSample
+      where: provider='RedshiftNode'
+      eventId: entityGuid
+      eventName: entityName

@@ -1,22 +1,46 @@
 domain: EXT
-# Network Router devices from Kentik using Metric API
-# Leaving this ambiguous to allow future technical partners to use the same entity type with additional conditions
 type: ROUTER
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
+  rules:
+    # Network Router devices from Kentik using Metric API
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-router
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
 
-  conditions:
-  - attribute: provider
-    value: kentik-router
+    # Mikrotik routers using Metric API
+    # https://github.com/OscarDCorbalan/mikrotik-newrelic/
+  - identifier: mikrotik.serialnumber
+    name: mikrotik.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.provider
+      value: mikrotik-router
+    tags:
+      instrumentation.provider:
+      instrumentation.version:
+        entityTagName: agentVersion
+      mikrotik.model:
+        entityTagName: model
+      mikrotik.boardname:
+        entityTagName: boardname
+      mikrotik.currentfirmware:
+        entityTagName: firmware
 
-compositeMetrics:
-  goldenMetrics:
-  - golden_metrics.yml
-  summaryMetrics:
-  - summary_metrics.yml
+goldenTags:
+- device_ip
 
+## Note - these dashboards are overwritten at the entity-ui layer by custom components built by the NR product team
 dashboardTemplates:
-  newRelic:
-    template: dashboard.json
+  # Cisco ASR profiles (default)
+  kentik/cisco-asr:
+    template: cisco-asr-dashboard.json
+  # Mikrotik Router from mikrotik-newrelic script
+  mikrotik-router:
+    template: mikrotik-dashboard.json

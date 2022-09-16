@@ -1,41 +1,72 @@
 ipAddress:
-  title: Router IP Address
+  title: IP address
   unit: STRING
   tag:
-    key: src_addr
+    key: device_ip
 
 cpuUtilization:
-  title: CPU Utilization (%)
+  goldenMetric: cpuUtilization
+  title: CPU
   unit: PERCENTAGE
-  query:
-    select: average(kentik.snmp.CPU)
-    from: Metric
-    where: "provider = 'kentik-router'"
-    eventId: entity.guid
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: average(kentik.snmp.CPU)
+      from: Metric
+      where: "provider = 'kentik-router'"
+      eventId: entity.guid
+    # Mikrotik Router from mikrotik-newrelic script
+    mikrotik-router:
+      select: average(mikrotik.system.cpu.load)
+      from: Metric
+      eventId: entity.guid
 
 memoryUtilization:
-  title: Memory Utilization (%)
+  goldenMetric: memoryUtilization
+  title: Memory
   unit: PERCENTAGE
-  query:
-    select: average(kentik.snmp.MemoryUtilization)
-    from: Metric
-    where: "provider = 'kentik-router'"
-    eventId: entity.guid
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: average(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-router'"
+      eventId: entity.guid
+    # Mikrotik Router from mikrotik-newrelic script
+    mikrotik-router:
+      select: average(mikrotik.system.memory.load)
+      from: Metric
+      eventId: entity.guid
 
 receiveErrors:
-  title: Receive Errors (count)
+  goldenMetric: receiveErrors
+  title: Receive errors
   unit: COUNT
-  query:
-    select: sum(kentik.snmp.ifInErrors)
-    from: Metric
-    where: "provider = 'kentik-router'"
-    eventId: entity.guid
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: sum(kentik.snmp.ifInErrors)
+      from: Metric
+      where: "provider = 'kentik-router'"
+      eventId: entity.guid
+    # Mikrotik Router from mikrotik-newrelic script
+    mikrotik-router:
+      select: sum(mikrotik.interface.ether1.rxerrorsps)
+      from: Metric
+      eventId: entity.guid
 
 transmitErrors:
-  title: Transmit Errors (count)
+  goldenMetric: transmitErrors
+  title: Transmit errors
   unit: COUNT
-  query:
-    select: sum(kentik.snmp.ifOutErrors)
-    from: Metric
-    where: "provider = 'kentik-router'"
-    eventId: entity.guid
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: sum(kentik.snmp.ifOutErrors)
+      from: Metric
+      eventId: entity.guid
+    # Mikrotik Router from mikrotik-newrelic script
+    mikrotik-router:
+      select: sum(mikrotik.interface.ether1.txerrorsps)
+      from: Metric
+      eventId: entity.guid

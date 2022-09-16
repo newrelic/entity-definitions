@@ -25,8 +25,13 @@ module.exports = {
     sanitizeDashboard(fileContent){
         return fileContent
                 .replace(/\"accountId\"\s*:\s*\d+\s*/g , '"accountId": 0') // Anonymize account ID
-                .replace(/^.+\"linkedEntityGuids\".+\n?/mg , '') // Remove linkedEntityGuids
-                .replace(/^.+\"permissions\".+\n?/mg , '') // Remove permissions
-                .replace(/\,(?!\s*?[\{\[\"\'\w])/g, ''); // Remove trailing commas
+                .replace(/^.+\"linkedEntityGuids\".+\n?/mg , '')           // Remove linkedEntityGuids
+                .replace(/^.+\"permissions\".+\n?/mg , '')                 // Remove permissions
+                // Remove trailing commas - Pattern translation:
+                // A comma + positive look ahead for closing braces.
+                // Further, optional whitespaces and optional line breaks
+                // between comma and closing braces.
+                .replace(/\,(?=\s*[\r?\n]?\s*[\]\}])/g,'');
+
     }
 }

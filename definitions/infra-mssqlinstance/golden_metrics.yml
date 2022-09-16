@@ -1,21 +1,84 @@
 connections:
   title: Connections
-  query:
-    select: average(stats.connections)
-    from: MssqlInstanceSample
-    eventId: entityGuid
-    eventName: entityName
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(mssql.instance.stats.connections)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(stats.connections)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
 blockedProcesses:
   title: Blocked processes
-  query:
-    select: max(instance.blockedProcessesCount)
-    from: MssqlInstanceSample
-    eventId: entityGuid
-    eventName: entityName
+  unit: COUNT
+  queries:
+    newRelic:
+      select: max(mssql.instance.instance.blockedProcessesCount)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: max(instance.blockedProcessesCount)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
 waitTimeMs:
   title: Wait time (ms)
-  query:
-    select: average(system.waitTimeInMillisecondsPerSecond)
-    from: MssqlInstanceSample
-    eventId: entityGuid
-    eventName: entityName
+  unit: MS
+  queries:
+    newRelic:
+      select: average(mssql.instance.system.waitTimeInMillisecondsPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(system.waitTimeInMillisecondsPerSecond)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+availability:
+  queries:
+    newRelic:
+      select: average(mssql.instance.activeConnections)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(activeConnections)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+  unit: COUNT
+  title: Connections
+monitorStatus:
+  queries:
+    newRelic:
+      select: average(mssql.instance.instance.transactionsPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(`instance.transactionsPerSecond`)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+  unit: OPERATIONS_PER_SECOND
+  title: Transactions
+sessionStatus:
+  queries:
+    newRelic:
+      select: average(mssql.instance.stats.sqlCompilations)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(`stats.sqlCompilations`)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+  unit: COUNT
+  title: SQL (re-)compilations

@@ -1,0 +1,30 @@
+domain: INFRA
+type: IBMMQ_QUEUE
+goldenTags:
+  - qmgr
+
+synthesis:
+  rules:
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      name: queue
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: ibmmq_queue
+      tags:
+        qmgr:
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
