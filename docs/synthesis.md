@@ -21,7 +21,7 @@ synthesis:
 | name    | String | Yes | The attribute to use for the entity name. |
 | identifier| String| Yes | Telemetry attribute to use as the entity identifier.|
 | compositeIdentifier| String| No | Set of attributes that will identify the telemetry. When this one is used identifier is not required.|
-| encodeIdentifierInGUID | Boolean | No | If true, the identifier value will be encoded to respect the [GUID limits][guid_spec]. Defaults to `false`. |
+| encodeIdentifierInGUID | Boolean | No | If true, the identifier value will be hashed to respect the [GUID limits][guid_spec]. Defaults to `false`. |
 | conditions | List | No | The list of conditions to apply in the data point to match the rule. Defaults to an empty list. |
 | tags     | List   | No | The list of attributes to copy as entity tags if the rule matches. Defaults to an empty list. |
 
