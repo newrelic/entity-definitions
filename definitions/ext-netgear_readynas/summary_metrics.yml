@@ -1,27 +1,28 @@
-chassisCount:
-  goldenMetric: chassisCount
-  title: Chassis count
+clusterUsedPercent:
+  goldenMetric: clusterUsedPercent
+  title: Cluster used %
   unit: PERCENTAGE
   query:
-    select: uniqueCount(chassis_name)
-    from: zfs
-    where: "key = 'chassis'"
+    select: latest(cap_used/cap_total)*100
+    from: readynas_all
+    where: key = 'capacity'
     eventId: entity.guid
-clusterState:
-  goldenMetric: clusterState
-  title: Cluster peer state
+
+clusterUptime:
+  goldenMetric: clusterUptime
+  title: Uptime (days)
   unit: COUNT
   query:
-    select: latest(peer_state)
-    from: zfs
-    where: "key = 'cluster_link'"
+    select: latest(uptime)/60/60/24/100
+    from: readynas_all
     eventId: entity.guid
-diskCount:
-  goldenMetric: diskCount
-  title: Disk count
+
+failedDriveCount:
+  goldenMetric: failedDriveCount
+  title: Drive failures
   unit: COUNT
   query:
-    select: uniquecount(label)
-    from: zfs
-    where: "key = 'disk'"
+    select: count(statusID)
+    from: readynas_all
+    where: "key = 'drives' and statusID != 1 and statusID != 0"
     eventId: entity.guid
