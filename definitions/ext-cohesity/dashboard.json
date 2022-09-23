@@ -1,0 +1,285 @@
+{
+  "name": "Backup - Cohesity",
+  "description": null,
+  "pages": [
+    {
+      "name": "Cohesity",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Data collection",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from cohesity SELECT uniqueCount(clusterCI) as 'Clusters count' TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "IOs (read/write)",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM cohesity SELECT latest(readIos),latest(writeIos) where key = 'stats' TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Read/Write (GB/s)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM cohesity SELECT latest(numBytesRead)/1024/1024/1024 as 'Read GB',latest(numBytesWritten)/1024/1024/1024 as 'Written GB' where key = 'stats' TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Latency (ms)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM cohesity SELECT latest(readLatencyMsecs) as 'Read',latest(writeLatencyMsecs) as 'Write' where key = 'stats' TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Performance",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM cohesity SELECT latest(dataInBytes)/1024/1024/1024 as 'DataIn GB',latest(dataInBytesAfterReduction)/1024/1024/1024 as 'DataIn After Reduction GB',latest(dataReductionRatio) as 'Reduction ratio',latest(numBytesRead)/1024/1024/1024 as 'Read GB',latest(numBytesWritten)/1024/1024/1024 as 'Written GB',latest(readIos),latest(readLatencyMsecs) as 'Read latency',latest(writeIos) as ' Write IO',latest(writeLatencyMsecs) as 'Write latency' where key = 'stats'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Capacity Used %",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(localUsageBytes / totalCapacityBytes)*100 as 'Used %' from cohesity where key ='capacity' TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Capacity",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(localUsageBytes / totalCapacityBytes)*100 as 'Used %',latest(localAvailableBytes)/1024/1024/1024/1024 as 'Local Free',latest(localUsageBytes)/1024/1024/1024/1024 as 'Local Used',latest(totalCapacityBytes)/1024/1024/1024/1024 as 'Total',latest(dataProtectionLogicalUsageBytes)/1024/1024/1024/1024 as 'DP Logical Used', latest(dataProtectionPhysicalUsageBytes)/1024/1024/1024/1024 as 'DP Physical Used', latest(fileServicesLogicalUsageBytes)/1024/1024/1024/1024 as 'File Logical Used', latest(fileServicesPhysicalUsageBytes)/1024/1024/1024/1024 as 'File Physical Used'  from cohesity where key ='capacity'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Services status",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(state),latest(stateID) from cohesity where key = 'services' facet service limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Node system disk status",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM cohesity SELECT latest(chassisID),latest(devicePath),latest(node_hostname),latest(offline),latest(offlineID) facet id where key ='node_disk' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
