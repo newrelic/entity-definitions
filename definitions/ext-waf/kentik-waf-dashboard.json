@@ -1,0 +1,679 @@
+{
+  "name": "Web Application Firewall",
+  "description": null,
+  "pages": [
+    {
+      "name": "Web Application Firewall",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "recent-relative"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason', latest(currentFirmwareVersion), latest(securityDefUpdates), latest(serial_number) WHERE provider = 'kentik-waf' and instrumentation.name not like 'ping'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider = 'kentik-waf'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE provider = 'kentik-waf'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "Load Average 1m",
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-waf' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Memory Utilization (%)",
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-waf' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Interfaces Summary",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus) OR latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_name or if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed AS 'Interface Speed' WHERE provider = 'kentik-waf' LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Receive Traffic %",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_interface_name WHERE provider = 'kentik-waf' TIMESERIES 5 MINUTES LIMIT 10"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Transmit Traffic %",
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'RX %' FACET if_interface_name WHERE provider = 'kentik-waf' TIMESERIES 5 MINUTES LIMIT 10"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Receive Traffic Mbps",
+          "layout": {
+            "column": 1,
+            "row": 14,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE provider = 'kentik-waf' TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Transmit Traffic Mbps",
+          "layout": {
+            "column": 7,
+            "row": 14,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name WHERE provider = 'kentik-waf' TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Ssl Proxy Stats",
+          "layout": {
+            "column": 1,
+            "row": 18,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.sslProxyActiveConn), latest(kentik.snmp.sslProxyFullHandshakes), latest(kentik.snmp.sslProxyResumptionHandshakes), latest(kentik.snmp.sslProxyHandshakeAttempts), latest(kentik.snmp.sslProxyCacheHits), latest(kentik.snmp.sslProxyCacheMiss), latest(kentik.snmp.sslProxyCacheTimeouts), latest(kentik.snmp.sslProxyErrPms), latest(kentik.snmp.sslProxyAuthBadCertErr), latest(kentik.snmp.sslProxyAuthBadCNErr), latest(kentik.snmp.sslProxyBadDNCErr), latest(kentik.snmp.sslProxyBadCRLErr), latest(kentik.snmp.sslProxyInBytes), latest(kentik.snmp.sslProxyOutBytes), latest(kentik.snmp.sslProxyTotalReq), latest(kentik.snmp.sslProxyTotalConn), latest(kentik.snmp.sslProxyCurrentConn) FACET sslProxyAddress, sslProxyPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Ssl Server Stats",
+          "layout": {
+            "column": 1,
+            "row": 22,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.sslSrvrTotReqAccepted), latest(kentik.snmp.sslSrvrTotReqActive), latest(kentik.snmp.sslSrvrTotReqRejected), latest(kentik.snmp.sslSrvrTotSuccess), latest(kentik.snmp.sslSrvrTotRefused), latest(kentik.snmp.sslSrvrTotTimedout), latest(kentik.snmp.sslSrvrAvgReqPerConn), latest(kentik.snmp.sslSrvrTotResponse), latest(kentik.snmp.sslSrvrAvgResTime), latest(kentik.snmp.sslSrvrMaxResTime), latest(kentik.snmp.sslSrvrMinResTime), latest(kentik.snmp.sslSrvrNumReqEnqueue), latest(kentik.snmp.sslSrvrNumFreeConn), latest(kentik.snmp.sslSrvrNumOpeningConn), latest(kentik.snmp.sslSrvrNumConn), latest(kentik.snmp.sslSrvrNumIBDisabled), latest(kentik.snmp.sslSrvrNumOOBDisabled), latest(kentik.snmp.sslSrvrNumOOBEnabled), latest(kentik.snmp.sslSrvrLastDisabledTime), latest(sslSrvrState), latest(kentik.snmp.sslSrvrInBytes), latest(kentik.snmp.sslSrvrOutBytes) FACET sslSrvrSrvcAddress, sslSrvrSrvcPort, sslSrvrAddress, sslSrvrPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS request limit stats",
+          "layout": {
+            "column": 1,
+            "row": 26,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsReqLimitUrlLenOFErr), latest(kentik.snmp.ipsReqLimitQueryLenOFErr), latest(kentik.snmp.ipsReqLimitReqLenOFErr), latest(kentik.snmp.ipsReqLimitCookieLenOFErr), latest(kentik.snmp.ipsReqLimitHdrCntOFErr), latest(kentik.snmp.ipsReqLimitHdrLenOFErr), latest(kentik.snmp.ipsReqLimitContentLenErr), latest(kentik.snmp.ipsReqLimitBlkdMethodErr) FACET ipsReqLimitAddress, ipsReqLimitPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS request service stats",
+          "layout": {
+            "column": 1,
+            "row": 30,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsReqSrvcNoOfUrlProfMatched), latest(kentik.snmp.ipsReqSrvcNoOfAppProfViol), latest(kentik.snmp.ipsReqSrvcTotProfViol) FACET ipsReqSrvcAddress, ipsReqSrvcPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS LRN request service stats",
+          "layout": {
+            "column": 1,
+            "row": 34,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsLrnSrvcUpdatesByReq), latest(kentik.snmp.ipsLrnSrvcUpdatesByRsp), latest(kentik.snmp.ipsLrnSrvcTotUpdatesByReq), latest(kentik.snmp.ipsLrnSrvcTotUpdatesByRsp), latest(kentik.snmp.ipsLrnSrvcTotUrlUpdated), latest(kentik.snmp.ipsLrnSrvcTotParamsLearned), latest(kentik.snmp.ipsLrnSrvcTimeLastUpdated), latest(kentik.snmp.ipsLrnSrvcTimeLocked) FACET ipsLrnSrvcAddress, ipsLrnSrvcPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS URL ACL stats",
+          "layout": {
+            "column": 1,
+            "row": 38,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsUrlAclProcessAclHits), latest(kentik.snmp.ipsUrlAclPolicyHits), latest(kentik.snmp.ipsUrlAclTimeStamp), latest(kentik.snmp.ipsUrlAclAllowAclHits) FACET ipsUrlAclAddress, ipsUrlAclPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS URL normalization stats",
+          "layout": {
+            "column": 1,
+            "row": 42,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsUrlNormEncodingErr), latest(kentik.snmp.ipsUrlNormSlashDotInUrlErr), latest(kentik.snmp.ipsUrlNormTildaInUrl), latest(kentik.snmp.ipsUrlNormCharSetEncodingErr) FACET ipsUrlNormAddress, ipsUrlNormPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS cookie security stats",
+          "layout": {
+            "column": 1,
+            "row": 46,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsCookieSecEncrypted), latest(kentik.snmp.ipsCookieSecTampered), latest(kentik.snmp.ipsCookieSecNumCookieAllow), latest(kentik.snmp.ipsCookieSecNumCookieSet), latest(kentik.snmp.ipsCookieSecNumCookieErr), latest(kentik.snmp.ipsCookieSecCookieDecErr), latest(kentik.snmp.ipsCookieSecCookieDecrypted) FACET ipsCookieSecAddress, ipsCookieSecPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS access control stats",
+          "layout": {
+            "column": 1,
+            "row": 50,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsAccessCtrlMissingCookie), latest(kentik.snmp.ipsAccessCtrlNoAuthHdr), latest(kentik.snmp.ipsAccessCtrlInvalidCookie), latest(kentik.snmp.ipsAccessCtrlExpiredCookie), latest(kentik.snmp.ipsAccessCtrlAccessDenied), latest(kentik.snmp.ipsAccessCtrlGenFailure), latest(kentik.snmp.ipsAccessCtrlAccessAttempts), latest(kentik.snmp.ipsAccessCtrlAccessAttemptsTotRtt), latest(kentik.snmp.ipsAccessCtrlInvalidSrcIp), latest(kentik.snmp.ipsAccessCtrlAuthCacheHits), latest(kentik.snmp.ipsAccessCtrlAuthCacheMiss), latest(kentik.snmp.ipsAccessCtrlAuthCacheExp), latest(kentik.snmp.ipsAccessCtrlTimeStamp) FACET ipsAccessCtrlAddress, ipsAccessCtrlPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS header ACL stats",
+          "layout": {
+            "column": 1,
+            "row": 54,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsHdrAclHits), latest(kentik.snmp.ipsHdrAclTimeStamp) FACET ipsHdrAclAddress, ipsHdrAclPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS rate control stats",
+          "layout": {
+            "column": 1,
+            "row": 58,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsRCTotServed), latest(kentik.snmp.ipsRCTotQueued), latest(kentik.snmp.ipsRCTotDropped), latest(kentik.snmp.ipsRCTotOutOfResource), latest(kentik.snmp.ipsRCTimeStamp) FACET ipsRCAddress, ipsRCPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS URL translation stats",
+          "layout": {
+            "column": 1,
+            "row": 62,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsWebAddrTransReqUrlTrans), latest(kentik.snmp.ipsWebAddrTransRspUrlTrans), latest(kentik.snmp.ipsWebAddrTransReqUrlReWritten), latest(kentik.snmp.ipsWebAddrTransReqHdrReWritten), latest(kentik.snmp.ipsWebAddrTransRspHdrReWritten), latest(kentik.snmp.ipsWebAddrTransReqReDirection), latest(kentik.snmp.ipsWebAddrTransTimeStamp) FACET ipsWebAddrTransAddress, ipsWebAddrTransPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPS UrlPolicy stats",
+          "layout": {
+            "column": 1,
+            "row": 66,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric select latest(kentik.snmp.ipsUrlPolicyTotServed), latest(kentik.snmp.ipsUrlPolicyTotQueued), latest(kentik.snmp.ipsUrlPolicyTotDropped), latest(kentik.snmp.ipsUrlPolicyTotOutOfResource), latest(kentik.snmp.ipsUrlPolicyEntryCtrlAuth), latest(kentik.snmp.ipsUrlPolicyTimeStamp) FACET ipsUrlPolicyAddress, ipsUrlPolicyPort where instrumentation.name = 'barracuda-waf' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
