@@ -1,0 +1,34 @@
+ipAddress:
+  title: IP address
+  unit: STRING
+  tag:
+    key: device_ip
+
+cpuUtilization:
+  goldenMetric: cpuUtilization
+  title: CPU
+  unit: PERCENTAGE
+  queries:
+    kentik:
+      select: max(kentik.snmp.CPU)
+      from: Metric
+      where: "provider like '%wan-optimizer'"
+      eventId: entity.guid
+
+memoryUtilization:
+  goldenMetric: memoryUtilization
+  title: Memory
+  unit: PERCENTAGE
+  queries:
+    # Cisco devices
+    kentik/cisco-wan-optimizer:
+      select: (max(kentik.snmp.hrStorageUsed / kentik.snmp.hrStorageSize)) * 100
+      from: Metric
+      where: "provider = 'kentik-cisco-wan-optimizer' AND storage_description LIKE 'RAM'"
+      eventId: entity.guid
+    # Other Kentik devices
+    kentik:
+      select: max(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-wan-optimizer'"
+      eventId: entity.guid
