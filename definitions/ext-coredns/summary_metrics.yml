@@ -1,31 +1,33 @@
-dnsPanics:
-  goldenMetric: dnsPanics       
-  title: CoreDNS Panics
+panics:
+  goldenMetric: panics
+  title: CoreDNS panics
   unit: 'COUNT'
   query:
-    select: sum(coredns_panics_total) 
+    select: sum(coredns_panics_total)
     from: Metric
 responseCodes:
-  goldenMetric: responseCodes 
-  title: CoreDNS Response codes distribution
+  goldenMetric: responseCodes
+  title: CoreDNS response codes distribution
   unit: 'COUNT'
   query:
-    select: sum(coredns_dns_responses_total) 
+    select: sum(coredns_dns_responses_total)
     from: Metric
-    eventId: entity.guid 
+    facet: rcode
+    eventId: entity.guid
 requestTypes:
-  goldenMetric: requestTypes 
-  title: CoreDNS Request types
+  goldenMetric: requestTypes
+  title: CoreDNS request types
   unit: 'COUNT'
   query:
-    select: rate(sum(coredns_dns_requests_total), 1 second) 
+    select: rate(sum(coredns_dns_requests_total), 1 second)
     from: Metric
     eventId: entity.guid
 dnsLatency:
-  goldenMetric: dnsLatency 
+  goldenMetric: dnsLatency
   title: CoreDNS request latency (ms)
   unit: 'MS'
   query:
-    select: histogrampercentile(coredns_dns_request_duration_seconds_bucket, (100 * 0.99), (100 * 0.5)) 
+    select: histogrampercentile(coredns_dns_request_duration_seconds_bucket, (100 * 0.99), (100 * 0.5))
     from: Metric
     eventId: entity.guid
+    facet: tuple(server, zone)
