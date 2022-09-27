@@ -3,15 +3,15 @@ totalLoginRequests:
   title: Total Login Requests
   unit: COUNT
   query:
-    select: latest(vault_core_handle_request)
+    select: count(vault_core_handle_login_request)
     from: Metric
     eventId: entity.guid
-totalHandleRequests:
-  goldenMetric: totalHandleRequests
-  title: Total Handle Requests
-  unit: COUNT
+totalRequests:
+  goldenMetric: totalRequests
+  title: Total Requests
+  unit: REQUESTS_PER_SECOND
   query:
-    select: latest(vault_core_handle_login_request)
+    select: rate(sum(vault_core_handle_request),1 second) as 'Vault Core Requests'
     from: Metric
     eventId: entity.guid
 sealedStatus:
