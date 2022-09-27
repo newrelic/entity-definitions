@@ -42,7 +42,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (rate(average(cilium_kubernetes_events_total), 1 SECONDS) * 60) FROM Metric WHERE (((k8s_app = 'cilium') AND (scope = 'Pod')) AND (pod RLIKE 'cilium-.*')) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(pod, action) LIMIT 100 TIMESERIES 60000 SLIDE BY 30000"
+                "query": "SELECT (rate(average(cilium_kubernetes_events_total), 1 SECONDS) * 60) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(pod, action) LIMIT 100 TIMESERIES 60000 SLIDE BY 30000"
               }
             ],
             "platformOptions": {
@@ -71,7 +71,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max((`__result_0` / `__result_1`)) FROM (SELECT rate(sum(cilium_agent_api_process_time_seconds_sum), 1 SECONDS) AS `__result_0`, rate(sum(cilium_agent_api_process_time_seconds_count), 1 SECONDS) AS `__result_1` FROM Metric WHERE ((k8s_app = 'cilium') AND (pod RLIKE 'cilium-.*')) FACET dimensions() LIMIT 100 TIMESERIES 60000 SLIDE BY 30000) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(path, pod, method) LIMIT 100 TIMESERIES 30000"
+                "query": "SELECT max((`__result_0` / `__result_1`)) FROM (SELECT rate(sum(cilium_agent_api_process_time_seconds_sum), 1 SECONDS) AS `__result_0`, rate(sum(cilium_agent_api_process_time_seconds_count), 1 SECONDS) AS `__result_1` FROM Metric  FACET dimensions() LIMIT 100 TIMESERIES 60000 SLIDE BY 30000) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(path, pod, method) LIMIT 100 TIMESERIES 30000"
               }
             ],
             "platformOptions": {
@@ -100,7 +100,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(cilium_forward_count_total), 1 SECONDS) FROM Metric WHERE ((k8s_app = 'cilium') AND (pod RLIKE 'cilium-.*')) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(pod, direction) LIMIT 100 TIMESERIES 60000 SLIDE BY 30000"
+                "query": "SELECT rate(sum(cilium_forward_count_total), 1 SECONDS) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(pod, direction) LIMIT 100 TIMESERIES 60000 SLIDE BY 30000"
               }
             ],
             "platformOptions": {
@@ -129,23 +129,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT min(cilium_datapath_conntrack_gc_entries) AS 'MIN_IPV4_TCP_ALIVE' FROM Metric WHERE (((((k8s_app = 'cilium') AND (status = 'alive')) AND (family = 'ipv4')) AND (protocol = 'TCP')) AND (pod RLIKE 'cilium-.*')) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(family, status) LIMIT 100 TIMESERIES 30000"
-              },
-              {
-                "accountId": 0,
-                "query": "SELECT max(cilium_datapath_conntrack_gc_entries) AS 'MAX_IPV4_TCP_ALIVE' FROM Metric WHERE (((((k8s_app = 'cilium') AND (status = 'alive')) AND (family = 'ipv4')) AND (protocol = 'TCP')) AND (pod RLIKE 'cilium-.*')) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(family, status) LIMIT 100 TIMESERIES 30000"
-              },
-              {
-                "accountId": 0,
-                "query": "SELECT average(cilium_datapath_conntrack_gc_entries) AS 'AVERAGE_IPV4_TCP_ALIVE' FROM Metric WHERE (((((k8s_app = 'cilium') AND (status = 'alive')) AND (family = 'ipv4')) AND (protocol = 'TCP')) AND (pod RLIKE 'cilium-.*')) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(family, status) LIMIT 100 TIMESERIES 30000"
-              },
-              {
-                "accountId": 0,
-                "query": "SELECT average(cilium_datapath_conntrack_gc_entries) AS 'AVERAGE_IPV4_TCP_DELETED' FROM Metric WHERE (((((k8s_app = 'cilium') AND (status = 'deleted')) AND (family = 'ipv4')) AND (protocol = 'TCP')) AND (pod RLIKE 'cilium-.*')) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(family, status) LIMIT 100 TIMESERIES 30000"
-              },
-              {
-                "accountId": 0,
-                "query": "SELECT max(cilium_datapath_conntrack_gc_entries) AS 'MAX_IPV4_TCP_DELETED' FROM Metric WHERE (((((k8s_app = 'cilium') AND (status = 'deleted')) AND (family = 'ipv4')) AND (protocol = 'TCP')) AND (pod RLIKE 'cilium-.*')) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(family, status) LIMIT 100 TIMESERIES 30000"
+                "query": "SELECT max(cilium_datapath_conntrack_gc_entries) AS 'MAX_IPV4_TCP_ALIVE' FROM Metric WHERE (((((k8s_app = 'cilium') AND (status = 'alive')) AND (family = 'ipv4')) AND (protocol = 'TCP'))) SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(family, status) LIMIT 100 TIMESERIES 30000"
               }
             ],
             "platformOptions": {
