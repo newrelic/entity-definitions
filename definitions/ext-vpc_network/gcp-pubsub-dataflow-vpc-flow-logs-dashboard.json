@@ -94,6 +94,140 @@
           },
           "layout": {
             "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Observed Applications",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT uniqueCount(decorated.connection.application) AS 'Applications' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Inbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'DEST'\nFACET decorated.connection.application\nLIMIT 5"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Inbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP SELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'DEST'\nFACET decorated.connection.application\nLIMIT 25 TIMESERIES 5 MINUTES"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 8,
+            "row": 4,
+            "height": 3,
+            "width": 2
+          },
+          "title": "Top 5 - Outbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP \nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes \nWHERE jsonPayload.reporter = 'DEST'\nFACET decorated.connection.application\nLIMIT 5\n"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "layout": {
+            "column": 10,
+            "row": 4,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Top 25 - Outbound Applications",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log_VPC_Flows_GCP\nSELECT sum(numeric(jsonPayload.bytes_sent)) AS Bytes\nWHERE jsonPayload.reporter = 'DEST'\nFACET decorated.connection.application\nLIMIT 25 TIMESERIES 5 MINUTES "
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
             "row": 7,
             "height": 3,
             "width": 2
