@@ -2,80 +2,18 @@ sources:
   goldenMetric: sources
   title: Unique sources
   unit: COUNT
-  queries:
-    kentik/aws-vpc-flow-events:
-      select: uniqueCount(src_endpoint)
-      from: KFlow
-      where: "provider = 'kentik-vpc'"
-      eventId: entity.guid
-    aws-kinesis-firehose/vpc-flow-logs:
-      select: uniqueCount(src_endpoint)
-      from: Log_VPC_Flows_AWS
-      where: "provider = 'firehose-vpc'"
-      eventId: entity.guid
-    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
-      select: uniqueCount(jsonPayload.connection.src_ip, jsonPayload.connection.src_port)
-      from: Log_VPC_Flows_GCP
-      eventId: entity.guid
 destinations:
   goldenMetric: destinations
   title: Unique destinations
   unit: COUNT
-  queries:
-    kentik/aws-vpc-flow-events:
-      select: uniqueCount(dst_endpoint)
-      from: KFlow
-      where: "provider = 'kentik-vpc'"
-      eventId: entity.guid
-    aws-kinesis-firehose/vpc-flow-logs:
-      select: uniqueCount(dest_endpoint)
-      from: Log_VPC_Flows_AWS
-      where: "provider = 'firehose-vpc'"
-      eventId: entity.guid
-    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
-      select: uniqueCount(jsonPayload.connection.dest_ip, jsonPayload.connection.dest_port)
-      from: Log_VPC_Flows_GCP
-      eventId: entity.guid
 egressBytes:
   goldenMetric: egressBytes
   title: Egress bytes
   unit: BYTES
-  queries:
-    kentik/aws-vpc-flow-events:
-      select: sum(out_bytes*sample_rate)
-      from: KFlow
-      where: "provider = 'kentik-vpc' AND flow_direction = 'egress'"
-      eventId: entity.guid
-    aws-kinesis-firehose/vpc-flow-logs:
-      select: sum(bytes*sample_rate)
-      from: Log_VPC_Flows_AWS
-      where: "provider = 'firehose-vpc' and flow_direction = 'egress'"
-      eventId: entity.guid
-    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
-      select: sum(jsonPayload.bytes_sent)
-      from: Log_VPC_Flows_GCP
-      where: "jsonPayload.reporter = 'SRC'"
-      eventId: entity.guid
 ingressBytes:
   goldenMetric: ingressBytes
   title: Ingress bytes
   unit: BYTES
-  queries:
-    kentik/aws-vpc-flow-events:
-      select: sum(in_bytes*sample_rate)
-      from: KFlow
-      where: "provider = 'kentik-vpc' AND flow_direction = 'ingress'"
-      eventId: entity.guid
-    aws-kinesis-firehose/vpc-flow-logs:
-      select: sum(bytes*sample_rate)
-      from: Log_VPC_Flows_AWS
-      where: "provider = 'firehose-vpc' and flow_direction = 'ingress'"
-      eventId: entity.guid
-    gcp-pubsub-dataflow/vpc-flow-logs-gcp:
-      select: sum(jsonPayload.bytes_sent)
-      from: Log_VPC_Flows_GCP
-      where: "jsonPayload.reporter = 'DEST'"
-      eventId: entity.guid
 sampleRate:
   title: Sample rate
   unit: STRING
