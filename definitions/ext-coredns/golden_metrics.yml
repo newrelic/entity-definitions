@@ -5,23 +5,23 @@ panics:
     select: sum(coredns_panics_total)
     from: Metric
 responseCodes:
-  title: CoreDNS response codes as 'Response codes'
+  title: CoreDNS response codes as 'Response Codes'
   unit: 'COUNT'
   query:
     select: sum(coredns_dns_responses_total)
     from: Metric
     facet: rcode
 requestTypes:
-  title: CoreDNS request types as 'Requests per second'
+  title: CoreDNS request types as 'Requests Per Second'
   unit: 'REQUESTS_PER_SECOND'
   query:
     select: rate(sum(coredns_dns_requests_total), 1 second)
     from: Metric
     facet: type
 requestLatency:
-  title: CoreDNS request latency as 'Average request latency (ms)'
+  title: CoreDNS request latency as 'Average Request Latency (ms)'
   unit: 'MS'
   query:
-    select: histogrampercentile(coredns_dns_request_duration_seconds_bucket, 50)*1000
+    select: sum(coredns_dns_request_duration_seconds_sum * 1000) / count(coredns_dns_request_duration_seconds_count)
     from: Metric
     facet: server, zone
