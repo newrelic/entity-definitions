@@ -1,71 +1,30 @@
 redisConnectionsReceivedPerSecond:
   title: Number of connections received
   query:
-    #newRelic Redis Integration
-    newRelic:
-      select: average(redis_connections_received_total)
-    
-    #Prometheus RedisExporter Integration
-    prometheus/remote-write:
-      select: average(redis_connections_received_total)
-      from: Metric
-      where: instrumentation.name='remote-write' AND instrumentation.provider='prometheus'
+    select: average(redis_connections_received_total)
 
 redisCommandsProcessedPerSecond:
   title: Number of commands processed
   query:
-    #newRelic Redis Integration
-    newRelic:
-      select: sum(redis_commands_processed_total)
-    
-    #Prometheus RedisExporter Integration
-    prometheus/remote-write:
-      select: sum(redis_commands_processed_total)
-      from: Metric
-      where: instrumentation.name='remote-write' AND instrumentation.provider='prometheus'
+    select: sum(redis_commands_processed_total)
 
 redisCacheHitRatio:
   title: Cache hit ratio
   query:
-    #newRelic Redis Integration
-    newRelic:
-      select: 1 - (sum(redis_keyspace_misses_total) / sum(redis_keyspace_hits_total))
-    
-    #Prometheus RedisExporter Integration
-    prometheus/remote-write:
-      select: 1 - (sum(redis_keyspace_misses_total) / sum(redis_keyspace_hits_total))
-      from: Metric
-      where: instrumentation.name='remote-write' AND instrumentation.provider='prometheus'
+    select: 1 - (sum(redis_keyspace_misses_total) / sum(redis_keyspace_hits_total))
 
 redisKeyspaceHitsPerSecond:
   title: Keyspace hits per second
   unit: OPERATIONS_PER_SECOND
   query:
-    #newRelic Redis Integration
-    newRelic:
-      select: average(redis_keyspace_hits_total)
-      from: Metric
-      eventId: entity.guid
-    
-    #Prometheus RedisExporter Integration
-    prometheus/remote-write:
-      select: average(redis_keyspace_hits_total)
-      from: Metric
-      eventId: entity.guid
+    select: average(redis_keyspace_hits_total)
+    from: Metric
+    eventId: entity.guid
 
 redisKeyspaceMissesPerSecond:
   title: Keyspace misses per second
   unit: OPERATIONS_PER_SECOND
   query:
-    #newRelic Redis Integration
-    newRelic:
-      select: average(redis_keyspace_misses_total)
-      from: Metric
-      eventId: entity.guid
-    
-    #Prometheus RedisExporter Integration
-    prometheus/remote-write:
-      select: average(redis_keyspace_misses_total)
-      from: Metric
-      where: instrumentation.name='remote-write' AND instrumentation.provider='prometheus'
-      eventId: entity.guid
+    select: average(redis_keyspace_misses_total)
+    from: Metric
+    eventId: entity.guid
