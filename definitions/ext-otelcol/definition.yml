@@ -1,0 +1,35 @@
+domain: EXT
+type: OTELCOL
+synthesis:
+  rules:
+    # standard attributes for the Opentelemetry Collector, as documented here:
+    # https://github.com/open-telemetry/opamp-spec/blob/adfdcba/specification.md#agentdescriptionidentifying_attributes
+  - identifier: service.instance.id
+    name: service.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: service.name
+      value: io.opentelemetry.collector
+      # temporary condition while this rule is being tested
+    - attribute: nr.entity_type
+      value: otelcol
+    tags:
+      service.namespace:
+      service.version:
+      os.type:
+      os.version:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      cloud.availability_zone:
+      cloud.platform:
+      host.name:
+      host.type:
+      host.arch:
+      host.image.name:
+      host.image.id:
+      host.image.version:
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true

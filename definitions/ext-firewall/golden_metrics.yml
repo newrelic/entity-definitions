@@ -32,16 +32,6 @@ memoryUtilization:
   title: Memory utilization (%)
   unit: PERCENTAGE
   queries:
-    # Palo Alto firewalls
-    kentik/palo-alto:
-      select: (max(kentik.snmp.hrStorageUsed / kentik.snmp.hrStorageSize)) * 100
-      from: Metric
-      where: "provider = 'kentik-firewall' AND storage_description LIKE '%Management Memory%'"
-    # Fortinet Fortigate firewalls
-    kentik/fortinet-fortigate:
-      select: (max(kentik.snmp.fgSysMemUsage / kentik.snmp.fgSysMemCapacity)) * 100
-      from: Metric
-      where: "provider = 'kentik-firewall'"
     # Cisco Firepower firewalls
     kentik/cisco-firepower:
       select: max(kentik.snmp.MemoryUtilization)
@@ -64,7 +54,7 @@ sessionsTotal:
       where: "provider = 'kentik-firewall'"
     # Fortinet Fortigate firewalls
     kentik/fortinet-fortigate:
-      select: max(kentik.snmp.fgSysSesCount + kentik.snmp.fgSysSes6Count)
+      select: max(kentik.snmp.fgSysSesCount) + max(kentik.snmp.fgSysSes6Count)
       from: Metric
       where: "provider = 'kentik-firewall'"
     # Cisco Firepower firewalls
