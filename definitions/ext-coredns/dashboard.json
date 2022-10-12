@@ -3,7 +3,7 @@
   "description": null,
   "pages": [
     {
-      "name": "Heath and Requests",
+      "name": "Heath and requests",
       "description": null,
       "widgets": [
         {
@@ -19,16 +19,16 @@
             "id": "viz.markdown"
           },
           "rawConfiguration": {
-            "text": "![CoreDNS Logo](https://raw.githubusercontent.com/coredns/logo/master/Icon/CoreDNS_Colour_Icon.svg)"
+            "text": "![CoreDNS Logo](https://raw.githubusercontent.com/coredns/logo/master/Icon/CoreDNS_Colour_Icon.svg) \n- - -\n### Overview\n[coreDNS](https://github.com/coredns/coredns) is a fast and flexible DNS server/forwarder. The key word here is *flexible*, with CoreDNS you are able to do what you want with your DNS data by utilizing plugins. If some functionality is not provided out of the box you can add it by [writing a plugin](https://coredns.io/explugins).CoreDNS is a [Cloud Native Computing Foundation](https://cncf.io) graduated project.\n\n### About this Dashboard\n\nThis dashboard is based on standard `coreDNS` Prometheus metrics ingested using Prometheus [remote write](https://one.newrelic.com/marketplace/catalog-pack-details/detail?state=d8bbbb94-e24f-8ef8-a440-f815fc4b340a). Using the maximum dimensions of metrics as facets, a comprehensive view of CoreDNS can be obtained from this dashboard. \n"
           }
         },
         {
-          "title": "Num of CoreDNS instances reporting UP",
+          "title": "Num Of CoreDNS Instances Reporting UP",
           "layout": {
             "column": 3,
             "row": 1,
             "width": 2,
-            "height": 3
+            "height": 2
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -36,35 +36,13 @@
           },
           "rawConfiguration": {
             "dataFormatters": [],
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT uniqueCount(instance) where instrumentation.provider = 'prometheus' AND k8s_app LIKE '%dns' AND metricName = 'up'  "
-              }
-            ],
-            "thresholds": []
-          }
-        },
-        {
-          "title": "Build Version",
-          "layout": {
-            "column": 5,
-            "row": 1,
-            "width": 2,
-            "height": 3
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(version) from Metric WHERE metricName='coredns_build_info' and instrumentation.provider = 'prometheus' facet instance"
+                "query": "FROM Metric SELECT uniqueCount(instance) where instrumentation.provider = 'prometheus' AND instance LIKE '%:9153' AND metricName = 'up'  "
               }
             ],
             "platformOptions": {
@@ -75,10 +53,10 @@
         {
           "title": "Failed Reload Attempts",
           "layout": {
-            "column": 7,
+            "column": 5,
             "row": 1,
             "width": 3,
-            "height": 3
+            "height": 2
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -94,7 +72,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(coredns_reload_failed_total), 1 SECONDS) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES"
+                "query": "SELECT rate(sum(coredns_reload_failed_total), 1 SECONDS) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES 300000 SLIDE BY 30000"
               }
             ],
             "platformOptions": {
@@ -108,10 +86,10 @@
         {
           "title": "Sum of DNS Panics",
           "layout": {
-            "column": 10,
+            "column": 8,
             "row": 1,
             "width": 3,
-            "height": 3
+            "height": 2
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -119,12 +97,18 @@
           },
           "rawConfiguration": {
             "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
                 "query": "FROM Metric SELECT sum(coredns_panics_total) as 'CoreDNS Panics' WHERE instrumentation.provider = 'prometheus'"
               }
             ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
             "thresholds": [
               {
                 "alertSeverity": "WARNING",
@@ -140,10 +124,10 @@
         {
           "title": "Unhealthy Upstreams",
           "layout": {
-            "column": 3,
-            "row": 4,
-            "width": 3,
-            "height": 3
+            "column": 11,
+            "row": 1,
+            "width": 2,
+            "height": 2
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -159,7 +143,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(coredns_forward_healthcheck_broken_total), 1 SECONDS) FROM Metric facet instance SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES"
+                "query": "SELECT rate(sum(coredns_forward_healthcheck_broken_total), 1 SECONDS) FROM Metric facet instance SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES 300000 SLIDE BY 30000"
               }
             ],
             "platformOptions": {
@@ -174,45 +158,39 @@
           }
         },
         {
-          "title": "CPU Time",
+          "title": "Build Version",
           "layout": {
-            "column": 6,
-            "row": 4,
-            "width": 4,
-            "height": 3
+            "column": 3,
+            "row": 3,
+            "width": 2,
+            "height": 4
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.table"
           },
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
             },
-            "legend": {
-              "enabled": true
-            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(process_cpu_seconds_total), 1 SECONDS) FROM Metric facet instance SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES"
+                "query": "\nfrom (\nSELECT latest(version) as 'corednsversion' \nfrom Metric\nWHERE metricName='coredns_build_info'\nand instrumentation.provider = 'prometheus' \nfacet instance) \nselect uniqueCount(corednsversion) as 'Instances' facet corednsversion as 'Core DNS Version'"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
             }
           }
         },
         {
           "title": "Memory Usage",
           "layout": {
-            "column": 10,
-            "row": 4,
-            "width": 3,
-            "height": 3
+            "column": 5,
+            "row": 3,
+            "width": 4,
+            "height": 4
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -228,7 +206,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(go_memstats_alloc_bytes) FROM Metric where instrumentation.provider = 'prometheus' SINCE 60 MINUTES AGO UNTIL NOW facet instance TIMESERIES "
+                "query": "SELECT latest(go_memstats_alloc_bytes) FROM Metric where instrumentation.provider = 'prometheus' and instance LIKE '%:9153' SINCE 60 MINUTES AGO UNTIL NOW facet instance TIMESERIES "
               }
             ],
             "platformOptions": {
@@ -243,12 +221,48 @@
           }
         },
         {
+          "title": "CPU Time",
+          "layout": {
+            "column": 9,
+            "row": 3,
+            "width": 4,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(process_cpu_seconds_total), 1 SECONDS) FROM Metric facet instance where instance LIKE '%:9153' SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES 300000 SLIDE BY 30000"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "PERCENTAGE"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
           "title": "",
           "layout": {
             "column": 1,
             "row": 7,
-            "width": 2,
-            "height": 12
+            "width": 12,
+            "height": 1
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -259,11 +273,11 @@
           }
         },
         {
-          "title": "Request Size (Bytes)",
+          "title": "Request Size Bytes",
           "layout": {
-            "column": 3,
-            "row": 7,
-            "width": 5,
+            "column": 1,
+            "row": 8,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -295,11 +309,11 @@
           }
         },
         {
-          "title": "Response Size (Bytes)",
+          "title": "Response Size Bytes",
           "layout": {
-            "column": 8,
-            "row": 7,
-            "width": 5,
+            "column": 7,
+            "row": 8,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -331,11 +345,11 @@
           }
         },
         {
-          "title": "Requests rate by upstream servers",
+          "title": "Requests Rate By Upstream Servers",
           "layout": {
-            "column": 3,
-            "row": 10,
-            "width": 5,
+            "column": 1,
+            "row": 11,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -367,11 +381,11 @@
           }
         },
         {
-          "title": "Request rate by zone",
+          "title": "Request Rate By Zone",
           "layout": {
-            "column": 8,
-            "row": 10,
-            "width": 5,
+            "column": 7,
+            "row": 11,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -400,11 +414,11 @@
           }
         },
         {
-          "title": "Request rate by type",
+          "title": "Request Rate By Type",
           "layout": {
-            "column": 3,
-            "row": 13,
-            "width": 5,
+            "column": 1,
+            "row": 14,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -433,11 +447,11 @@
           }
         },
         {
-          "title": "Request rate by protocol",
+          "title": "Request Rate By Protocol",
           "layout": {
-            "column": 8,
-            "row": 13,
-            "width": 5,
+            "column": 7,
+            "row": 14,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -468,9 +482,9 @@
         {
           "title": "Sever Request Ratio",
           "layout": {
-            "column": 3,
-            "row": 16,
-            "width": 5,
+            "column": 1,
+            "row": 17,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -496,9 +510,9 @@
         {
           "title": "Upstream Rejected Queries",
           "layout": {
-            "column": 8,
-            "row": 16,
-            "width": 5,
+            "column": 7,
+            "row": 17,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -533,9 +547,9 @@
           "title": "",
           "layout": {
             "column": 1,
-            "row": 19,
-            "width": 2,
-            "height": 3
+            "row": 20,
+            "width": 12,
+            "height": 1
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -548,9 +562,9 @@
         {
           "title": "Average Response Latency (server, zone)",
           "layout": {
-            "column": 3,
-            "row": 19,
-            "width": 5,
+            "column": 1,
+            "row": 21,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -582,11 +596,11 @@
           }
         },
         {
-          "title": "Average Response Latency by upstream servers",
+          "title": "Average Response Latency By Upstream Servers",
           "layout": {
-            "column": 8,
-            "row": 19,
-            "width": 5,
+            "column": 7,
+            "row": 21,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -640,7 +654,7 @@
           }
         },
         {
-          "title": "Ratio of cache hits / misses",
+          "title": "Ratio Of Cache Hits / Misses",
           "layout": {
             "column": 3,
             "row": 1,
@@ -686,7 +700,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (average(coredns_cache_entries) * cardinality(coredns_cache_entries)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET type LIMIT 100 TIMESERIES"
+                "query": "SELECT (average(coredns_cache_entries) * cardinality(coredns_cache_entries)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET type LIMIT 100 TIMESERIES 30000 "
               }
             ],
             "platformOptions": {
@@ -722,7 +736,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(coredns_cache_hits_total), 1 SECONDS) FROM Metric FACET type SINCE 60 MINUTES AGO UNTIL NOW LIMIT 100 TIMESERIES"
+                "query": "SELECT rate(sum(coredns_cache_hits_total), 1 SECONDS) FROM Metric FACET type SINCE 6 MINUTES AGO UNTIL NOW LIMIT 100 TIMESERIES 300000 SLIDE BY 10000"
               }
             ],
             "nullValues": {
@@ -740,7 +754,7 @@
           }
         },
         {
-          "title": "Cache miss rate",
+          "title": "Cache Miss Rate",
           "layout": {
             "column": 7,
             "row": 4,
@@ -761,7 +775,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(coredns_cache_misses_total), 1 SECONDS) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW LIMIT 100 TIMESERIES"
+                "query": "SELECT rate(sum(coredns_cache_misses_total), 1 SECONDS) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW LIMIT 100 where prometheus_server='prom-coredns' TIMESERIES 300000 SLIDE BY 10000 "
               }
             ],
             "platformOptions": {
@@ -776,7 +790,7 @@
           }
         },
         {
-          "title": "Cache hits by upstream",
+          "title": "Cache Hits Per Upstream",
           "layout": {
             "column": 3,
             "row": 7,
@@ -797,7 +811,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (rate(sum(coredns_forward_conn_cache_hits_total), 1 SECONDS) / rate(sum(coredns_forward_requests_total), 1 SECONDS)) FROM Metric FACET to SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES"
+                "query": "SELECT (rate(sum(coredns_forward_conn_cache_hits_total), 1 SECONDS) / rate(sum(coredns_forward_requests_total), 1 SECONDS)) FROM Metric FACET to SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES 300000 SLIDE BY 30000"
               }
             ],
             "platformOptions": {
@@ -812,7 +826,7 @@
           }
         },
         {
-          "title": "Cache misses by upstream",
+          "title": "Cache Misses Per Upstream",
           "layout": {
             "column": 7,
             "row": 7,
@@ -833,7 +847,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (rate(sum(coredns_forward_conn_cache_misses_total), 1 SECONDS) / rate(sum(coredns_forward_requests_total), 1 SECONDS)) FROM Metric FACET to SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES"
+                "query": "SELECT (rate(sum(coredns_forward_conn_cache_misses_total), 1 SECONDS) / rate(sum(coredns_forward_requests_total), 1 SECONDS)) FROM Metric FACET to SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES 300000 SLIDE BY 30000"
               }
             ],
             "platformOptions": {
@@ -875,7 +889,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (sum(coredns_dns_responses_total)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET rcode LIMIT 100 TIMESERIES "
+                "query": "SELECT (sum(coredns_dns_responses_total)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET rcode LIMIT 100 TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -921,7 +935,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT uniqueCount(instance) where instrumentation.provider = 'prometheus' AND k8s_app LIKE '%dns' AND metricName = 'up'  TIMESERIES 30000 SLIDE BY 30 minutes LIMIT 100"
+                "query": "FROM Metric SELECT uniqueCount(instance) where instrumentation.provider = 'prometheus' AND k8s_app LIKE '%dns' AND metricName = 'up'  TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -952,7 +966,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(coredns_panics_total) as 'CoreDNS Panics' WHERE instrumentation.provider = 'prometheus' "
+                "query": "FROM Metric SELECT sum(coredns_panics_total) as 'CoreDNS Panics' WHERE instrumentation.provider = 'prometheus'"
               }
             ],
             "platformOptions": {
