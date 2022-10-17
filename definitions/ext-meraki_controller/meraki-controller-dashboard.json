@@ -1,0 +1,316 @@
+{
+    "name": "Meraki Cloud Controller",
+    "description": null,
+    "pages": [
+      {
+        "name": "Meraki Cloud Controller",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 6,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT uniqueCount(device_mac_addr) AS 'Meraki Devices', uniqueCount(client_mac_addr) AS 'Connected Clients' FACET org_name AS 'Organization', network WHERE metricName LIKE 'kentik.meraki.clients.%'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Connected Clients",
+            "layout": {
+              "column": 7,
+              "row": 1,
+              "width": 6,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.area"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT uniqueCount(client_mac_addr) AS 'Connected Clients' FACET concat(org_name,' - ',network) WHERE metricName LIKE 'kentik.meraki.clients.%' TIMESERIES 5 MINUTES LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "WAN Health",
+            "layout": {
+              "column": 1,
+              "row": 5,
+              "width": 12,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Latency MS",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Total Xmt GB",
+                  "precision": 3,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Total Rcv GB",
+                  "precision": 3,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT 100 - latest(kentik.meraki.uplinks.LossPct) AS 'Availability %' ,average(kentik.meraki.uplinks.LatencyMS) AS 'Latency MS' ,max(kentik.meraki.uplinks.Recv)/1000/1000/1000 AS 'Total Rcv GB' ,max(kentik.meraki.uplinks.Sent)/1000/1000/1000 AS 'Total Xmt GB' WHERE status IS NOT NULL FACET network AS 'Network Name', interface, status AS 'Uplink Status' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Top 10 - Clients by Recv Bytes",
+            "layout": {
+              "column": 1,
+              "row": 10,
+              "width": 6,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Recv) AS 'Recv' FACET concat(network,' - ',client_id) TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Top 10 - Clients by Sent Bytes",
+            "layout": {
+              "column": 7,
+              "row": 10,
+              "width": 6,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Sent) AS 'Sent' FACET concat(network,' - ',client_id) TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Top 10 - Applications by Recv Bytes",
+            "layout": {
+              "column": 1,
+              "row": 14,
+              "width": 6,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Recv) AS 'Recv' FACET application TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Top 10 - Applications by Sent Bytes",
+            "layout": {
+              "column": 7,
+              "row": 14,
+              "width": 6,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Sent) AS 'Sent' FACET application TIMESERIES 5 MINUTES LIMIT 10"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Device Inventory",
+            "layout": {
+              "column": 1,
+              "row": 18,
+              "width": 12,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(org_name) AS 'Organization' FACET device_name, device_model, device_firmware, device_serial, device_mac_addr, device_tags, network WHERE metricName LIKE 'kentik.meraki.clients.%' LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Client Summary",
+            "layout": {
+              "column": 1,
+              "row": 23,
+              "width": 12,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Recv) AS ' Avg Receive Bytes', average(kentik.meraki.clients.Sent) AS 'Avg Sent Bytes' FACET org_name AS 'Organization', network, device_name, client_id, client_mac_addr LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Meraki Configuration Changes",
+            "layout": {
+              "column": 1,
+              "row": 28,
+              "width": 12,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM KExtEvent SELECT * SINCE 1 WEEK AGO LIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

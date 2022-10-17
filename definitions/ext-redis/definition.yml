@@ -1,18 +1,42 @@
 domain: EXT
 type: REDIS
 synthesis:
-  identifier: targetName
-  name: targetName
-  encodeIdentifierInGUID: true
-  conditions:
-  - attribute: metricName
-    prefix: redis_
-  tags:
-    clusterName:
-    targetName:
+  rules:
+  # nri-prometheus telemetry
+  - identifier: targetName
+    name: targetName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: metricName
+      prefix: redis_
+    - attribute: integrationName
+      value: "nri-prometheus"
+    tags:
+      clusterName:
+      targetName:
+
+  # remote-write telemetry
+  - identifier: instance
+    name: instance
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: metricName
+      prefix: redis_
+    - attribute: instrumentation.name
+      value: "remote-write"
+    - attribute: instrumentation.provider
+      value: "prometheus"
+    tags:
+      instance:
+      job:
+      prometheus_server:
+
 dashboardTemplates:
   newRelic:
     template: dashboard.json
+  prometheus/remote-write:
+    template: redis-remote-write-dashboard.json
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true

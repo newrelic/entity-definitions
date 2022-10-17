@@ -3,108 +3,23 @@ containerState:
   unit: STRING
   tag:
     key: container.state
-cpuUsageContainer:
-  title: Container CPU Core usage
-  query:
-    eventId: entityGuid
-    from: ContainerSample
-    select: max(cpuUsedCores)
-  unit: COUNT
-  hidden: true
-cpuUsageK8s:
-  title: K8s CPU Core usage
-  query:
-    eventId: entityGuid
-    from: K8sContainerSample
-    select: max(cpuUsedCores)
-  unit: COUNT
-  hidden: true
 cpuUsage:
   goldenMetric: cpuUsage
   title: CPU usage (cores)
-  derive: '@cpuUsageContainer || @cpuUsageK8s'
   unit: COUNT
-cpuUtilizationContainer:
-  title: Container CPU utilization percent
-  query:
-    eventId: entityGuid
-    from: ContainerSample
-    select: max(cpuPercent)
-  unit: PERCENTAGE
-  hidden: true
-cpuUtilizationK8s:
-  title: K8s CPU utilization percent
-  query:
-    eventId: entityGuid
-    from: K8sContainerSample
-    select: max(cpuCoresUtilization)
-  unit: PERCENTAGE
-  hidden: true
 cpuUtilization:
   goldenMetric: cpuUtilization
-  derive: '@cpuUtilizationContainer || @cpuUtilizationK8s'
   unit: PERCENTAGE
   title: CPU utilization (%)
-storageUsageContainer:
-  title: container storage usage
-  query:
-    eventId: entityGuid
-    from: ContainerSample
-    select: max(ioTotalBytes)
-  unit: BYTES
-  hidden: true
-storageUsageK8s:
-  title: K8s storage usage
-  query:
-    eventId: entityGuid
-    from: K8sContainerSample
-    select: max(fsUsedBytes)
-  unit: BYTES
-  hidden: true
 storageUsage:
   goldenMetric: storageUsage
   title: Storage usage (bytes)
   unit: BYTES
-  derive: '@storageUsageContainer || @storageUsageK8s'
-memoryUsageContainer:
-  title: Container memory usage
-  query:
-    eventId: entityGuid
-    from: ContainerSample
-    select: max(memoryUsageBytes)
-  unit: BYTES
-  hidden: true
-memoryUsageK8s:
-  title: K8s memory usage
-  query:
-    eventId: entityGuid
-    from: K8sContainerSample
-    select: max(memoryWorkingSetBytes)
-  unit: BYTES
-  hidden: true
 memoryUsage:
   goldenMetric: memoryUsage
-  derive: '@memoryUsageContainer || @memoryUsageK8s'
   title: Memory usage (bytes)
   unit: BYTES
-networkTrafficRx:
-  title: Network traffic RX
-  query:
-    eventId: entityGuid
-    from: ContainerSample
-    select: max(networkRxBytesPerSecond)
-  unit: BYTES_PER_SECOND
-  hidden: true
-networkTrafficTx:
-  title: Network traffic TX
-  query:
-    eventId: entityGuid
-    from: ContainerSample
-    select: max(networkTxBytesPerSecond)
-  unit: BYTES_PER_SECOND
-  hidden: true
 networkTrafficTotal:
   goldenMetric: networkTrafficTotal
-  derive: '@networkTrafficRx + @networkTrafficTx'
   title: Network traffic (bytes per second)
   unit: BYTES_PER_SECOND
