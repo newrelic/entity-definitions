@@ -19,3 +19,19 @@ errorRate:
     select: filter(count(newrelic.timeslice.value), where metricTimesliceName = 'Errors/all') / (filter(count(newrelic.timeslice.value),
       where metricTimesliceName in ('HttpDispatcher', 'OtherTransaction/all'))) * 100 AS 'Error %'
     eventName: appName
+
+deprecatedTlsInstances:
+  title: Instances using deprecated TLS versions
+  unit: COUNT
+  query:
+    select: uniqueCount(realAgentId)
+    where: metricTimesliceName in ('HttpDispatcher', 'OtherTransaction/all')
+    eventName: appName
+    
+supportedTlsInstances:
+  title: Instances using supported TLS versions
+  unit: COUNT
+  query:
+    select: uniqueCount(realAgentId)
+    where: metricTimesliceName in ('HttpDispatcher', 'OtherTransaction/all')
+    eventName: appName
