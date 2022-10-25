@@ -1,0 +1,132 @@
+{
+  "name": "sap_abapws",
+  "description": "entity dashboard for sap_abapws",
+  "pages": [
+    {
+      "name": "sap_abapws",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Total Number by Adapter Type",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null, 
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_INTEGRATION_SERVICE SELECT count(*) SINCE 1 day ago FACET Adapter_Type"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Error Distribution by Message Status",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_INTEGRATION_SERVICE SELECT count(*) WHERE STATUS_GROUP != 'SUCCESSFUL' SINCE 1 day ago FACET Message_Status "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Average Processing Time(ms) Trend",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_WS_MESSAGES_EVENTS SELECT average(TOTAL_TIME) SINCE 1 day ago LIMIT MAX TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Messages in Error",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 6
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_INTEGRATION_SERVICE SELECT SYS_ID, Interface, Message_Status, Error_ID, Error_Information, Message_Size, Message_Status, Processing_Status, Location, Queue_Name, Adapter_Type, Communication_Type, Persistency_Type, TOTAL_TIME, Message_ID, Client, Error_ID,Error_Information, Execution_Date, Execution_Time, Expiry_Date,Root_Context_ID,Transaction_ID,Receiver_Interface_Name,Receiver_Interface_Namespace, Receiver_Operation,Sender_Interface_Name,Sender_Interface_Namespace, Sender_Operation,Sender_Party, User, Changed_by WHERE STATUS_GROUP != 'SUCCESSFUL' SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
