@@ -1,0 +1,34 @@
+domain: EXT
+type: SAP_ABAPWS
+goldenTags:
+    - instrumentation.provider
+    - sap.functional_area
+    - sap.system
+
+synthesis:
+  rules:
+    # Telemetry from New Relic SAP integration
+    # SAP_EID in format of SYS_ID/MESSAGE_TYPE
+  - identifier: SAP_EID
+    name: Interface 
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: SAP_ETYPE
+        value: ABAPWS
+
+    tags:
+      sap.functional_area:
+      SYS_ID:
+        entityTagName: sap.system
+      BUSIPROC_0001:
+      BUSIFUNC_0001:
+      BSUBPROC_0001:
+      BSUBFUNC_0001:
+
+dashboardTemplates:
+  SAP:
+    template: dashboard.json
+    
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
