@@ -1,0 +1,44 @@
+domain: EXT
+type: PIXIE_MYSQL
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - mysql.service.name
+        - mysql.namespace.name
+        - px.cluster.id
+    name: mysql.service.name
+    encodeIdentifierInGUID: true
+    # Matching redis metrics
+    conditions:
+    - attribute: metricName
+      prefix: redis. 
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - mysql.service.name
+        - mysql.namespace.name
+        - px.cluster.id
+    name: mysql.service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    # Matching redis traces
+    - attribute: newRelic.ingestPoint
+      value: api.traces
+    - attribute: db.system
+      value: mysql
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  alertable: true
