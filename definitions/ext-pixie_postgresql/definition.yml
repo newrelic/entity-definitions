@@ -1,0 +1,44 @@
+domain: EXT
+type: PIXIE_POSTGRES
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - postgres.service.name
+        - postgres.namespace.name
+        - px.cluster.id
+    name: postgres.service.name
+    encodeIdentifierInGUID: true
+    # Matching postgres metrics
+    conditions:
+    - attribute: metricName
+      prefix: postgres.
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - postgres.service.name
+        - postgres.namespace.name
+        - px.cluster.id
+    name: postgres.service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    # Matching postgres traces
+    - attribute: newRelic.ingestPoint
+      value: api.traces
+    - attribute: postgres.req_cmd
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  alertable: true
