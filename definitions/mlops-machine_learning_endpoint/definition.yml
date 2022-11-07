@@ -2,9 +2,14 @@ domain: MLOPS
 type: MACHINE_LEARNING_ENDPOINT
 synthesis:
   rules:
-    - identifier: aws..aws.sagemaker.endpoints.EndpointName
-      name: aws..aws.sagemaker.endpoints.EndpointName
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - aws.region
+          - aws.accountId
+          - aws..aws.sagemaker.endpoints.EndpointName
       encodeIdentifierInGUID: true
+      name: aws..aws.sagemaker.endpoints.EndpointName
       conditions:
         - attribute: aws.Namespace
           value: /aws/sagemaker/Endpoints
@@ -17,9 +22,19 @@ synthesis:
           entityTagName: providerExternalId
         aws..aws.sagemaker.endpoints.VariantName:
           entityTagName: VariantName
-    - identifier: aws.sagemaker.EndpointName
-      name: aws.sagemaker.EndpointName
+        aws.region:
+          entityTagName: aws.region
+        aws.accountId:
+          entityTagName: aws.accountId
+
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - aws.region
+          - aws.accountId
+          - aws.sagemaker.EndpointName
       encodeIdentifierInGUID: true
+      name: aws.sagemaker.EndpointName
       conditions:
         - attribute: aws.Namespace
           value: AWS/SageMaker
@@ -34,6 +49,10 @@ synthesis:
           entityTagName: VariantName
         aws.sagemaker.EndpointConfigName:
           entityTagName: EndpointConfigName
+        aws.region:
+          entityTagName: aws.region
+        aws.accountId:
+          entityTagName: aws.accountId
 dashboardTemplates:
   newRelic:
     template: dashboard.json
