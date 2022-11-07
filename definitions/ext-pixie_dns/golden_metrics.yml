@@ -1,0 +1,18 @@
+throughput:
+  title: Throughput (rpm)
+  unit: REQUESTS_PER_MINUTE
+  query:
+    select: rate(count(dns.latency), 1 minute)
+    from: Metric
+responseTimeMS:
+  title: Response time (ms)
+  unit: MS
+  query:
+    select: average(dns.latency)
+    from: Metric
+errorRate:
+  title: Error rate (%)
+  unit: PERCENTAGE
+  query:
+    select: percentage(count(dns.latency), WHERE dns.rcode!=3 and dns.rcode!= 0)
+    from: Metric

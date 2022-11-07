@@ -1,0 +1,207 @@
+{
+  "name": "pixie_dns",
+  "description": null,
+  "pages": [
+    {
+      "name": "pixie_dns",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Distribution of response times (ms)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`dns.latency`), max(`dns.latency`), min(`dns.latency`) FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "% of Errors over time",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT percentage(count(`dns.latency`),where `dns.rcode`!=3 and `dns.rcode` != 0) FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput (rpm)",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`dns.latency`), 1 minute) as requests_per_m FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "**RCODE** explanation:\n| CODE NAME  | VALUE | DESCRIPTION|\n| ------------- | ------------- | ------------- |\n| NOERROR  | 0  | The request completed successfully |\n| NXDOMAIN | 3  | The server could not find the requested domain. Not counted as an error as an application might try multiple DNS servers to resolve a name. |\n\nExhaustive list: http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml"
+          }
+        },
+        {
+          "title": "Throughput by rcode (rpm)",
+          "layout": {
+            "column": 4,
+            "row": 7,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`dns.latency`), 1 minute) FROM Metric facet dns.rcode \nSINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Sampled DNS Requests",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT * from Span WHERE dns.dns_server IS NOT NULL and instrumentation.provider = 'pixie' since 30 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Response times by each Attribute",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(`dns.latency`), min(`dns.latency`), average(`dns.latency`), count(`dns.latency`) as num_requests FROM Metric \nFACET \n`k8s.cluster.name`, `k8s.namespace.name`, `k8s.pod.name`, `service.name`,`dns.server.name`, `dns.server.cluster_id`, `dns.server.namespace`, `dns.rcode`, `dns.resolved`, `dns.query_type`, `dns.query`\nSINCE 30 MINUTES ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
