@@ -1,0 +1,44 @@
+domain: EXT
+type: PIXIE_REDIS
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - redis.service.name
+        - redis.namespace.name
+        - px.cluster.id
+    name: redis.service.name
+    encodeIdentifierInGUID: true
+    # Matching redis metrics
+    conditions:
+    - attribute: metricName
+      prefix: redis. 
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - redis.service.name
+        - redis.namespace.name
+        - px.cluster.id
+    name: redis.service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    # Matching redis traces
+    - attribute: newRelic.ingestPoint
+      value: api.traces
+    - attribute: redis.req_cmd
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  alertable: true

@@ -1,0 +1,24 @@
+throughput:
+  title: Throughput (rpm)
+  unit: REQUESTS_PER_MINUTE
+  query:
+    select: rate(count(kafka.latency), 1 minute)
+    from: Metric
+responseTimeMS:
+  title: Response time (ms)
+  unit: MS
+  query:
+    select: average(kafka.latency)
+    from: Metric
+errorRate:
+  title: Error rate (%)
+  unit: PERCENTAGE
+  query:
+    select: percentage(count(kafka.latency), WHERE kafka.has_error)
+    from: Metric
+dataTransferRate:
+  title: Throughput (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: rate(sum(kafka.bytes), 1 second)
+    from: Metric
