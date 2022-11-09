@@ -1,0 +1,25 @@
+domain: EXT
+type: PIXIE_CASSANDRA
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - cassandra.service.name
+        - cassandra.namespace.name
+        - px.cluster.id
+    name: cassandra.service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: cassandra.req_body
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  alertable: true
