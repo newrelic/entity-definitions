@@ -1,9 +1,9 @@
 {
-  "name": "pixie_dns",
+  "name": "pixie_mysql",
   "description": null,
   "pages": [
     {
-      "name": "pixie_dns",
+      "name": "pixie_mysql",
       "description": null,
       "widgets": [
         {
@@ -11,7 +11,7 @@
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 12,
+            "width": 6,
             "height": 3
           },
           "visualization": {
@@ -27,7 +27,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(`dns.latency`), max(`dns.latency`), min(`dns.latency`) FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
+                "query": "SELECT average(`mysql.latency`), max(`mysql.latency`), min(`mysql.latency`) FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -40,6 +40,38 @@
         },
         {
           "title": "% of Errors over time",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT percentage(count(mysql.latency), where mysql.resp_status>2) FROM Metric SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Data Transfer Rate (bps)",
           "layout": {
             "column": 1,
             "row": 4,
@@ -59,7 +91,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT percentage(count(`dns.latency`),where `dns.rcode`!=3 and `dns.rcode` != 0) FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
+                "query": "SELECT rate(sum(`mysql.req_bytes`), 1 second) as req_bps, rate(sum(`mysql.resp_bytes`), 1 second) as resp_bps  FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -91,7 +123,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(count(`dns.latency`), 1 minute) as requests_per_m FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
+                "query": "SELECT rate(count(`mysql.latency`), 1 minute) as requests_per_m FROM Metric \nSINCE 30 MINUTES AGO TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -103,54 +135,33 @@
           }
         },
         {
-          "title": "",
+          "title": "Sampled mysql Requests",
           "layout": {
             "column": 1,
             "row": 7,
-            "width": 6,
+            "width": 12,
             "height": 3
           },
           "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "**RCODE** explanation:\n| CODE NAME  | VALUE | DESCRIPTION|\n| ------------- | ------------- | ------------- |\n| NOERROR  | 0  | The request completed successfully |\n| NXDOMAIN | 3  | The server could not find the requested domain. Not counted as an error as an application might try multiple DNS servers to resolve a name. |\n\nExhaustive list: http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml"
-          }
-        },
-        {
-          "title": "Throughput by rcode (rpm)",
-          "layout": {
-            "column": 7,
-            "row": 7,
-            "width": 6,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
+            "id": "viz.table"
           },
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
             },
-            "legend": {
-              "enabled": true
-            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(count(`dns.latency`), 1 minute) FROM Metric facet dns.rcode \nSINCE 30 MINUTES AGO TIMESERIES"
+                "query": "SELECT * from Span WHERE mysql.service.name IS NOT NULL and instrumentation.provider = 'pixie' since 30 minutes ago"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
             }
           }
         },
         {
-          "title": "Sampled DNS Requests",
+          "title": "Response times by each Attribute",
           "layout": {
             "column": 1,
             "row": 10,
@@ -167,33 +178,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT * from Span WHERE dns.server.name IS NOT NULL and instrumentation.provider = 'pixie' since 30 minutes ago"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "title": "Response times by each Attribute",
-          "layout": {
-            "column": 1,
-            "row": 13,
-            "width": 12,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.table"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT max(`dns.latency`), min(`dns.latency`), average(`dns.latency`), count(`dns.latency`) as num_requests FROM Metric \nFACET \n`k8s.cluster.name`, `k8s.namespace.name`, `k8s.pod.name`, `service.name`,`dns.server.name`, `dns.server.cluster_id`, `dns.server.namespace`, `dns.rcode`, `dns.resolved`, `dns.query_type`, `dns.query`\nSINCE 30 MINUTES ago"
+                "query": "SELECT max(`mysql.latency`), min(`mysql.latency`), average(`mysql.latency`), count(`mysql.latency`) as num_requests, sum(mysql.req_bytes), sum(mysql.resp_bytes) FROM Metric \nFACET \n`mysql.req_cmd`, `service.name`, `service.instance.id`, `k8s.namespace.name`, `mysql.pod.name` \nSINCE 30 MINUTES ago"
               }
             ],
             "platformOptions": {
