@@ -319,7 +319,10 @@ Read on [summary metrics configuration options in our docs][summary_metrics].
 
 With all this we have a working definition of a new entityType: Commit the changes and open a new PR! After we merge and release, all New Relic users will take advantage of your contribution!
 
-By default all entity types will display under `Your system` category in the Explorer. If you'd like to place it somewhere else, let us know when opening the PR.
+By default all entity types will display under `Your system` category in the Explorer.
+If you want to change this or other UI properties you will need to open a PR into `entity-platform/entity-type-ui-definitions-service` repository.
+This requires access to our private github, so if you don't have that let us know on the PR and we will made the changes for you.
+
 
 [guid_spec]: guid_spec.md
 [synthesis]: synthesis.md
