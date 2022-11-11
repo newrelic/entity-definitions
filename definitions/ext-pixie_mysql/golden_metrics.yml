@@ -1,0 +1,24 @@
+throughput:
+  title: Throughput (rpm)
+  unit: REQUESTS_PER_MINUTE
+  query:
+    select: rate(count(mysql.latency), 1 minute)
+    from: Metric
+responseTimeMS:
+  title: Response time (ms)
+  unit: MS
+  query:
+    select: average(mysql.latency)
+    from: Metric
+errorRate:
+  title: Error rate (%)
+  unit: PERCENTAGE
+  query:
+    select: percentage(count(mysql.latency), where mysql.resp_status>2)
+    from: Metric
+dataTransferRate:
+  title: Throughput (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: rate(sum(mysql.req_bytes)+sum(mysql.resp_bytes), 1 second)
+    from: Metric
