@@ -1,0 +1,62 @@
+domain: INFRA
+type: MONGODB_COLLECTION
+
+synthesis:
+  rules:
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - mongodb_cluster_name
+          - database
+          - collection
+      encodeIdentifierInGUID: true
+      name: collection
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: mongodb_collstats_
+      tags:
+        mongodb_cluster_name:
+        database:
+
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - mongodb_cluster_name
+          - database
+          - collection
+      encodeIdentifierInGUID: true
+      name: collection
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: mongodb_indexstats_
+      tags:
+        mongodb_cluster_name:
+        database:
+
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - mongodb_cluster_name
+          - database
+          - collection
+      encodeIdentifierInGUID: true
+      name: collection
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: mongodb_top_
+      tags:
+        mongodb_cluster_name:
+        database:
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
