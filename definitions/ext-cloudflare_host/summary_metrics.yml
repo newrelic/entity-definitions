@@ -8,27 +8,11 @@ responseTimeMs:
   goldenMetric: responseTimeMs
   title: Response time
   unit: SECONDS
-  query:
-    select: average(cloudflare_response_time_ms) / 1000
-    from: Metric
-    eventId: entity.guid
-
 throughput:
   goldenMetric: throughput
   title: Throughput
   unit: REQUESTS_PER_SECOND
-  query:
-    select: rate(sum(cloudflare_request_total), 1 second)
-    from: Metric
-    where: cloudflare_request_total IS NOT NULL
-    eventId: entity.guid
-
 errorRate:
   goldenMetric: errorRate
   title: Error rate
   unit: PERCENTAGE
-  query:
-    select: (filter(sum(cloudflare_request_total), where http_status >= 500) / sum(cloudflare_request_total)) * 100
-    from: Metric
-    where: cloudflare_request_total IS NOT NULL
-    eventId: entity.guid

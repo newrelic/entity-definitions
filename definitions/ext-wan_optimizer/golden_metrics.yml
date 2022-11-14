@@ -1,0 +1,23 @@
+cpuUtilization:
+  title: CPU utilization (%)
+  unit: PERCENTAGE
+  queries:
+    kentik:
+      select: max(kentik.snmp.CPU)
+      from: Metric
+      where: "provider like '%wan-optimizer'"
+
+memoryUtilization:
+  title: Memory utilization (%)
+  unit: PERCENTAGE
+  queries:
+    # Cisco devices
+    kentik/cisco-wan-optimizer:
+      select: (max(kentik.snmp.hrStorageUsed / kentik.snmp.hrStorageSize)) * 100
+      from: Metric
+      where: "provider = 'kentik-cisco-wan-optimizer' AND storage_description LIKE 'RAM'"
+    # Other devices
+    kentik:
+      select: max(kentik.snmp.MemoryUtilization)
+      from: Metric
+      where: "provider = 'kentik-wan-optimizer'"
