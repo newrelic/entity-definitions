@@ -1,0 +1,458 @@
+{
+  "name": "Rubrik",
+  "description": null,
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
+    {
+      "name": "Rubrik",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Total failed backup+repl jobs",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 1,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(`failedJobCount`) from (FROM rubrik SELECT  latest(failedJobCount) WHERE key = 'failed_job' FACET clusterCI LIMIT MAX)"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 1
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "Count of Node issues",
+          "layout": {
+            "column": 2,
+            "row": 1,
+            "width": 1,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT uniqueCount(id) as 'Nodes' where key = 'node_status' and statusID != 1 limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "title": "Failed drive count",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 1,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(`drives`) from (SELECT uniqueCount(id) as 'drives' FROM rubrik  where key = 'drives' WHERE statusID = 2 limit max facet clusterCI,nodeID,id)"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 1
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "Clusters over 80%",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 1,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT  count(`Clusters`) from (FROM rubrik SELECT  latest(used/total)*100 as 'Clusters' where key = 'capacity' where (used/total)*100 > 80 FACET clusterCI limit max)"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 1
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "Failed Jobs count for 24h",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(objectCounts.failure) as 'Failed' where key = 'jobs_info' limit max TIMESERIES 2 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Cluster capacity Used %",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(used/total)*100 as 'Used %' where key = 'capacity' TIMESERIES 2 minutes  limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Drives",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(statusID) WHERE key = 'drives' facet nodeID,id LIMIT MAX TIMESERIES 2 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Failed Backup&Replication jobs in 24h",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(jobType),latest(jobMonitoringState),latest(locationName),latest(slaDomainName),latest(sourceClusterName),latest(duration),latest(lastSuccessfulJobTime),latest(lastUpdatedTime),latest(startTime),latest(errorInfo) WHERE key = 'failed_job_details' FACET objectName  LIMIT MAX "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "System status",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 3,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(statusID) where key = 'system_status' TIMESERIES 2 minutes "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Node status",
+          "layout": {
+            "column": 4,
+            "row": 6,
+            "width": 3,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(statusID) where key = 'node_status'  facet ipAddress limit max TIMESERIES 2 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Cluster capacity",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(used/total)*100 as 'Used %',latest(available)/1024/1024/1024/1024 as 'Free TB',latest(total)/1024/1024/1024/1024 as 'Total TB',latest(used)/1024/1024/1024/1024 as 'Used TB',latest(miscellaneous)/1024/1024/1024/1024 as 'Misc TB',latest(snapshot)/1024/1024/1024/1024 as 'Snap TB' where key = 'capacity' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Drives",
+          "layout": {
+            "column": 7,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(status),latest(statusID),latest(isDegraded),latest(diskType) WHERE key = 'drives' facet nodeID,id LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Failed job count",
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "width": 12,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(objectCounts.backup) as 'Backup',latest(objectCounts.replication) as 'Replication',latest(objectCounts.archival) as 'Archival',latest(objectCounts.conversion) as 'Conversion',latest(objectCounts.index) as 'Index',latest(objectCounts.logArchival) as 'Log Archival',latest(objectCounts.logBackup) as 'Log Backup',latest(objectCounts.logReplication) as 'Log Replication',latest(objectCounts.logShipping) as 'Log Shipping',latest(objectCounts.recovery) as 'Recovery',latest(objectCounts.total) as 'Total Failed Jobs',latest(lastUpdatedTime),latest(jobMonitoringState) where key = 'failed_job_count' LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Jobs statistics",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 6,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM rubrik SELECT latest(objectCounts.failure) as 'Failed',latest(objectCounts.active) as 'Active',latest(objectCounts.canceled) as 'Canceled',latest(objectCounts.scheduled) as 'Scheduled',latest(objectCounts.success) as 'Success',latest(objectCounts.total) as 'Total',latest(lastUpdatedTime) where key = 'jobs_info' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
