@@ -1,0 +1,24 @@
+domain: INFRA
+type: MONGODB_DATABASE
+
+synthesis:
+  rules:
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - mongodb_cluster_name
+          - database
+      encodeIdentifierInGUID: true
+      name: database
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: mongodb_dbstats_
+      tags:
+        mongodb_cluster_name:
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true

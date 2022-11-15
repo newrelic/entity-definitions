@@ -1,0 +1,527 @@
+{
+  "name": "Cisco WAN Optimizer",
+  "description": null,
+  "pages": [
+    {
+      "name": "Cisco WAN Optimizer",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "recent-relative"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE provider = 'kentik-cisco-wan-optimizer' and instrumentation.name not like 'ping'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "recent-relative"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider = 'kentik-cisco-wan-optimizer'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "recent-relative"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.hrStorageUsed)*100/latest(kentik.snmp.hrStorageSize) AS 'Current Memory Utilization %'WHERE provider = 'kentik-cisco-wan-optimizer' and storage_description = 'RAM'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 90
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "CPU Utilization (%)",
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' TIMESERIES 5 MINUTES WHERE instrumentation.name = 'cisco-wan-optimizer'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Memory Utilization (%)",
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.hrStorageUsed)*100/average(kentik.snmp.hrStorageSize) AS 'Average Memory' TIMESERIES 5 MINUTES WHERE instrumentation.name = 'cisco-wan-optimizer' and storage_description = 'RAM'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Interfaces Summary",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus) OR latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed AS 'Interface Speed' LIMIT MAX WHERE instrumentation.name = 'cisco-wan-optimizer'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Receive Traffic %",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_interface_name TIMESERIES 5 MINUTES LIMIT 10 WHERE instrumentation.name = 'cisco-wan-optimizer' "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Transmit Traffic %",
+          "layout": {
+            "column": 7,
+            "row": 9,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'TX %' FACET if_interface_name TIMESERIES 5 MINUTES LIMIT 10 WHERE instrumentation.name = 'cisco-wan-optimizer' "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Receive Traffic Mbps",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name TIMESERIES 5 minutes WHERE instrumentation.name = 'cisco-wan-optimizer'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Transmit Traffic Mbps",
+          "layout": {
+            "column": 7,
+            "row": 13,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET if_interface_name TIMESERIES 5 minutes WHERE instrumentation.name = 'cisco-wan-optimizer'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Current Content Engine Alarms",
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "recent-relative"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.snmp.cceAlarmCriticalCount) as Critical, max(kentik.snmp.cceAlarmMajorCount) as Major, max(kentik.snmp.cceAlarmMinorCount) as Minor WHERE instrumentation.name = 'cisco-wan-optimizer'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Content Engine Alarms",
+          "layout": {
+            "column": 3,
+            "row": 17,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#ff0000",
+                  "seriesName": "Critical"
+                },
+                {
+                  "color": "#ff8f0f",
+                  "seriesName": "Major"
+                },
+                {
+                  "color": "#e1ee2b",
+                  "seriesName": "Minor"
+                }
+              ]
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.snmp.cceAlarmCriticalCount) as Critical, max(kentik.snmp.cceAlarmMajorCount) as Major, max(kentik.snmp.cceAlarmMinorCount) as Minor WHERE instrumentation.name = 'cisco-wan-optimizer' TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Current TCP Flow Optimizations",
+          "layout": {
+            "column": 7,
+            "row": 17,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "recent-relative"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.snmp.active_connections) as active_connections, max(kentik.snmp.cwoTfoStatsActiveOptTCPPlusConn) as cwoTfoStatsActiveOptTCPPlusConn, max(kentik.snmp.cwoTfoStatsActiveOptTCPOnlyConn) as cwoTfoStatsActiveOptTCPOnlyConn, max(kentik.snmp.cwoTfoStatsActiveOptTCPPrepConn) as cwoTfoStatsActiveOptTCPPrepConn, max(kentik.snmp.cwoTfoStatsActiveADConn) as cwoTfoStatsActiveADConn, max(kentik.snmp.cwoTfoStatsReservedConn) as cwoTfoStatsReservedConn, max(kentik.snmp.cwoTfoStatsPendingConn) as cwoTfoStatsPendingConn, max(kentik.snmp.cwoTfoStatsActivePTConn) as cwoTfoStatsActivePTConn, max(kentik.snmp.cwoTfoStatsLoadStatus) as cwoTfoStatsLoadStatus WHERE instrumentation.name = 'cisco-wan-optimizer'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Historical TCP Flow Optimization Counters",
+          "layout": {
+            "column": 1,
+            "row": 20,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.snmp.cwoTfoStatsTotalOptConn) as cwoTfoStatsTotalOptConn, max(kentik.snmp.cwoTfoStatsTotalNormalClosedConn) as cwoTfoStatsTotalNormalClosedConn, max(kentik.snmp.cwoTfoStatsResetConn) as cwoTfoStatsResetConn WHERE instrumentation.name = 'cisco-wan-optimizer' timeseries 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Current TCP Flow Optimizations",
+          "layout": {
+            "column": 7,
+            "row": 20,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.snmp.active_connections) as active_connections, max(kentik.snmp.cwoTfoStatsActiveOptTCPPlusConn) as cwoTfoStatsActiveOptTCPPlusConn, max(kentik.snmp.cwoTfoStatsActiveOptTCPOnlyConn) as cwoTfoStatsActiveOptTCPOnlyConn, max(kentik.snmp.cwoTfoStatsActiveOptTCPPrepConn) as cwoTfoStatsActiveOptTCPPrepConn, max(kentik.snmp.cwoTfoStatsActiveADConn) as cwoTfoStatsActiveADConn, max(kentik.snmp.cwoTfoStatsReservedConn) as cwoTfoStatsReservedConn, max(kentik.snmp.cwoTfoStatsPendingConn) as cwoTfoStatsPendingConn, max(kentik.snmp.cwoTfoStatsActivePTConn) as cwoTfoStatsActivePTConn, max(kentik.snmp.cwoTfoStatsLoadStatus) as cwoTfoStatsLoadStatus WHERE instrumentation.name = 'cisco-wan-optimizer' TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
