@@ -1,0 +1,25 @@
+domain: EXT
+type: PIXIE_DNS
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - dns.server.cluster_id
+        - dns.server.namespace
+        - dns.server.name
+    name: dns.server.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: dns.query_type
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  alertable: true
