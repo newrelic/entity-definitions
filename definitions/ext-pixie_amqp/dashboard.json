@@ -1,0 +1,276 @@
+{
+  "name": "pixie_amqp",
+  "description": null,
+  "pages": [
+    {
+      "name": "pixie_amqp",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Throughput by Pod, Frame, Method (rpm)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`amqp.frame_count`), 1 minute) as req_per_m FROM Metric facet service.instance.id, amqp.frame_name, if(amqp.req_name is not NULL and amqp.req_name != '', amqp.req_name, if (amqp.resp_name is not null and amqp.resp_name != '', amqp.resp_name, '-')) as amqp_method SINCE 30 MINUTES AGO timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput (bps)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`amqp.req_bytes`), 1 second) as req_bytes_per_s, rate(sum(`amqp.resp_bytes`), 1 second) as resp_bytes_per_s FROM Metric SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Outgoing Throughput by Pod (bps)",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`amqp.resp_bytes`), 1 second) as resp_bytes_per_s FROM Metric facet service.instance.id  SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Incoming Throughput by Pod (bps)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`amqp.req_bytes`), 1 second) as req_bytes_per_s FROM Metric facet service.instance.id  SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput by Routing Key (rpm)",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(filter(sum(`amqp.frame_count`), WHERE amqp.routing_key is not NULL ), 1 minute) as req_per_m FROM Metric facet amqp.routing_key SINCE 30 MINUTES AGO timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "AMQP Consumer List",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM Metric FACET `amqp.routing_key`, `amqp.frame_name`, if(`amqp.req_name` is not NULL,`amqp.req_name`,  `amqp.resp_name`) as amqp_method, `amqp.consumer_tag`, `k8s.cluster.name`, `k8s.namespace.name`, `service.instance.id`,`service.name` where  amqp.resp_name is not null and amqp.routing_key is not null SINCE 30 MINUTES ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "AMQP Producer List",
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM Metric FACET `amqp.routing_key`, `amqp.frame_name`, if(`amqp.req_name` is not NULL,`amqp.req_name`,  `amqp.resp_name`) as amqp_method, `k8s.cluster.name`, `k8s.namespace.name`, `service.instance.id`,`service.name` where  amqp.req_name is not null and amqp.routing_key is not null SINCE 30 MINUTES ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Response times by each Attribute",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`amqp.frame_count`), sum(`amqp.req_bytes`), sum(`amqp.resp_bytes`) FROM Metric FACET `k8s.cluster.name`, `k8s.namespace.name`, `k8s.pod.name`, `amqp.pod.name`, `amqp.frame_name`, if(`amqp.req_name` is not NULL,`amqp.req_name`,  `amqp.resp_name`) as amqp_method, `amqp.routing_key`, `service.name`, amqp.consumer_tag SINCE 30 MINUTES ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Sample of amqp Requests",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT * from Span WHERE amqp.frame_name IS NOT NULL and instrumentation.provider = 'pixie'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
