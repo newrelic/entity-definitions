@@ -128,6 +128,112 @@ synthesis:
       conditions:
         - attribute: azure.resourceType
           value: Microsoft.Compute/virtualMachines
+    # <test:entity_type_na>
+    # This is a temporary condition to set the entityType of the Otel Host to NA
+    # opentelemetry host data from opentelemetry-collector with NA EntityType
+    - identifier: host.id
+      name: host.id
+      encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # for testing purposes
+        - attribute: nr_test_na_entity
+          value: 'true'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.id
+      encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # for testing purposes
+        - attribute: nr_test_na_entity
+          value: 'true'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.id
+      encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # for testing purposes
+        - attribute: nr_test_na_entity
+          value: 'true'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # </test:entity_type_na>
 configuration:
   entityExpirationTime: DAILY
   alertable: true
