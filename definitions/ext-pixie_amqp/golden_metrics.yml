@@ -1,0 +1,18 @@
+throughput:
+  title: Throughput (rpm)
+  unit: REQUESTS_PER_MINUTE
+  query:
+    select: rate(filter(sum(amqp.frame_count), WHERE amqp.routing_key is not NULL), 1 minute)
+    from: Metric
+incomingDataTransferRate:
+  title: Incoming Throughput (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: rate(sum(amqp.req_bytes), 1 second)
+    from: Metric
+outgoingDataTransferRate:
+  title: Outgoing Throughput (bps)
+  unit: BYTES_PER_SECOND
+  query:
+    select: rate(sum(amqp.resp_bytes), 1 second)
+    from: Metric
