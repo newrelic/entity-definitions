@@ -12,35 +12,15 @@ throughputInbound:
   goldenMetric: throughputInbound
   title: Throughput (inbound)
   unit: REQUESTS_PER_SECOND
-  query:
-    select: rate(sum(istio_requests_total), 1 SECOND)
-    where: reporter = 'destination'
-    from: Metric
-    eventId: entity.guid
 throughputOutbound:
   goldenMetric: throughputOutbound
   title: Throughput (outbound)
   unit: REQUESTS_PER_SECOND
-  query:
-    select: rate(sum(istio_requests_total), 1 SECOND)
-    where: reporter = 'source'
-    from: Metric
-    eventId: entity.guid
 errorRate:
   goldenMetric: errorRate
   title: Error rate
   unit: PERCENTAGE
-  query:
-    select: (filter(sum(istio_requests_total), WHERE response_code LIKE '5%') / sum(istio_requests_total)) * 100
-    where: reporter = 'destination'
-    from: Metric
-    eventId: entity.guid
 responseTimeMs:
   goldenMetric: responseTimeMs
   title: Response time
   unit: SECONDS
-  query:
-    select: (sum(istio_request_duration_milliseconds_sum) / sum(istio_request_duration_milliseconds_count)) / 1000
-    where: reporter = 'destination'
-    from: Metric
-    eventId: entity.guid

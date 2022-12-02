@@ -7,64 +7,11 @@ responseTimeMs:
   goldenMetric: responseTimeMs
   title: Response time
   unit: SECONDS
-  queries:
-    opentelemetry:
-      select: average(duration.ms) / 1000
-      from: Span
-      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
-      eventId: entity.guid
-    kamon-agent:
-      select: average(http.server.requests) / 1000
-      from: Metric
-      eventId: entity.guid
-    micrometer:
-      select: average(http.server.requests) / 1000
-      from: Metric
-      eventId: entity.guid
-    pixie:
-      select: average(http.server.duration) / 1000
-      from: Metric
-      eventId: entity.guid
 throughput:
   goldenMetric: throughput
   title: Throughput
   unit: REQUESTS_PER_SECOND
-  queries:
-    opentelemetry:
-      select: rate(count(*), 1 second)
-      from: Span
-      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
-      eventId: entity.guid
-    kamon-agent:
-      select: rate(sum(http.server.requests), 1 second)
-      from: Metric
-      eventId: entity.guid
-    micrometer:
-      select: rate(sum(http.server.requests), 1 second)
-      from: Metric
-      eventId: entity.guid
-    pixie:
-      select: rate(count(http.server.duration), 1 second)
-      from: Metric
-      eventId: entity.guid
 errorRate:
   goldenMetric: errorRate
   title: Error rate
   unit: PERCENTAGE
-  queries:
-    opentelemetry:
-      select: average(newrelic.goldenmetrics.ext.service.errorRate)
-      from: Metric
-      eventId: entity.guid
-    kamon-agent:
-      select: filter(sum(http.server.requests), where http.status_code = '5xx') / sum(http.server.requests) * 100
-      from: Metric
-      eventId: entity.guid
-    micrometer:
-      select: filter(sum(http.server.requests), where exception IS NOT NULL and exception != 'None') / sum(http.server.requests) * 100
-      from: Metric
-      eventId: entity.guid
-    pixie:
-      select: filter(count(http.server.duration), where numeric(http.status_code) >= 400 AND numeric(http.status_code) != 404) / count(http.server.duration) * 100
-      from: Metric
-      eventId: entity.guid

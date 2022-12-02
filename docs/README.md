@@ -296,52 +296,22 @@ See more information on [golden metrics configuration options in our docs][golde
 
 Summary metrics are also important for your entity type. Unlike golden metrics, summary metrics are only displayed in the [Explorer list view](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/new-relic-explorer-view-performance-across-apps-services-hosts/#find). We recommend to provide at most three metrics to display, and match them to golden metrics. We're working towards removing this definition, and only use golden metrics in the future.
 
-In order to provide summary metrics you need to create a file named `summary_metrics.yml` inside the entity type folder. We'll provide the same golden metrics as summary metrics for our PiHole entities:
+In order to provide summary metrics you need to create a file named `summary_metrics.yml` inside the entity type folder. Each metric has to reference an existing golden metric. For example, for our PiHole entities we will define it as follows.
 
 ```yaml
 totalQueries:
   title: Total queries
   unit: COUNT
-  queries:
-    newRelic:
-      select: latest(pihole_dns_queries_all_types)
-      from: Metric
-      eventId: entity.guid
+  goldenMetric: totalQueries
 adsBlockedToday:
   title: Ads Blocked Today
   unit: COUNT
-  queries:
-    newRelic:
-      select: latest(pihole_ads_blocked_today)
-      from: Metric
-      eventId: entity.guid
+  goldenMetric: adsBlockedToday
 ```
 
 <!--
 TODO: [image of the list view displaying these metrics]
 -->
-
-As you can see, configuration's almost like golden metrics.
-
-<details>
-  <summary>Different sources of data</summary>
-We can define the same summary metric with different queries for each provider.
-
-```yaml
-totalQueries:
-  title: Total queries
-  unit: COUNT
-  queries:
-    pihole-exporter:
-      select: latest(pihole_dns_queries_all_types)
-      from: Metric
-      eventId: entity.guid
-    pihole-windows:
-      select: latest(all_dns_queries)
-      from: Metric
-      eventId: entity.guid
-```
-</details>
 
 Read on [summary metrics configuration options in our docs][summary_metrics].
 
@@ -349,7 +319,10 @@ Read on [summary metrics configuration options in our docs][summary_metrics].
 
 With all this we have a working definition of a new entityType: Commit the changes and open a new PR! After we merge and release, all New Relic users will take advantage of your contribution!
 
-By default all entity types will display under `Your system` category in the Explorer. If you'd like to place it somewhere else, let us know when opening the PR.
+By default all entity types will display under `Your system` category in the Explorer.
+If you want to change this or other UI properties you will need to open a PR into `entity-platform/entity-type-ui-definitions-service` repository.
+This requires access to our private github, so if you don't have that let us know on the PR and we will made the changes for you.
+
 
 [guid_spec]: guid_spec.md
 [synthesis]: synthesis.md

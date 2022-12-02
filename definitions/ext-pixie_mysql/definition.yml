@@ -1,0 +1,25 @@
+domain: EXT
+type: PIXIE_MYSQL
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - mysql.service.name
+        - mysql.namespace.name
+        - px.cluster.id
+    name: mysql.service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: mysql.req_cmd
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  alertable: true
