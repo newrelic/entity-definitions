@@ -1,0 +1,351 @@
+{
+  "name": "Default Router Template",
+  "pages": [
+    {
+      "description": null,
+      "name": "Router",
+      "widgets": [
+        {
+          "layout": {
+            "row": 1,
+            "column": 1,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device name', latest(SysObjectID) AS 'Object ID', latest(src_addr) AS 'IP address' WHERE LIMIT MAX SINCE 1 DAY AGO"
+              }
+            ]
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "title": ""
+        },
+        {
+          "layout": {
+            "row": 1,
+            "column": 5,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(entity.type) as 'Type', latest(instrumentation.name) as 'Profile', latest(tags.kentik.model) as 'Model' WHERE AND provider = 'kentik-router' LIMIT 1"
+              }
+            ]
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "title": ""
+        },
+        {
+          "layout": {
+            "row": 1,
+            "column": 9,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(PollingHealth) as 'Polling status', latest(kentik.snmp.Uptime)/8640000 as 'Uptime (days)', latest(timestamp) as 'Latest timestamp' WHERE LIMIT MAX SINCE 1 DAY AGO"
+              }
+            ]
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "title": ""
+        },
+        {
+          "layout": {
+            "row": 3,
+            "column": 1,
+            "width": 6,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.CPU) FACET entity.name TIMESERIES"
+              }
+            ]
+          },
+          "title": "CPU utilization %",
+          "visualization": {
+            "id": "viz.line"
+          }
+        },
+        {
+          "layout": {
+            "row": 3,
+            "column": 7,
+            "width": 6,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kentik.snmp.MemoryUtilization) FACET entity.name TIMESERIES"
+              }
+            ]
+          },
+          "title": "Memory utilization %",
+          "visualization": {
+            "id": "viz.line"
+          }
+        },
+        {
+          "layout": {
+            "row": 5,
+            "column": 1,
+            "width": 3,
+            "height": 1
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT uniqueCount(Index) AS 'BGP peers' WHERE provider = 'kentik-router' AND AND metricName = 'kentik.snmp.bgpPeerRemoteAs' LIMIT MAX"
+              }
+            ]
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "title": ""
+        },
+        {
+          "layout": {
+            "row": 5,
+            "column": 4,
+            "width": 3,
+            "height": 1
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT uniqueCount(ospf_ip_address) AS 'OSPF adjacent IPs' WHERE ospfIfState IS NOT NULL AND LIMIT MAX"
+              }
+            ]
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "title": ""
+        },
+        {
+          "layout": {
+            "row": 5,
+            "column": 7,
+            "width": 3,
+            "height": 1
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT uniqueCount(if_Index) AS 'Interfaces monitored' WHERE provider = 'kentik-router' AND AND if_Type NOT IN('propvirtual','l2vlan','l3ipvlan') AND if_interface_name NOT LIKE 'vlan%' AND if_Name NOT LIKE 'vlan%' AND if_Name NOT LIKE 'vl%' AND if_Description NOT LIKE 'VLAN%' LIMIT MAX"
+              }
+            ]
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "title": ""
+        },
+        {
+          "layout": {
+            "row": 5,
+            "column": 11,
+            "width": 3,
+            "height": 1
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(if_interface_name OR if_Name) AS 'Interface status changes' FROM (FROM Metric SELECT uniqueCount(if_AdminStatus) as adminStatusCount, uniqueCount(if_OperStatus) as operStatusCount  WHERE provider = 'kentik-router' AND if_Index IS NOT NULL AND FACET if_interface_name OR if_Name) WHERE adminStatusCount > 1 OR operStatusCount > 1 LIMIT MAX"
+              }
+            ]
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "title": ""
+        },
+        {
+          "layout": {
+            "row": 6,
+            "column": 1,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) as 'RX utilization %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+              }
+            ]
+          },
+          "title": "RX utilization %",
+          "visualization": {
+            "id": "viz.line"
+          }
+        },
+        {
+          "layout": {
+            "row": 6,
+            "column": 5,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifInErrors)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX error rate %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+              }
+            ]
+          },
+          "title": "RX error rate %",
+          "visualization": {
+            "id": "viz.line"
+          }
+        },
+        {
+          "layout": {
+            "row": 6,
+            "column": 9,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX discard rate %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+              }
+            ]
+          },
+          "title": "RX discard rate %",
+          "visualization": {
+            "id": "viz.line"
+          }
+        },
+        {
+          "layout": {
+            "row": 9,
+            "column": 1,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfOutUtilization) AS 'TX utilization %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+              }
+            ]
+          },
+          "title": "TX utilization %",
+          "visualization": {
+            "id": "viz.line"
+          }
+        },
+        {
+          "layout": {
+            "row": 9,
+            "column": 5,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifOutErrors)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'RX Error Rate %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+              }
+            ]
+          },
+          "title": "TX error rate %",
+          "visualization": {
+            "id": "viz.line"
+          }
+        },
+        {
+          "layout": {
+            "row": 9,
+            "column": 9,
+            "width": 4,
+            "height": 2
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifOutDiscards)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX discard rate %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+              }
+            ]
+          },
+          "title": "TX discard rate %",
+          "visualization": {
+            "id": "viz.line"
+          }
+        },
+        {
+          "layout": {
+            "row": 10,
+            "column": 1,
+            "width": 12,
+            "height": 2
+          },
+          "title": "RX by interface",
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round(latest(kentik.snmp.IfInUtilization) OR 0,.01) AS 'RX utilization %', round((sum(kentik.snmp.ifInErrors)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX error rate %', round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX discard rate %', latest(if_Description) AS 'Description', latest(if_OperStatus) AS 'Operational Status', latest(if_Address) AS 'Address', latest(if_PhysAddress) AS 'Phys Address', latest(if_Index) AS 'Index', latest(if_Alias) AS 'Alias' WHERE FACET if_interface_name OR if_Name AS 'Name'"
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "row": 10,
+            "column": 1,
+            "width": 12,
+            "height": 2
+          },
+          "title": "TX by interface",
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT round(latest(kentik.snmp.IfOutUtilization) OR 0,.01) AS 'TX Utilization %', round((sum(kentik.snmp.ifOutErrors)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX Error Rate %', round((sum(kentik.snmp.ifOutDiscards)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX Discard Rate %', latest(if_Description) AS 'Description', latest(if_OperStatus) AS 'Operational Status', latest(if_Address) AS 'Address', latest(if_PhysAddress) AS 'Phys Address', latest(if_Index) AS 'Index', latest(if_Alias) AS 'Alias' WHERE entity.guid = 'MTA5MDc3MTF8RVhUfFJPVVRFUnwtODkzNDcyNDUwMDYxMDQ0NTU5MQ' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name'"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
