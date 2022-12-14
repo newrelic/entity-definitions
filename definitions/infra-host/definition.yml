@@ -109,13 +109,25 @@ synthesis:
         host.image.id:
         host.image.version:
         instrumentation.provider:
-    # Azure host from Microsoft.Compute/virtualMachines
-    - identifier: azure.resourceId
-      name: displayName
+    # opentelemetry host data from New Relic sap solutions 
+    - identifier: host.id
+      name: host.id
       encodeIdentifierInGUID: true
       conditions:
+        - attribute: SAP_ETYPE
+          value: HOST
+      tags:
+        host.name:
+        instrumentation.provider:
+    # Azure host from Microsoft.Compute/virtualMachines
+    - identifier: azure.compute.virtualmachines.vmId
+      name: displayName
+      encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
         - attribute: azure.resourceType
-          value: Microsoft.Compute/virtualMachines
+          value: microsoft.compute/virtualmachines
 configuration:
   entityExpirationTime: DAILY
   alertable: true
