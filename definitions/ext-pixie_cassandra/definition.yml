@@ -2,11 +2,27 @@ domain: EXT
 type: PIXIE_CASSANDRA
 synthesis:
   rules:
+  # Matches the services that exist inside a cluster (namespace is not null).
   - compositeIdentifier:
       separator: "/"
       attributes:
         - cassandra.service.name
         - cassandra.namespace.name
+        - px.cluster.id
+    name: cassandra.service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: cassandra.req_cmd
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+  # Matches the services that exist outside of a cluster (namespace is null).
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - cassandra.service.name
         - px.cluster.id
     name: cassandra.service.name
     encodeIdentifierInGUID: true
