@@ -3,7 +3,7 @@
   "description": null,
   "pages": [
     {
-      "name": "pixie_redis",
+      "name": "Overview",
       "description": null,
       "widgets": [
         {
@@ -155,6 +155,263 @@
           }
         }
       ]
+    },
+    {
+      "name": "By Servicing pod",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Servicing Pods",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(*), 1 minute) as requests_per_minute from Metric FACET redis.pod.name SINCE 30 MINUTES AGO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Distribution of response times (ms)",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 9,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`redis.latency`), max(`redis.latency`), min(`redis.latency`) FROM Metric FACET `redis.pod.name` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Data Transfer Rate (bps)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`redis.req_bytes`), 1 second) as req_bps, rate(sum(`redis.resp_bytes`), 1 second) as resp_bps FROM Metric FACET `redis.pod.name` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput (rpm)",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`redis.latency`), 1 minute) as requests_per_m FROM Metric FACET `redis.pod.name` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "By requesting pod",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Requesting Pods",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(*), 1 minute) as requests_per_minute from Metric FACET service.instance.id where redis.pod.name is NOT NULL SINCE 30 MINUTES AGO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Distribution of response times (ms)",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 9,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`redis.latency`), max(`redis.latency`), min(`redis.latency`) FROM Metric FACET `k8s.namespace.name`, `service.instance.id` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Data Transfer Rate (bps)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`redis.req_bytes`), 1 second) as req_bps, rate(sum(`redis.resp_bytes`), 1 second) as resp_bps FROM Metric FACET `k8s.namespace.name`, `service.instance.id` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput (rpm)",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`redis.latency`), 1 minute) as requests_per_m FROM Metric FACET `k8s.namespace.name`, `service.instance.id` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
     }
-  ]
+  ],
+  "variables": []
 }
