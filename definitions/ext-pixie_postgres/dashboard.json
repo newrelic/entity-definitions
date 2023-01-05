@@ -146,7 +146,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(`postgres.latency`), min(`postgres.latency`), average(`postgres.latency`), count(`postgres.latency`) as num_requests, sum(postgres.req_bytes), sum(postgres.resp_bytes) FROM Metric FACET `postgres.req_cmd`, `service.name`, `service.instance.id`, `k8s.namespace.name`, `postgres.pod.name` SINCE 30 MINUTES ago"
+                "query": "SELECT max(`postgres.latency`), min(`postgres.latency`), average(`postgres.latency`), count(`postgres.latency`) as num_requests, sum(postgres.req_bytes), sum(postgres.resp_bytes) FROM Metric FACET `postgres.req_cmd`, `service.name`, `service.instance.id` as pod_name, `k8s.namespace.name`, `postgres.pod.name` SINCE 30 MINUTES ago"
               }
             ],
             "platformOptions": {
@@ -187,7 +187,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(count(*), 1 minute) as requests_per_minute from Metric FACET cases(WHERE postgres.pod.name IS NULL as 'Outside Cluster', WHERE postgres.pod.name is NOT NULL as 'Inside Cluster') as outside_cluster, postgres.pod.name where postgres.req_cmd is not null SINCE 30 MINUTES AGO"
+                "query": "SELECT rate(count(`postgres.latency`), 1 minute) as requests_per_minute from Metric FACET cases(WHERE postgres.pod.name IS NULL as 'Outside Cluster', WHERE postgres.pod.name is NOT NULL as 'Inside Cluster') as outside_cluster, postgres.pod.name SINCE 30 MINUTES AGO"
               }
             ],
             "platformOptions": {
@@ -324,7 +324,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(count(*), 1 minute) as requests_per_minute from Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, k8s.namespace.name, service.instance.id where postgres.pod.name is NOT NULL SINCE 30 MINUTES AGO "
+                "query": "SELECT rate(count(`postgres.latency`), 1 minute) as requests_per_minute from Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO "
               }
             ],
             "platformOptions": {
@@ -353,7 +353,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(`postgres.latency`), max(`postgres.latency`), min(`postgres.latency`) FROM Metric FACET  cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` SINCE 30 MINUTES AGO TIMESERIES"
+                "query": "SELECT average(`postgres.latency`), max(`postgres.latency`), min(`postgres.latency`) FROM Metric FACET  cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -385,7 +385,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(`postgres.req_bytes`), 1 second) as req_bps, rate(sum(`postgres.resp_bytes`), 1 second) as resp_bps FROM Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` SINCE 30 MINUTES AGO TIMESERIES"
+                "query": "SELECT rate(sum(`postgres.req_bytes`), 1 second) as req_bps, rate(sum(`postgres.resp_bytes`), 1 second) as resp_bps FROM Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -417,7 +417,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(count(`postgres.latency`), 1 minute) as requests_per_m FROM Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster,`k8s.namespace.name`, `service.instance.id` SINCE 30 MINUTES AGO TIMESERIES"
+                "query": "SELECT rate(count(`postgres.latency`), 1 minute) as requests_per_m FROM Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster,`k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
               }
             ],
             "platformOptions": {
