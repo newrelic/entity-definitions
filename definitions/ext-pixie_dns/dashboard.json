@@ -3,7 +3,7 @@
   "description": null,
   "pages": [
     {
-      "name": "pixie_dns",
+      "name": "Overview",
       "description": null,
       "widgets": [
         {
@@ -114,7 +114,7 @@
             "id": "viz.markdown"
           },
           "rawConfiguration": {
-            "text": "**RCODE** explanation:\n| CODE NAME  | VALUE | DESCRIPTION|\n| ------------- | ------------- | ------------- |\n| NOERROR  | 0  | The request completed successfully |\n| NXDOMAIN | 3  | The server could not find the requested domain. Not counted as an error as an application might try multiple DNS servers to resolve a name. |\n\nExhaustive list: http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml"
+            "text": "**RCODE** explanation:\n| CODE NAME  |  DESCRIPTION|\n| ------------- | ------------- |\n| NOERROR  | The request completed successfully |\n| NXDOMAIN | The server could not find the requested domain. Not counted as an error as an application might try multiple DNS servers to resolve a name. |\n\nExhaustive list: http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml"
           }
         },
         {
@@ -138,7 +138,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(count(`dns.latency`), 1 minute) FROM Metric facet dns.rcode_name SINCE 30 MINUTES AGO TIMESERIES"
+                "query": "SELECT rate(count(`dns.latency`), 1 minute) FROM Metric FACET if (dns.rcode_name is NOT NULL, dns.rcode_name, '-') as rcode SINCE 30 MINUTES AGO TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -198,6 +198,175 @@
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# Breakdown by Requesting Pod\nThis section breaks the metrics down based on the internal pod that makes requests to the service. Clients that are located off cluster are grouped under \"Outside Cluster\"."
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`dns.latency`), 1 minute) as requests_per_minute from Metric FACET cases(WHERE `k8s.namespace.name` IS NULL as 'Outside Cluster', WHERE `k8s.namespace.name` is NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Distribution of response times (ms)",
+          "layout": {
+            "column": 5,
+            "row": 17,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`dns.latency`), max(`dns.latency`), min(`dns.latency`) FROM Metric FACET cases(WHERE `k8s.namespace.name` IS NULL as 'Outside Cluster', WHERE `k8s.namespace.name` is NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "% of Errors over time",
+          "layout": {
+            "column": 1,
+            "row": 20,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT percentage(count(`dns.latency`),where `dns.rcode`!=3 and `dns.rcode` != 0) FROM Metric FACET cases(WHERE `k8s.namespace.name` IS NULL as 'Outside Cluster', WHERE `k8s.namespace.name` is NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput (rpm)",
+          "layout": {
+            "column": 5,
+            "row": 20,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`dns.latency`), 1 minute) as requests_per_m FROM Metric FACET cases(WHERE `k8s.namespace.name` IS NULL as 'Outside Cluster', WHERE `k8s.namespace.name` is NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput by rcode (rpm)",
+          "layout": {
+            "column": 9,
+            "row": 20,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`dns.latency`), 1 minute) FROM Metric FACET cases(WHERE `k8s.namespace.name` IS NULL as 'Outside Cluster', WHERE `k8s.namespace.name` is NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name, if (dns.rcode_name is NOT NULL, dns.rcode_name, '-') as rcode SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
             }
           }
         }
