@@ -1,4 +1,4 @@
-FROM node:16.17.1-alpine
+FROM node:19.4.0-alpine3.17
 WORKDIR /scripts
 VOLUME  /definitions
 COPY ["package.json", "package-lock.json*", "./"]
