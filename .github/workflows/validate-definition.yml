@@ -6,11 +6,15 @@ jobs:
     name: Validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
-      - uses: actions/checkout@v2
+          node-version: "16"
+      - uses: actions/checkout@v3
       - name: Install dependencies
         run: npm --prefix validator install
       - name: Validate definition
         run: npm --prefix validator run check
+      - name: Ensure sanitize was run
+        # Runs the sanitize script and checks errors if the dashboards were not sanitized.
+        # If the dashboards were sanitized, the git command will return 0 and the step will pass.
+        run: npm --prefix validator run sanitize-dashboards &&  git diff-index --quiet HEAD -- definitions/
