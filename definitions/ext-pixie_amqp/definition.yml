@@ -2,11 +2,27 @@ domain: EXT
 type: PIXIE_AMQP
 synthesis:
   rules:
+  # Matches the services that exist inside a cluster (namespace is not null).
   - compositeIdentifier:
       separator: "/"
       attributes:
         - amqp.service.name
         - amqp.namespace.name
+        - px.cluster.id
+    name: amqp.service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: amqp.frame_name
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+  # Matches the services that exist outside of a cluster (namespace is null).
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - amqp.service.name
         - px.cluster.id
     name: amqp.service.name
     encodeIdentifierInGUID: true
