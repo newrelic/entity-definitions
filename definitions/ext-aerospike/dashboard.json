@@ -1,0 +1,122 @@
+{
+	"name": "Aerospike",
+	"pages": [
+	  {
+		"name": "Aerospike",
+		"description": null,
+		"widgets": [
+		  {
+			"title": "Client Connections",
+			"layout": {
+			  "column": 1,
+			  "row": 1,
+			  "width": 6,
+			  "height": 4
+			},
+			"visualization": {
+			  "id": "viz.area"
+			},
+			"rawConfiguration": {
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(aerospike_node_stats_client_connections) as 'Active', latest(aerospike_node_stats_client_connections_opened) as 'Opened' TIMESERIES AUTO"
+				}
+			  ]
+			}
+		  },
+		  {
+			"title": "Cluster Size",
+			"layout": {
+			  "column": 7,
+			  "row": 1,
+			  "width": 6,
+			  "height": 2
+			},
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"rawConfiguration": {
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(aerospike_node_stats_cluster_size) as 'Cluster Size' TIMESERIES AUTO"
+				}
+			  ],
+			  "yAxisLeft": {
+				"zero": true
+			  }
+			}
+		  },
+		  {
+			"title": "Heap Efficiency Pct",
+			"layout": {
+			  "column": 7,
+			  "row": 3,
+			  "width": 3,
+			  "height": 2
+			},
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"rawConfiguration": {
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(aerospike_node_stats_heap_efficiency_pct) AS 'Percent (%)' LIMIT MAX"
+				}
+			  ],
+			  "thresholds": [
+				{
+				  "alertSeverity": "WARNING",
+				  "value": 60
+				},
+				{
+				  "alertSeverity": "CRITICAL",
+				  "value": 50
+				}
+			  ]
+			}
+		  },
+		  {
+			"title": "Memory (%)",
+			"layout": {
+			  "column": 10,
+			  "row": 3,
+			  "width": 3,
+			  "height": 2
+			},
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"rawConfiguration": {
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(aerospike_node_stats_system_free_mem_pct) AS 'Free System Memory (%)', latest(aerospike_namespace_memory_free_pct) AS 'Memory capacity free (%)'"
+				}
+			  ]
+			}
+		  }
+		]
+	  }
+	]
+  }
