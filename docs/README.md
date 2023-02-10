@@ -1,6 +1,6 @@
 # Documentation
 
-This document will walk you through creating a new entity type from scracth. While it's useful to understand the implications of each section, you can skip to the configuration options from the following list:
+This document will walk you through creating a new entity type from scratch. While it's useful to understand the implications of each section, you can skip to the configuration options from the following list:
 
 - [GUID Spec][guid_spec]
 - [Synthesis rules][synthesis]
