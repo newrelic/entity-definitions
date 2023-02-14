@@ -83,7 +83,7 @@ Tags are assigned to all entities based on the tags defined in an entity's defin
 `k8s.cluster.name` as a tag.
 https://github.com/newrelic/entity-definitions/blob/42b7a5a1780d897312f231aac3271898f8c87ff5/definitions/ext-pixie_postgres/definition.yml#L34-L35
 
-In a NRQL query, you can reference the value of a tag using the `tags.k8s.cluster.name` like so:
+In a NRQL query, you can reference the value of a tag using `tags.k8s.cluster.name` like so:
 ```sql
-FROM Metric SELECT latest(k8s.clusterName) as 'Cluster Name' WHERE metricName = 'k8s.pod.startTime' AND tags.k8s.cluster.name = '{{tags.k8s.cluster.name}}'
+FROM Metric SELECT latest(k8s.clusterName) as 'Cluster Name' WHERE k8s.cluster.name = '{{tags.k8s.cluster.name}}'
 ```
