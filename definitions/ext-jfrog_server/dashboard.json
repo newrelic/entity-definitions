@@ -1,0 +1,224 @@
+{
+  "name": "Jfrog Artifactory",
+  "description": null,
+  "pages": [
+    {
+      "name": "Jfrog Artifactory",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Requests by Repo",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM Log FACET repo WHERE log_source LIKE 'jfrog.rt.access.request' OR log_source = 'jfrog.rt.artifactory.request' TIMESERIES AUTO SINCE 24 hours ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Artifactory Log Errors",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) as 'Errors' FROM Log WHERE log_source = 'jfrog.rt.artifactory.service' AND log_level = 'ERROR' TIMESERIES AUTO SINCE 24 hours ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Requests by Status Code",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM Log FACET return_status WHERE log_source LIKE 'jfrog.rt.access.request' OR log_source = 'jfrog.rt.artifactory.request' TIMESERIES AUTO SINCE 24 hours ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "5xx Response codes",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) as '5xx Errors' FROM Log WHERE numeric(return_status) >= 500 AND log_source LIKE 'jfrog.rt.access.request' OR log_source = 'jfrog.rt.artifactory.request' TIMESERIES AUTO SINCE 24 hours ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Accessed images",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM Log FACET image WHERE log_source = 'jfrog.rt.artifactory.request' AND repo != 'NULL' AND image != 'NULL' AND repo != '' AND image != '' and repo != 'latest' AND request_url LIKE '/api/docker/%' TIMESERIES AUTO SINCE 24 hours ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Data Transfers (GBs) over time",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(request_content_length) as 'Downloads' FROM Log WHERE log_source = 'jfrog.rt.artifactory.request' AND request_url LIKE '/api/docker/%' AND repo != 'NULL' AND image != 'NULL' AND repo != '' AND image != '' AND request_method = 'HEAD' TIMESERIES SINCE 24 hours ago"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT sum(response_content_length) as 'Uploads' FROM Log WHERE log_source = 'jfrog.rt.artifactory.request' AND request_url LIKE '/api/docker/%' AND repo != 'NULL' AND image != 'NULL' AND repo != '' AND image != '' AND request_method = 'PUT' SINCE 24 hours ago TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Most Uploading IPs",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) as 'Uploads' FROM Log FACET remote_address WHERE log_source = 'jfrog.rt.artifactory.request' AND request_url LIKE '/api/docker/%' AND repo != 'NULL' AND image != 'NULL' AND repo != '' AND image != '' AND request_method = 'PUT' SINCE 24 hours ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Most Active Repos by Data Transfer",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(request_content_length) as 'Data Transfer' FROM Log FACET repo WHERE log_source = 'jfrog.rt.artifactory.request' AND request_url LIKE '/api/docker/%' AND repo != 'NULL' AND image != 'NULL' AND repo != '' AND image != '' SINCE 24 hours ago"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
