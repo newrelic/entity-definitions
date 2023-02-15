@@ -1,0 +1,329 @@
+{
+  "name": "MongoDB Instance",
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Connections Saturation",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT filter(average(mongodb_ss_connections) , WHERE conn_type IN ('current')) AS 'Open' , filter(average(mongodb_ss_connections) , WHERE conn_type IN ('available')) AS 'Available', 100 * filter(average(mongodb_ss_connections) , WHERE conn_type IN ('current')) / filter(average(mongodb_ss_connections) , WHERE conn_type IN ('available')) AS '% used' WHERE metricName='mongodb_ss_connections' "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Connections Saturation",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT 100 * filter(average(mongodb_ss_connections) , WHERE conn_type IN ('current')) / filter(average(mongodb_ss_connections) , WHERE conn_type IN ('available')) AS '% used' WHERE metricName='mongodb_ss_connections' FACET mongodb_cluster_name AS 'Instance' TIMESERIES "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "PERCENTAGE"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Oplog Size",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(mongodb_oplog_stats_size) AS 'Current', latest(mongodb_oplog_stats_storageSize) AS 'Storage' WHERE (metricName='mongodb_oplog_stats_size' OR metricName='mongodb_oplog_stats_storageSize')"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Oplog Size",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(mongodb_oplog_stats_size) AS 'Current', latest(mongodb_oplog_stats_storageSize) AS 'Storage' WHERE (metricName='mongodb_oplog_stats_size' OR metricName='mongodb_oplog_stats_storageSize') TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Query Operations",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "mongodb_ss_opcounters",
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT derivative(mongodb_ss_opcounters, 1 minute) WHERE metricName='mongodb_ss_opcounters' FACET CASES ( WHERE legacy_op_type = 'command' AS 'Command', WHERE legacy_op_type = 'delete' AS 'Delete', WHERE legacy_op_type = 'getmore' AS 'Getmore', WHERE legacy_op_type = 'insert' AS 'Insert', WHERE legacy_op_type = 'query' AS 'Query', WHERE legacy_op_type = 'update' AS 'Update')  compare with 1 hour ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Query Operations",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT derivative(mongodb_ss_opcounters, 1 minute) WHERE metricName='mongodb_ss_opcounters' FACET CASES ( WHERE legacy_op_type = 'command' AS 'Command', WHERE legacy_op_type = 'delete' AS 'Delete', WHERE legacy_op_type = 'getmore' AS 'Getmore', WHERE legacy_op_type = 'insert' AS 'Insert', WHERE legacy_op_type = 'query' AS 'Query', WHERE legacy_op_type = 'update' AS 'Update')  TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Document Query Executor",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Scanned Objects",
+                "precision": 2,
+                "type": "decimal"
+              },
+              {
+                "name": "Scanned",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT derivative(mongodb_ss_metrics_queryExecutor_scanned, 1 minute) AS 'Scanned', derivative(mongodb_ss_metrics_queryExecutor_scannedObjects, 1 minute) AS 'Scanned Objects' WHERE (metricName='mongodb_ss_metrics_queryExecutor_scanned' OR metricName='mongodb_ss_metrics_queryExecutor_scannedObjects') compare with 1 hour ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Document Query Executor",
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT derivative(mongodb_ss_metrics_queryExecutor_scanned, 1 minute) AS 'Scanned', derivative(mongodb_ss_metrics_queryExecutor_scannedObjects, 1 minute) AS 'Scanned Objects' WHERE (metricName='mongodb_ss_metrics_queryExecutor_scanned' OR metricName='mongodb_ss_metrics_queryExecutor_scannedObjects') TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Document Operations",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "mongodb_ss_metrics_document",
+                "type": "humanized"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT derivative(mongodb_ss_metrics_document, 1 minute) WHERE metricName='mongodb_ss_metrics_document' FACET CASES ( WHERE doc_op_type = 'returned' AS 'Returned', WHERE doc_op_type = 'inserted' AS 'Inserted', WHERE doc_op_type = 'deleted' AS 'Deleted', WHERE doc_op_type = 'updated' AS 'Updated' ) compare with 1 hour ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Document Operations",
+          "layout": {
+            "column": 5,
+            "row": 13,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT derivative(mongodb_ss_metrics_document, 1 minute) WHERE metricName='mongodb_ss_metrics_document' FACET CASES ( WHERE doc_op_type = 'returned' AS 'Returned', WHERE doc_op_type = 'inserted' AS 'Inserted', WHERE doc_op_type = 'deleted' AS 'Deleted', WHERE doc_op_type = 'updated' AS 'Updated' ) TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
