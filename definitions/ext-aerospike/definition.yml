@@ -2,14 +2,21 @@ domain: EXT
 type: AEROSPIKE
 
 synthesis:
-  identifier: aerospike_identifier
-  name: aerospike_hostname
-  encodeIdentifierInGUID: true
-  conditions:
-    - attribute: metricName
-      prefix: aerospike_
-  tags:
-    clusterName:
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - targetName
+        - aerospike_cluster_name
+    name: aerospike_cluster_name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: MetricRaw
+      - attribute: metricName
+        prefix: aerospike_
+    tags:
+      aerospike_cluster_name:
 
 dashboardTemplates:
   newRelic:
