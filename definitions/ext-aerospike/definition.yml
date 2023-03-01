@@ -1,0 +1,26 @@
+domain: EXT
+type: AEROSPIKE
+
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - targetName
+        - aerospike_cluster_name
+    name: aerospike_cluster_name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: MetricRaw
+      - attribute: metricName
+        prefix: aerospike_
+    tags:
+      aerospike_cluster_name:
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true

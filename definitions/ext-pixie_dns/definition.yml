@@ -2,11 +2,27 @@ domain: EXT
 type: PIXIE_DNS
 synthesis:
   rules:
+  # Matches the services that exist inside a cluster (namespace is not null).
   - compositeIdentifier:
       separator: "/"
       attributes:
         - dns.server.cluster_id
         - dns.server.namespace
+        - dns.server.name
+    name: dns.server.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: dns.query_type
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+  # Matches the services that exist outside of a cluster (namespace is null).
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - dns.server.cluster_id
         - dns.server.name
     name: dns.server.name
     encodeIdentifierInGUID: true

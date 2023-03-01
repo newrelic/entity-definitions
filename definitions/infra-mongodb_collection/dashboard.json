@@ -1,0 +1,451 @@
+{
+  "name": "MongoDB Collections",
+  "pages": [
+    {
+      "name": "Collections",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Collection Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Size (Bytes)",
+                "type": "humanized"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(mongodb_cluster_name) AS 'Instance', latest(database) AS 'Database', latest(mongodb_collstats_storageStats_size) AS 'Size (Bytes)' WHERE metricName='mongodb_collstats_storageStats_size' COMPARE WITH 1 hour ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Size",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(mongodb_collstats_storageStats_size) AS 'Size (Bytes)' WHERE metricName IN ('mongodb_collstats_storageStats_size') timeseries auto limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Read Operations",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_collstats_latencyStats_reads_ops, 1 minute) WHERE metricName='mongodb_collstats_latencyStats_reads_ops' TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Read Latency",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_collstats_latencyStats_reads_latency, 1 minute)/1000 WHERE metricName='mongodb_collstats_latencyStats_reads_latency' TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Write Operations",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_collstats_latencyStats_writes_ops, 1 minute) WHERE metricName='mongodb_collstats_latencyStats_writes_ops' TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Write Latency",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_collstats_latencyStats_writes_latency, 1 minute)/1000 WHERE metricName='mongodb_collstats_latencyStats_writes_latency' TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Transactions",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_collstats_latencyStats_transactions_ops, 1 minute) WHERE metricName='mongodb_collstats_latencyStats_transactions_ops' TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Transactions Latency",
+          "layout": {
+            "column": 4,
+            "row": 10,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_collstats_latencyStats_transactions_latency, 1 minute)/1000 WHERE metricName='mongodb_collstats_latencyStats_transactions_latency'  TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Index Access Operations",
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_indexstats_accesses_ops, 1 minute) WHERE metricName='mongodb_indexstats_accesses_ops' TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Commands ",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_collstats_latencyStats_commands_ops, 1 minute) WHERE metricName='mongodb_collstats_latencyStats_commands_ops' TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Commands Latency",
+          "layout": {
+            "column": 4,
+            "row": 13,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "From Metric SELECT derivative(mongodb_collstats_latencyStats_commands_latency, 1 minute)/1000 WHERE metricName='mongodb_collstats_latencyStats_commands_latency' TIMESERIES AUTO limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Commands Frequency",
+          "layout": {
+            "column": 7,
+            "row": 13,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(mongodb_top_insert_count) AS 'Commands', average(mongodb_top_getmore_count) AS 'Getmore', average(mongodb_top_insert_count) AS 'Insert', average(mongodb_top_queries_count) AS 'Queries', average(mongodb_top_readLock_count) AS 'ReadLock', average(mongodb_top_writeLock_count) AS 'WriteLock', average(mongodb_top_remove_count) AS 'Remove', average(mongodb_top_update_count) AS 'Update' FROM Metric TIMESERIES auto"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Commands Duration",
+          "layout": {
+            "column": 10,
+            "row": 13,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT derivative(mongodb_top_insert_time, 1 minute)/1000 AS 'Commands', derivative(mongodb_top_getmore_time, 1 minute)/1000 AS 'Getmore', derivative(mongodb_top_insert_time, 1 minute)/1000 AS 'Insert', derivative(mongodb_top_queries_time, 1 minute)/1000 AS 'Queries', derivative(mongodb_top_readLock_time, 1 minute)/1000 AS 'ReadLock', derivative(mongodb_top_writeLock_time, 1 minute)/1000 AS 'WriteLock', derivative(mongodb_top_remove_time, 1 minute)/1000 AS 'Remove', derivative(mongodb_top_update_time, 1 minute)/1000 AS 'Update' FROM Metric TIMESERIES limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

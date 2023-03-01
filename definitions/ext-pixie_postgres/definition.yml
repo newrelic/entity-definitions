@@ -2,11 +2,27 @@ domain: EXT
 type: PIXIE_POSTGRES
 synthesis:
   rules:
+  # Matches the services that exist inside a cluster (namespace is not null).
   - compositeIdentifier:
       separator: "/"
       attributes:
         - postgres.service.name
         - postgres.namespace.name
+        - px.cluster.id
+    name: postgres.service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: postgres.req_cmd
+      present: true
+    - attribute: instrumentation.provider
+      value: pixie
+    tags:
+      k8s.cluster.name:
+  # Matches the services that exist outside of a cluster (namespace is null).
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - postgres.service.name
         - px.cluster.id
     name: postgres.service.name
     encodeIdentifierInGUID: true

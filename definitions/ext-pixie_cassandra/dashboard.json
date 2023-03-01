@@ -3,7 +3,7 @@
   "description": null,
   "pages": [
     {
-      "name": "pixie_cassandra",
+      "name": "Overview",
       "description": null,
       "widgets": [
         {
@@ -146,7 +146,278 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(`cassandra.latency`), min(`cassandra.latency`), average(`cassandra.latency`), count(`cassandra.latency`) as num_requests, sum(cassandra.req_bytes), sum(cassandra.resp_bytes) FROM Metric FACET `cassandra.req_cmd`, `service.name`, `service.instance.id`, `k8s.namespace.name`, `cassandra.pod.name` SINCE 30 MINUTES ago"
+                "query": "SELECT max(`cassandra.latency`), min(`cassandra.latency`), average(`cassandra.latency`), count(`cassandra.latency`) as num_requests, sum(cassandra.req_bytes), sum(cassandra.resp_bytes) FROM Metric FACET `cassandra.req_cmd`, `service.name`, `service.instance.id` as pod_name, `k8s.namespace.name`, `cassandra.pod.name` SINCE 30 MINUTES ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# Breakdown by Servicing Pod\nThis section breaks down metrics based on which pod handles the work for the service. \nIf the service is located off the cluster, then everything will be grouped under \"Outside Cluster\"."
+          }
+        },
+        {
+          "title": "Servicing Pods",
+          "layout": {
+            "column": 1,
+            "row": 14,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`cassandra.latency`), 1 minute) as requests_per_minute from Metric FACET cases(WHERE cassandra.pod.name IS NULL as 'Outside Cluster', WHERE cassandra.pod.name is NOT NULL as 'Inside Cluster') as outside_cluster, `cassandra.pod.name` SINCE 30 MINUTES AGO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Distribution of response times (ms)",
+          "layout": {
+            "column": 7,
+            "row": 14,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`cassandra.latency`), max(`cassandra.latency`), min(`cassandra.latency`) FROM Metric FACET cases(WHERE cassandra.pod.name IS NULL as 'Outside Cluster', WHERE cassandra.pod.name is NOT NULL as 'Inside Cluster') as outside_cluster, `cassandra.pod.name` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Data Transfer Rate (bps)",
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`cassandra.req_bytes`), 1 second) as req_bps, rate(sum(`cassandra.resp_bytes`), 1 second) as resp_bps FROM Metric FACET cases(WHERE cassandra.pod.name IS NULL as 'Outside Cluster', WHERE cassandra.pod.name is NOT NULL as 'Inside Cluster') as outside_cluster, `cassandra.pod.name` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput (rpm)",
+          "layout": {
+            "column": 7,
+            "row": 17,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`cassandra.latency`), 1 minute) as requests_per_m FROM Metric FACET cases(WHERE cassandra.pod.name IS NULL as 'Outside Cluster', WHERE cassandra.pod.name is NOT NULL as 'Inside Cluster') as outside_cluster, `cassandra.pod.name` SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 20,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# Breakdown by Requesting Pod\nThis section breaks the metrics down based on the internal pod that makes requests to the service. Clients that are located off cluster are grouped under \"Outside Cluster\"."
+          }
+        },
+        {
+          "title": "Requesting Pods",
+          "layout": {
+            "column": 1,
+            "row": 21,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`cassandra.latency`), 1 minute) as requests_per_minute from Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Distribution of response times (ms)",
+          "layout": {
+            "column": 7,
+            "row": 21,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`cassandra.latency`), max(`cassandra.latency`), min(`cassandra.latency`) FROM Metric FACET  cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Data Transfer Rate (bps)",
+          "layout": {
+            "column": 1,
+            "row": 24,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`cassandra.req_bytes`), 1 second) as req_bps, rate(sum(`cassandra.resp_bytes`), 1 second) as resp_bps FROM Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster, `k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput (rpm)",
+          "layout": {
+            "column": 7,
+            "row": 24,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(`cassandra.latency`), 1 minute) as requests_per_m FROM Metric FACET cases(WHERE k8s.namespace.name IS NULL as 'Outside Cluster', WHERE k8s.namespace.name IS NOT NULL as 'Inside Cluster') as outside_cluster,`k8s.namespace.name`, `service.instance.id` as pod_name SINCE 30 MINUTES AGO TIMESERIES"
               }
             ],
             "platformOptions": {
