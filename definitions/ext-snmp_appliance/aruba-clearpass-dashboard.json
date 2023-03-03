@@ -1,0 +1,506 @@
+{
+    "name": "Aruba Clearpass",
+    "description": null,
+    "pages": [
+      {
+        "name": "Aruba Clearpass",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 3,
+              "height": 7
+            },
+            
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Health Problem Timestamp",
+                  "type": "recent-relative"
+                },
+                {
+                  "name": "Last Update",
+                  "type": "recent-relative"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Last Health Problem', filter(latest(timestamp), where PollingHealth = 'BAD') AS 'Last Health Problem Timestamp'  WHERE instrumentation.name = 'aruba-clearpass' "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 4,
+              "row": 1,
+              "width": 3,
+              "height": 1
+            },
+            
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "recent-relative"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE instrumentation.name = 'aruba-clearpass' "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 7,
+              "row": 1,
+              "width": 3,
+              "height": 1
+            },
+            
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "recent-relative"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (latest(kentik.snmp.cppmSystemMemoryTotal) - latest(kentik.snmp.cppmSystemMemoryFree)) * 100 / latest(kentik.snmp.cppmSystemMemoryTotal) AS 'Current Memory Utilization %' WHERE instrumentation.name = 'aruba-clearpass' "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 10,
+              "row": 1,
+              "width": 3,
+              "height": 1
+            },
+            
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "recent-relative"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (latest(kentik.snmp.cppmSystemDiskSpaceTotal) - latest(kentik.snmp.cppmSystemDiskSpaceFree)) * 100 / latest(kentik.snmp.cppmSystemDiskSpaceTotal) AS 'Current Disk Utilization %' WHERE instrumentation.name = 'aruba-clearpass' "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 90
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 95
+                }
+              ]
+            }
+          },
+          {
+            "title": "CPU Utilization (%)",
+            "layout": {
+              "column": 4,
+              "row": 2,
+              "width": 3,
+              "height": 4
+            },
+            
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' TIMESERIES 5 MINUTES WHERE instrumentation.name = 'aruba-clearpass' "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Memory Utilization (%)",
+            "layout": {
+              "column": 7,
+              "row": 2,
+              "width": 3,
+              "height": 4
+            },
+            
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (min(kentik.snmp.cppmSystemMemoryTotal) - min(kentik.snmp.cppmSystemMemoryFree)) * 100 / min(kentik.snmp.cppmSystemMemoryTotal) AS 'Min Memory', (max(kentik.snmp.cppmSystemMemoryTotal) - max(kentik.snmp.cppmSystemMemoryFree)) * 100 / max(kentik.snmp.cppmSystemMemoryTotal) AS 'Max Memory', (average(kentik.snmp.cppmSystemMemoryTotal) - average(kentik.snmp.cppmSystemMemoryFree)) * 100 / average(kentik.snmp.cppmSystemMemoryTotal) AS 'Average Memory' TIMESERIES 5 MINUTES  WHERE instrumentation.name = 'aruba-clearpass' "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "Disk Utilization (%)",
+            "layout": {
+              "column": 10,
+              "row": 2,
+              "width": 3,
+              "height": 4
+            },
+            
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT (max(kentik.snmp.cppmSystemDiskSpaceTotal) - max(kentik.snmp.cppmSystemDiskSpaceFree)) * 100 / max(kentik.snmp.cppmSystemDiskSpaceTotal) AS 'Max Disk Usage' TIMESERIES 5 MINUTES  WHERE instrumentation.name = 'aruba-clearpass' "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              }
+            }
+          },
+          {
+            "title": "RadiusServerAuth Table",
+            "layout": {
+              "column": 4,
+              "row": 6,
+              "width": 9,
+              "height": 3
+            },
+            
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT \nlatest(kentik.snmp.radAuthCounterSuccess) AS 'radAuthCounterSuccess'\n, latest(kentik.snmp.radAuthCounterFailure) AS 'radAuthCounterFailure'\n, latest(kentik.snmp.radAuthCounterCount) AS 'radAuthCounterCount'\n, latest(kentik.snmp.radAuthCounterTime) AS 'radAuthCounterTime'\n WHERE instrumentation.name = 'aruba-clearpass'  \nFACET radAuthSourceName \nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Device Info",
+            "layout": {
+              "column": 1,
+              "row": 8,
+              "width": 3,
+              "height": 5
+            },
+            
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "recent-relative"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT \nlatest(cppmSystemVersion) AS 'cppmSystemVersion'\n, latest(cppmClusterNodeType) AS 'cppmClusterNodeType'\n, latest(cppmZoneName) AS 'cppmZoneName'\n, latest(cppmNumClusterNodes) AS 'cppmNumClusterNodes'\n, latest(cppmNwMgmtPortIPAddress) AS 'cppmNwMgmtPortIPAddress'\n, latest(cppmNwMgmtPortMACAddress) AS 'cppmNwMgmtPortMACAddress'\n, latest(cppmNwDataPortIPAddress) AS 'cppmNwDataPortIPAddress'\n, latest(cppmNwDataPortMACAddress) AS 'cppmNwDataPortMACAddress'\n, latest(cppmSystemNumCPUs) AS 'cppmSystemNumCPUs' \nWHERE instrumentation.name = 'aruba-clearpass' "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "policyServerAutz Table",
+            "layout": {
+              "column": 4,
+              "row": 9,
+              "width": 9,
+              "height": 4
+            },
+            
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT \nlatest(kentik.snmp.psAutzCounterSuccess) AS 'psAutzCounterSuccess'\n, latest(kentik.snmp.psAutzCounterFailure) AS 'psAutzCounterFailure'\n, latest(kentik.snmp.psAutzCounterCount) AS 'psAutzCounterCount'\n, latest(kentik.snmp.psAutzCounterTime) AS 'psAutzCounterTime' \nWHERE instrumentation.name = 'aruba-clearpass'  \nFACET psAutzSourceName \nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "RadiusServer Table",
+            "layout": {
+              "column": 1,
+              "row": 13,
+              "width": 12,
+              "height": 2
+            },
+            
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.radPolicyEvalTime) AS 'radPolicyEvalTime', latest(kentik.snmp.radAuthRequestTime) AS 'radAuthRequestTime', latest(kentik.snmp.radServerCounterSuccess) AS 'radServerCounterSuccess', latest(kentik.snmp.radServerCounterFailure) AS 'radServerCounterFailure', latest(kentik.snmp.radServerCounterCount) AS 'radServerCounterCount' WHERE instrumentation.name = 'aruba-clearpass'  Facet Index \nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "policyServer Table",
+            "layout": {
+              "column": 1,
+              "row": 15,
+              "width": 12,
+              "height": 2
+            },
+            
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(kentik.snmp.psServicePolicyEvalCount) AS 'psServicePolicyEvalCount', latest(kentik.snmp.psRolemappingPolicyEvalCount) AS 'psRolemappingPolicyEvalCount', latest(kentik.snmp.psPosturePolicyEvalCount) AS 'psPosturePolicyEvalCount', latest(kentik.snmp.psAuditPolicyEvalCount) AS 'psAuditPolicyEvalCount', latest(kentik.snmp.psRestrictionPolicyEvalCount) AS 'psRestrictionPolicyEvalCount', latest(kentik.snmp.psEnforcementPolicyEvalCount) AS 'psEnforcementPolicyEvalCount', latest(kentik.snmp.psServicePolicyEvalTime) AS 'psServicePolicyEvalTime', latest(kentik.snmp.psRolemappingPolicyEvalTime) AS 'psRolemappingPolicyEvalTime', latest(kentik.snmp.psPosturePolicyEvalTime) AS 'psPosturePolicyEvalTime', latest(kentik.snmp.psAuditPolicyEvalTime) AS 'psAuditPolicyEvalTime', latest(kentik.snmp.psRestrictionPolicyEvalTime) AS 'psRestrictionPolicyEvalTime', latest(kentik.snmp.psEnforcementPolicyEvalTime) AS 'psEnforcementPolicyEvalTime', latest(kentik.snmp.psSessionlogTime) AS 'psSessionlogTime', latest(kentik.snmp.psAuthCounterSuccess) AS 'psAuthCounterSuccess', latest(kentik.snmp.psAuthCounterFailure) AS 'psAuthCounterFailure', latest(kentik.snmp.psAuthCounterTotal) AS 'psAuthCounterTotal', latest(kentik.snmp.dailySuccessAuthCount) AS 'dailySuccessAuthCount', latest(kentik.snmp.dailyFailedAuthCount) AS 'dailyFailedAuthCount', latest(kentik.snmp.dailyTotalAuthCount) AS 'dailyTotalAuthCount' WHERE instrumentation.name = 'aruba-clearpass'  Facet Index \nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "tacacsAuth Table",
+            "layout": {
+              "column": 1,
+              "row": 17,
+              "width": 12,
+              "height": 2
+            },
+            
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT \nlatest(kentik.snmp.tacAuthCounterSuccess) AS 'tacAuthCounterSuccess'\n, latest(kentik.snmp.tacAuthCounterFailure) AS 'tacAuthCounterFailure'\n, latest(kentik.snmp.tacAuthCounterCount) AS 'tacAuthCounterCount'\n, latest(kentik.snmp.tacAuthCounterTime) AS 'tacAuthCounterTime'\n, latest(kentik.snmp.tacAuthCounterAuthTime) AS 'tacAuthCounterAuthTime'\n, latest(kentik.snmp.tacServicePolicyEvalTime) AS 'tacServicePolicyEvalTime'\n, latest(kentik.snmp.tacPolicyEvalTime) AS 'tacPolicyEvalTime' \nWHERE instrumentation.name = 'aruba-clearpass'   Facet Index\n"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "tacacsAutz Table",
+            "layout": {
+              "column": 1,
+              "row": 19,
+              "width": 12,
+              "height": 2
+            },
+            
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT \nlatest(kentik.snmp.tacAutzCounterSuccess) AS 'tacAutzCounterSuccess'\n, latest(kentik.snmp.tacAutzCounterFailure) AS 'tacAutzCounterFailure'\n, latest(kentik.snmp.tacAutzCounterCount) AS 'tacAutzCounterCount'\n, latest(kentik.snmp.tacAutzCounterTime) AS 'tacAutzCounterTime' \nWHERE instrumentation.name = 'aruba-clearpass'  \nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "networkTraffic Table",
+            "layout": {
+              "column": 1,
+              "row": 21,
+              "width": 12,
+              "height": 3
+            },
+            
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT \nlatest(kentik.snmp.nwTrafficTotal) AS 'nwTrafficTotal'\n, latest(kentik.snmp.nwAppPort) AS 'nwAppPort'\nWHERE instrumentation.name = 'aruba-clearpass' \nFACET nwAppName\nLIMIT MAX "
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
