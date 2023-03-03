@@ -7,15 +7,6 @@ queryResponseTimeAvg:
       from: Gigamon
       where: "dns_message_type = 'RESPONSE'"
 
-queryResponseTimeMedian:
-  title: Query Response Time (ms) - 95th Percentile
-  unit: MS
-  queries:
-    gigamon/network_dns_service:
-      select: median(numeric(dns_response_time)) * 1000
-      from: Gigamon
-      where: "dns_message_type = 'RESPONSE'"
-
 queryCount:
   title: Query Count
   unit: COUNT
@@ -25,11 +16,11 @@ queryCount:
       from: Gigamon
       where: "dns_message_type = 'QUERY' AND dns_query IS NOT NULL"
 
-querySourceIp:
-  title: Unique Query Source IPs
+responseCount:
+  title: Response Count
   unit: COUNT
   queries:
     gigamon/network_dns_service:
-      select: uniqueCount(src_ip) + uniqueCount(src_ipv6) 
+      select: count(*)
       from: Gigamon
-      where: "dns_message_type = 'QUERY' AND dns_query IS NOT NULL"
+      where: "dns_message_type = 'RESPONSE' AND dns_query IS NOT NULL"
