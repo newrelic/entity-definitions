@@ -1,0 +1,236 @@
+{
+  "name": "Gigamon DNS Endpoint",
+  "description": null,
+  "pages": [
+    {
+      "name": "Gigamon DNS Endpoint",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Gigamon DNS Endpoint",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon select latest(dst_ip) as `DNS IP`, latest(src_port) as `Port`, latest(dst_ipv6) as `DNS IPv6`, filter(uniqueCount(dns_query), where dns_query is not null and dns_query != '') as `Unique Queries`, filter(uniqueCount(src_ip), where src_ip is not null and src_ip != '') as `Unique Source IPs`, latest(dns_host_type) as `DNS Host Type`  where dns_query is not null "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Average Dns Response Time (ms)",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon Select average(numeric(dns_response_time)) * 1000 AS MinResponseMs where dns_query is not null limit 10 facet dst_ip timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Max DNS Response Time (ms)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon Select max(numeric(dns_response_time) * 1000) AS MaxResponseMs where dns_query is not null limit 10 facet dst_ip timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Raw Query Count",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon select count(dns_query) as QueryCount where dns_query is not null and dns_message_type = 'QUERY' limit 10 facet dst_ip timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Unique Query Sources Count",
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon select uniqueCount(src_ip) as SrcCount where dns_query is not null and dns_message_type = 'QUERY' limit 10 facet dst_ip timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Raw Response Count",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon select count(dns_query) as ResponseCount where dns_query is not null and dns_message_type = 'RESPONSE' limit 10 facet dst_ip timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Unique Lookup Count",
+          "layout": {
+            "column": 7,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon select uniqueCount(dns_query) as QueryCount where dns_query is not null limit 10 since 1 day ago facet dst_ip timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
