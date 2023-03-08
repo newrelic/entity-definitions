@@ -122,3 +122,41 @@ destinations:
       from: KFlow
       where: "provider = 'kentik-flow-device'"
 ```
+
+### Currently supported NRQL expressions
+
+Telemetry for Golden Metrics is evaluated while it is streaming through our ingest pipeline (*before it is written to disk in NRDB*). As such, it is not possible to support ever NRQL expression. The following is a breakdown of the expressions currently supported in creating queries for Golden Metrics:
+
+| <div style="width:380px">**Expression**</div> | **Notes** |
+|----------------|-----------|
+| `sum(x)`<br />`min(x)`<br />`max(x)`<br />`average(x)`<br />`count(x)` | Basic `operation`s on a value |
+| `C * operation(x)`<br />`C / operation(x)` | `constant C != 0` |
+| `C * sum(x) / count(y)`<br />`C * count(x) / count(y)`<br />`C * sum(x) / sum(y)`<br />`filter( C * count(x), WHERE ...) / count(x)`<br />`filter(count(x), WHERE ...) * C / count(x)` | Useful to calculate averages or percentages.  *`x` and `y` can be equals.* |
+| `op(x) + op(y)`<br />`op(x) OR op(y)` | Only some operations are addable or 'or-able': `sum`, `min`, `max`, `average` |
+| `sum(x) - sum(y)` |   |
+| `uniqueCount(x[, y...])`<br />`uniqueCount(tuple(x, y, ...))` | There is support for a `tuple` with more than 1 value.  Note: `uniqueCount(x, y) == uniqueCount(tuple(x, y))` |
+| `latest(x) ± C` |   |
+| `rate(op(x), 1 minute)` |   |
+| `(sum(x) ± sum(y)) / sum(z)` |   |
+| `percentile(x, 90)` | Although the [percentile](https://docs.newrelic.com/docs/query-your-data/nrql-new-relic-query-language/get-started/nrql-syntax-clauses-functions/#func-percentile) function supports more than one argument, the Golden Metrics pipeline only allows 1 argument. |
+
+#### Further explanation
+
+To provide more context around this concept; take this example:
+
+```
+latest(x) + latest(y) + latest(z)
+```
+
+This does not make sense in the context of analyzing streaming telemetry for 2 primary reasons:
+
+1. The processing pipeline is distributed. Meaning that a specific metric will almost assuredly be processed by different processors.
+2. To keep the pipeline simple, it lacks a central or distributed state. There's no way of maintaining information during a time window just for the sake of processing it by the end of the window.
+
+In order to calculate `latest`, a pipeline should:
+
+1. Keep all the observed datapoints for the different metrics in a central state (it needs state).
+2. At the end of a time window, it should aggregate in a common place (not be distributed).
+3. Once aggregated, the metric must be synthesized.
+
+Another way to think about this is that a streaming pipeline cannot know the `latest` of anything because it simply does not have any context about any other data point in this manner. Without an `earliest`, there can be no `latest`.
