@@ -1,0 +1,20 @@
+requestsPerSecond:
+  title: Requests per second
+  unit: REQUESTS_PER_SECOND
+  queries:
+    prometheus:
+      select: rate(sum(nginx_ingress_controller_request_size_count), 1 SECONDS) AS 'Requests Per Second'
+
+p99Latency:
+  title: "99% of requests are completed within this many milliseconds"
+  unit: MS
+  queries:
+    prometheus:
+      select: bucketpercentile(nginx_ingress_controller_request_duration_seconds_bucket, 99)*1000 AS 'Latency'
+
+errorRate:
+  title: Percentage of requests which result in 4xx or 5xx responses
+  unit: PERCENTAGE
+  queries:
+    prometheus:
+      select: filter( rate(Sum( nginx_ingress_controller_requests),1 seconds),  WHERE status Not RLIKE '[4-5].*') * 100  / filter( rate(sum( nginx_ingress_controller_requests), 1 seconds), WHERE status RLIKE '.*') AS 'Error Rate'

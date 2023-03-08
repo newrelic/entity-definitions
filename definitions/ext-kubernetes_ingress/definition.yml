@@ -1,0 +1,31 @@
+domain: EXT
+type: KUBERNETES_INGRESS
+
+goldenTags:
+  - cluster_name
+  - k8s.namespace
+  - ingress_class
+
+synthesis:
+  rules:
+    - compositeIdentifier:
+        separator: "/"
+        attributes:
+          - cluster_name
+          - exported_namespace
+          - ingress
+      encodeIdentifierInGUID: true
+      name: ingress
+      conditions:
+        - attribute: metricName
+          prefix: nginx_ingress_controller_
+      tags:
+        k8s.namespace:
+          entityTagNames: [exported_namespace]
+          multiValue: false
+        ingress_class:
+          entityTagNames: [controller_class]
+          multiValue: false
+
+configuration:
+  alertable: true
