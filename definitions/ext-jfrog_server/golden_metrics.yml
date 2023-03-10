@@ -1,39 +1,37 @@
 artifactoryLogErrors:
-  title: Artifactory request duration
+  title: Error rate
   displayAsValue: true
   query:
-    select: average(numeric(request_duration))
+    select: percentage(count(*), WHERE log_level='ERROR')
     from: Log
-    where: log_source LIKE 'jfrog.rt%' AND log_source LIKE '%request'
+    where: log_source LIKE 'jfrog.rt.artifactory.service'
     eventId: entity.guid
     eventName: entity.name
 
-artifactoryRequestCount:
-  title: Artifactory request count
+artifactoryMemoryUsage:
+  title: Memory used
   displayAsValue: true
   query:
-    select: count(*)
+    select: percentage(sum(jfrog.artifactory.sys_memory_free_bytes) + sum(jfrog.artifactory.sys_memory_used_bytes), WHERE jfrog.artifactory.sys_memory_used_bytes IS NOT NULL) as 'Memory used'
     from: Log
-    where: log_source LIKE 'jfrog.rt%' AND log_source LIKE '%request'
     eventId: entity.guid
     eventName: entity.name
 
-artifactoryErrorCount:
-  title: Artifactory error count
+artifactoryCpuPerc:
+  title: CPU %
   displayAsValue: true
   query:
-    select: count(*)
+    select: average(jfrog.artifactory.sys_cpu_ratio) * 100 as 'CPU %'
     from: Log
     where: log_source = 'jfrog.rt.artifactory.service' AND log_level = 'ERROR'
     eventId: entity.guid
     eventName: entity.name
 
-artifactorySystemMetrics:
-  title: Artifactory System Metrics
+artifactoryHeapMemory:
+  title: Heap memory
   displayAsValue: true
   query:
-    select: count(*)
+    select: percentage(sum(jfrog.artifactory.jfrt_runtime_heap_totalmemory_bytes) + sum(jfrog.artifactory.jfrt_runtime_heap_freememory_bytes), WHERE jfrog.artifactory.jfrt_runtime_heap_totalmemory_bytes IS NOT NULL) as 'Heap memory used'
     from: Log
-    where: log_source = 'jfrog.rt.artifactory.service' AND log_level = 'ERROR'
     eventId: entity.guid
     eventName: entity.name
