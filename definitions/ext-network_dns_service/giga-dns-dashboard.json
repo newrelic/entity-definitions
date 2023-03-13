@@ -24,7 +24,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(dst_ip OR dst_ipv6) as `DNS IP`, latest(dst_port) as `Port`, filter(uniqueCount(dns_query), where dns_query is not null and dns_query != '') as `Unique Queries`, filter(uniqueCount(src_ip), where src_ip is not null and src_ip != '') as `Unique Source IPs`, latest(dns_host_type) as `DNS Host Type` FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'QUERY'"
+                "query": "select latest(dst_ip OR dst_ipv6) as `DNS IP`, latest(dst_port) as `Port`, filter(uniqueCount(dns_query), where dns_query is not null and dns_query != '') as `Unique Queries`, filter(uniqueCount(src_ip), where src_ip is not null and src_ip != '') as `Unique Source IPs` FROM Gigamon WHERE dns_message_type IS NOT NULL"
               }
             ],
             "platformOptions": {
@@ -53,7 +53,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "Select average(numeric(dns_response_time)) * 1000 AS avgResponseMs FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'RESPONSE' TIMESERIES "
+                "query": "Select average(numeric(dns_response_time)) * 1000 AS avgResponseMs FROM Gigamon WHERE dns_message_type = 'RESPONSE' TIMESERIES "
               }
             ],
             "platformOptions": {
@@ -85,7 +85,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "Select percentile((numeric(dns_response_time)),95) * 1000 AS ResponseTimeMs FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'RESPONSE' timeseries"
+                "query": "Select percentile((numeric(dns_response_time)),95) * 1000 AS ResponseTimeMs FROM Gigamon WHERE dns_message_type = 'RESPONSE' timeseries"
               }
             ],
             "platformOptions": {
@@ -117,7 +117,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "Select count(*) AS 'Query Count' FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'QUERY' AND dns_query IS NOT NULL TIMESERIES "
+                "query": "Select count(*) AS 'Query Count' FROM Gigamon WHERE dns_message_type = 'QUERY' AND dns_query IS NOT NULL TIMESERIES "
               }
             ],
             "platformOptions": {
@@ -146,7 +146,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "Select uniqueCount(src_ip) + uniqueCount(src_ipv6) AS 'uniqueSourceIp' FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'QUERY' AND dns_query IS NOT NULL timeseries"
+                "query": "Select uniqueCount(src_ip) + uniqueCount(src_ipv6) AS 'uniqueSourceIp' FROM Gigamon WHERE dns_message_type = 'QUERY' AND dns_query IS NOT NULL timeseries"
               }
             ],
             "platformOptions": {
@@ -175,7 +175,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select count(dns_query) as QueryCount FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'QUERY' AND dns_query IS NOT NULL LIMIT 10 FACET src_ip OR src_ipv6 TIMESERIES"
+                "query": "select count(dns_query) as QueryCount FROM Gigamon WHERE dns_message_type = 'QUERY' AND dns_query IS NOT NULL LIMIT 10 FACET src_ip OR src_ipv6 TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -192,7 +192,7 @@
             "height": 3
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.area"
           },
           "rawConfiguration": {
             "facet": {
@@ -204,7 +204,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select uniqueCount(src_ip) as 'Unique Source Count' FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'QUERY' AND dns_query IS NOT NULL TIMESERIES"
+                "query": "select uniqueCount(src_ip) as 'Unique Source Count' FROM Gigamon WHERE dns_message_type = 'QUERY' AND dns_query IS NOT NULL TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -236,7 +236,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select count(dns_query) as ResponseCount FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'RESPONSE' AND dns_reply_code IS NOT NULL FACET CASES(dns_reply_code = 0 AS 'NOERROR', dns_reply_code = 1 AS 'FORMERR', dns_reply_code = 2 AS 'SERVFAIL', dns_reply_code = 3 AS 'NXDOMAIN', dns_reply_code = 4 AS 'NOTIMP', dns_reply_code = 5 AS 'REFUSED', dns_reply_code = 6 AS 'YXDOMAIN', dns_reply_code = 7 AS 'YXRRSET', dns_reply_code = 8 AS 'NXRRSET', dns_reply_code = 9 AS 'NOTAUTH', dns_reply_code = 10 AS 'NOTZONE', dns_reply_code = 11 AS 'DSOTYPENI', dns_reply_code = 16 AS 'BADVERS/SIG', dns_reply_code = 17 AS 'BADKEY', dns_reply_code = 18 AS 'BADTIME', dns_reply_code = 19 AS 'BADMODE', dns_reply_code = 20 AS 'BADNAME', dns_reply_code = 21 AS 'BADALG', dns_reply_code = 22 AS 'BADTRUNC', dns_reply_code = 23 AS 'BADCOOKIE') OR dns_reply_code TIMESERIES LIMIT 10 "
+                "query": "select count(dns_query) as ResponseCount FROM Gigamon WHERE dns_message_type = 'RESPONSE' AND dns_reply_code IS NOT NULL FACET CASES(dns_reply_code = 0 AS 'NOERROR', dns_reply_code = 1 AS 'FORMERR', dns_reply_code = 2 AS 'SERVFAIL', dns_reply_code = 3 AS 'NXDOMAIN', dns_reply_code = 4 AS 'NOTIMP', dns_reply_code = 5 AS 'REFUSED', dns_reply_code = 6 AS 'YXDOMAIN', dns_reply_code = 7 AS 'YXRRSET', dns_reply_code = 8 AS 'NXRRSET', dns_reply_code = 9 AS 'NOTAUTH', dns_reply_code = 10 AS 'NOTZONE', dns_reply_code = 11 AS 'DSOTYPENI', dns_reply_code = 16 AS 'BADVERS/SIG', dns_reply_code = 17 AS 'BADKEY', dns_reply_code = 18 AS 'BADTIME', dns_reply_code = 19 AS 'BADMODE', dns_reply_code = 20 AS 'BADNAME', dns_reply_code = 21 AS 'BADALG', dns_reply_code = 22 AS 'BADTRUNC', dns_reply_code = 23 AS 'BADCOOKIE') OR dns_reply_code TIMESERIES LIMIT 10 "
               }
             ],
             "platformOptions": {
@@ -268,7 +268,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select uniqueCount(dns_query) as QueryCount FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'RESPONSE' AND dns_query IS NOT NULL limit 10 since 1 day AGO FACET src_ip OR src_ipv6 TIMESERIES"
+                "query": "select uniqueCount(dns_query) as QueryCount FROM Gigamon WHERE dns_message_type = 'RESPONSE' AND dns_query IS NOT NULL limit 10 since 1 day AGO FACET src_ip OR src_ipv6 TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -297,7 +297,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "Select (src_ip OR src_ipv6) AS 'Source IP', src_mac AS 'Source MAC Address', numeric(dns_response_time) * 1000 AS 'Response Time (ms)', dns_query AS 'DNS lookup' FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'RESPONSE' AND dns_response_time IS NOT NULL LIMIT MAX ORDER BY dns_response_time DESC"
+                "query": "Select (src_ip OR src_ipv6) AS 'Source IP', src_mac AS 'Source MAC Address', numeric(dns_response_time) * 1000 AS 'Response Time (ms)', dns_query AS 'DNS lookup' FROM Gigamon WHERE dns_message_type = 'RESPONSE' AND dns_response_time IS NOT NULL LIMIT MAX ORDER BY dns_response_time DESC"
               }
             ],
             "platformOptions": {
@@ -323,7 +323,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select dns_class, dns_flags, dns_message_type, dns_name_resolution_type, dns_opcode, dns_qdcount, dns_query, dns_query_type, dns_reverse_addr, dns_transaction_id, dst_bytes, (dst_ip OR dst_ipv6) AS 'dst IP', dst_mac, dst_packets, dst_port, end_reason, end_time, ip_version, next_hdr_v6, protocol, seq_num, src_bytes, (src_ip OR src_ipv6) AS 'src IP', src_mac, src_packets, src_port, vendor, version, generator FROM Gigamon WHERE app_name = 'dns' AND instrumentation.provider = 'Gigamon' AND dns_message_type = 'QUERY' AND (dst_ip IS NOT NULL OR dst_ipv6 IS NOT NULL) limit max"
+                "query": "select dns_class, dns_flags, dns_message_type, dns_name_resolution_type, dns_opcode, dns_qdcount, dns_query, dns_query_type, dns_reverse_addr, dns_transaction_id, dst_bytes, (dst_ip OR dst_ipv6) AS 'dst IP', dst_mac, dst_packets, dst_port, end_reason, end_time, ip_version, next_hdr_v6, protocol, seq_num, src_bytes, (src_ip OR src_ipv6) AS 'src IP', src_mac, src_packets, src_port, vendor, version, generator FROM Gigamon WHERE dns_message_type = 'QUERY' AND (dst_ip IS NOT NULL OR dst_ipv6 IS NOT NULL) limit max"
               }
             ],
             "platformOptions": {
