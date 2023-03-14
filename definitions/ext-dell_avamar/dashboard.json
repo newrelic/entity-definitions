@@ -1,0 +1,234 @@
+{
+  "name": "Dell Avamar",
+  "description": null,
+  "pages": [
+    {
+      "name": "Backup - Avamar",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Failed backups",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 1,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": " SELECT uniqueCount(clientName)  FROM avamar WHERE key = 'activity' WHERE type = 'Scheduled Backup' FACET clientName,datadomain limit max WHERE stateID = 2"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Backup exceeding 24 hours",
+          "layout": {
+            "column": 2,
+            "row": 1,
+            "width": 1,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": " SELECT uniqueCount(clientName) FROM avamar WHERE key = 'activity' FACET clientName limit max where overtimeOption = 'NEVER'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Running backups for 24h",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(clientName)  FROM avamar WHERE key = 'activity' where type = 'Scheduled Backup' FACET clientName,state limit max WHERE stateID = 3  TIMESERIES 2 minutes SINCE 24 hours ago "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Failed backups",
+          "layout": {
+            "column": 6,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(id)  FROM avamar WHERE key = 'activity' where type = 'Scheduled Backup' FACET clientName,id,state limit max WHERE stateID = 2  TIMESERIES 2 minutes "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "All latest data",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM avamar SELECT latest(state),latest(stateID),latest(description),latest(errorCode),latest(codeReason),latest(stats.clientOs),latest(stats.clientVersion),latest(timeZone),latest(type),latest(completedDate),latest(endStartTime),latest(`endTime`),latest(dispensedTime),latest(elapsedTime),latest(datadomain),latest(proxyName),latest(retention),latest(scheduleName),latest(allowOvertime),latest(overtimeOption),latest(datasetFqdn),latest(groupFqdn)  WHERE key = 'activity' FACET clientName,datadomain limit max "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Failed/In progress",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM avamar SELECT latest(state),latest(stateID),latest(description),latest(errorCode),latest(codeReason),latest(stats.clientOs),latest(stats.clientVersion),latest(timeZone),latest(type),latest(completedDate),latest(endStartTime),latest(`endTime`),latest(dispensedTime),latest(elapsedTime),latest(datadomain),latest(proxyName),latest(retention),latest(scheduleName),latest(allowOvertime),latest(overtimeOption),latest(datasetFqdn),latest(groupFqdn) WHERE key = 'activity' FACET clientName,datadomain limit max WHERE stateID != 1"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Backup exceeding 24 hours",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": " SELECT filter(latest(elapsedTime)/60/60/24, where elapsedTime/60/60/24 > 1) as 'Over 24 hours',latest(elapsedTime)/60/60 as 'run time Hours',latest(clientName),latest(overtimeOption),latest(state),latest(stateID),latest(description),latest(errorCode),latest(codeReason),latest(stats.clientOs),latest(stats.clientVersion),latest(timeZone),latest(type),latest(completedDate),latest(endStartTime),latest(`endTime`),latest(dispensedTime),latest(datadomain),latest(proxyName),latest(retention),latest(scheduleName),latest(allowOvertime),latest(datasetFqdn),latest(groupFqdn) FROM avamar WHERE key = 'activity' FACET clientName limit max where overtimeOption = 'NEVER'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Events",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM avamar SELECT latest(time),latest(summary),latest(type),latest(category),latest(data.attributes.SourceHostName) where key = 'events' facet id limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
+
