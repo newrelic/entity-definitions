@@ -1,0 +1,36 @@
+domain: EXT
+type: NETWORK_DNS_SERVICE
+synthesis:
+  rules:
+  - identifier: dst_ip
+    name: dst_ip
+    conditions:
+    - attribute: instrumentation.provider
+      value: Gigamon
+    - attribute: app_name
+      value: dns
+    - attribute: dns_message_type
+      present: true
+    tags:
+      dst_ip:
+        entityTagName: dstIpV4
+        multiValue: false
+      dst_ipv6:
+        entityTagName: dstIpV6
+        multiValue: false
+      dst_port:
+        entityTagName: dstPort
+        multiValue: false
+      dst_mac:
+        entityTagName: dstMacAddr
+        multiValue: false
+      dns_host_type:
+        entityTagName: dnsHostType
+        multiValue: true
+
+configuration:
+  entityExpirationTime: DAILY
+
+dashboardTemplates:
+  Gigamon:
+    template: giga-dns-dashboard.json
