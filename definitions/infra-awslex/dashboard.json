@@ -1,25 +1,32 @@
 {
   "name": "Amazon Lex",
   "description": null,
-  "permissions": "PUBLIC_READ_WRITE",
   "pages": [
     {
       "name": "Amazon Lex",
       "description": null,
       "widgets": [
         {
-          "title": "Audio/Video Logs Delivery Success/Failure",
+          "title": "Number Of Requests",
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 4,
+            "width": 7,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
           "rawConfiguration": {
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#ff00c8",
+                  "seriesName": "Requests"
+                }
+              ]
+            },
             "facet": {
               "showOtherSeries": false
             },
@@ -29,47 +36,23 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(`aws.lex.ConversationLogsTextDeliveryFailure`)as logsTextFailure, count(`aws.lex.ConversationLogsTextDeliverySuccess`)as logsTextSuccess, count(`aws.lex.ConversationLogsTextDeliverySuccess`)as logsTextSuccess, count(`aws.lex.ConversationLogsAudioDeliverySuccess`)as logsAudioSucces, count(`aws.lex.ConversationLogsAudioDeliveryFailure`)as logsAudioFailure FROM Metric TIMESERIES"
+                "query": "FROM Metric select count(aws.lex.RuntimeRequestCount) as `Requests` TIMESERIES "
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "title": "Runtime Request Counts",
-          "layout": {
-            "column": 5,
-            "row": 1,
-            "width": 4,
-            "height": 3
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
             },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric select count(aws.lex.RuntimeRequestCount) as RuntimeRequestCount where aws.Namespace='AWS/Lex'"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
+            "yAxisLeft": {
+              "zero": true
             }
           }
         },
         {
-          "title": "Runtime Errors",
+          "title": "Latency",
           "layout": {
-            "column": 9,
+            "column": 8,
             "row": 1,
-            "width": 4,
+            "width": 5,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -86,7 +69,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select count(aws.lex.RuntimeUserErrors) as RuntimeUserErrors, count(aws.lex.RuntimeSystemErrors) as RuntimeSystemErrors timeseries"
+                "query": "FROM Metric select average(aws.lex.RuntimeSuccessfulRequestLatency) as RuntimeSuccessfulRequestLatency TIMESERIES "
               }
             ],
             "platformOptions": {
@@ -98,7 +81,7 @@
           }
         },
         {
-          "title": "RuntimeSuccessfulRequestLatency",
+          "title": "Number Of Request On Channel",
           "layout": {
             "column": 1,
             "row": 4,
@@ -107,16 +90,27 @@
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.stacked-bar"
           },
           "rawConfiguration": {
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#03ff17",
+                  "seriesName": "FACEBOOK"
+                }
+              ]
+            },
             "facet": {
               "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select average(aws.lex.RuntimeSuccessfulRequestLatency) as RuntimeSuccessfulRequestLatency"
+                "query": "FROM Metric SELECT count(aws.lex.BotChannelRequestCount) as BotChannelRequestCount facet  aws.lex.Source TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -125,7 +119,7 @@
           }
         },
         {
-          "title": "Lex Channel",
+          "title": "Bot Channel Errors",
           "layout": {
             "column": 5,
             "row": 4,
@@ -134,11 +128,11 @@
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.pie"
+            "id": "viz.stacked-bar"
           },
           "rawConfiguration": {
             "facet": {
-              "showOtherSeries": true
+              "showOtherSeries": false
             },
             "legend": {
               "enabled": true
@@ -146,7 +140,75 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric select count(aws.lex.Source) as NumberOfTimesChannelUsedForBotConversation  facet aws.lex.Source where aws.Namespace = 'AWS/Lex'"
+                "query": "FROM Metric SELECT count(aws.lex.BotChannelResponseCardErrors) as BotChannelResponseCardErrors, count(aws.lex.BotChannelSystemErrors) as BotChannelSystemErrors, count(aws.lex.BotChannelAuthErrors) as BotChannelAuthErrors, count(aws.lex.BotChannelConfigurationErrors) as BotChannelConfigurationErrors TIMESERIES since 3 weeks ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Runtime Errors",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#e70814",
+                  "seriesName": "RuntimeUserErrors"
+                }
+              ]
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select count(aws.lex.RuntimeUserErrors) as RuntimeUserErrors, count(aws.lex.RuntimeSystemErrors) as RuntimeSystemErrors timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select count(aws.lex.RuntimeThrottledEvents) as `Runtime Throttled Events` timeseries"
               }
             ],
             "platformOptions": {
