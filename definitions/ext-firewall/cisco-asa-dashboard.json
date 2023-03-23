@@ -12,8 +12,9 @@
             "column": 1,
             "row": 1,
             "width": 4,
-            "height": 5
+            "height": 4
           },
+          
           "visualization": {
             "id": "viz.billboard"
           },
@@ -35,7 +36,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE entity.type  = 'FIREWALL'"
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(kentik.snmp.Uptime) / 8640000 AS 'Uptime (Days)', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE instrumentation.name = 'cisco-asa'"
               }
             ],
             "platformOptions": {
@@ -51,6 +52,7 @@
             "width": 4,
             "height": 1
           },
+          
           "visualization": {
             "id": "viz.billboard"
           },
@@ -61,7 +63,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE entity.type  = 'FIREWALL'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE instrumentation.name = 'cisco-asa'"
               }
             ],
             "platformOptions": {
@@ -87,6 +89,7 @@
             "width": 4,
             "height": 1
           },
+          
           "visualization": {
             "id": "viz.billboard"
           },
@@ -97,7 +100,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE entity.type  = 'FIREWALL'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current System Memory Utilization %' WHERE instrumentation.name = 'cisco-asa' and memory_pool_name = 'System memory'"
               }
             ],
             "platformOptions": {
@@ -121,8 +124,9 @@
             "column": 5,
             "row": 2,
             "width": 4,
-            "height": 4
+            "height": 3
           },
+          
           "visualization": {
             "id": "viz.line"
           },
@@ -136,7 +140,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE entity.type  = 'FIREWALL' TIMESERIES 5 MINUTES"
+                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE instrumentation.name = 'cisco-asa' TIMESERIES 5 MINUTES"
               }
             ],
             "platformOptions": {
@@ -155,8 +159,9 @@
             "column": 9,
             "row": 2,
             "width": 4,
-            "height": 4
+            "height": 3
           },
+          
           "visualization": {
             "id": "viz.line"
           },
@@ -170,7 +175,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE entity.type  = 'FIREWALL' TIMESERIES 5 MINUTES"
+                "query": "FROM Metric SELECT average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE instrumentation.name = 'cisco-asa' TIMESERIES 5 MINUTES facet memory_pool_name"
               }
             ],
             "platformOptions": {
@@ -180,6 +185,371 @@
               "max": 100,
               "min": 0,
               "zero": false
+            }
+          }
+        },
+        {
+          "title": "ASA Failover Summary",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 5,
+            "height": 3
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(failover_status) WHERE instrumentation.name = 'cisco-asa' facet failover_description, failover_status_detail"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Current Firewall Connections",
+          "layout": {
+            "column": 6,
+            "row": 5,
+            "width": 3,
+            "height": 3
+          },
+          
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.current_firewall_connections) AS 'Current Firewall Connections' SINCE 10 MINUTES AGO COMPARE WITH 1 DAY AGO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Firewall Connections",
+          "layout": {
+            "column": 9,
+            "row": 5,
+            "width": 4,
+            "height": 3
+          },
+          
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(kentik.snmp.current_firewall_connections) AS 'Connections' TIMESERIES 5 MINUTES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Interfaces Details",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 12,
+            "height": 3
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface', if_Speed AS 'Interface Speed' WHERE instrumentation name = 'cisco-asa' LIMIT MAX "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Top 10 Interfaces - Outgoing Mbps",
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "width": 6,
+            "height": 4
+          },
+          
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets) * 8 / 1000 / 1000, 1 second) AS 'Mbps' FACET concat(if_interface_name, ' ', if_Alias) TIMESERIES 5 MINUTES WHERE instrumentation.name = 'cisco-asa' LIMIT 10"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Top 10 Interfaces - Incoming Mbps",
+          "layout": {
+            "column": 7,
+            "row": 11,
+            "width": 6,
+            "height": 4
+          },
+          
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets) * 8 / 1000 / 1000, 1 second) AS 'Mbps' FACET concat(if_interface_name, ' ', if_Alias) TIMESERIES 5 MINUTES WHERE instrumentation.name = 'cisco-asa' LIMIT 10"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Unified Firewall Summary",
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "width": 6,
+            "height": 3
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.cufwUrlfRequestsNumProcessed) as 'cufwUrlfRequestsNumProcessed', latest(kentik.snmp.cufwUrlfRequestsNumAllowed) as 'cufwUrlfRequestsNumAllowed', latest(kentik.snmp.cufwUrlfRequestsNumDenied) as 'cufwUrlfRequestsNumDenied' WHERE instrumentation.name = 'cisco-asa'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Remote Access Summary",
+          "layout": {
+            "column": 7,
+            "row": 15,
+            "width": 6,
+            "height": 3
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.crasNumDeclinedSessions) as 'crasNumDeclinedSessions', latest(kentik.snmp.crasNumSessions) as 'crasNumSessions', latest(kentik.snmp.crasNumUsers) as 'crasNumUsers', latest(kentik.snmp.crasNumSetupFailInsufResources) as 'crasNumSetupFailInsufResources' WHERE instrumentation.name = 'cisco-asa'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IKE Summary",
+          "layout": {
+            "column": 1,
+            "row": 18,
+            "width": 6,
+            "height": 3
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.cikeGlobalActiveTunnels) as 'cikeGlobalActiveTunnels', latest(kentik.snmp.cikeGlobalInOctets) as 'cikeGlobalInOctets', latest(kentik.snmp.cikeGlobalInPkts) as 'cikeGlobalInPkts', latest(kentik.snmp.cikeGlobalOutOctets) as 'cikeGlobalOutOctets', latest(kentik.snmp.cikeGlobalOutPkts) as 'cikeGlobalOutPkts' WHERE instrumentation.name = 'cisco-asa'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPSec Summary",
+          "layout": {
+            "column": 7,
+            "row": 18,
+            "width": 6,
+            "height": 3
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.cipSecGlobalActiveTunnels) as 'cipSecGlobalActiveTunnels', latest(kentik.snmp.cipSecGlobalHcInOctets) as 'cipSecGlobalHcInOctets', latest(kentik.snmp.cipSecGlobalInPkts) as 'cipSecGlobalInPkts', latest(kentik.snmp.cipSecGlobalHcOutOctets) as 'cipSecGlobalHcOutOctets', latest(kentik.snmp.cipSecGlobalOutPkts) as 'cipSecGlobalOutPkts' WHERE instrumentation.name = 'cisco-asa'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IKE Peer Summary",
+          "layout": {
+            "column": 1,
+            "row": 21,
+            "width": 12,
+            "height": 4
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.cikePeerActiveTime) as 'cikePeerActiveTime' WHERE instrumentation.name = 'cisco-asa' FACET cikePeerLocalType, cikePeerLocalValue, cikePeerRemoteType, cikePeerRemoteValue, cikePeerLocalAddr, cikePeerRemoteAddr"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IKE Tunnel Summary",
+          "layout": {
+            "column": 1,
+            "row": 25,
+            "width": 12,
+            "height": 4
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.cikeTunActiveTime) as 'cikeTunActiveTime', latest(kentik.snmp.cikeTunInOctets) as 'cikeTunInOctets', latest(kentik.snmp.cikeTunInPkts) as 'cikeTunInPkts', latest(kentik.snmp.cikeTunInDropPkts) as 'cikeTunInDropPkts', latest(kentik.snmp.cikeTunOutOctets) as 'cikeTunOutOctets', latest(kentik.snmp.cikeTunOutPkts) as 'cikeTunOutPkts', latest(kentik.snmp.cikeTunOutDropPkts) as 'cikeTunOutDropPkts', latest(cikeTunStatus) as 'cikeTunStatus' WHERE instrumentation.name = 'cisco-asa' FACET cikeTunLocalType, cikeTunLocalValue, cikeTunLocalAddr, cikeTunLocalName, cikeTunRemoteType, cikeTunRemoteValue, cikeTunRemoteAddr, cikeTunRemoteName, cikeTunNegoMode, cikeTunDiffHellmanGrp, cikeTunEncryptAlgo, cikeTunHashAlgo "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IPSEC Tunnel Summary",
+          "layout": {
+            "column": 1,
+            "row": 29,
+            "width": 12,
+            "height": 4
+          },
+          
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(kentik.snmp.cipSecTunIkeTunnelAlive) as 'cipSecTunIkeTunnelAlive', latest(kentik.snmp.cipSecTunActiveTime) as 'cipSecTunActiveTime', latest(kentik.snmp.cipSecTunHcInOctets) as 'cipSecTunHcInOctets', latest(kentik.snmp.cipSecTunInPkts) as 'cipSecTunInPkts', latest(kentik.snmp.cipSecTunHcOutOctets) as 'cipSecTunHcOutOctets', latest(kentik.snmp.cipSecTunOutPkts) as 'cipSecTunOutPkts', latest(cipSecTunStatus) as 'cipSecTunStatus' WHERE instrumentation.name = 'cisco-asa' FACET cipSecTunIkeTunnelIndex, cipSecTunLocalAddr, cipSecTunRemoteAddr, cipSecTunKeyType, cipSecTunEncapMode, cipSecTunInSaDiffHellmanGrp, cipSecTunInSaEncryptAlgo, cipSecTunInSaAhAuthAlgo, cipSecTunInSaEspAuthAlgo, cipSecTunInSaDecompAlgo, cipSecTunOutSaDiffHellmanGrp, cipSecTunOutSaEncryptAlgo, cipSecTunOutSaAhAuthAlgo, cipSecTunOutSaEspAuthAlgo, cipSecTunOutSaCompAlgo"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
             }
           }
         }
