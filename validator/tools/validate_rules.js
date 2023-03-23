@@ -141,7 +141,6 @@ RULES.forEach(rule => {
                         // terminate early
                         process.exit(1)
                     }
-            console.log(`=> processed ${definition.domain}-${definition.type}... valid for rule "${rule.name}"`)
             }))
     .catch(err => console.log(err))
     }
