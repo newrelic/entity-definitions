@@ -25,10 +25,24 @@ function hasConflictingConditions(previousEntity, conditions){
 }
 
 function areSameConditions(condition1, condition2){
+    // If both are empty they are the same
     if(condition1.length === 0 || condition2.length === 0){
         return true
     }
-    return condition1.some(e1cond => condition2.some(e2cond => isEqual(e1cond, e2cond)));
+
+    // If there are different amount of conditions they can't be the same.
+    if (condition1.length != condition2.length) {
+        return false
+    }
+
+    // Sort so we can compare them ordered
+    sorted1 = condition1.sort()
+    sorted2 = condition2.sort()
+
+    sameConditions = sorted1.filter((e1cond, index) => isEqual(e1cond, sorted2[index]))
+
+    // All of the conditions are equal
+    return sameConditions.length == sorted1.length
 }
 
 function validateAndRecord(definition, identifier, compositeIdentifier, conditions) {
@@ -141,7 +155,6 @@ RULES.forEach(rule => {
                         // terminate early
                         process.exit(1)
                     }
-            console.log(`=> processed ${definition.domain}-${definition.type}... valid for rule "${rule.name}"`)
             }))
     .catch(err => console.log(err))
     }
