@@ -18,8 +18,6 @@ const yaml = require('js-yaml');
         if(folderDefinition.name !== folderDefinitionExpectedName){
             console.error(`bad definition folder for ${domain} ${type}... expected ${folderDefinitionExpectedName}`)
             process.exit(1)
-        }else {
-            console.log(`=> definition folder for ${domain} ${type}... valid`)
         }
     }
 })();
