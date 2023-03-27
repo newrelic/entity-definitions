@@ -1,0 +1,195 @@
+{
+  "name": "DHCP Service",
+  "description": null,
+  "pages": [
+    {
+      "name": "Individual Entity",
+      "description": null,
+      "widgets": [
+        {
+          "title": "DHCP Service Endpoint",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon select latest(dst_ip) as `Service IP`, latest(dst_port) as `Service Port`, filter(uniqueCount(dhcp_xid), where dhcp_xid is not null and dhcp_xid != '') as `DHCP Transactions` WHERE app_name = 'dhcp' AND instrumentation.provider = 'Gigamon'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "DHCP Transactions",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon select uniqueCount(dhcp_xid) AS 'Count (unique)' WHERE app_name = 'dhcp' AND instrumentation.provider = 'Gigamon'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "DHCP Message Type (Count)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon select count(*) WHERE app_name = 'dhcp' AND instrumentation.provider = 'Gigamon' FACET dhcp_message_type "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Request Count by Domain",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon Select uniqueCount(dhcp_host_name) AS 'DHCP Clients (count)' WHERE app_name = 'dhcp' AND instrumentation.provider = 'Gigamon' AND dhcp_message_type = 'DHCPREQUEST' FACET dhcp_domain_name "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Lease Duration by DHCP Domain",
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon Select max(numeric(dhcp_ip_lease_time))/60 AS 'Longest Lease (minutes)'  WHERE app_name = 'dhcp' AND instrumentation.provider = 'Gigamon' AND dhcp_message_type = 'DHCPREQUEST' FACET dhcp_domain_name"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "DHCP Transaction Details (forwarded by router)",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon Select timestamp, dhcp_message_type, src_ip, src_mac, src_packets, src_port, src_bytes, dst_ip, dst_mac, dst_packets, dst_port, dst_bytes, end_reason, end_time, generator, id, protocol, seq_num, start_time, ts, udp_client_port, udp_server_port, vendor, version WHERE app_name = 'dhcp' AND instrumentation.provider = 'Gigamon' AND dhcp_hops != '0'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Transaction Details (same subnet)",
+          "layout": {
+            "column": 7,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Gigamon Select timestamp, dhcp_message_type, src_ip, src_mac, src_packets, src_port, src_bytes, dst_ip, dst_mac, dst_packets, dst_port, dst_bytes, end_reason, end_time, generator, id, protocol, seq_num, start_time, ts, udp_client_port, udp_server_port, vendor, version WHERE app_name = 'dhcp' AND instrumentation.provider = 'Gigamon' AND dhcp_hops = '0'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
