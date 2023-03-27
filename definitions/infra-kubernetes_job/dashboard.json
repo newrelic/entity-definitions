@@ -1,0 +1,673 @@
+{
+    "name": "Kubernetes job",
+    "description": null,
+    "pages": [
+      {
+        "name": "Kubernetes job",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 1,
+              "width": 9
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## Job Overview"
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 1,
+              "row": 2,
+              "width": 12,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Created At",
+                  "type": "duration"
+                },
+                {
+                  "name": "Started At",
+                  "type": "duration"
+                },
+                {
+                  "name": "Completed At",
+                  "type": "duration"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.jobName) as 'Job Name', latest(k8s.namespaceName) as 'Namespace Name', latest(k8s.clusterName) as 'Cluster Name', latest(k8s.job.createdAt) * 1000 as 'Created At', latest(k8s.job.startedAt) * 1000 as 'Started At', latest(k8s.job.completedAt) * 1000 as 'Completed At' WHERE metricName = 'k8s.job.createdAt' and `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 10,
+              "row": 1,
+              "width": 1,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.job.succeededPods) as 'Pods Succeeded' WHERE metricName = 'k8s.job.createdAt' and `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 11,
+              "row": 1,
+              "width": 1,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.job.activePods) as 'Pods Active' WHERE metricName = 'k8s.job.createdAt' and `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 12,
+              "row": 1,
+              "width": 1,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.job.failedPods) as 'Pods Failed' WHERE metricName = 'k8s.job.createdAt' and `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 3,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## Job owner"
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 1,
+              "row": 4,
+              "width": 12,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Created At",
+                  "type": "date"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(if(k8s.job.ownerKind = '<none>', 'None', k8s.job.ownerKind)) as 'Kind', latest(if(k8s.job.ownerName = '<none>', 'None', k8s.job.ownerName)) as 'Name', latest(if(k8s.job.ownerIsController = '<none>', 'None', k8s.job.ownerIsController)) as 'Owner is Controller' WHERE metricName = 'k8s.job.createdAt' and `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 7,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## Pod metrics"
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 8,
+              "height": 3,
+              "width": 12
+            },
+            "title": "Pods",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Net Transferred Kbps",
+                  "precision": 2,
+                  "type": "decimal"
+                },
+                {
+                  "name": "Net Received Kbps",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "from (FROM Metric SELECT latest(k8s.pod.isReady) as 'ready', latest(k8s.pod.isScheduled) as 'scheduled', latest(k8s.status) as 'status' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName as 'Podname', k8s.nodeName as 'Nodename' limit max) select latest(if(ready = 1, 'True', 'False')) as 'Ready', latest(if(scheduled = 1, 'True', 'False')) as 'Scheduled', latest(status) as 'Status' facet Podname, Nodename limit max"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 11,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Network bytes transferred",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(k8s.pod.netTxBytesPerSecond) / 1000 AS 'Transferred (KBps)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName TIMESERIES LIMIT 40"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              },
+              "units": {
+                "unit": "BYTES"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 5,
+              "row": 11,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Network bytes received",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(k8s.pod.netRxBytesPerSecond) / 1000 AS 'Received (KBps)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}'  FACET k8s.podName TIMESERIES LIMIT 20"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              },
+              "units": {
+                "unit": "BYTES"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 87,
+              "row": 11,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Network errors / second",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(k8s.pod.netErrorsPerSecond) AS 'Errors (per second)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName TIMESERIES LIMIT 20"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              },
+              "units": {
+                "unit": "COUNT"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 14,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## Container metrics"
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 15,
+              "height": 3,
+              "width": 12
+            },
+            "title": "Containers",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "from(FROM Metric select latest(if(k8s.container.memoryRequestedBytes is not null, k8s.container.memoryRequestedBytes  / 1024 / 1024, 'Not Set')) as 'mr', latest(if(k8s.container.memoryLimitBytes is not null, k8s.container.memoryLimitBytes / 1024 / 1024, 'Not Set')) as 'ml', latest(if(k8s.container.cpuRequestedCores is not null, k8s.container.cpuRequestedCores, 'Not Set')) as 'cr', latest(if(k8s.container.cpuLimitCores is not null, k8s.container.cpuLimitCores, 'Not Set')) as 'cl', sum(k8s.container.restartCountDelta) AS 'rcd', latest(k8s.container.restartCount) AS 'rcc', latest(`k8s.status`) as 'status', latest(k8s.reason) as 'reason' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' and k8s.containerName is not null FACET k8s.containerName as 'containername', k8s.podName as 'podname') select latest(mr) as 'Memory Required (MiB)', latest(ml) as 'Memory Limit (MiB)', latest(cr) as 'CPU Required (cores)', latest(cl) as 'CPU Limit (cores)', latest(concat(string(rcd, precision: 1), ' / ', string(rcc, precision: 1))) as 'Restarts (delta / cumulative)', latest(concat(status, ' / ', if(reason is null, 'None', reason))) as 'Status / Reason' facet containername as 'Container', podname as 'Pod'"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 18,
+              "height": 3,
+              "width": 4
+            },
+            "title": "CPU usage (cores)",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(k8s.container.cpuUsedCores) AS 'CPU usage (cores)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName, k8s.containerName TIMESERIES LIMIT 20"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 5,
+              "row": 18,
+              "height": 3,
+              "width": 4
+            },
+            "title": "CPU utilization (%)",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(k8s.container.cpuCoresUtilization) / 100 AS 'CPU utilization (%)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName, k8s.containerName TIMESERIES LIMIT 20"
+                }
+              ],
+              "thresholds": [],
+              "units": {
+                "unit": "PERCENTAGE"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 9,
+              "row": 18,
+              "height": 3,
+              "width": 4
+            },
+            "title": "CPU throttling",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT sum(k8s.container.cpuCfsThrottledPeriodsDelta) / sum(k8s.container.cpuCfsPeriodsDelta) AS 'CPU throttling (%)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName, k8s.containerName TIMESERIES LIMIT 20"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              },
+              "units": {
+                "unit": "PERCENTAGE"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 21,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Memory usage",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(k8s.container.memoryWorkingSetBytes) AS 'Memory usage (bytes)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName, k8s.containerName TIMESERIES LIMIT 20"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              },
+              "units": {
+                "unit": "BYTES"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 7,
+              "row": 21,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Memory utilization",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT average(k8s.container.memoryWorkingSetUtilization) / 100 AS 'Memory utilization (%)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName, k8s.containerName TIMESERIES LIMIT 20"
+                }
+              ],
+              "thresholds": [],
+              "units": {
+                "unit": "PERCENTAGE"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 24,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Filesystem used",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(k8s.container.fsUsedBytes) AS 'Filesystem used (bytes)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName, k8s.containerName TIMESERIES LIMIT 20"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              },
+              "units": {
+                "unit": "BYTES"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 7,
+              "row": 24,
+              "height": 3,
+              "width": 6
+            },
+            "title": "Filesystem utilization",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT max(k8s.container.fsUsedPercent) / 100 AS 'Filesystem Utilization (%)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName, k8s.containerName TIMESERIES LIMIT 20"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              },
+              "units": {
+                "unit": "PERCENTAGE"
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.line"
+            },
+            "layout": {
+              "column": 1,
+              "row": 27,
+              "height": 3,
+              "width": 12
+            },
+            "title": "Container restarts",
+            "rawConfiguration": {
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "SELECT sum(k8s.container.restartCountDelta) AS 'Container restarts' FROM Metric WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName, k8s.containerName TIMESERIES LIMIT 20"
+                }
+              ],
+              "yAxisLeft": {
+                "zero": true
+              },
+              "units": {
+                "unit": "COUNT"
+              }
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 1,
+              "row": 30,
+              "width": 12,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "rawConfiguration": {
+              "text": "## Kubernetes Warning events"
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 31,
+              "height": 3,
+              "width": 9
+            },
+            "title": "Warning events",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "from InfrastructureEvent select concat(event.involvedObject.kind, ' / ', event.involvedObject.name) as 'Kind / Name', event.message, event.reason as 'Reason', if(event.count is not null, event.count, event.series.count) as 'Event Count', event.lastTimestamp, event.firstTimestamp where clusterName = '{{{tags.k8s.clusterName}}}' and event.metadata.namespace = '{{{tags.k8s.namespaceName}}}' and category = 'kubernetes' and (event.involvedObject.name = '{{{entity.name}}}' OR event.involvedObject.name like '%{{{entity.name}}}%') and event.type = 'Warning' limit 100"
+                }
+              ]
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.stacked-bar"
+            },
+            "layout": {
+              "column": 10,
+              "row": 31,
+              "height": 3,
+              "width": 3
+            },
+            "title": "Warning events",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "from InfrastructureEvent select count(concat(event.type, ':', event.reason)) as 'Reason (Type)' where clusterName = '{{{tags.k8s.clusterName}}}' and event.metadata.namespace = '{{{tags.k8s.namespaceName}}}' and category = 'kubernetes' and (event.involvedObject.name = '{{{entity.name}}}' OR event.involvedObject.name like '%{{{entity.name}}}%') and event.type = 'Warning' facet event.reason TIMESERIES limit 100"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
