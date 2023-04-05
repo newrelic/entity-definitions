@@ -74,6 +74,25 @@ synthesis:
       telemetry.sdk.version:
       service.namespace:
 
+    # telemetry from NewRelic opentelemetry distribution
+  - identifier: service.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.provider
+      value: newrelic-opentelemetry
+    tags:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.deployment.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      telemetry.sdk.language:
+        entityTagName: language
+      telemetry.sdk.version:
+      service.namespace:
+
     # telemetry from kamon-agent provider
   - identifier: service.name
     name: service.name
@@ -133,10 +152,10 @@ synthesis:
         ttl: P1D
 
     # IMPORTANT:
-    # This rule matches on any telemetry with service.name 
+    # This rule matches on any telemetry with service.name
     # which is too broad for some telemetry sources, resulting
     # in matches that are not actually about services.  We're
-    # keeping it for backwards compatibility reasons but it 
+    # keeping it for backwards compatibility reasons but it
     # is being ignored in some internal services while we add
     # a configuration option to choose the relevant ingestion
     # sources for each rule.
