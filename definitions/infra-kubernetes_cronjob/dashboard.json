@@ -256,7 +256,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric WITH k8s.job.completedAt - k8s.job.startedAt AS duration SELECT latest(k8s.namespaceName) AS 'Namespace Name', latest(k8s.job.createdAt * 1000) AS 'Created', latest(k8s.job.startedAt * 1000) AS 'Started', if(latest(k8s.job.isComplete), 'Complete', if(latest(k8s.job.failed), 'Failed', 'Running')) as 'State', if(latest(duration), latest(duration), '-') AS 'Duration (sec)', if(latest(k8s.job.failed), if(latest(k8s.job.failedPodsReason)!='', latest(k8s.job.failedPodsReason), 'No reason provided'), '-') AS 'Failure Reason' FACET k8s.jobName AS 'Job Name' WHERE metricName = 'k8s.job.createdAt' AND k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' AND k8s.jobName LIKE '{{{entity.name}}}-%' LIMIT MAX"
+                "query": "FROM Metric WITH k8s.job.completedAt - k8s.job.startedAt AS duration SELECT latest(k8s.namespaceName) AS 'Namespace Name', latest(k8s.job.createdAt * 1000) AS 'Created', latest(k8s.job.startedAt * 1000) AS 'Started', if(latest(k8s.job.isComplete), 'Complete', if(latest(k8s.job.failed), 'Failed', 'Running')) as 'State', if(latest(duration), latest(duration), '-') AS 'Duration (sec)', if(latest(k8s.job.failed), latest(if(k8s.job.failedPodsReason is not null, k8s.job.failedPodsReason, 'No reason provided')), '-') AS 'Failure Reason' FACET k8s.jobName AS 'Job Name' WHERE metricName = 'k8s.job.createdAt' AND k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' AND k8s.jobName LIKE '{{{entity.name}}}-%' LIMIT MAX"
               }
             ],
             "platformOptions": {

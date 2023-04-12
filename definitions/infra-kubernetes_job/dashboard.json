@@ -179,7 +179,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.jobName) as 'Job Name', latest(k8s.namespaceName) as 'Namespace Name', latest(k8s.clusterName) as 'Cluster', latest(k8s.job.createdAt) * 1000 as 'Created', latest(k8s.job.startedAt) * 1000 as 'Started', if(latest(k8s.job.failed), if(latest(k8s.job.failedPodsReason)!='', latest(k8s.job.failedPodsReason), 'No reason provided'), '-') as 'Failure Reason' WHERE metricName = 'k8s.job.createdAt' and `entity.guid` = '{{entity.id}}'"
+                "query": "FROM Metric SELECT latest(k8s.jobName) as 'Job Name', latest(k8s.namespaceName) as 'Namespace Name', latest(k8s.clusterName) as 'Cluster', latest(k8s.job.createdAt) * 1000 as 'Created', latest(k8s.job.startedAt) * 1000 as 'Started', if(latest(k8s.job.failed), latest(if(k8s.job.failedPodsReason is not null, k8s.job.failedPodsReason, 'No reason provided')), '-') as 'Failure Reason' WHERE metricName = 'k8s.job.createdAt' and `entity.guid` = '{{entity.id}}'"
               }
             ],
             "platformOptions": {
