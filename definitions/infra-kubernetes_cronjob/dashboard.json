@@ -14,46 +14,32 @@
             "column": 1,
             "row": 1,
             "height": 1,
-            "width": 10
+            "width": 8
           },
           "title": "",
           "rawConfiguration": {
-            "text": "## Cronjob Overview"
+            "text": "## CronJob Overview"
           }
         },
         {
           "title": "",
           "layout": {
-            "column": 1,
-            "row": 2,
-            "width": 12,
+            "column": 9,
+            "row": 1,
+            "width": 1,
             "height": 1
           },
           "visualization": {
-            "id": "viz.table"
+            "id": "viz.billboard"
           },
           "rawConfiguration": {
-            "dataFormatters": [
-              {
-                "name": "Created At",
-                "type": "date"
-              },
-              {
-                "name": "Last Scheduled",
-                "type": "duration"
-              },
-              {
-                "name": "Next Scheduled",
-                "type": "duration"
-              }
-            ],
             "facet": {
               "showOtherSeries": false
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.cronjobName) as 'Cronjob Name', latest(k8s.namespaceName) as 'Namespace Name', latest(k8s.clusterName) as 'Cluster Name', latest(k8s.cronjob.schedule) as 'Schedule', latest(k8s.cronjob.createdAt) * 1000 as 'Created At', latest(k8s.cronjob.lastScheduledTime) * 1000 as 'Last Scheduled', latest(k8s.cronjob.nextScheduledTime) * 1000 as 'Next Scheduled' WHERE metricName = 'k8s.cronjob.createdAt' and `entity.guid` = '{{entity.id}}'"
+                "query": "FROM Metric SELECT filter(uniqueCount(k8s.jobName), where k8s.job.isComplete is not null) AS 'Completed Jobs' WHERE clusterName = '{{{tags.k8s.clusterName}}}' AND namespaceName = '{{{tags.k8s.namespaceName}}}' AND jobName LIKE '{{{entity.name}}}-%' LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -61,7 +47,32 @@
             }
           }
         },
-
+        {
+          "title": "",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT filter(uniqueCount(k8s.jobName), where k8s.job.failed is not null) AS 'Failed Jobs' WHERE clusterName = '{{{tags.k8s.clusterName}}}' AND namespaceName = '{{{tags.k8s.namespaceName}}}' AND jobName LIKE '{{{entity.name}}}-%' LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
         {
           "title": "",
           "layout": {
@@ -80,7 +91,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.cronjob.isActive) as 'Active' WHERE metricName = 'k8s.cronjob.createdAt' and `entity.guid` = '{{entity.id}}'"
+                "query": "FROM Metric SELECT latest(k8s.cronjob.isActive) as 'Active Jobs' WHERE metricName = 'k8s.cronjob.createdAt' and `entity.guid` = '{{entity.id}}'"
               }
             ],
             "platformOptions": {
@@ -106,7 +117,43 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.cronjob.isSuspended) as 'Suspended' WHERE metricName = 'k8s.cronjob.createdAt' and `entity.guid` = '{{entity.id}}'"
+                "query": "FROM Metric SELECT if(latest(k8s.cronjob.isSuspended) = 1, 'True', 'False') as 'Suspended' WHERE metricName = 'k8s.cronjob.createdAt' and `entity.guid` = '{{entity.id}}'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Created At",
+                "type": "date"
+              },
+              {
+                "name": "Last Scheduled",
+                "type": "date"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from( FROM Metric SELECT latest(k8s.cronjobName) AS cronjob, latest(k8s.namespaceName) AS namespace, latest(k8s.clusterName) AS cluster, latest(k8s.cronjob.schedule) AS schedule, latest(k8s.cronjob.concurrencyPolicy) as concurrencyPolicy, latest(k8s.cronjob.createdAt) * 1000 AS created, latest(k8s.cronjob.lastScheduledTime) * 1000 AS lastScheduled WHERE metricName = 'k8s.cronjob.createdAt' AND `entity.guid` = '{{entity.id}}' ) with aparse(schedule, '* * * * *') as (mm, hh, day, month, weekday) select latest(cronjob) as 'CronJob Name', latest(namespace) as 'Namespace Name', latest(cluster) as 'Cluster', latest(mm) as 'Minute', latest(hh) as 'Hour', latest(day) as 'Day', latest(month) as 'Month', latest(weekday) as 'Day of the Week', latest(concurrencyPolicy) as 'Concurrency Policy', latest(created) as 'Created At', latest(lastScheduled) as 'Last Scheduled'"
               }
             ],
             "platformOptions": {
@@ -134,6 +181,58 @@
           "layout": {
             "column": 1,
             "row": 4,
+            "height": 1,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from (FROM K8sJobSample SELECT latest(completedAt - startedAt) AS duration FACET jobName WHERE clusterName = '{{{tags.k8s.clusterName}}}' AND namespaceName = '{{{tags.k8s.namespaceName}}}' AND jobName LIKE '{{{entity.name}}}-%' LIMIT MAX ) select min(duration) as 'Min. Duration (sec)', average(duration) as 'Avg. Duration (sec)', max(duration) as 'Max. Duration (sec)' limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "height": 1,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(k8s.job.specParallelism) AS 'Parallelism', latest(k8s.job.specCompletions) AS 'Completions', latest(k8s.job.specActiveDeadlineSeconds) AS 'Active Deadline (sec)' WHERE clusterName = '{{{tags.k8s.clusterName}}}' AND namespaceName = '{{{tags.k8s.namespaceName}}}' AND jobName LIKE '{{{entity.name}}}-%' LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "History",
+          "layout": {
+            "column": 1,
+            "row": 5,
             "width": 12,
             "height": 3
           },
@@ -143,16 +242,12 @@
           "rawConfiguration": {
             "dataFormatters": [
               {
-                "name": "Created At",
+                "name": "Created",
                 "type": "duration"
               },
               {
-                "name": "Started At",
-                "type": "duration"
-              },
-              {
-                "name": "Completed At",
-                "type": "duration"
+                "name": "Started",
+                "type": "date"
               }
             ],
             "facet": {
@@ -161,7 +256,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.namespaceName) as 'Namespace Name', latest(k8s.job.createdAt * 1000) as 'Created At', latest(k8s.job.startedAt * 1000) as 'Started At', latest(k8s.job.completedAt * 1000) as 'Completed At' facet k8s.jobName as 'Job Name' WHERE metricName = 'k8s.job.createdAt' AND k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' AND k8s.jobName LIKE '{{{entity.name}}}-%'"
+                "query": "FROM Metric WITH k8s.job.completedAt - k8s.job.startedAt AS duration SELECT latest(k8s.namespaceName) AS 'Namespace Name', latest(k8s.job.createdAt * 1000) AS 'Created', latest(k8s.job.startedAt * 1000) AS 'Started', if(latest(k8s.job.isComplete), 'Complete', if(latest(k8s.job.failed), 'Failed', 'Running')) as 'State', if(latest(duration), latest(duration), '-') AS 'Duration (sec)', if(latest(k8s.job.failed), if(latest(k8s.job.failedPodsReason)!='', latest(k8s.job.failedPodsReason), 'No reason provided'), '-') AS 'Failure Reason' FACET k8s.jobName AS 'Job Name' WHERE metricName = 'k8s.job.createdAt' AND k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' AND k8s.jobName LIKE '{{{entity.name}}}-%' LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -196,25 +291,14 @@
           },
           "title": "Pods",
           "rawConfiguration": {
-            "dataFormatters": [
-              {
-                "name": "Net Transferred Kbps",
-                "precision": 2,
-                "type": "decimal"
-              },
-              {
-                "name": "Net Received Kbps",
-                "precision": 2,
-                "type": "decimal"
-              }
-            ],
+            "dataFormatters": [],
             "facet": {
               "showOtherSeries": false
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from (FROM Metric SELECT latest(k8s.pod.isReady) as 'ready', latest(k8s.pod.isScheduled) as 'scheduled', latest(k8s.status) as 'status' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName as 'podname', k8s.nodeName as 'nodename' limit max) select latest(if(ready = 1, 'True', 'False')) as 'Ready', latest(if(scheduled = 1, 'True', 'False')) as 'Scheduled', latest(status) facet podname, nodename limit max"
+                "query": "from (FROM Metric SELECT latest(k8s.pod.isReady) as 'ready', latest(k8s.pod.isScheduled) as 'scheduled', latest(k8s.status) as 'status' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName as 'podname', k8s.nodeName as 'nodename' limit max) select latest(if(ready = 1, 'True', 'False')) as 'Ready', latest(if(scheduled = 1, 'True', 'False')) as 'Scheduled', latest(status) as 'Status' facet podname as 'Pod Name', if(nodename != '', nodename, 'Unassigned') as 'Node Name' limit max"
               }
             ]
           }
@@ -240,7 +324,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(k8s.pod.netTxBytesPerSecond) / 1000 AS 'Transferred (KBps)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName TIMESERIES LIMIT 40"
+                "query": "FROM Metric SELECT max(k8s.pod.netTxBytesPerSecond) / 1000 AS 'Transferred (KBps)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName TIMESERIES LIMIT 20"
               }
             ],
             "yAxisLeft": {
@@ -288,7 +372,7 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 87,
+            "column": 9,
             "row": 11,
             "height": 3,
             "width": 4
@@ -348,7 +432,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from(FROM Metric select latest(if(k8s.container.memoryRequestedBytes is not null, k8s.container.memoryRequestedBytes  / 1024 / 1024, 'Not Set')) as 'mr', latest(if(k8s.container.memoryLimitBytes is not null, k8s.container.memoryLimitBytes / 1024 / 1024, 'Not Set')) as 'ml', latest(if(k8s.container.cpuRequestedCores is not null, k8s.container.cpuRequestedCores, 'Not Set')) as 'cr', latest(if(k8s.container.cpuLimitCores is not null, k8s.container.cpuLimitCores, 'Not Set')) as 'cl', sum(k8s.container.restartCountDelta) AS 'rcd', latest(k8s.container.restartCount) AS 'rcc', latest(`k8s.status`) as 'status', latest(k8s.reason) as 'reason' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' and k8s.containerName is not null FACET k8s.containerName as 'containername', k8s.podName as 'podname') select latest(mr) as 'Mem Req (MiB)', latest(ml) as 'Mem Limit (MiB)', latest(cr) as 'CPU Req (cores)', latest(cl) as 'CPU Limit (cores)', latest(concat(string(rcd, precision: 1), ' / ', string(rcc, precision: 1))) as 'Restarts (delta / cumul.)', latest(concat(status, ' / ', if(reason is null, 'None', reason))) as 'Status / Reason' facet containername as 'Container', podname as 'Pod'"
+                "query": "from(FROM Metric SELECT latest(if(k8s.container.memoryRequestedBytes is not null, k8s.container.memoryRequestedBytes  / 1024 / 1024, 'Not Set')) AS 'mrb', latest(if(k8s.container.memoryLimitBytes is not null, k8s.container.memoryLimitBytes / 1024 / 1024, 'Not Set')) AS 'mlb', latest(if(k8s.container.cpuRequestedCores is not null, k8s.container.cpuRequestedCores, 'Not Set')) AS 'crc', latest(if(k8s.container.cpuLimitCores is not null, k8s.container.cpuLimitCores, 'Not Set')) AS 'clc', sum(k8s.container.restartCountDelta) AS 'rcd', latest(k8s.container.restartCount) AS 'rcc', latest(`k8s.status`) AS 'status', latest(k8s.reason) AS 'reason' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' AND k8s.containerName IS NOT NULL FACET k8s.containerName AS 'containername', k8s.podName AS 'podname') select latest(mrb) as 'Memory Requested (MiB)', latest(mlb) as 'Memory Limit (MiB)', latest(crc) as 'CPU Requested (cores)', latest(clc) as 'CPU Limit (cores)', latest(concat(string(rcd, precision: 1), ' / ', string(rcc, precision: 1))) as 'Restarts (delta / cumulative)', latest(concat(status, ' / ', if(reason is null, 'None', reason))) as 'Status / Reason' facet containername as 'Container', podname as 'Pod'"
               }
             ]
           }
@@ -616,13 +700,23 @@
           },
           "title": "Warning events",
           "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "First Timestamp",
+                "type": "date"
+              },
+              {
+                "name": "Last Timestamp",
+                "type": "date"
+              }
+            ],
             "facet": {
               "showOtherSeries": false
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from InfrastructureEvent select concat(event.involvedObject.kind, ' / ', event.involvedObject.name) as 'Kind / Name', event.message, event.reason as 'Reason', if(event.count is not null, event.count, event.series.count) as 'Event Count', event.lastTimestamp, event.firstTimestamp where clusterName = '{{{tags.k8s.clusterName}}}' and event.metadata.namespace = '{{{tags.k8s.namespaceName}}}' and category = 'kubernetes' and (event.involvedObject.name = '{{{entity.name}}}' OR event.involvedObject.name like '%{{{entity.name}}}%') and event.type = 'Warning' limit 100"
+                "query": "from InfrastructureEvent select concat(event.involvedObject.kind, ' / ', event.involvedObject.name) as 'Kind / Name', event.message as 'Message', event.reason as 'Reason', if(event.count is not null, event.count, event.series.count) as 'Event Count', event.lastTimestamp as 'Last Timestamp', event.firstTimestamp as 'First Timestamp' where clusterName = '{{{tags.k8s.clusterName}}}' and event.metadata.namespace = '{{{tags.k8s.namespaceName}}}' and category = 'kubernetes' and (event.involvedObject.name = '{{{entity.name}}}' OR event.involvedObject.name like '%{{{entity.name}}}%') and event.type = 'Warning' limit 100"
               }
             ]
           }
