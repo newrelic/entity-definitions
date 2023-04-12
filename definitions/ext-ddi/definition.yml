@@ -1,22 +1,35 @@
 domain: EXT
 type: DDI
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
+  rules:
+    - identifier: device_name
+      name: device_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: provider
+          value: kentik-ipam
+      tags:
+        src_addr:
+          entityTagName: device_ip
+          multiValue: false
 
-  conditions:
-  - attribute: provider
-    value: kentik-ipam
-
-  tags:
-    src_addr:
-      entityTagName: device_ip
-      multiValue: false
+    - identifier: device_name
+      name: device_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: provider
+          value: kentik-dhcp
+      tags:
+        src_addr:
+          entityTagName: device_ip
+          multiValue: false
 
 goldenTags:
 - device_ip
 
 dashboardTemplates:
+  # Default
+  kentik:
+    template: default-dashboard.json
   kentik/infoblox-ipam:
     template: infoblox-dashboard.json
