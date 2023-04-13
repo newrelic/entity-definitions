@@ -1,0 +1,94 @@
+{
+    "name": "Kubernetes PersistentVolumeClaim",
+    "description": null,
+    "pages": [
+      {
+        "name": "Kubernetes PersistentVolumeClaim",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## PersistentVolumeClaim Overview"
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 1,
+              "row": 2,
+              "width": 12,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Created At",
+                  "type": "date"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.pvcName) as 'PersistentVolumeClaim Name', latest(k8s.namespaceName) as 'Namespace Name', latest(k8s.clusterName) as 'Cluster Name', latest(k8s.persistentvolumeclaim.createdAt) * 1000 as 'Created At' WHERE metricName = 'k8s.persistentvolumeclaim.createdAt' AND `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 3,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## Resource Overview"
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 4,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.persistentvolumeclaim.statusPhase) as 'Status', latest(k8s.persistentvolumeclaim.storageClass) as 'Storage Class', latest(k8s.pvcName) as 'Volume Name', latest(k8s.persistentvolumeclaim.requestedStorageBytes) / 1000 / 1000 as 'Capacity (Mi)', latest(k8s.persistentvolumeclaim.accessMode) as 'Access Mode' WHERE metricName = 'k8s.persistentvolumeclaim.createdAt' AND `entity.guid` = '{{entity.id}}'"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
