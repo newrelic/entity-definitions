@@ -1,0 +1,182 @@
+{
+    "name": "Kubernetes PersistentVolume",
+    "description": null,
+    "pages": [
+      {
+        "name": "Kubernetes PersistentVolume",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## PersistentVolume Overview"
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 1,
+              "row": 2,
+              "width": 12,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Created At",
+                  "type": "date"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.pvName) as 'PersistentVolume Name', latest(k8s.clusterName) as 'Cluster Name', latest(k8s.persistentvolume.createdAt) * 1000 as 'Created At' WHERE metricName = 'k8s.persistentvolume.createdAt' and `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 3,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## Resource Claims"
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 1,
+              "row": 4,
+              "width": 12,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.persistentvolumeclaim.statusPhase) as 'Status', latest(k8s.pvcName) as 'Claim', latest(k8s.persistentvolumeclaim.storageClass) as 'Storage Class', latest(k8s.persistentvolumeclaim.accessMode) as 'Access Modes'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 4,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## Source"
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 1,
+              "row": 5,
+              "width": 12,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.persistentvolume.hostPath) as 'Host Path' WHERE `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "## Capacity"
+            }
+          },
+          {
+            "title": "",
+            "layout": {
+              "column": 1,
+              "row": 7,
+              "width": 12,
+              "height": 1
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(k8s.persistentvolume.storageClass) as 'Resource', latest(k8s.persistentvolume.capacityBytes) / 1000 / 1000 as 'Capacity (Mi)' WHERE metricName = 'k8s.persistentvolume.createdAt' and `entity.guid` = '{{entity.id}}'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
