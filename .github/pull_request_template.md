@@ -1,7 +1,13 @@
 ### Relevant information
 
-Describe what you have done and any details that you think are relevant or that you might want to discuss with us. 
+<!--
+  Describe what you have done.
+  Provide details that are relevant to the PR
 
+  Always think that the person reviewing the PR doesn't have the context you have.
+
+  Links to examples, documentation and similar resources make the process easier to review.
+-->
 
 <!--
   Contributions to this repository are reviewed at least twice a week
