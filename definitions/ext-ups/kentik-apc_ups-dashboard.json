@@ -2,195 +2,221 @@
 	"name": "Kentik - UPS",
 	"description": null,
 	"pages": [
-		{
-			"name": "Kentik - UPS",
-			"description": null,
-			"widgets": [
+	  {
+		"name": "Kentik - UPS",
+		"description": null,
+		"widgets": [
+		  {
+			"title": "Summary",
+			"layout": {
+			  "column": 1,
+			  "row": 1,
+			  "width": 2,
+			  "height": 4
+			},
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"rawConfiguration": {
+			  "dataFormatters": [
 				{
-					"visualization": {
-						"id": "viz.bar"
-					},
-					"layout": {
-						"column": 1,
-						"row": 1,
-						"height": 3,
-						"width": 4
-					},
-					"title": "Device Uptime (Hours)",
-					"rawConfiguration": {
-						"facet": {
-							"showOtherSeries": false
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM Metric SELECT latest(`kentik.snmp.Uptime`)/100/60/60 AS 'Hours' WHERE provider = 'kentik-ups' LIMIT MAX"
-							}
-						]
-					}
+				  "name": "Uptime (Days)",
+				  "precision": 2,
+				  "type": "decimal"
 				},
 				{
-					"visualization": {
-						"id": "viz.bar"
-					},
-					"layout": {
-						"column": 5,
-						"row": 1,
-						"height": 3,
-						"width": 4
-					},
-					"title": "Time Currently Running on Battery (mins)",
-					"rawConfiguration": {
-						"facet": {
-							"showOtherSeries": false
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM Metric SELECT latest(kentik.snmp.upsBasicBatteryTimeOnBattery)*.01/60 AS 'Time on Battery (mins)' WHERE provider = 'kentik-ups'"
-							}
-						]
-					}
-				},
-				{
-					"visualization": {
-						"id": "viz.bar"
-					},
-					"layout": {
-						"column": 9,
-						"row": 1,
-						"height": 3,
-						"width": 4
-					},
-					"title": "Battery Run Time Remaining (mins)",
-					"rawConfiguration": {
-						"facet": {
-							"showOtherSeries": false
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM Metric SELECT latest(kentik.snmp.upsAdvBatteryRunTimeRemaining)*.01/60 AS 'Battery Run Time Remaining (mins)' WHERE provider = 'kentik-ups'"
-							}
-						]
-					}
-				},
-				{
-					"visualization": {
-						"id": "viz.line"
-					},
-					"layout": {
-						"column": 1,
-						"row": 4,
-						"height": 3,
-						"width": 4
-					},
-					"title": "Output Load Capacity %",
-					"rawConfiguration": {
-						"facet": {
-							"showOtherSeries": false
-						},
-						"legend": {
-							"enabled": true
-						},
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM Metric SELECT latest(kentik.snmp.upsAdvOutputLoad) AS 'Output Load %' WHERE provider = 'kentik-ups' TIMESERIES 5 MINUTES"
-							}
-						],
-						"yAxisLeft": {
-							"max": 100,
-							"min": 0,
-							"zero": false
-						}
-					}
-				},
-				{
-					"visualization": {
-						"id": "viz.billboard"
-					},
-					"layout": {
-						"column": 5,
-						"row": 4,
-						"height": 3,
-						"width": 2
-					},
-					"title": "Battery Needs Replacing (1 == All Clear, 2 == Needs Replacing)",
-					"rawConfiguration": {
-						"dataFormatters": [],
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM Metric SELECT latest(kentik.snmp.upsAdvBatteryReplaceIndicator) AS 'Battery Needs Replacing' WHERE provider = 'kentik-ups'"
-							}
-						],
-						"thresholds": [
-							{
-								"alertSeverity": "WARNING",
-								"value": 1.1
-							},
-							{
-								"alertSeverity": "CRITICAL",
-								"value": 1.9
-							}
-						]
-					}
-				},
-				{
-					"visualization": {
-						"id": "viz.billboard"
-					},
-					"layout": {
-						"column": 7,
-						"row": 4,
-						"height": 3,
-						"width": 2
-					},
-					"title": "Bad Battery Packs (Count)",
-					"rawConfiguration": {
-						"dataFormatters": [],
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM Metric SELECT latest(kentik.snmp.upsAdvBatteryNumOfBadBattPacks) AS 'Bad Battery Packs' WHERE provider = 'kentik-ups'"
-							}
-						],
-						"thresholds": [
-							{
-								"alertSeverity": "WARNING",
-								"value": 0.5
-							},
-							{
-								"alertSeverity": "CRITICAL",
-								"value": 0.9
-							}
-						]
-					}
-				},
-				{
-					"visualization": {
-						"id": "viz.billboard"
-					},
-					"layout": {
-						"column": 9,
-						"row": 4,
-						"height": 3,
-						"width": 4
-					},
-					"title": "Battery Temperature",
-					"rawConfiguration": {
-						"dataFormatters": [],
-						"nrqlQueries": [
-							{
-								"accountId": 0,
-								"query": "FROM Metric SELECT latest(kentik.snmp.upsAdvBatteryTemperature) AS 'Celsius', (latest(kentik.snmp.upsAdvBatteryTemperature)*1.8) + 32 AS 'Fahrenheit' WHERE provider = 'kentik-ups'"
-							}
-						],
-						"thresholds": []
-					}
+				  "name": "Last Update",
+				  "type": "date"
 				}
-			]
-		}
+			  ],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(SysObjectID) AS 'SysObjectID', latest(entity.type) AS 'NR Entity Type', latest(instrumentation.name) AS 'Ktranslate Profile', latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)', latest(timestamp) AS 'Last Update', latest(PollingHealth) AS 'Current Polling Health', latest(PollingHealthReason) AS 'Health Reason' WHERE provider = 'kentik-ups'"
+				}
+			  ],
+			  "platformOptions": {
+				"ignoreTimeRange": false
+			  }
+			}
+		  },
+		  {
+			"title": "Battery Replacement Indicator",
+			"layout": {
+			  "column": 3,
+			  "row": 1,
+			  "width": 2,
+			  "height": 2
+			},
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT if(latest(upsAdvBatteryReplaceIndicator) = 'noBatteryNeedsReplacing', 0, 1) FACET upsAdvBatteryReplaceIndicator WHERE provider = 'kentik-ups'"
+				}
+			  ],
+			  "platformOptions": {
+				"ignoreTimeRange": false
+			  },
+			  "thresholds": [
+				{
+				  "alertSeverity": "WARNING",
+				  "value": 0.1
+				},
+				{
+				  "alertSeverity": "CRITICAL",
+				  "value": 0.2
+				}
+			  ]
+			}
+		  },
+		  {
+			"title": "Output Load Capacity %",
+			"layout": {
+			  "column": 5,
+			  "row": 1,
+			  "width": 8,
+			  "height": 4
+			},
+			"visualization": {
+			  "id": "viz.line"
+			},
+			"rawConfiguration": {
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "legend": {
+				"enabled": true
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.upsAdvOutputLoad) AS 'Output Load %' WHERE provider = 'kentik-ups' TIMESERIES 5 MINUTES"
+				}
+			  ],
+			  "yAxisLeft": {
+				"max": 100,
+				"min": 0,
+				"zero": false
+			  }
+			}
+		  },
+		  {
+			"title": "Battery Status",
+			"layout": {
+			  "column": 3,
+			  "row": 3,
+			  "width": 2,
+			  "height": 2
+			},
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT if(latest(upsBatteryStatus) = 'batteryNormal', 0, 1) FACET upsBatteryStatus WHERE provider = 'kentik-ups'"
+				}
+			  ],
+			  "platformOptions": {
+				"ignoreTimeRange": false
+			  },
+			  "thresholds": [
+				{
+				  "alertSeverity": "WARNING",
+				  "value": 0.1
+				},
+				{
+				  "alertSeverity": "CRITICAL",
+				  "value": 0.2
+				}
+			  ]
+			}
+		  },
+		  {
+			"title": "Battery Temperature",
+			"layout": {
+			  "column": 1,
+			  "row": 5,
+			  "width": 4,
+			  "height": 3
+			},
+			"visualization": {
+			  "id": "viz.billboard"
+			},
+			"rawConfiguration": {
+			  "dataFormatters": [],
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.upsAdvBatteryTemperature) AS 'Celsius', (latest(kentik.snmp.upsAdvBatteryTemperature)*1.8) + 32 AS 'Fahrenheit' WHERE provider = 'kentik-ups'"
+				}
+			  ],
+			  "thresholds": []
+			}
+		  },
+		  {
+			"title": "Time Currently Running on Battery (mins)",
+			"layout": {
+			  "column": 5,
+			  "row": 5,
+			  "width": 4,
+			  "height": 3
+			},
+			"visualization": {
+			  "id": "viz.bar"
+			},
+			"rawConfiguration": {
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.upsBasicBatteryTimeOnBattery)*.01/60 AS 'Time on Battery (mins)' WHERE provider = 'kentik-ups'"
+				}
+			  ]
+			}
+		  },
+		  {
+			"title": "Battery Run Time Remaining (mins)",
+			"layout": {
+			  "column": 9,
+			  "row": 5,
+			  "width": 4,
+			  "height": 3
+			},
+			"visualization": {
+			  "id": "viz.bar"
+			},
+			"rawConfiguration": {
+			  "facet": {
+				"showOtherSeries": false
+			  },
+			  "nrqlQueries": [
+				{
+				  "accountId": 0,
+				  "query": "FROM Metric SELECT latest(kentik.snmp.upsAdvBatteryRunTimeRemaining)*.01/60 AS 'Battery Run Time Remaining (mins)' WHERE provider = 'kentik-ups'"
+				}
+			  ]
+			}
+		  }
+		]
+	  }
 	]
-}
+  }
