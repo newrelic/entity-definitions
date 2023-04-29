@@ -21,7 +21,6 @@
             "text": "## PersistentVolumeClaim Overview"
           }
         },
-
         {
           "title": "",
           "layout": {
@@ -68,7 +67,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.persistentvolumeclaim.requestedStorageBytes) / 1024 / 1024 as 'Capacity (Mi)' WHERE metricName = 'k8s.persistentvolumeclaim.createdAt' and `entity.guid` = '{{entity.id}}'"
+                "query": "FROM Metric SELECT latest(k8s.persistentvolumeclaim.requestedStorageBytes) / 1024 / 1024 as 'Requested Capacity (Mi)' WHERE `entity.guid` = '{{entity.id}}'"
               }
             ],
             "platformOptions": {
@@ -124,7 +123,7 @@
           },
           "title": "",
           "rawConfiguration": {
-            "text": "## Resource Overview"
+            "text": "## PersistentVolume Overview"
           }
         },
         {
@@ -142,7 +141,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(k8s.persistentvolume.statusPhase) as 'Status', latest(k8s.pvName) as 'Volume Name', latest(k8s.persistentvolume.capacityBytes) / 1024 / 1024 as 'Capacity (Mi)', latest(k8s.persistentvolume.storageClass) as 'Storage Class' WHERE metricName = 'k8s.persistentvolume.createdAt' AND k8s.pvcName = '{{entity.name}}'"
+                "query": "FROM Metric SELECT latest(k8s.persistentvolume.statusPhase) as 'Status', latest(k8s.volumeName) as 'Volume Name', latest(k8s.persistentvolume.capacityBytes) / 1024 / 1024 as 'Volume Capacity (Mi)', latest(k8s.persistentvolume.storageClass) as 'Storage Class' WHERE metricName = 'k8s.persistentvolume.createdAt' AND k8s.pvcName = '{{entity.name}}'"
               }
             ]
           }
@@ -182,7 +181,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(k8s.nodeName) as 'Node Name', latest(if(k8s.pod.isReady = 1, 'True', 'False')) as 'Ready', latest(if(k8s.pod.isScheduled = 1, 'True', 'False')) as 'Scheduled', latest(k8s.status) as 'Status' where k8s.podName in (FROM Metric SELECT uniques(k8s.podName) as 'Pod Name' WHERE metricName = 'k8s.volume.fsAvailableBytes' AND k8s.pvcName = '{{entity.name}}') and metricName = 'k8s.pod.createdAt' FACET k8s.podName"
+                "query": "from Metric SELECT latest(k8s.nodeName) as 'Node Name', latest(if(k8s.pod.isReady = 1, 'True', 'False')) as 'Ready', latest(if(k8s.pod.isScheduled = 1, 'True', 'False')) as 'Scheduled', latest(if(k8s.status IS NOT NULL,k8s.status,'-')) as 'Status' where k8s.podName in (FROM Metric SELECT uniques(k8s.podName) as 'Pod Name' WHERE metricName = 'k8s.volume.fsAvailableBytes' AND k8s.pvcName = '{{entity.name}}') and metricName = 'k8s.pod.createdAt' FACET k8s.podName AS 'Pod Name'"
               }
             ]
           }
@@ -208,7 +207,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(k8s.volume.fsInodesUsed) as 'Average Used Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES"
+                "query": "FROM Metric SELECT average(k8s.volume.fsInodesUsed) as 'Average Used Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES AUTO"
               }
             ],
             "yAxisLeft": {
@@ -237,7 +236,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(k8s.volume.fsInodesFree) as 'Average Available Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES"
+                "query": "FROM Metric SELECT average(k8s.volume.fsInodesFree) as 'Average Available Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES AUTO"
               }
             ],
             "yAxisLeft": {
@@ -266,7 +265,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(k8s.volume.fsInodes) as 'Average Total Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES"
+                "query": "FROM Metric SELECT average(k8s.volume.fsInodes) as 'Average Total Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES AUTO"
               }
             ],
             "yAxisLeft": {
@@ -295,7 +294,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(k8s.volume.fsUsedBytes) as 'Average Used Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES"
+                "query": "FROM Metric SELECT average(k8s.volume.fsUsedBytes) as 'Average Used Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES AUTO"
               }
             ],
             "yAxisLeft": {
@@ -327,7 +326,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(k8s.volume.fsAvailableBytes) as 'Average Available Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES"
+                "query": "FROM Metric SELECT average(k8s.volume.fsAvailableBytes) as 'Average Available Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES AUTO"
               }
             ],
             "yAxisLeft": {
@@ -359,7 +358,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(k8s.volume.fsCapacityBytes) as 'Average Total Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES"
+                "query": "FROM Metric SELECT average(k8s.volume.fsCapacityBytes) as 'Average Total Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES AUTO"
               }
             ],
             "yAxisLeft": {
@@ -391,7 +390,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(k8s.volume.fsUsedPercent) / 100 as 'Average Used Bytes (%)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES"
+                "query": "FROM Metric SELECT average(k8s.volume.fsUsedPercent) / 100 as 'Average Used Bytes (%)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{entity.name}}' TIMESERIES AUTO"
               }
             ],
             "yAxisLeft": {
