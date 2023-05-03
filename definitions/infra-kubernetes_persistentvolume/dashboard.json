@@ -1,182 +1,413 @@
 {
-    "name": "Kubernetes PersistentVolume",
-    "description": null,
-    "pages": [
-      {
-        "name": "Kubernetes PersistentVolume",
-        "description": null,
-        "widgets": [
-          {
-            "visualization": {
-              "id": "viz.markdown"
-            },
-            "layout": {
-              "column": 1,
-              "row": 1,
-              "height": 1,
-              "width": 12
-            },
-            "title": "",
-            "rawConfiguration": {
-              "text": "## PersistentVolume Overview"
-            }
+  "name": "Kubernetes PersistentVolume",
+  "description": null,
+  "pages": [
+    {
+      "name": "Kubernetes PersistentVolume",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.markdown"
           },
-          {
-            "title": "",
-            "layout": {
-              "column": 1,
-              "row": 2,
-              "width": 12,
-              "height": 1
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 1,
+            "width": 10
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "## PersistentVolume Overview"
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 11,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+            ],
+            "facet": {
+              "showOtherSeries": false
             },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "dataFormatters": [
-                {
-                  "name": "Created At",
-                  "type": "date"
-                }
-              ],
-              "facet": {
-                "showOtherSeries": false
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT latest(k8s.pvName) as 'PersistentVolume Name', latest(k8s.clusterName) as 'Cluster Name', latest(k8s.persistentvolume.createdAt) * 1000 as 'Created At' WHERE metricName = 'k8s.persistentvolume.createdAt' and `entity.guid` = '{{entity.id}}'"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(k8s.persistentvolume.statusPhase) as 'Status' WHERE metricName = 'k8s.persistentvolume.createdAt' and `entity.guid` = '{{entity.id}}'"
               }
-            }
-          },
-          {
-            "visualization": {
-              "id": "viz.markdown"
-            },
-            "layout": {
-              "column": 1,
-              "row": 3,
-              "height": 1,
-              "width": 12
-            },
-            "title": "",
-            "rawConfiguration": {
-              "text": "## Resource Claims"
-            }
-          },
-          {
-            "title": "",
-            "layout": {
-              "column": 1,
-              "row": 4,
-              "width": 12,
-              "height": 1
-            },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT latest(k8s.persistentvolumeclaim.statusPhase) as 'Status', latest(k8s.pvcName) as 'Claim', latest(k8s.persistentvolumeclaim.storageClass) as 'Storage Class', latest(k8s.persistentvolumeclaim.accessMode) as 'Access Modes'"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              }
-            }
-          },
-          {
-            "visualization": {
-              "id": "viz.markdown"
-            },
-            "layout": {
-              "column": 1,
-              "row": 4,
-              "height": 1,
-              "width": 12
-            },
-            "title": "",
-            "rawConfiguration": {
-              "text": "## Source"
-            }
-          },
-          {
-            "title": "",
-            "layout": {
-              "column": 1,
-              "row": 5,
-              "width": 12,
-              "height": 1
-            },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT latest(k8s.persistentvolume.hostPath) as 'Host Path' WHERE `entity.guid` = '{{entity.id}}'"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              }
-            }
-          },
-          {
-            "visualization": {
-              "id": "viz.markdown"
-            },
-            "layout": {
-              "column": 1,
-              "row": 6,
-              "height": 1,
-              "width": 12
-            },
-            "title": "",
-            "rawConfiguration": {
-              "text": "## Capacity"
-            }
-          },
-          {
-            "title": "",
-            "layout": {
-              "column": 1,
-              "row": 7,
-              "width": 12,
-              "height": 1
-            },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT latest(k8s.persistentvolume.storageClass) as 'Resource', latest(k8s.persistentvolume.capacityBytes) / 1000 / 1000 as 'Capacity (Mi)' WHERE metricName = 'k8s.persistentvolume.createdAt' and `entity.guid` = '{{entity.id}}'"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
             }
           }
-        ]
-      }
-    ]
-  }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 12,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(k8s.persistentvolume.capacityBytes) / 1024 / 1024 as 'Capacity (Mi)' WHERE metricName = 'k8s.persistentvolume.createdAt' and `entity.guid` = '{{entity.id}}'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Created At",
+                "type": "date"
+              },
+              {
+                "name": "Age",
+                "type": "duration"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(k8s.volumeName) as 'PersistentVolume Name', latest(k8s.clusterName) as 'Cluster Name', latest(k8s.persistentvolume.storageClass) as 'Storage Class', latest(k8s.persistentvolume.createdAt) * 1000 as 'Created At', latest(k8s.persistentvolume.createdAt) * 1000 as 'Age' WHERE metricName = 'k8s.persistentvolume.createdAt' and `entity.guid` = '{{entity.id}}'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "## PersistentVolumeClaims"
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(k8s.pvcName) as 'Claim Name', latest(k8s.namespaceName) as 'Claim Namespace', latest(k8s.persistentvolumeclaim.statusPhase) as 'Status', latest(k8s.persistentvolumeclaim.requestedStorageBytes) / 1024 / 1024 as 'Requested Capacity (Mi)', latest(k8s.persistentvolumeclaim.accessMode) as 'Access Mode', latest(k8s.persistentvolumeclaim.storageClass) as 'Storage Class' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND metricName = 'k8s.persistentvolumeclaim.requestedStorageBytes' and k8s.persistentvolumeclaim.volumeName = '{{entity.name}}'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "## Pod metrics"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Pods",
+          "rawConfiguration": {
+            "dataFormatters": [
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "from Metric SELECT latest(k8s.nodeName) as 'Node Name', latest(if(k8s.pod.isReady = 1, 'True', 'False')) as 'Ready', latest(if(k8s.pod.isScheduled = 1, 'True', 'False')) as 'Scheduled', latest(if(k8s.status IS NOT NULL,k8s.status,'-')) as 'Status' where k8s.podName in (FROM Metric SELECT uniques(k8s.podName) as 'Pod Name' WHERE metricName = 'k8s.volume.fsAvailableBytes' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}') and metricName = 'k8s.pod.createdAt' FACET k8s.podName AS 'Pod Name'"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Used Inodes",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(k8s.volume.fsInodesUsed) as 'Average Used Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Available Inodes",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(k8s.volume.fsInodesFree) as 'Average Available Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Total Inodes",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(k8s.volume.fsInodes) as 'Average Total Inodes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Used Bytes",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(k8s.volume.fsUsedBytes) as 'Average Used Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 12,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Available Bytes",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(k8s.volume.fsAvailableBytes) as 'Average Available Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 12,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Total Bytes",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(k8s.volume.fsCapacityBytes) as 'Average Total Bytes' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Used Bytes (%)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(k8s.volume.fsUsedPercent) / 100 as 'Average Used Bytes (%)' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "PERCENTAGE"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
