@@ -1,7 +1,7 @@
 const { DEFINITIONS_DIR,DASHBOARD_FILE_NAME_SUFFIX,FILE_ENCODING} = require('./props');
-const {readdir} = require('fs').promises;
-const path = require('path');
 const fs = require('fs')
+const {readdir} = fs.promises;
+const path = require('path');
 const utils = require('./utils');
 
 (async () => {
