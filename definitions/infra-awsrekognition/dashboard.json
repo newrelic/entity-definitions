@@ -1,0 +1,125 @@
+{
+  "name": "AWS Rekognition",
+  "description": null,
+  "pages": [
+    {
+      "name": "AWS Rekognition",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Request count",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT count(aws.rekognition.CallCount) as `Total Requests`, count(aws.rekognition.SuccessfulRequestCount) as `Successful Requests`, count(aws.rekognition.ThrottledCount) as `Throttled Count`"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Errors count",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT count(aws.rekognition.UserErrorCount) as `User Error Count`, count(aws.rekognition.ServerErrorCount) as `Server Error Count` TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Response Time",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric Select average(aws.rekognition.ResponseTime) as `ResponseTime` TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Inference Units",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select count(aws.rekognition.MaxInferenceUnits) as `MaxInferenceUnits`, count(aws.rekognition.MinInferenceUnits) as `MinInferenceUnits`, count(aws.rekognition.MinInferenceUnits) as `MinInferenceUnits`, count(aws.rekognition.DesiredInferenceUnits) as DesiredInferenceUnits, count(aws.rekognition.InServiceInferenceUnits) as `InServiceInferenceUnits` facet aws.rekognition.ProjectName"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
