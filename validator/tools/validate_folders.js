@@ -13,7 +13,7 @@ const yaml = require('js-yaml');
             console.error(`expected ${DEFINITION_FILE_NAME} in the definitions folder ${folderDefinition.name}`)
             process.exit(1)
         }
-        const {domain, type} = yaml.safeLoad(fs.readFileSync(definitionPath, 'utf-8'))
+        const {domain, type} = yaml.load(fs.readFileSync(definitionPath, 'utf-8'))
         const folderDefinitionExpectedName = `${domain.toLowerCase()}-${type.toLowerCase()}`
         if(folderDefinition.name !== folderDefinitionExpectedName){
             console.error(`bad definition folder for ${domain} ${type}... expected ${folderDefinitionExpectedName}`)
