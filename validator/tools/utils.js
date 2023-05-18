@@ -1,7 +1,7 @@
 const yaml = require('js-yaml')
 const fs = require('fs')
 const path = require('path')
-const {readdir} = require('fs').promises
+const {readdir} = fs.promises
 const {DEFINITIONS_DIR} = require('./props')
 
 async function getFiles(dir) {
@@ -18,7 +18,7 @@ module.exports = {
         const files = await getFiles(DEFINITIONS_DIR)
         const definitionFiles = files.filter(file => file.includes('definition.yml'))
         return definitionFiles.map((filename) => {
-                return yaml.safeLoad(fs.readFileSync(filename, 'utf8'));
+                return yaml.load(fs.readFileSync(filename, 'utf8'));
             }
         )
     },
