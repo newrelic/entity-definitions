@@ -16,7 +16,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(device_name) AS 'Device name', latest(SysObjectID) AS 'Object ID', latest(src_addr) AS 'IP address' WHERE LIMIT MAX SINCE 1 DAY AGO"
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device name', latest(SysObjectID) AS 'Object ID', latest(src_addr) AS 'IP address'"
               }
             ]
           },
@@ -53,10 +53,13 @@
             "height": 2
           },
           "rawConfiguration": {
+            "dataFormatters": [
+              { "name": "Latest timestamp", "type": "recent-relative" }
+            ],
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(PollingHealth) as 'Polling status', latest(kentik.snmp.Uptime)/8640000 as 'Uptime (days)', latest(timestamp) as 'Latest timestamp' WHERE LIMIT MAX SINCE 1 DAY AGO"
+                "query": "FROM Metric SELECT latest(PollingHealth) as 'Polling status', latest(kentik.snmp.Uptime)/8640000 as 'Uptime (days)', latest(timestamp) as 'Latest timestamp'"
               }
             ]
           },
@@ -76,9 +79,14 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(kentik.snmp.CPU) FACET entity.name WHERE TIMESERIES"
+                "query": "FROM Metric SELECT average(kentik.snmp.CPU) TIMESERIES"
               }
-            ]
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
           },
           "title": "CPU utilization %",
           "visualization": {
@@ -96,9 +104,14 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(kentik.snmp.MemoryUtilization) FACET entity.name TIMESERIES"
+                "query": "FROM Metric SELECT average(kentik.snmp.MemoryUtilization) TIMESERIES"
               }
-            ]
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
           },
           "title": "Memory utilization %",
           "visualization": {
@@ -116,7 +129,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT uniqueCount(if_Index) AS 'Configured VLANs' WHERE provider = 'kentik-switch' AND AND if_Type IN('propvirtual','l2vlan','l3ipvlan') OR if_interface_name LIKE 'vlan%' OR if_Name LIKE 'vlan%' OR if_Name LIKE 'vl%' OR if_Description LIKE 'VLAN%'"
+                "query": "FROM Metric SELECT uniqueCount(if_Index) AS 'Configured VLANs' WHERE provider = 'kentik-switch' AND if_Type IN('propvirtual','l2vlan','l3ipvlan') OR if_interface_name LIKE 'vlan%' OR if_Name LIKE 'vlan%' OR if_Name LIKE 'vl%' OR if_Description LIKE 'VLAN%'"
               }
             ]
           },
@@ -136,7 +149,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT uniqueCount(if_Index) AS 'Interfaces monitored' WHERE provider = 'kentik-switch' AND AND if_Type NOT IN('propvirtual','l2vlan','l3ipvlan') AND if_interface_name NOT LIKE 'vlan%' AND if_Name NOT LIKE 'vlan%' AND if_Name NOT LIKE 'vl%' AND if_Description NOT LIKE 'VLAN%' LIMIT MAX"
+                "query": "FROM Metric SELECT uniqueCount(if_Index) AS 'Interfaces monitored' WHERE provider = 'kentik-switch' AND if_Type NOT IN('propvirtual','l2vlan','l3ipvlan') AND if_interface_name NOT LIKE 'vlan%' AND if_Name NOT LIKE 'vlan%' AND if_Name NOT LIKE 'vl%' AND if_Description NOT LIKE 'VLAN%' LIMIT MAX"
               }
             ]
           },
@@ -156,7 +169,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT uniqueCount(if_interface_name OR if_Name) AS 'Interface status changes' FROM (FROM Metric SELECT uniqueCount(if_AdminStatus) as adminStatusCount, uniqueCount(if_OperStatus) as operStatusCount  WHERE provider = 'kentik-switch' AND if_Index IS NOT NULL AND FACET if_interface_name OR if_Name) WHERE adminStatusCount > 1 OR operStatusCount > 1"
+                "query": "SELECT uniqueCount(if_interface_name OR if_Name) AS 'Interface status changes' FROM (FROM Metric SELECT uniqueCount(if_AdminStatus) as adminStatusCount, uniqueCount(if_OperStatus) as operStatusCount  WHERE provider = 'kentik-switch' AND if_Index IS NOT NULL FACET if_interface_name OR if_Name) WHERE (adminStatusCount > 1 OR operStatusCount > 1)"
               }
             ]
           },
@@ -176,7 +189,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) as 'RX utilization %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) as 'RX utilization %' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
               }
             ]
           },
@@ -196,9 +209,14 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifInErrors)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX error rate %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifInErrors)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX error rate %' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
               }
-            ]
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
           },
           "title": "RX error rate %",
           "visualization": {
@@ -216,7 +234,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX discard rate %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX discard rate %' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
               }
             ]
           },
@@ -236,9 +254,14 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(kentik.snmp.IfOutUtilization) AS 'TX utilization %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+                "query": "FROM Metric SELECT latest(kentik.snmp.IfOutUtilization) AS 'TX utilization %' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
               }
-            ]
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            }
           },
           "title": "TX utilization %",
           "visualization": {
@@ -256,7 +279,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifOutErrors)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'RX Error Rate %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifOutErrors)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'RX Error Rate %' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
               }
             ]
           },
@@ -276,7 +299,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifOutDiscards)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX discard rate %' WHERE LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
+                "query": "FROM Metric SELECT round((sum(kentik.snmp.ifOutDiscards)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX discard rate %' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name' TIMESERIES"
               }
             ]
           },
@@ -300,7 +323,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT round(latest(kentik.snmp.IfInUtilization) OR 0,.01) AS 'RX utilization %', round((sum(kentik.snmp.ifInErrors)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX error rate %', round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX discard rate %', latest(if_Description) AS 'Description', latest(if_OperStatus) AS 'Operational Status', latest(if_Address) AS 'Address', latest(if_PhysAddress) AS 'Phys Address', latest(if_Index) AS 'Index', latest(if_Alias) AS 'Alias' WHERE FACET if_interface_name OR if_Name AS 'Name'"
+                "query": "FROM Metric SELECT round(latest(kentik.snmp.IfInUtilization) OR 0,.01) AS 'RX utilization %', round((sum(kentik.snmp.ifInErrors)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX error rate %', round((sum(kentik.snmp.ifInDiscards)/sum(kentik.snmp.ifHCInOctets))*100,.01) AS 'RX discard rate %', latest(if_Description) AS 'Description', latest(if_OperStatus) AS 'Operational Status', latest(if_Address) AS 'Address', latest(if_PhysAddress) AS 'Phys Address', latest(if_Index) AS 'Index', latest(if_Alias) AS 'Alias' FACET if_interface_name OR if_Name AS 'Name'"
               }
             ]
           }
@@ -320,7 +343,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT round(latest(kentik.snmp.IfOutUtilization) OR 0,.01) AS 'TX Utilization %', round((sum(kentik.snmp.ifOutErrors)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX Error Rate %', round((sum(kentik.snmp.ifOutDiscards)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX Discard Rate %', latest(if_Description) AS 'Description', latest(if_OperStatus) AS 'Operational Status', latest(if_Address) AS 'Address', latest(if_PhysAddress) AS 'Phys Address', latest(if_Index) AS 'Index', latest(if_Alias) AS 'Alias' WHERE entity.guid = 'MTA5MDc3MTF8RVhUfFJPVVRFUnwtODkzNDcyNDUwMDYxMDQ0NTU5MQ' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name'"
+                "query": "FROM Metric SELECT round(latest(kentik.snmp.IfOutUtilization) OR 0,.01) AS 'TX Utilization %', round((sum(kentik.snmp.ifOutErrors)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX Error Rate %', round((sum(kentik.snmp.ifOutDiscards)/sum(kentik.snmp.ifHCOutOctets))*100,.01) AS 'TX Discard Rate %', latest(if_Description) AS 'Description', latest(if_OperStatus) AS 'Operational Status', latest(if_Address) AS 'Address', latest(if_PhysAddress) AS 'Phys Address', latest(if_Index) AS 'Index', latest(if_Alias) AS 'Alias' LIMIT 1000 FACET if_interface_name OR if_Name AS 'Name'"
               }
             ]
           }
