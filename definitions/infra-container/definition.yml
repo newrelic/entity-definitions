@@ -3,60 +3,11 @@ type: CONTAINER
 
 synthesis:
   rules:
-  - identifier: entity.id
-    name: docker.name
-    encodeIdentifierInGUID: false
-    conditions:
-    - attribute: docker.containerId
-    tags:
-      container.state:
-      docker.state:
-        entityTagNames: [container.state, docker.state]
-      docker.containerId:
-        multiValue: false
-      docker.shortContainerId:
-      docker.imageName:
-      docker.ecsClusterArn:
-      docker.ecsClusterName:
-      docker.ecsContainerName:
-      docker.ecsLaunchType:
-      docker.ecsTaskArn:
-      docker.ecsTaskDefinitionFamily:
-      docker.ecsTaskDefinitionVersion:
-    legacyFeatures:
-      overrideGuidType: true
-
-  - identifier: entity.id
-    name: k8s.containerName
-    encodeIdentifierInGUID: false
-    conditions:
-    - attribute: k8s.containerName
-    tags:
-      k8s.status:
-        entityTagNames: [container.state, k8s.status]
-      k8s.clusterName:
-      k8s.namespaceName:
-      k8s.podName:
-      k8s.containerImage:
-        multiValue: false
-      k8s.nodeName:
-      k8s.containerId:
-        multiValue: false
-      label.topology.kubernetes.io/region:
-      label.topology.kubernetes.io/zone:
-      label.eks.amazonaws.com/compute-type:
-      label.kubernetes.io/arch:
-      label.kubernetes.io/hostname:
-      label.kubernetes.io/os:
-      # This is for OpenTelemetry. Verify if we need to respect tag priority since they alias to the same tagName as others above
-      k8s.cluster.name:
-        entityTagName: k8s.clusterName
-      k8s.namespace.name:
-        entityTagName: k8s.namespaceName
-    legacyFeatures:
-      overrideGuidType: true
-
-  - identifier: container.id
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - instrumentation.provider
+        - container.id
     name: container.name
     encodeIdentifierInGUID: true
     # This is a temporary condition to restrict synthesis for a particular set of telemetry data.
@@ -67,6 +18,10 @@ synthesis:
       container.runtime:
       container.image.name:
       container.image.tag:
+      container.hostname:
+      container.image.id:
+      # This tag is not currently used by OTel docker stats receiver.
+      container.state:
       host.type:
       cloud.provider:
       cloud.account.id:
