@@ -2,7 +2,7 @@ responseTimeMs:
   title: Response time (ms)
   unit: MS
   query: 
-    select: average(`server-histogram.%_v%.response-duration.mean`) AS 'Response time (ms)'
+    select: average(`server-histogram.%.response-duration.mean`) AS 'Response time (ms)'
     from: Metric 
 responseTimeP99Ms:
   title: Response time P99 (ms)
@@ -20,5 +20,5 @@ errorRate:
   title: Error rate
   unit: PERCENTAGE
   query:
-    select: (rate(sum(`server-histogram.4xx-responses.rate`), 1 minute) + rate(sum(`server-histogram.5xx-responses.rate`), 1 minute)) / (rate(sum(`server-histogram.2xx-responses.rate`), 1 minute) + rate(sum(`server-histogram.4xx-responses.rate`), 1 minute) + rate(sum(`server-histogram.5xx-responses.rate`), 1 minute)) * 100 AS 'Error Rate' 
+    select: 100 * (sum(`server-histogram.4xx-responses.rate`) + sum(`server-histogram.5xx-responses.rate`)) / (sum(`server-histogram.2xx-responses.rate`) + sum(`server-histogram.4xx-responses.rate`) + sum(`server-histogram.5xx-responses.rate`)) as 'Error Rate'
     from: Metric
