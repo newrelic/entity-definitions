@@ -5,7 +5,7 @@ queryResponseTimeAvg:
     Gigamon/applicationInsights:
       select: average(numeric(dns_response_time)) * 1000
       from: Gigamon
-      where: "dns_message_type = 'RESPONSE'"
+      where: "dns_response_time IS NOT NULL"
 
 queryCount:
   title: Query Count
@@ -14,7 +14,7 @@ queryCount:
     Gigamon/applicationInsights:
       select: count(*)
       from: Gigamon
-      where: "dns_message_type = 'QUERY' AND dns_query IS NOT NULL"
+      where: "dns_query_type IS NOT NULL"
 
 responseCount:
   title: Response Count
@@ -23,4 +23,4 @@ responseCount:
     Gigamon/applicationInsights:
       select: count(*)
       from: Gigamon
-      where: "dns_message_type = 'RESPONSE' AND dns_host_type IS NOT NULL"
+      where: "dns_reply_code IS NOT NULL"
