@@ -3,7 +3,7 @@ cpuUsage:
   queries:
     newRelic:
       select: max(docker.container.cpuUsedCores) or max(k8s.container.cpuUsedCores) as 'CPU used cores'
-    opentelemetry/otelcol/dockerstatsreceiver:
+    opentelemetry:
       select: rate(sum(container.cpu.usage.total) / 1E9, 1 second) AS 'CPU used cores'
 cpuUtilization:
   title: CPU utilization (%)
@@ -11,7 +11,7 @@ cpuUtilization:
   queries:
     newRelic:
       select: max(docker.container.cpuPercent) or max(k8s.container.cpuCoresUtilization) AS 'CPU Utilization (%)'
-    opentelemetry/otelcol/dockerstatsreceiver:
+    opentelemetry:
       select: max(container.cpu.percent) AS 'CPU Utilization (%)'
 memoryUsage:
   title: Memory usage (bytes)
@@ -19,7 +19,7 @@ memoryUsage:
   queries:
     newRelic:
       select: max(docker.container.memoryUsageBytes) or max(k8s.container.memoryWorkingSetBytes) AS 'Memory used (bytes)'
-    opentelemetry/otelcol/dockerstatsreceiver:
+    opentelemetry:
       select: max(container.memory.usage.total) AS 'Memory used (bytes)'
 storageUsage:
   title: Storage usage (bytes)
@@ -27,7 +27,7 @@ storageUsage:
   queries:
     newRelic:
       select: max(docker.container.ioTotalBytes) or max(k8s.container.fsUsedPercent) AS 'Storage used (bytes)'
-    opentelemetry/otelcol/dockerstatsreceiver:
+    opentelemetry:
       select: max(container.blockio.io_service_bytes_recursive) AS 'Storage used (bytes)'
 networkTrafficTotal:
   title: Network traffic (bytes per second)
@@ -35,5 +35,5 @@ networkTrafficTotal:
   queries:
     newRelic:
       select: max(docker.container.networkRxBytesPerSecond) + max(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
-    opentelemetry/otelcol/dockerstatsreceiver:
+    opentelemetry:
       select: rate(sum(container.network.io.usage.tx_bytes), 1 second) + rate(sum(container.network.io.usage.rx_bytes), 1 second) AS 'Network traffic (bytes per second)'
