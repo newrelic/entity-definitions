@@ -34,6 +34,6 @@ networkTrafficTotal:
   unit: BYTES_PER_SECOND
   queries:
     newRelic:
-      select: max(docker.container.networkRxBytesPerSecond) + max(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
+      select: average(docker.container.networkRxBytesPerSecond) + average(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
     opentelemetry:
-      select: rate(sum(container.network.io.usage.tx_bytes), 1 second) + rate(sum(container.network.io.usage.rx_bytes), 1 second) AS 'Network traffic (bytes per second)'
+      select: (rate(sum(container.network.io.usage.tx_bytes), 1 second) + rate(sum(container.network.io.usage.rx_bytes), 1 second))/1 AS 'Network traffic (bytes per second)'
