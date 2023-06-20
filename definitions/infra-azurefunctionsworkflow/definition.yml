@@ -1,0 +1,43 @@
+domain: INFRA
+type: AZUREFUNCTIONSWORKFLOW
+goldenTags:
+  - azure.regionName
+  - azure.subscriptionId
+  - azure.type
+  - azure.resourceGroupName
+  - azure.state
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  rules:
+    - identifier: azure.resourceId
+      name: displayName
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.web/sites
+        - attribute: azure.resourceKind
+          value: 'functionapp,workflow'
+    - identifier: azure.resourceId
+      name: displayName
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.web/sites
+        - attribute: azure.resourceKind
+          value: 'functionapp,workflow,container'
+    - identifier: azure.resourceId
+      name: displayName
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.web/sites
+        - attribute: azure.resourceKind
+          value: 'functionapp,workflow,kubernetes'
