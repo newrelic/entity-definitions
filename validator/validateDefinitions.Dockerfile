@@ -1,4 +1,4 @@
-FROM node:20.0-bullseye-slim
+FROM node:latest
 WORKDIR /scripts
 VOLUME  /definitions
 COPY ["package.json", "package-lock.json*", "./"]
