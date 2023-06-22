@@ -3,8 +3,6 @@ cpuUsage:
   queries:
     newRelic:
       select: max(docker.container.cpuUsedCores) or max(k8s.container.cpuUsedCores) as 'CPU used cores'
-    opentelemetry:
-      select: rate(sum(container.cpu.usage.total) / 1E9, 1 second) AS 'CPU used cores'
 cpuUtilization:
   title: CPU utilization (%)
   unit: PERCENTAGE
@@ -35,8 +33,3 @@ networkTrafficTotal:
   queries:
     newRelic:
       select: average(docker.container.networkRxBytesPerSecond) + average(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
-    opentelemetry:
-      select: (rate(sum(container.network.io.usage.tx_bytes), 1 second) + rate(sum(container.network.io.usage.rx_bytes), 1 second))/1 AS 'Network traffic (bytes per second)'
-    kamon-agent:
-      select: (rate(sum(container.network.io.usage.tx_bytes), 1 second) + rate(sum(container.network.io.usage.rx_bytes), 1 second))/1 AS 'Network traffic (bytes per second)'
-      from: Metric
