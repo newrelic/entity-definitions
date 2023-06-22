@@ -3,6 +3,8 @@ cpuUsage:
   queries:
     newRelic:
       select: max(docker.container.cpuUsedCores) or max(k8s.container.cpuUsedCores) as 'CPU used cores'
+    # left blank for now since we cannot match value functions for cumulative metrics from OpenTelemetry.
+    opentelemetry:
 cpuUtilization:
   title: CPU utilization (%)
   unit: PERCENTAGE
@@ -32,4 +34,6 @@ networkTrafficTotal:
   unit: BYTES_PER_SECOND
   queries:
     newRelic:
-      select: average(docker.container.networkRxBytesPerSecond) + average(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
+      select: max(docker.container.networkRxBytesPerSecond) + max(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
+    # left blank for now since we cannot match value functions for cumulative metrics from OpenTelemetry.
+    opentelemetry:
