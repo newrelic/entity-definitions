@@ -6,6 +6,9 @@ throughput:
       select: rate(count(*), 1 minute)
       from: Span
       where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+    newrelic-opentelemetry:
+      select: rate(count(apm.service.transaction.duration), 1 minute)
+      from: Metric
     kamon-agent:
       select: rate(sum(http.server.requests), 1 minute) as 'count'
       from: Metric
@@ -22,6 +25,9 @@ errorRate:
       select: (filter(count(*), WHERE otel.status_code = 'ERROR') * 100) / count(*)
       from: Span
       where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+    newrelic-opentelemetry:
+      select: count(apm.service.error.count) / count(apm.service.transaction.duration)
+      from: Metric
     kamon-agent:
       select: (filter(sum(http.server.requests), where http.status_code = '5xx') * 100) / sum(http.server.requests)
       from: Metric
@@ -39,6 +45,9 @@ responseTimeMs:
       select: average(duration.ms)
       from: Span
       where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+    newrelic-opentelemetry:
+      select: average(apm.service.transaction.duration * 1000)
+      from: Metric
     kamon-agent:
       select: average(http.server.requests)
       from: Metric
