@@ -26,7 +26,7 @@ errorRate:
       from: Span
       where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
     newrelic-opentelemetry:
-      select: count(apm.service.error.count) / count(apm.service.transaction.duration)
+      select: sum(apm.service.error.count) / count(apm.service.transaction.duration)
       from: Metric
     kamon-agent:
       select: (filter(sum(http.server.requests), where http.status_code = '5xx') * 100) / sum(http.server.requests)
