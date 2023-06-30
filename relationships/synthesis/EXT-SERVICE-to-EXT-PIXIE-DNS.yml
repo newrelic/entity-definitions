@@ -1,0 +1,29 @@
+relationships:
+  - name: extServiceCallsExtPixieDns
+    version: 1
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "PIXIE_DNS" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+
