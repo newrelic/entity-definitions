@@ -3,25 +3,38 @@ type: CONTAINER
 
 synthesis:
   rules:
+  # Dockerstats receiver from otel collector.
   - identifier: container.id
     name: container.name
     encodeIdentifierInGUID: true
-    # This is a temporary condition to restrict synthesis for a particular set of telemetry data.
     conditions:
-      - attribute: nr.entity_type
-        value: container
+      - attribute: eventType
+        value: MetricRaw
+      # All metrics from the receiver starts with the 'container.' prefix.
+      - attribute: metricName
+        prefix: container.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics comming from docker receiver, given that metrics
+      # could deffer between different runtime receivers. 
+      - attribute: otel.library.name
+        value: otelcol/dockerstatsreceiver
     tags:
+      # Default resource attributes
       container.runtime:
-      container.image.name:
-      container.image.tag:
+      container.image.name:      
       container.hostname:
+      # Optional resource attribute
       container.image.id:
-      # This tag is not currently used by OTel docker stats receiver.
-      container.state:
+      # Environment resource attributes
       host.type:
       cloud.provider:
       cloud.account.id:
       cloud.region:
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
   tags:
     newrelic.integrationName:
     newrelic.integrationVersion:
