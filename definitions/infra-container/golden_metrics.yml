@@ -1,26 +1,39 @@
 cpuUsage:
   title: CPU usage (cores)
-  query:
-    select: max(docker.container.cpuUsedCores) or max(k8s.container.cpuUsedCores) as 'CPU used cores'
+  queries:
+    newRelic:
+      select: max(docker.container.cpuUsedCores) or max(k8s.container.cpuUsedCores) as 'CPU used cores'
+    # defaulting to newRelic query for now since we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
 cpuUtilization:
   title: CPU utilization (%)
   unit: PERCENTAGE
-  query:
-    select: max(docker.container.cpuPercent) or max(k8s.container.cpuCoresUtilization) AS 'CPU Utilization
-      (%)'
+  queries:
+    newRelic:
+      select: max(docker.container.cpuPercent) or max(k8s.container.cpuCoresUtilization) AS 'CPU Utilization (%)'
+    opentelemetry:
+      select: max(container.cpu.utilization) AS 'CPU Utilization (%)'
 memoryUsage:
   title: Memory usage (bytes)
   unit: BYTES
-  query:
-    select: max(docker.container.memoryUsageBytes) or max(k8s.container.memoryWorkingSetBytes) AS 'Memory
-      used (bytes)'
+  queries:
+    newRelic:
+      select: max(docker.container.memoryUsageBytes) or max(k8s.container.memoryWorkingSetBytes) AS 'Memory used (bytes)'
+    opentelemetry:
+      select: max(container.memory.usage.total) AS 'Memory used (bytes)'
 storageUsage:
   title: Storage usage (bytes)
   unit: BYTES
-  query:
-    select: max(docker.container.ioTotalBytes) or max(k8s.container.fsUsedPercent) AS 'Storage used (bytes)'
+  queries:
+    newRelic:
+      select: max(docker.container.ioTotalBytes) or max(k8s.container.fsUsedPercent) AS 'Storage used (bytes)'
+    opentelemetry:
+      select: max(container.blockio.io_service_bytes_recursive) AS 'Storage used (bytes)'
 networkTrafficTotal:
   title: Network traffic (bytes per second)
   unit: BYTES_PER_SECOND
-  query:
-    select: max(docker.container.networkRxBytesPerSecond) + max(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
+  queries:
+    newRelic:
+      select: max(docker.container.networkRxBytesPerSecond) + max(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
+    # defaulting to newRelic query for now since we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
