@@ -19,7 +19,7 @@ cpuUsage:
       eventId: entity.guid
       eventName: entity.name
     prometheus:
-      select: (filter(average(node_cpu_seconds_total), where mode != 'idle') / average(node_cpu_seconds_total)) * 100
+      select: (filter(sum(node_cpu_seconds_total), where mode != 'idle') / sum(node_cpu_seconds_total)) * 100
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -44,7 +44,7 @@ memoryUsage:
       eventId: entity.guid
       eventName: entity.name
     prometheus:
-      select: 100 - average(node_memory_MemAvailable_bytes) / average(node_memory_MemTotal_bytes) * 100
+      select: 100 - (sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)) * 100
       from: Metric
       eventId: entity.guid
       eventName: entity.name
