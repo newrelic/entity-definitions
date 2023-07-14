@@ -30,6 +30,11 @@ If you have experience with the repo and are looking for a specific section docu
 - [Golden Tags](docs/entities/golden_tags.md)
 - [Summary Metrics](docs/entities/summary_metrics.md)
 
+In case you are looking for **experimental features**, check out our new features here:
+
+- [Relationship Synthesis](docs/relationship_synthesis.md)
+- [Candidate Relationships](docs/candidate_relationships.md)
+
 ## Validation
 
 Whenever there's a contribution via pull request, some validations are automatically executed to verify that the provided definition meets the basic requirements:
