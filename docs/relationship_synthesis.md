@@ -2,10 +2,10 @@
 
 Relationship synthesis rules are a set of rules defined in this repository, that are used in the process of relationship synthesis. 
 
-Relationship synthesis is a mechanism that leverages the defined rules to match telemetry datapoints and correlate them 
-with candidate relationships and entities data. Its purpose is to automatically identify and create relationships on the users behalf users.
+Relationship synthesis is a mechanism that leverages the defined rules to match telemetry data points and correlate them
+with candidate relationships and entities data. Its purpose is to automatically identify and create relationships on the user's behalf.
 
-When the relationship synthesis process identifies a match between telemetry datapoints and the defined rules, 
+When the relationship synthesis process identifies a match between telemetry data points and the defined rules,
 it generates what is known as instrumented relationships. 
 These instrumented relationships are the actual relationships that are created based on the established criteria.
 
@@ -38,13 +38,38 @@ entity-definitions/
     ...
 ```
 
+2. Fill in the required fields (`name`, `version`, `origins`, `conditions`, `relationship`)
+following the instructions on the [next section](#how-to-configure-a-new-candidate-relationship).
+
+Example:
+
+```yaml
+relationships:
+  - name: extServiceCallsExtPixieDns
+    version:
+    origins:
+    conditions:
+    relationship:
+```
+
+3. Create a new pull request and make sure all the automatic validations are successfully executed.
+
+4. Wait for our team to review the pull request and iterate on the feedbacks.
+
+5. Once it is approved, merged to the main branch and a new release is issued, it is available to you.
+
+6. Enjoy your new relationship synthesis rule by applied automatically to your data! :tada:
+
 # How to configure a new Candidate Relationship
 
 Relationship synthesis involves a two-phase system to determine and create relationships based on the provided rules.
 
-In the first phase, the system verifies if a data point should be considered for creating a relationship by performing duck typing. This means checking if the data point has all the required attributes and values specified by the rules.
+In the first phase, the system verifies if a data point should be considered for creating a relationship by performing duck typing.
+This means checking if the data point has all the required attributes and values specified by the rules.
 
-In the second phase, the data point is used to create a relationship according to the defined rule, which specifies the relationship type (guid to guid, candidate, or proposal) and how the source and target GUIDs should be created.
+In the second phase, the data point is used to create a relationship according to the defined rule,
+which specifies the relationship type (guid to guid, candidate, or proposal)
+and how the source and target GUIDs should be created.
 
 Example of a generic relationship definition:
 
@@ -125,7 +150,6 @@ future changes without major breaking updates.
 The following example demonstrates various capabilities supported by conditions:
 
 ```yaml
-# ...
 conditions:
   - attribute: eventType
     anyOf: ["NginxSample", "K8sPodSample", "K8sContainerSample"]
@@ -136,7 +160,6 @@ conditions:
     caseSensitive: true
   - attribute: metricName
     regex: ".*\.rds\.amazonaws\.com.*"
-# ...
 ```
 
 The `attribute` field specifies the name of the attribute in the data point, and the operation to perform is defined using matchers 
@@ -178,7 +201,6 @@ The `extractGuid` resolver is the simplest and allows specifying an attribute to
 Example:
 
 ```yaml
-# ...
   source:
     extractGuid:
       attribute: host.guid
@@ -189,7 +211,6 @@ Example:
       attribute: entityGuid
       entityType:
         attribute: nr.entityType
-# ...
 ```
 
 If the resolved GUID corresponds to an `INFRA-NA` GUID, the relationship platform needs to know the actual type behind the GUID. 
@@ -203,7 +224,6 @@ The `buildGuid` resolver allows constructing the GUID from different pieces of i
 Example:
 
 ```yaml
-# ...
 source:
   buildGuid:
     account:
@@ -220,7 +240,6 @@ source:
       - attribute: "service.name"
       - value: ":pod:"
       hashAlgorithm: FARM_HASH
-# ...
 ```
 
 The `account` field can be defined using an attribute in the telemetry or by specifying a lookup key. 
@@ -240,13 +259,11 @@ The `lookupGuid` resolver is used when the GUID cannot be inferred from the tele
 Example:
 
 ```yaml
-# ...
 lookupGuid:
   candidateCategory: DATABASE
   fields:
     - field: endpoint
       attribute: aws.db.host
-# ...
 ```
 
 The `lookupGuid` points to the candidate category to be used and maps the fields required for the lookup to the attributes in the telemetry.
