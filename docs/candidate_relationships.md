@@ -74,7 +74,15 @@ lookups:
         type: AWSSQSQUEUE
 ```
 
-The next section provides detailed explanations of the configurable elements for a candidate relationship definition.
+The [next section](#how-to-configure-a-new-candidate-relationship) provides detailed explanations of the configurable elements for a candidate relationship definition.
+
+5. Create a new pull request and make sure all the automatic validations are successfully executed.
+
+6. Wait for our team to review the pull request and iterate on the feedbacks.
+
+7. Once it is approved, merged to the main branch and a new release is issued, it is available to you.
+
+8. Enjoy your new candidate relationship! :tada:
 
 # How to configure a new Candidate Relationship
 
