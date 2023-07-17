@@ -1,3 +1,4 @@
-# This section is currently experimental
+# Relationship definitions
 
-Please avoid producing any change in these files
+Please refer to our documentation to learn more about how to create and configure new relationship types:
+- [Entity docs](../docs/relationships/README.md)

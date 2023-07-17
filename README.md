@@ -9,7 +9,7 @@ By proposing changes to this repository you can achieve the following:
 - Generate entities from a new source of data (telemetry, logs, etc)
 - Change how an entity is represented in different experiences via golden metrics ( [New Relic Lookout](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/new-relic-lookout-monitor-your-estate-glance/), [workloads](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/workloads/workloads-isolate-resolve-incidents-faster/), etc) and summary metrics ([entity explorer](https://docs.newrelic.com/docs/new-relic-one/use-new-relic-one/core-concepts/new-relic-explorer-view-performance-across-apps-services-hosts/))
 - Modify the summary of an entity type
-- Modify the lifecycle of an entity and make them `alertable` (see [Lifecycle](docs/lifecycle.md) for more information about this attribute)
+- Modify the lifecycle of an entity and make them `alertable` (see [Lifecycle](docs/entities/lifecycle.md) for more information about this attribute)
 
 ## Changelog
 
@@ -17,18 +17,18 @@ All notable changes are defined in the [releases page](https://github.com/newrel
 
 ## Getting started
 
-For newcomers, we recommend checking the [creating an entity type example](./docs/README.md).
+For newcomers, we recommend checking the [creating an entity type example](docs/entities/README.md).
 This document will walk through creating an entity type from scratch.
 
 If you have experience with the repo and are looking for a specific section documentation:
 
-- [GUID Spec](docs/guid_spec.md)
-- [Synthesis](docs/synthesis.md)
-- [Lifecycle](docs/lifecycle.md)
-- [Entity Summary](docs/entity_summary.md)
-- [Golden Metrics](docs/golden_metrics.md)
-- [Golden Tags](docs/golden_tags.md)
-- [Summary Metrics](docs/summary_metrics.md)
+- [GUID Spec](docs/entities/guid_spec.md)
+- [Synthesis](docs/entities/synthesis.md)
+- [Lifecycle](docs/entities/lifecycle.md)
+- [Entity Summary](docs/entities/entity_summary.md)
+- [Golden Metrics](docs/entities/golden_metrics.md)
+- [Golden Tags](docs/entities/golden_tags.md)
+- [Summary Metrics](docs/entities/summary_metrics.md)
 
 ## Validation
 
