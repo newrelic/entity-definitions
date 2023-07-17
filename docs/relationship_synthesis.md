@@ -125,8 +125,6 @@ The engine discards any unsupported versions.
 
 The `origin` field represents a closed list of values that indicate the source of telemetry. When defining a rule, a list of these values must be provided.
 
-TODO: Add a table with all supported origins
-
 Example:
 
 ```yaml
