@@ -71,7 +71,7 @@ In the second phase, the data point is used to create a relationship according t
 which specifies the relationship type (guid to guid, candidate, or proposal)
 and how the source and target GUIDs should be created.
 
-Example of a generic relationship definition:
+Example of a valid relationship definition:
 
 ```yaml
 relationships:
@@ -106,7 +106,7 @@ relationships:
 
 The `name` property provides information during debugging and can be used for feature flags or logging purposes.
 
-The `origins` field indicates where the telemetry information originates from in a user-friendly way.
+The `origins` contains a list of keys indicating where the telemetry information originates from in a user-friendly way.
 
 The `conditions` section specifies the attributes and matching criteria that determine if the rule applies to a given data point.
 
@@ -119,11 +119,13 @@ All these sections are required for a rule to be considered valid.
 
 The `version` field indicates the rule version. This allows for introducing new breaking changes to the formats 
 without requiring immediate updates to all engines. 
-The engine should discard any unsupported versions.
+The engine discards any unsupported versions.
 
 ## Origin
 
 The `origin` field represents a closed list of values that indicate the source of telemetry. When defining a rule, a list of these values must be provided.
+
+TODO: Add a table with all supported origins
 
 Example:
 
@@ -137,9 +139,6 @@ Example:
 One rule can be applied to multiple sources, as shown in the example. These origins are used by our internal services 
 to filter which rules to evaluate and which ones to ignore. 
 The mapping of origins to sources allows for performance improvements when evaluating rules via the matching system.
-
-Determining clear and specific values for defining origins is an ongoing discussion, 
-and further documentation will provide final proposals.
 
 ## Conditions
 
@@ -176,8 +175,8 @@ The `relationship` section defines aspects related to the created relationship.
 
 The `expires` field allows configuring the duration for which the relationship should exist if it is not reported within that timeframe. 
 By default, this field is set to ***75 minutes*** (the default for the relationship platform). 
-The value for expires follows the `ISO-8601` format and must be between ***10 minutes*** and ***75 minutes***, 
-as per the platform documentation.
+The value for expires follows the `ISO-8601` format and must be between ***10 minutes*** and ***75 minutes***, which is the time interval 
+currently supported by the platform.
 
 Explicitly providing the expires field is recommended for clarity, even though the default is 75 minutes.
 
@@ -251,7 +250,7 @@ GUID using `valueInGuid`, which is useful for building `INFRA-NA` GUIDs.
 The `identifier` can be constructed using one or multiple fragments. Each fragment can be a hardcoded string, an attribute, or a part of an attribute. 
 The identifier can be hashed using one of the supported hashing algorithms, with farmHash being the currently supported algorithm.
 
-If needed, a part of an attribute can be provided as a capture group in a regular expression, which is especially useful for MRP cases.
+If needed, a part of an attribute can be provided as a capture group in a regular expression.
 
 ##### lookupGuid
 The `lookupGuid` resolver is used when the GUID cannot be inferred from the telemetry and a lookup is required using candidates.
