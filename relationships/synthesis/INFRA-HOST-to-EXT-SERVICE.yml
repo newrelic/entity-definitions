@@ -1,0 +1,64 @@
+relationships:
+  - name: otelServiceHost
+    version: 1
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            # This is an otel host hence no use of NA on the type.
+            value: HOST
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  - name: otelServiceHostMetric
+    version: 1
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.metrics.otlp" ]
+      - attribute: service.name
+        anyOf: [ "io.opentelemetry.collector" ]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            # This is an otel host hence no use of NA on the type.
+            value: HOST
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
