@@ -1,0 +1,506 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "relationship-synthesis-schema-v1",
+  "type": "object",
+  "title": "Relationship Synthesis schema",
+  "description": "Schema used to verify that a given entity yaml is valid",
+  "examples": [
+    {
+      "relationships": {
+        "apmCallsDatabase": {
+          "version": "1",
+          "origins": {
+            "APM Metrics": [
+              "APM Metrics"
+            ]
+          },
+          "name": "apmCallsDatabase",
+          "conditions": [
+            {
+              "attribute": "metricName",
+              "regex": "^datastore/instance/[^/]*/([^/]*\\.rds\\.amazonaws\\.com[^/]*)/.*"
+            }
+          ],
+          "relationship": {
+            "expires": "P75M",
+            "relationshipType": "CALLS",
+            "source": {
+              "@class": ".ExtractGuidResolver",
+              "attribute": "entity.guid",
+              "entityType": null
+            },
+            "target": {
+              "@class": ".LookupGuidResolver",
+              "candidateCategory": "DATABASE",
+              "fields": [
+                {
+                  "field": "endpoint",
+                  "attribute": "metricName__4"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "required": [
+    "relationships"
+  ],
+  "properties": {
+    "relationships": {
+      "$id": "#/relationships",
+      "type": "object",
+      "title": "Relationship synthesis definition."
+    },
+    "additionalProperties": {
+      "$ref": "#/definitions/relationshipsItem"
+    }
+  },
+  "definitions": {
+    "relationshipsItem": {
+      "$id": "#/definitions/relationshipsItem",
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/version"
+        },
+        "origins": {
+          "$ref": "#/definitions/origins"
+        },
+        "name": {
+          "$ref": "#/definitions/name"
+        },
+        "conditions": {
+          "$ref": "#/definitions/conditions"
+        },
+        "relationship": {
+          "$ref": "#/definitions/relationship"
+        }
+      },
+      "required": [
+        "version",
+        "origins",
+        "name",
+        "conditions",
+        "relationship"
+      ],
+      "additionalProperties": false
+    },
+    "version": {
+      "$id": "#/definitions/version",
+      "type": "string"
+    },
+    "origins": {
+      "$id": "#/definitions/origins",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "APM Metrics",
+          "Infrastructure Agent",
+          "Kubernetes Integration",
+          "AWS Integration",
+          "GCP Integration",
+          "Azure Integration",
+          "OnHost Integration",
+          "OpenTelemetry",
+          "Pixie",
+          "Prometheus",
+          "Distributed Tracing",
+          "Metric API",
+          "AIOPS"
+        ]
+      }
+    },
+    "name": {
+      "$id": "#/definitions/name",
+      "type": "string"
+    },
+    "conditions": {
+      "$id": "#/definitions/conditions",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/condition"
+      }
+    },
+    "condition": {
+      "$id": "#/definitions/condition",
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/anyOfCondition"
+        },
+        {
+          "$ref": "#/definitions/presentCondition"
+        },
+        {
+          "$ref": "#/definitions/startsWithCondition"
+        },
+        {
+          "$ref": "#/definitions/regexCondition"
+        }
+      ],
+      "additionalProperties": false
+    },
+    "anyOfCondition": {
+      "$id": "#/definitions/anyOfCondition",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "type": "string"
+        },
+        "anyOf": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "attribute",
+        "anyOf"
+      ],
+      "additionalProperties": false
+    },
+    "presentCondition": {
+      "$id": "#/definitions/presentCondition",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "$id": "#/definitions/presentCondition/attribute",
+          "type": "string"
+        },
+        "present": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "attribute",
+        "present"
+      ],
+      "additionalProperties": false
+    },
+    "startsWithCondition": {
+      "$id": "#/definitions/startsWithCondition",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "$id": "#/definitions/startsWithCondition/attribute",
+          "type": "string"
+        },
+        "startsWith": {
+          "type": "string"
+        },
+        "caseSensitive": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "attribute",
+        "startsWith"
+      ],
+      "additionalProperties": false
+    },
+    "regexCondition": {
+      "$id": "#/definitions/regexCondition",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "$id": "#/definitions/regexCondition/attribute",
+          "type": "string"
+        },
+        "regex": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "attribute",
+        "regex"
+      ],
+      "additionalProperties": false
+    },
+    "relationship": {
+      "$id": "#/definitions/relationship",
+      "type": "object",
+      "properties": {
+        "expires": {
+          "type": "string"
+        },
+        "relationshipType": {
+          "$ref": "#/definitions/relationshipType"
+        },
+        "source": {
+          "$ref": "#/definitions/resolver"
+        },
+        "target": {
+          "$ref": "#/definitions/resolver"
+        }
+      },
+      "required": [
+        "expires",
+        "relationshipType",
+        "source",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "relationshipType": {
+      "type": "string",
+      "enum": [
+        "CONTAINS",
+        "CALLS",
+        "HOSTS",
+        "SERVES",
+        "IS",
+        "OPERATES_IN",
+        "CONNECTS_TO",
+        "BUILT_FROM",
+        "MEASURES",
+        "PRODUCES",
+        "CONSUMES",
+        "MANAGES",
+        "TEST",
+        "OWNS"
+      ]
+    },
+    "resolver": {
+      "$id": "#/definitions/resolver",
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/extractGuidResolver"
+        },
+        {
+          "$ref": "#/definitions/buildGuidResolver"
+        },
+        {
+          "$ref": "#/definitions/lookupGuidResolver"
+        }
+      ],
+      "additionalProperties": false
+    },
+    "extractGuidResolver": {
+      "$id": "#/definitions/extractGuidResolver",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "$id": "#/definitions/extractGuidResolver/attribute",
+          "type": "string"
+        },
+        "entityType": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": [
+        "attribute",
+        "entityType"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolver": {
+      "$id": "#/definitions/buildGuidResolver",
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "object",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/buildGuidResolverAccountAttribute"
+            },
+            {
+              "$ref": "#/definitions/buildGuidResolverAccountLookup"
+            }
+          ]
+        },
+        "domain": {
+          "$ref": "#/definitions/buildGuidResolverDomain"
+        },
+        "type": {
+          "$ref": "#/definitions/buildGuidResolverType"
+        },
+        "identifier": {
+          "$ref": "#/definitions/buildGuidResolverIdentifier"
+        }
+      },
+      "required": [
+        "account",
+        "domain",
+        "type",
+        "identifier"
+      ],
+      "additionalProperties": false
+    },
+    "fragment": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/fragmentValue"
+        },
+        {
+          "$ref": "#/definitions/fragmentAttribute"
+        },
+        {
+          "$ref": "#/definitions/fragmentCapture"
+        }
+      ]
+    },
+    "fragmentValue": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "fragmentAttribute": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "attribute"
+      ],
+      "additionalProperties": false
+    },
+    "fragmentCapture": {
+      "type": "object",
+      "properties": {
+        "capture": {
+          "type": "object",
+          "properties": {
+            "attribute": {
+              "type": "string"
+            },
+            "regex": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": [
+        "attribute",
+        "regex"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolverAccountAttribute": {
+      "$id": "#/definitions/buildGuidResolverAccountAttribute",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "$id": "#/definitions/buildGuidResolverAccountAttribute/attribute",
+          "type": "string"
+        }
+      },
+      "required": [
+        "attribute"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolverAccountLookup": {
+      "type": "object",
+      "properties": {
+        "lookup": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "lookup"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolverDomain": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolverType": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "valueInGuid": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolverIdentifier": {
+      "type": "object",
+      "properties": {
+        "fragments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/fragment"
+          }
+        },
+        "hashAlgorithm": {
+          "type": "string",
+          "enum": [
+            "FARM_HASH"
+          ]
+        }
+      },
+      "required": [
+        "fragments"
+      ]
+    },
+    "lookupGuidResolver": {
+      "$id": "#/definitions/lookupGuidResolver",
+      "type": "object",
+      "properties": {
+        "candidateCategory": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lookupGuidResolverField"
+          }
+        }
+      },
+      "required": [
+        "candidateCategory",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "lookupGuidResolverField": {
+      "$id": "#/definitions/lookupGuidResolverField",
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "attribute": {
+          "$id": "#/definitions/lookupGuidResolverField/attribute",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "attribute"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
