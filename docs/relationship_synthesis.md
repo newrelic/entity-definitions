@@ -1,29 +1,34 @@
 # [Experimental] Relationship Synthesis
 
-Relationship synthesis rules are a set of rules defined in this repository, that are used in the process of relationship synthesis. 
+Entities and relationships provide the connective tissue for telemetry data.
 
-Relationship synthesis is a mechanism that leverages the defined rules to match telemetry data points and correlate them
-with candidate relationships and entities data. Its purpose is to automatically identify and create relationships on the user's behalf.
+They enable visualization and exploration of large data sets across account boundaries, functioning as the building blocks for a unified, 
+connected user experience for different products where users can explore, navigate and troubleshoot their complex systems.
 
-When the relationship synthesis process identifies a match between telemetry data points and the defined rules,
-it generates what is known as instrumented relationships. 
-These instrumented relationships are the actual relationships that are created based on the established criteria.
+In this context, Relationship synthesis provides an easy-to-use mechanism to detect and create relationships.
 
-In some cases, a candidate relationship may be provided, but it may not be possible to find a direct match 
-with the existing relationship synthesis rules. 
-In such situations, an uninstrumented relationship can be optionally created. 
-These uninstrumented relationships serve as a way to expose the potential relationship opportunities 
-that may exist but are not yet fully supported by the defined rules.
+It enables New Relic product teams, solutions consultants and customers to create topologies of connected entities in order to extend the 
+New Relic platform to provide data-driven insights and empower the world’s engineers to build better digital experiences.
 
-Overall, relationship synthesis rules play a crucial role in automating the identification and creation of 
-relationships between entities by providing a set of guidelines and conditions 
-to correlate telemetry data and candidate relationships.
+Relationship synthesis rules are a set of rules defined in this repository that are used in the process of relationship synthesis.
+
+From a technical point of view, Relationship synthesis is a mechanism that detects and creates relationships out of telemetry through applying 
+predefined rules on telemetry data points. It supports creating relationships to both instrumented and uninstrumented entities 
+while providing powerful capabilities to identify both ends of a potential relationship.
+
+In the next section, we explain the steps needed to define a new Relationship Synthesis rule.
 
 # How to create a new Relationship Synthesis rule 
 
-To create a new relationship synthesis rule, follow these steps:
+In the same way Entities are synthesized through predefined rules from telemetry, 
+we want to offer a similar mechanism to connect two entities with a relationship. 
+This is achieved through the creation of relationship synthesis rules.
 
-1. Create a `<TYPE-to-TYPE>.yml` file under the `relationships/synthesis` directory.
+In order to create a new relationship synthesis rule, we need to follow the given steps:
+
+1. Create a `<ENTITY_TYPE-to-ENTITY_TYPE>.yml` file under the `relationships/synthesis` directory.
+   1. This directory holds all pre-existing relationship synthesis rules, and is also a 
+   good source of inspiration for creating new rules.
 
 Example: 
 
@@ -41,24 +46,13 @@ entity-definitions/
 2. Fill in the required fields (`name`, `version`, `origins`, `conditions`, `relationship`)
 following the instructions on the [next section](#how-to-configure-a-new-candidate-relationship).
 
-Example:
-
-```yaml
-relationships:
-  - name: extServiceCallsExtPixieDns
-    version:
-    origins:
-    conditions:
-    relationship:
-```
-
 3. Create a new pull request and make sure all the automatic validations are successfully executed.
 
-4. Wait for our team to review the pull request and iterate on the feedbacks.
+4. Wait for our team to review the pull request and iterate on the feedback.
 
-5. Once it is approved, merged to the main branch and a new release is issued, it is available to you.
+5. Once approved, merged to the main branch and a new release is issued, it is available for you to use.
 
-6. Enjoy your new relationship synthesis rule by applied automatically to your data! :tada:
+6. Enjoy your new relationship synthesis rule being applied automatically to your data! :tada:
 
 # How to configure a new Candidate Relationship
 
@@ -167,13 +161,13 @@ Multiple conditions must all match for the rule to apply; there is no support fo
 
 ## Relationship
 
-The `relationship` section defines aspects related to the created relationship.
+The `relationship` section defines aspects related to the relationship we want to synthesize.
 
 ### Expires
 
 The `expires` field allows configuring the duration for which the relationship should exist if it is not reported within that timeframe. 
 By default, this field is set to ***75 minutes*** (the default for the relationship platform). 
-The value for expires follows the `ISO-8601` format and must be between ***10 minutes*** and ***75 minutes***, which is the time interval 
+The value for expires follows the `ISO-8601` format and must be between ***10 minutes*** and ***72 hours*** (inclusive), which is the time interval 
 currently supported by the platform.
 
 Explicitly providing the expires field is recommended for clarity, even though the default is 75 minutes.
