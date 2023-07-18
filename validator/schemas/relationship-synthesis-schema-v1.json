@@ -50,17 +50,20 @@
   "properties": {
     "relationships": {
       "$id": "#/relationships",
+      "type:": "array",
+      "title": "Relationship synthesis definition.",
+      "minItems": 1,
       "type": "object",
-      "title": "Relationship synthesis definition."
+      "additionalProperties": {
+        "$ref": "#/definitions/relationshipsItem"
+      }
     },
-    "additionalProperties": {
-      "$ref": "#/definitions/relationshipsItem"
-    }
+    "additionalProperties": false
   },
   "definitions": {
     "relationshipsItem": {
       "$id": "#/definitions/relationshipsItem",
-      "type": "object",
+      "type:": "object",
       "properties": {
         "version": {
           "$ref": "#/definitions/version"
@@ -89,11 +92,11 @@
     },
     "version": {
       "$id": "#/definitions/version",
-      "type": "string"
+      "type:": "string"
     },
     "origins": {
       "$id": "#/definitions/origins",
-      "type": "array",
+      "type:": "array",
       "items": {
         "type": "string",
         "enum": [
@@ -115,17 +118,17 @@
     },
     "name": {
       "$id": "#/definitions/name",
-      "type": "string"
+      "type:": "string"
     },
     "conditions": {
       "$id": "#/definitions/conditions",
-      "type": "array",
+      "type:": "array",
       "items": {
-        "$ref": "#/definitions/condition"
+        "$ref": "#/definitions/conditions"
       }
     },
     "condition": {
-      "$id": "#/definitions/condition",
+      "$id": "#/definitions/conditions",
       "type": "object",
       "oneOf": [
         {
@@ -168,7 +171,6 @@
       "type": "object",
       "properties": {
         "attribute": {
-          "$id": "#/definitions/presentCondition/attribute",
           "type": "string"
         },
         "present": {
@@ -186,7 +188,6 @@
       "type": "object",
       "properties": {
         "attribute": {
-          "$id": "#/definitions/startsWithCondition/attribute",
           "type": "string"
         },
         "startsWith": {
@@ -207,7 +208,6 @@
       "type": "object",
       "properties": {
         "attribute": {
-          "$id": "#/definitions/regexCondition/attribute",
           "type": "string"
         },
         "regex": {
@@ -285,7 +285,6 @@
       "type": "object",
       "properties": {
         "attribute": {
-          "$id": "#/definitions/extractGuidResolver/attribute",
           "type": "string"
         },
         "entityType": {
@@ -319,13 +318,89 @@
           ]
         },
         "domain": {
-          "$ref": "#/definitions/buildGuidResolverDomain"
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
         },
         "type": {
-          "$ref": "#/definitions/buildGuidResolverType"
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "valueInGuid": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
         },
         "identifier": {
-          "$ref": "#/definitions/buildGuidResolverIdentifier"
+          "type": "object",
+          "properties": {
+            "fragments": {
+              "type": "array",
+              "items": {
+                "condition": {
+                  "type": "object",
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "attribute": "string"
+                        }
+                      },
+                      "required": [
+                        "attribute"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "capture": {
+                          "attribute": "string",
+                          "regex": "string"
+                        }
+                      },
+                      "required": [
+                        "attribute",
+                        "regex"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            },
+            "hashAlgorithm": {
+              "type": "string",
+              "enum": [
+                "FARM_HASH"
+              ]
+            }
+          },
+          "required": [
+            "fragments"
+          ]
         }
       },
       "required": [
@@ -336,67 +411,11 @@
       ],
       "additionalProperties": false
     },
-    "fragment": {
-      "type": "object",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/fragmentValue"
-        },
-        {
-          "$ref": "#/definitions/fragmentAttribute"
-        },
-        {
-          "$ref": "#/definitions/fragmentCapture"
-        }
-      ]
-    },
-    "fragmentValue": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "fragmentAttribute": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "attribute"
-      ],
-      "additionalProperties": false
-    },
-    "fragmentCapture": {
-      "type": "object",
-      "properties": {
-        "capture": {
-          "type": "object",
-          "properties": {
-            "attribute": {
-              "type": "string"
-            },
-            "regex": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "required": [
-        "attribute",
-        "regex"
-      ],
-      "additionalProperties": false
-    },
     "buildGuidResolverAccountAttribute": {
       "$id": "#/definitions/buildGuidResolverAccountAttribute",
       "type": "object",
       "properties": {
         "attribute": {
-          "$id": "#/definitions/buildGuidResolverAccountAttribute/attribute",
           "type": "string"
         }
       },
@@ -417,53 +436,6 @@
       ],
       "additionalProperties": false
     },
-    "buildGuidResolverDomain": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "value"
-      ],
-      "additionalProperties": false
-    },
-    "buildGuidResolverType": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        },
-        "valueInGuid": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "value"
-      ],
-      "additionalProperties": false
-    },
-    "buildGuidResolverIdentifier": {
-      "type": "object",
-      "properties": {
-        "fragments": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/fragment"
-          }
-        },
-        "hashAlgorithm": {
-          "type": "string",
-          "enum": [
-            "FARM_HASH"
-          ]
-        }
-      },
-      "required": [
-        "fragments"
-      ]
-    },
     "lookupGuidResolver": {
       "$id": "#/definitions/lookupGuidResolver",
       "type": "object",
@@ -475,7 +447,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/lookupGuidResolverField"
-          }
+          },
+          "required": [
+            "field",
+            "attribute"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -486,13 +463,11 @@
     },
     "lookupGuidResolverField": {
       "$id": "#/definitions/lookupGuidResolverField",
-      "type": "object",
       "properties": {
         "field": {
           "type": "string"
         },
         "attribute": {
-          "$id": "#/definitions/lookupGuidResolverField/attribute",
           "type": "string"
         }
       },
