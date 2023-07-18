@@ -195,6 +195,25 @@ Explicitly providing the expires field is recommended for clarity, even though t
 The `relationshipType` field specifies the type of relationship to create. Only predefined values from the 
 supported relationship types list are accepted.
 
+The full list of supported relationship type options (as of July 2023) is the following:
+
+| **Relationship type** | **Description**                                                                                                                |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| CONTAINS              | Represents the set relationship between two or more entities (e.g. A cloud region contains a set of Virtual Machines)          |
+| CALLS                 | Represents that one entity calls another (e.g. API calls between downstream and upstream services).                            |
+| HOSTS                 | Represents that one entity hosts another (e.g. One application that runs on top of a given Virtual Machine).                   |
+| SERVES                | Represents that one entity serves another (e.g. A backend application serves HTTP requests to a browser application).          |
+| IS                    | Represents that both entities linked by this relationship are perspectives of the same thing.                                  |
+| OPERATES_IN           | Represents that one entity operates using another (e.g. A host operates in a certain region or datacenter.                     |
+| CONNECTS_TO           | Represents that one entity is connected to another (e.g. Interconnected network endpoints).                                    |
+| BUILT_FROM            | Represents that one entity was built using data from another (e.g. a git repository contains code for an application).         |
+| MEASURES              | Represents that one entity measures another in some way.                                                                       |
+| PRODUCES              | Indicates that an application or process produces messages to a system (e.g. one application produces messages to a queue).    |
+| CONSUMES              | Indicates that an application or process consume messages from a system (e.g. one application consumes messages from a queue). |
+| MANAGES               | Indicates that a system manages other subsystems (e.g. queue managers managing their queues).                                  |
+| OWNS                  | Indicates ownership of one entity to the other via their relationship.                                                         |
+| TEST                  | Used for testing purposes, might be a good option for experimentation.                                                         |
+
 #### Source & Target Resolvers
 
 Resolvers define how the source and target GUIDs are determined. There are three types of resolvers:
