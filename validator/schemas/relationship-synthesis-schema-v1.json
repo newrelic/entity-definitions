@@ -1,0 +1,481 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "relationship-synthesis-schema-v1",
+  "type": "object",
+  "title": "Relationship Synthesis schema",
+  "description": "Schema used to verify that a given entity yaml is valid",
+  "examples": [
+    {
+      "relationships": {
+        "apmCallsDatabase": {
+          "version": "1",
+          "origins": {
+            "APM Metrics": [
+              "APM Metrics"
+            ]
+          },
+          "name": "apmCallsDatabase",
+          "conditions": [
+            {
+              "attribute": "metricName",
+              "regex": "^datastore/instance/[^/]*/([^/]*\\.rds\\.amazonaws\\.com[^/]*)/.*"
+            }
+          ],
+          "relationship": {
+            "expires": "P75M",
+            "relationshipType": "CALLS",
+            "source": {
+              "@class": ".ExtractGuidResolver",
+              "attribute": "entity.guid",
+              "entityType": null
+            },
+            "target": {
+              "@class": ".LookupGuidResolver",
+              "candidateCategory": "DATABASE",
+              "fields": [
+                {
+                  "field": "endpoint",
+                  "attribute": "metricName__4"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "required": [
+    "relationships"
+  ],
+  "properties": {
+    "relationships": {
+      "$id": "#/relationships",
+      "type:": "array",
+      "title": "Relationship synthesis definition.",
+      "minItems": 1,
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/relationshipsItem"
+      }
+    },
+    "additionalProperties": false
+  },
+  "definitions": {
+    "relationshipsItem": {
+      "$id": "#/definitions/relationshipsItem",
+      "type:": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/version"
+        },
+        "origins": {
+          "$ref": "#/definitions/origins"
+        },
+        "name": {
+          "$ref": "#/definitions/name"
+        },
+        "conditions": {
+          "$ref": "#/definitions/conditions"
+        },
+        "relationship": {
+          "$ref": "#/definitions/relationship"
+        }
+      },
+      "required": [
+        "version",
+        "origins",
+        "name",
+        "conditions",
+        "relationship"
+      ],
+      "additionalProperties": false
+    },
+    "version": {
+      "$id": "#/definitions/version",
+      "type:": "string"
+    },
+    "origins": {
+      "$id": "#/definitions/origins",
+      "type:": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "APM Metrics",
+          "Infrastructure Agent",
+          "Kubernetes Integration",
+          "AWS Integration",
+          "GCP Integration",
+          "Azure Integration",
+          "OnHost Integration",
+          "OpenTelemetry",
+          "Pixie",
+          "Prometheus",
+          "Distributed Tracing",
+          "Metric API",
+          "AIOPS"
+        ]
+      }
+    },
+    "name": {
+      "$id": "#/definitions/name",
+      "type:": "string"
+    },
+    "conditions": {
+      "$id": "#/definitions/conditions",
+      "type:": "array",
+      "items": {
+        "$ref": "#/definitions/conditions"
+      }
+    },
+    "condition": {
+      "$id": "#/definitions/conditions",
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/anyOfCondition"
+        },
+        {
+          "$ref": "#/definitions/presentCondition"
+        },
+        {
+          "$ref": "#/definitions/startsWithCondition"
+        },
+        {
+          "$ref": "#/definitions/regexCondition"
+        }
+      ],
+      "additionalProperties": false
+    },
+    "anyOfCondition": {
+      "$id": "#/definitions/anyOfCondition",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "type": "string"
+        },
+        "anyOf": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "attribute",
+        "anyOf"
+      ],
+      "additionalProperties": false
+    },
+    "presentCondition": {
+      "$id": "#/definitions/presentCondition",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "type": "string"
+        },
+        "present": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "attribute",
+        "present"
+      ],
+      "additionalProperties": false
+    },
+    "startsWithCondition": {
+      "$id": "#/definitions/startsWithCondition",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "type": "string"
+        },
+        "startsWith": {
+          "type": "string"
+        },
+        "caseSensitive": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "attribute",
+        "startsWith"
+      ],
+      "additionalProperties": false
+    },
+    "regexCondition": {
+      "$id": "#/definitions/regexCondition",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "type": "string"
+        },
+        "regex": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "attribute",
+        "regex"
+      ],
+      "additionalProperties": false
+    },
+    "relationship": {
+      "$id": "#/definitions/relationship",
+      "type": "object",
+      "properties": {
+        "expires": {
+          "type": "string"
+        },
+        "relationshipType": {
+          "$ref": "#/definitions/relationshipType"
+        },
+        "source": {
+          "$ref": "#/definitions/resolver"
+        },
+        "target": {
+          "$ref": "#/definitions/resolver"
+        }
+      },
+      "required": [
+        "expires",
+        "relationshipType",
+        "source",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "relationshipType": {
+      "type": "string",
+      "enum": [
+        "CONTAINS",
+        "CALLS",
+        "HOSTS",
+        "SERVES",
+        "IS",
+        "OPERATES_IN",
+        "CONNECTS_TO",
+        "BUILT_FROM",
+        "MEASURES",
+        "PRODUCES",
+        "CONSUMES",
+        "MANAGES",
+        "TEST",
+        "OWNS"
+      ]
+    },
+    "resolver": {
+      "$id": "#/definitions/resolver",
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/extractGuidResolver"
+        },
+        {
+          "$ref": "#/definitions/buildGuidResolver"
+        },
+        {
+          "$ref": "#/definitions/lookupGuidResolver"
+        }
+      ],
+      "additionalProperties": false
+    },
+    "extractGuidResolver": {
+      "$id": "#/definitions/extractGuidResolver",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "type": "string"
+        },
+        "entityType": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": [
+        "attribute",
+        "entityType"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolver": {
+      "$id": "#/definitions/buildGuidResolver",
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "object",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/buildGuidResolverAccountAttribute"
+            },
+            {
+              "$ref": "#/definitions/buildGuidResolverAccountLookup"
+            }
+          ]
+        },
+        "domain": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "type": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "valueInGuid": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "identifier": {
+          "type": "object",
+          "properties": {
+            "fragments": {
+              "type": "array",
+              "items": {
+                "condition": {
+                  "type": "object",
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "attribute": "string"
+                        }
+                      },
+                      "required": [
+                        "attribute"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "capture": {
+                          "attribute": "string",
+                          "regex": "string"
+                        }
+                      },
+                      "required": [
+                        "attribute",
+                        "regex"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            },
+            "hashAlgorithm": {
+              "type": "string",
+              "enum": [
+                "FARM_HASH"
+              ]
+            }
+          },
+          "required": [
+            "fragments"
+          ]
+        }
+      },
+      "required": [
+        "account",
+        "domain",
+        "type",
+        "identifier"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolverAccountAttribute": {
+      "$id": "#/definitions/buildGuidResolverAccountAttribute",
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "attribute"
+      ],
+      "additionalProperties": false
+    },
+    "buildGuidResolverAccountLookup": {
+      "type": "object",
+      "properties": {
+        "lookup": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "lookup"
+      ],
+      "additionalProperties": false
+    },
+    "lookupGuidResolver": {
+      "$id": "#/definitions/lookupGuidResolver",
+      "type": "object",
+      "properties": {
+        "candidateCategory": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lookupGuidResolverField"
+          },
+          "required": [
+            "field",
+            "attribute"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "candidateCategory",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "lookupGuidResolverField": {
+      "$id": "#/definitions/lookupGuidResolverField",
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "attribute": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "attribute"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
