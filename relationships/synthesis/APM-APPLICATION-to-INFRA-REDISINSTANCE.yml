@@ -1,0 +1,30 @@
+relationships:
+  - name: apmApplicationCallsInfraRedisInstance
+    version: 1
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: peer.address
+        present: yes
+      - attribute: component
+        anyOf: [ "Redis" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "instance:"
+              - attribute: peer.address
+            hashAlgorithm: FARM_HASH
