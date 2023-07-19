@@ -276,15 +276,31 @@ Example:
 ```yaml
   source:
     extractGuid:
-      attribute: host.guid
-      entityType:
-         attribute: nr.entityType
+      attribute: entity.guid
   target:
     extractGuid:
-      attribute: entityGuid
+      attribute: cluster.guid 
+```
+
+Another additional feature of the `extractGuid` is the ability to define the entity type.
+
+In the example below, you'll see how to define the entity type using an attribute in the target relationship.
+
+Example:
+
+```yaml
+  source:
+     extractGuid:
+        attribute: entity.guid
+  target:
+    extractGuid:
+      attribute: cluster.guid
       entityType:
         attribute: nr.entityType
 ```
+
+Lastly, in special cases, you can provide a hardcoded value for the entityType. 
+We briefly discuss this in its dedicated section [here](#infra-na-for-extractguid).
 
 ##### buildGuid
 
