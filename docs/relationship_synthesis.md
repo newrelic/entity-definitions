@@ -157,28 +157,13 @@ future changes without major breaking updates.
 A `condition` is composed by an `attribute` and a matcher (that can be of multiple types), we explain what are 
 the valid combinations on the next sub-sections.
 
-The following example demonstrates various capabilities supported by conditions:
-
-```yaml
-conditions:
-  - attribute: eventType
-    anyOf: ["NginxSample", "K8sPodSample", "K8sContainerSample"]
-  - attribute: host.guid
-    present: yes
-  - attribute: metricName
-    startsWith: "DurationByCaller/"
-    caseSensitive: true
-  - attribute: metricName
-    regex: ".*\.rds\.amazonaws\.com.*"
-```
-
 ### Attribute
 The `attribute` field specifies the name of the attribute in the data point, 
 and the operation to perform is defined below using matchers.
 
 ### Matcher(s)
 
-The matcher describe the operation to be performed on a given data point to extract its information. 
+The matcher describes the operation to be performed on a given data point to extract its information. 
 
 The list of supported matchers can be found on the table below:
 
@@ -192,6 +177,50 @@ The list of supported matchers can be found on the table below:
 Only one matcher should be present in each condition, and matching is case-insensitive by default unless 
 specified otherwise with `caseSensitive: true`. 
 Multiple conditions must all match for the rule to apply; there is no support for `OR` conditions.
+
+In the following subsections, we will provide an example for each possible matcher usage.
+
+#### present
+
+Example:
+
+```yaml
+conditions:
+  - attribute: host.guid
+    present: yes
+```
+
+#### anyOf
+
+Example:
+
+```yaml
+conditions:
+  - attribute: eventType
+    anyOf: ["NginxSample", "K8sPodSample", "K8sContainerSample"]
+```
+
+#### startsWith 
+
+Example:
+
+```yaml
+conditions:
+  - attribute: metricName
+    startsWith: "DurationByCaller/"
+    caseSensitive: true
+```
+
+#### regex 
+
+Example:
+
+```yaml
+conditions:
+  - attribute: metricName
+    regex: ".*\.rds\.amazonaws\.com.*"
+    caseSensitive: false
+```
 
 ## Relationship
 
