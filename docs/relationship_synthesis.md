@@ -98,16 +98,14 @@ relationships:
           attribute: entity.guid
 ```
 
+In the provided example, you can observe the various sections of a valid relationship definition: `name`, `origins`, `conditions` and `relationship`. 
+Each of these sections is necessary for the rule to be considered valid.
+
+Below, we offer a more detailed explanation of how to complete each section properly.
+
+## Name
+
 The `name` property provides information during debugging and can be used for feature flags or logging purposes.
-
-The `origins` contains a list of keys indicating where the telemetry information originates from in a user-friendly way.
-
-The `conditions` section specifies the attributes and matching criteria that determine if the rule applies to a given data point.
-
-The `relationship` section defines various aspects of the relationship, such as its expiration timeframe, the relationship type, 
-and how to extract the source and target GUIDs.
-
-All these sections are required for a rule to be considered valid.
 
 ## Version
 
@@ -115,14 +113,14 @@ The `version` field indicates the rule version. This allows for introducing new 
 without requiring immediate updates to all engines. 
 The engine discards any unsupported versions.
 
-## Origin
+## Origin(s)
 
-The `origin` field represents a closed list of values that indicate the source of telemetry. When defining a rule, a list of these values must be provided.
+The `origins` field represents a closed list of values that indicate the source of telemetry. When defining a rule, a list of these values must be provided.
 
 Example:
 
 ```yaml
-- origin:
+- origins:
     - APM Metrics
     - Open Telemetry
     - Prometheus
