@@ -1,4 +1,4 @@
-# [Experimental] Candidate Relationships
+# Candidate Relationships
 
 Candidate Relationships are a mechanism used to give hints about what relationships should be created by relationship synthesis. 
 They are used to create complex relationships between entities within and across different product verticals in the context of an Observability offering.

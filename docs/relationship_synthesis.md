@@ -1,4 +1,4 @@
-# [Experimental] Relationship Synthesis
+# Relationship Synthesis
 
 Entities and relationships provide the connective tissue for telemetry data.
 
