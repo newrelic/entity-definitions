@@ -278,17 +278,13 @@ Example:
     extractGuid:
       attribute: host.guid
       entityType:
-        value: HOST
+         attribute: nr.entityType
   target:
     extractGuid:
       attribute: entityGuid
       entityType:
         attribute: nr.entityType
 ```
-
-If the resolved GUID corresponds to an `INFRA-NA` GUID, the relationship platform needs to know the actual type behind the GUID. 
-This can be achieved by providing a second field that specifies a hardcoded value for the entity type 
-or retrieves it from an existing attribute.
 
 ##### buildGuid
 
@@ -306,7 +302,6 @@ source:
       value: EXT
     type:
       value: SERVICE
-      valueInGuid: NA
     identifier:
       fragments:
       - value: "k8s:"
@@ -316,10 +311,9 @@ source:
 ```
 
 The `account` field can be defined using an attribute in the telemetry or by specifying a lookup key. 
-When a lookup key is defined, it will be searched within the accounts of the trusted account for the current data point (proposal system).
+When a lookup key is defined, it will be searched within the accounts of the trusted account for the current data point (and used via candidate relationships).
 
-The domain and type fields can be either hardcoded values or attributes. The type field also allows setting the given value as the type in the 
-GUID using `valueInGuid`, which is useful for building `INFRA-NA` GUIDs.
+The `domain` and `type` fields can be either hardcoded values or attributes.
 
 The `identifier` can be constructed using one or multiple fragments. Each fragment can be a hardcoded string, an attribute, or a part of an attribute. 
 The identifier can be hashed using one of the supported hashing algorithms, with farmHash being the currently supported algorithm.
@@ -340,3 +334,59 @@ lookupGuid:
 ```
 
 The `lookupGuid` points to the candidate category to be used and maps the fields required for the lookup to the attributes in the telemetry.
+
+#### Dealing with unknown infrastructure types
+
+Due to an internal limitation, we cannot precisely know the type for some infrastructure entity domainTypes.
+Due to that, we need to provide type hints for relationships in some scenarios.
+Below we explain how to overcome this issue by resolver type.
+
+#### INFRA-NA for extractGuid
+
+In case the resolved GUID corresponds to an `INFRA-NA` GUID, it is necessary to supply the actual type
+associated with the GUID. This can be accomplished by providing a second field that either specifies
+a hardcoded value for the entity type or retrieves it from an existing attribute.
+
+In the following definition, you'll find an instance of a hardcoded used in the source relationship,
+as well as an example of using an attribute in the target relationship.
+
+Example:
+
+```yaml
+  source:
+    extractGuid:
+      attribute: host.guid
+      entityType:
+        value: HOST
+  target:
+    extractGuid:
+      attribute: entityGuid
+      entityType:
+        attribute: nr.entityType
+```
+
+#### INFRA-NA for buildGuid
+
+The `type` field enables you to specify the `value` as the type in the GUID using `valueInGuid`,
+which is particularly helpful for constructing `INFRA-NA` GUIDs.
+
+In other words, in scenarios where a GUID contains `NA` as its `type`, the `value` fields will be used instead.
+For instance, in the example below, the `SERVICE` value will replace `NA`:
+
+```yaml
+source:
+  buildGuid:
+    account:
+      attribute: accountId
+    domain:
+      value: EXT
+    type:
+      value: SERVICE
+      valueInGuid: NA
+    identifier:
+      fragments:
+      - value: "k8s:"
+      - attribute: "service.name"
+      - value: ":pod:"
+      hashAlgorithm: FARM_HASH
+```
