@@ -27,8 +27,8 @@ This is achieved through the creation of relationship synthesis rules.
 In order to create a new relationship synthesis rule, we need to follow the given steps:
 
 1. Create a `<ENTITY_TYPE-to-ENTITY_TYPE>.yml` file under the `relationships/synthesis` directory.
-   1. This directory holds all pre-existing relationship synthesis rules, and is also a 
-   good source of inspiration for creating new rules.
+   1. In this directory, you'll find all the existing relationship synthesis rules, 
+   and it's also an excellent source of inspiration for crafting new ones.
 
 Example: 
 
