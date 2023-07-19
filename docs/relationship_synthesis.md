@@ -340,7 +340,14 @@ Finally, for specific scenarios, you have the option to extract the `type` from 
 We provide a brief discussion of this feature in its dedicated section [here](#infra-na-for-buildguid).
 
 ##### lookupGuid
-The `lookupGuid` resolver is used when the GUID cannot be inferred from the telemetry and a lookup is required using candidates.
+The `lookupGuid` resolver comes into play when the GUID cannot be determined from the telemetry, requiring a lookup 
+process using [candidate relationships](candidate_relationships.md).
+
+**Candidate relationships** serve as a critical mechanism for handling more intricate use cases and are 
+further explained in their [dedicated documentation](candidate_relationships.md).
+
+Make sure to explore this resource if you find situations where your desired relationship 
+cannot be created using only `extractGuid` or `buildGuid`.
 
 Example:
 
