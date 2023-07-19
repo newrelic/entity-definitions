@@ -336,6 +336,9 @@ The identifier can be hashed using one of the supported hashing algorithms, with
 
 If needed, a part of an attribute can be provided as a capture group in a regular expression.
 
+Finally, for specific scenarios, you have the option to extract the `type` from the GUID. 
+We provide a brief discussion of this feature in its dedicated section [here](#infra-na-for-buildguid).
+
 ##### lookupGuid
 The `lookupGuid` resolver is used when the GUID cannot be inferred from the telemetry and a lookup is required using candidates.
 
@@ -363,8 +366,8 @@ In case the resolved GUID corresponds to an `INFRA-NA` GUID, it is necessary to 
 associated with the GUID. This can be accomplished by providing a second field that either specifies
 a hardcoded value for the entity type or retrieves it from an existing attribute.
 
-In the following definition, you'll find an instance of a hardcoded used in the source relationship,
-as well as an example of using an attribute in the target relationship.
+In the following definition, you'll find an instance of a hardcoded entity type used in the source relationship,
+as well as an example of using an attribute to define the entity type in the target relationship.
 
 Example:
 
