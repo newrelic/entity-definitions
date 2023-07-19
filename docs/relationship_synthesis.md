@@ -154,6 +154,9 @@ The mapping of origins to sources allows for performance improvements when evalu
 The proposal for `conditions` is an iterative improvement over the existing rules format to allow for 
 future changes without major breaking updates.
 
+A `condition` is composed by an `attribute` and a matcher (that can be of multiple types), we explain what are 
+the valid combinations on the next sub-sections.
+
 The following example demonstrates various capabilities supported by conditions:
 
 ```yaml
@@ -169,8 +172,23 @@ conditions:
     regex: ".*\.rds\.amazonaws\.com.*"
 ```
 
-The `attribute` field specifies the name of the attribute in the data point, and the operation to perform is defined using matchers 
-such as `anyOf`, `present`, `startsWith`, and `regex`. 
+### Attribute
+The `attribute` field specifies the name of the attribute in the data point, 
+and the operation to perform is defined below using matchers.
+
+### Matcher(s)
+
+The matcher describe the operation to be performed on a given data point to extract its information. 
+
+The list of supported matchers can be found on the table below:
+
+| **Matcher**            | **Description**                                                                                       |
+|------------------------|-------------------------------------------------------------------------------------------------------|
+| present                | Commonly used with a specific attribute, to match it on the telemetry data point.                     |
+| anyOf                  | Commonly used with the `eventType` attribute, to match a list of events.                              |
+| startsWith             | Commonly used with the `metricName` attribute, to match on the prefix of the metric.                  |
+| regex                  | Commonly used with the `metricName` attribute, to extract match more complex use cases (e.g. URI(s)). |
+
 Only one matcher should be present in each condition, and matching is case-insensitive by default unless 
 specified otherwise with `caseSensitive: true`. 
 Multiple conditions must all match for the rule to apply; there is no support for `OR` conditions.
