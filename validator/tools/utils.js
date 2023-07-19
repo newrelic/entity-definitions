@@ -4,6 +4,8 @@ const path = require('path')
 const {readdir} = fs.promises
 const {DEFINITIONS_DIR} = require('./props')
 const {RELATIONSHIPS_SYNTHESIS_DIR} = require('./props')
+const allowedFileNamesRegex = /^[A-Z0-9_]+(?:-[A-Z0-9_]+)?-to-[A-Z0-9_]+(?:-[A-Z0-9_]+)?\.yml$/;
+const regex = new RegExp(allowedFileNamesRegex);
 
 async function getFiles(dir) {
     const items = await readdir(dir, {withFileTypes: true})
@@ -19,7 +21,11 @@ module.exports = {
         const files = await getFiles(RELATIONSHIPS_SYNTHESIS_DIR)
         const definitionFiles = files.filter(file => file.includes('.yml'))
         return definitionFiles.map((filename) => {
-                return yaml.load(fs.readFileSync(filename, 'utf8'));
+            justFileName=filename.split('/').pop()
+            if (regex.test(justFileName))
+                return yaml.load(fs.readFileSync(filename, 'utf8'))
+            else
+                throw 'Incorrect filename. Format must be <ORIGIN>-to-<TARGET>: ' + justFileName
             }
         )
     },
