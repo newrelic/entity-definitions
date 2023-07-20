@@ -33,7 +33,6 @@ If you have experience with the repo and are looking for a specific section docu
 In case you are looking for **experimental features**, check out our new features here:
 
 - [Relationship Synthesis](docs/relationship_synthesis.md)
-- [Candidate Relationships](docs/candidate_relationships.md)
 
 ## Validation
 
