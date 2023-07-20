@@ -73,7 +73,7 @@ as described in the dedicated documentation.
 
 By following these steps, users can easily create meaningful relationships between entities based on their specific requirements. 
 
-Example of a valid relationship definition:
+Example of a complete relationship definition:
 
 ```yaml
 relationships:
