@@ -52,16 +52,26 @@ following the instructions in the [next section](#how-to-configure-a-new-candida
 
 6. Enjoy your new relationship synthesis rule being applied automatically to your data! :tada:
 
-# How to configure a new Candidate Relationship
+# How to configure a new Relationship Synthesis rule 
 
-Relationship synthesis involves a two-phase system to determine and create relationships based on the provided rules.
+Relationship synthesis allows users to determine and create relationships based on provided rules in a simple two-phase process.
 
-In the first phase, the system verifies if a data point should be considered for creating a relationship by performing duck typing.
-This means checking if the data point has all the required attributes and values specified by the rules.
+**[Define the Data Source](#define-the-data-source)**: First, you need to determine the data source from which the relationship will be derived. 
+You can refer to the example below and to the [origins section](#origins) to understand how to identify the relevant attributes and values
+and apply [conditions](#conditions) to them.
 
-In the second phase, the data point is used to create a relationship according to the defined rule,
-which specifies the relationship type (guid to guid, candidate, or proposal)
-and how the source and target GUIDs should be created.
+**[Create the Relationship Rule](#create-the-relationship-rule)**: Next, you'll define the relationship rule that specifies how the relationship will be created from the data source. 
+
+This involves deciding how to apply the existing resolvers to the [source and target](#source--target) entities:
+
+a. Extract: Use the `extractGuid` operation to specify how to determine the GUID for the source and target entities.
+
+b. Build: Utilize the `buildGuid` operation to define the relationship type (guid to guid, candidate, or proposal) and how the source and target GUIDs should be created.
+
+c. Lookup: If the GUID cannot be inferred directly from the data source, you can use the `lookupGuid` resolver to perform a lookup using candidates, 
+as described in the dedicated documentation.
+
+By following these steps, users can easily create meaningful relationships between entities based on their specific requirements. 
 
 Example of a valid relationship definition:
 
@@ -99,7 +109,9 @@ Each of these sections is necessary for the rule to be considered valid.
 
 Below, we offer a more detailed explanation of how to complete each section properly.
 
-## Name
+## Define the data source
+
+### Name
 
 The name property serves as a unique identifier for the rule and must be distinct from all other rules. 
 It should adhere to the `camelCase` format.
@@ -115,7 +127,7 @@ Example:
 - name: extServiceCallsExtPixieRedis
 ```
 
-## Version
+### Version
 
 The `version` field indicates the rule version. This allows for introducing new breaking changes to the formats 
 without requiring immediate updates to all engines. 
@@ -129,7 +141,7 @@ Example:
     version: "1"
 ```
 
-## Origin(s)
+### Origin(s)
 
 The `origins` field represents a closed list of values that indicate the source of telemetry. When defining a rule, a list of these values must be provided.
 
@@ -162,7 +174,7 @@ One rule can be applied to multiple sources, as shown in the example. These orig
 to filter which rules to evaluate and which ones to ignore. 
 The mapping of origins to sources allows for performance improvements when evaluating rules via the matching system.
 
-## Conditions
+### Conditions
 
 `Conditions` are used to determine if a rule should be applied to a given data point. 
 The proposal for `conditions` is an iterative improvement over the existing rules format to allow for 
@@ -171,11 +183,11 @@ future changes without major breaking updates.
 A `condition` is composed by an `attribute` and a matcher (that can be of multiple types), we explain what are 
 the valid combinations on the next sub-sections.
 
-### Attribute
+#### Attribute
 The `attribute` field specifies the name of the attribute in the data point, 
 and the operation to perform is defined below using matchers.
 
-### Operation(s)
+#### Operation(s)
 
 The operation describes the action to be performed on a given data point to extract its information. 
 
@@ -194,7 +206,7 @@ Multiple conditions must all match for the rule to apply; there is no support fo
 
 In the following subsections, we will provide an example for each possible matcher usage.
 
-#### present
+##### present
 
 Example:
 
@@ -204,7 +216,7 @@ conditions:
     present: yes
 ```
 
-#### anyOf
+##### anyOf
 
 Example:
 
@@ -214,7 +226,7 @@ conditions:
     anyOf: ["NginxSample", "K8sPodSample", "K8sContainerSample"]
 ```
 
-#### startsWith 
+##### startsWith 
 
 Example:
 
@@ -225,7 +237,7 @@ conditions:
     caseSensitive: true
 ```
 
-#### regex 
+##### regex 
 
 Example:
 
@@ -236,7 +248,9 @@ conditions:
     caseSensitive: false
 ```
 
-## Relationship
+## Create the Relationship Rule 
+
+### Relationship
 
 The `relationship` section defines aspects related to the relationship we want to synthesize.
 
@@ -268,7 +282,7 @@ Each of these sections is necessary for the relationship section to be considere
 
 Below, we offer a more detailed explanation of how to complete each part properly.
 
-### Expires
+#### Expires
 
 The `expires` field allows configuring the duration for which the relationship should exist if it is not reported within that timeframe. 
 By default, this field is set to ***75 minutes*** (the default for the relationship platform). 
@@ -277,7 +291,7 @@ currently supported by the platform.
 
 Explicitly providing the expires field is recommended for clarity, even though the default is 75 minutes.
 
-### RelationshipType
+#### RelationshipType
 
 The `relationshipType` field specifies the type of relationship to create. Only predefined values from the 
 supported relationship types list are accepted.
@@ -301,16 +315,16 @@ The full list of supported relationship type options (as of July 2023) is the fo
 | OWNS                  | Indicates ownership of one entity to the other via their relationship.                                                         |
 | TEST                  | Used for testing purposes, might be a good option for experimentation.                                                         |
 
-#### Source & Target
+##### Source & Target
 
 Source and Target define the methods for determining the GUIDs of both entities involved in the relationship. 
-To achieve this, we provide support for the following GUID Resolvers:
+To achieve this, we provide support for the following GUID resolvers:
 
 1. `extractGuid`: Extracts the GUID from an existing attribute in the telemetry.
 2. `buildGuid`: Constructs the GUID using various pieces of information from the telemetry.
 3. `lookupGuid`: Performs a GUID lookup based on telemetry attributes. 
 
-##### extractGuid
+###### extractGuid
 
 The `extractGuid` resolver is the simplest and allows specifying an attribute to use as the GUID.
 
@@ -343,7 +357,7 @@ Example:
 Lastly, in special cases, you can provide a hardcoded value for the entityType. 
 We briefly discuss this in its dedicated section [here](#infra-na-for-extractguid).
 
-##### buildGuid
+###### buildGuid
 
 The `buildGuid` resolver allows constructing the GUID from different pieces of information.
 
@@ -386,7 +400,7 @@ If needed, a part of an attribute can be provided as a capture group in a regula
 Finally, for specific scenarios, you have the option to extract the `type` from the GUID. 
 We provide a brief discussion of this feature in its dedicated section [here](#infra-na-for-buildguid).
 
-##### lookupGuid
+###### lookupGuid
 The `lookupGuid` resolver comes into play when the GUID cannot be determined from the telemetry, requiring a lookup 
 process using [candidates](candidate_relationships.md).
 
@@ -408,13 +422,13 @@ lookupGuid:
 
 The `lookupGuid` points to the candidate category to be used and maps the fields required for the lookup to the attributes in the telemetry.
 
-#### Dealing with unknown infrastructure types
+##### Dealing with unknown infrastructure types
 
 Due to internal limitations, we cannot precisely know the type for some infrastructure entity domainTypes.
 Due to that, we need to provide type hints for relationships in some scenarios.
 Below we explain how to overcome this issue by resolver type.
 
-##### INFRA-NA for extractGuid
+###### INFRA-NA for extractGuid
 
 In case the resolved GUID corresponds to an `INFRA-NA` GUID, it is necessary to supply the actual type
 associated with the GUID. This can be accomplished by providing a second field that either specifies
@@ -438,7 +452,7 @@ Example:
         attribute: nr.entityType
 ```
 
-##### INFRA-NA for buildGuid
+###### INFRA-NA for buildGuid
 
 The `type` field enables you to specify the `value` as the type in the GUID using `valueInGuid`,
 which is particularly helpful for constructing `INFRA-NA` GUIDs.
