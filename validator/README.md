@@ -46,6 +46,7 @@ You can also run each of the validation tools independently:
 npm  --prefix validator run validate-schemas
 npm  --prefix validator run validate-rules
 npm  --prefix validator run validate-folders
+npm  --prefix validator run validate-relationship-synthesis 
 ```
 
 The tool expects all definition files to be in a subfolder under the `definitions` folder.
