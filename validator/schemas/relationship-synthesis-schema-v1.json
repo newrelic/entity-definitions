@@ -6,42 +6,41 @@
   "description": "Schema used to verify that a given entity yaml is valid",
   "examples": [
     {
-      "relationships": {
-        "apmCallsDatabase": {
-          "version": "1",
-          "origins": {
-            "APM Metrics": [
-              "APM Metrics"
-            ]
-          },
+      "relationships": [
+        {
           "name": "apmCallsDatabase",
+          "version": 1,
+          "origins": [
+            "APM Metrics"
+          ],
           "conditions": [
             {
               "attribute": "metricName",
-              "regex": "^datastore/instance/[^/]*/([^/]*\\.rds\\.amazonaws\\.com[^/]*)/.*"
+              "regex": "^datastore/instance/([^/]*/([^/]*\\.rds\\.amazonaws\\.com[^/]*)/.*"
             }
           ],
           "relationship": {
             "expires": "P75M",
             "relationshipType": "CALLS",
             "source": {
-              "@class": ".ExtractGuidResolver",
-              "attribute": "entity.guid",
-              "entityType": null
+              "extractGuid": {
+                "attribute": "entity.guid"
+              }
             },
             "target": {
-              "@class": ".LookupGuidResolver",
-              "candidateCategory": "DATABASE",
-              "fields": [
-                {
-                  "field": "endpoint",
-                  "attribute": "metricName__4"
-                }
-              ]
+              "lookupGuid": {
+                "candidateCategory": "DATABASE",
+                "fields": [
+                  {
+                    "field": "endpoint",
+                    "attribute": "metricName__4"
+                  }
+                ]
+              }
             }
           }
         }
-      }
+      ]
     }
   ],
   "required": [
@@ -50,11 +49,11 @@
   "properties": {
     "relationships": {
       "$id": "#/relationships",
-      "type": "object",
-      "title": "Relationship synthesis definition."
-    },
-    "additionalProperties": {
-      "$ref": "#/definitions/relationshipsItem"
+      "type": "array",
+      "title": "Relationship synthesis definition.",
+      "items": {
+        "$ref": "#/definitions/relationshipsItem"
+      }
     }
   },
   "definitions": {
@@ -121,27 +120,21 @@
       "$id": "#/definitions/conditions",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/condition"
+        "oneOf": [
+          {
+            "$ref": "#/definitions/anyOfCondition"
+          },
+          {
+            "$ref": "#/definitions/presentCondition"
+          },
+          {
+            "$ref": "#/definitions/startsWithCondition"
+          },
+          {
+            "$ref": "#/definitions/regexCondition"
+          }
+        ]
       }
-    },
-    "condition": {
-      "$id": "#/definitions/condition",
-      "type": "object",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/anyOfCondition"
-        },
-        {
-          "$ref": "#/definitions/presentCondition"
-        },
-        {
-          "$ref": "#/definitions/startsWithCondition"
-        },
-        {
-          "$ref": "#/definitions/regexCondition"
-        }
-      ],
-      "additionalProperties": false
     },
     "anyOfCondition": {
       "$id": "#/definitions/anyOfCondition",
@@ -267,17 +260,17 @@
     "resolver": {
       "$id": "#/definitions/resolver",
       "type": "object",
-      "oneOf": [
-        {
+      "properties": {
+        "extractGuid": {
           "$ref": "#/definitions/extractGuidResolver"
         },
-        {
+        "buildGuid": {
           "$ref": "#/definitions/buildGuidResolver"
         },
-        {
+        "lookupGuid": {
           "$ref": "#/definitions/lookupGuidResolver"
         }
-      ],
+      },
       "additionalProperties": false
     },
     "extractGuidResolver": {
@@ -298,8 +291,7 @@
         }
       },
       "required": [
-        "attribute",
-        "entityType"
+        "attribute"
       ],
       "additionalProperties": false
     },
