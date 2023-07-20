@@ -1,25 +1,24 @@
 # Candidate Relationships
 
-Candidate Relationships are a mechanism used to give hints about what relationships should be created by relationship synthesis. 
-They are used to create complex relationships between entities within and across different product verticals in the context of an Observability offering.
+Candidate Relationships serve as a valuable mechanism for creating complex connections between entities within 
+and across different product verticals in the context of our Observability offering.
 
-These relationships refer to the connections between entities within and across different product verticals. 
-In the context of our Observability offering, these relationships enable customers to more quickly identify issues, 
-resolve incidents, and correlate data across our distinct product offerings. 
-However, the current capabilities for creating relationships have limitations, 
-particularly when dealing with entities where only vague data is known.
+These relationships play a crucial role in enabling customers to quickly identify issues, resolve incidents, 
+and correlate data across our various product offerings. 
+While our current capabilities for creating relationships are powerful, they have some limitations, 
+especially when dealing with entities where only limited data is available and the entity GUID cannot be determined 
+directly from a single telemetry datapoint.
 
-A clear example of such limitations is seen in relating AWS RDS databases. 
-To establish these relationships, data needs to be joined from the Infrastructure agent, 
-which connects to AWS and retrieves information about the provisioned databases, and the New Relic agent, 
-which identifies the applications connected to databases using their connection URIs. 
-With this combined data, relationships can be created, including the association between an APM application and a database. 
-The APM agent may detect the database URL but lacks information about the entity GUID or whether the database is instrumented by New Relic. 
-By leveraging the data from both agents, these candidate relationships can be established, 
-enabling a more comprehensive understanding of the interconnected entities and improving users' overall Observability capabilities.
+An illustrative example of these limitations is evident when relating AWS RDS databases. 
+Establishing these relationships requires joining data from the Infrastructure agent, which connects to AWS and retrieves information about provisioned databases, 
+with data from the New Relic agent, which identifies applications connected to databases using their connection URIs. 
+By combining data from both agents, candidate relationships are formed, including the association between an APM application and a database. 
 
-The [relationship synthesis](relationship_synthesis.md) pipeline will, in turn, join together the data provided by the candidate relationships 
-with the rules defined by the relationship synthesis rules and generate new relationships out of this data.
+In the [relationship synthesis](relationship_synthesis.md) pipeline, the data provided by candidate relationships is combined with the rules defined by the 
+relationship synthesis rules. 
+This integration results in the generation of new relationships, further enhancing the Observability experience for our users.
+
+In the next section, we explain the steps needed to define a new Candidate Relationship.
 
 # How to create a new Candidate Relationship
 
