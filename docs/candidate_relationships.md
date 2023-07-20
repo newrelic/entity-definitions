@@ -18,8 +18,6 @@ The APM agent may detect the database URL but lacks information about the entity
 By leveraging the data from both agents, these candidate relationships can be established, 
 enabling a more comprehensive understanding of the interconnected entities and improving users' overall Observability capabilities.
 
-* TODO: Insert image graph here
-
 The [relationship synthesis](relationship_synthesis.md) pipeline will, in turn, join together the data provided by the candidate relationships 
 with the rules defined by the relationship synthesis rules and generate new relationships out of this data.
 
