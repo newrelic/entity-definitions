@@ -25,6 +25,7 @@ In the next section, we explain the steps needed to define a new Candidate Relat
 To create a new candidate relationship, follow these steps:
 
 1. Create a `<candidate-type>.yml` file under the `relationships/candidates` directory.
+   1. In this directory, you'll find all existing candidates, so it's also an excellent source of inspiration for crafting new ones.
 2. Using the current definition of `AWSSQSQUEUE` as an example, the `candidate-type` should match the
 filename (`AWSSQSQUEUE.yml`) and the category, which is `AWSSQSQUEUE`.
 
@@ -75,9 +76,9 @@ The [next section](#how-to-configure-a-new-candidate-relationship) provides deta
 
 5. Create a new pull request and make sure all the automatic validations are successfully executed.
 
-6. Wait for our team to review the pull request and iterate on the feedbacks.
+6. Wait for our team to review the pull request and iterate on the feedback.
 
-7. Once it is approved, merged to the main branch and a new release is issued, it is available to you.
+7. Once approved, merged to the main branch and a new release is issued, it is available for you to use.
 
 8. Enjoy your new candidate relationship! :tada:
 
