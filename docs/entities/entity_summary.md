@@ -15,7 +15,7 @@ dashboardTemplates:
 
 In order to get a dashboard in JSON format, [create a dashboard](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/) in New Relic and [export it as json](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/dashboards-charts-import-export-data/#dashboards).
 
-![Export Dashboard](./images/export_dashboard.png)
+![Export Dashboard](images/export_dashboard.png)
 
 Copy the JSON content to the `dashboard.json` file.
 
