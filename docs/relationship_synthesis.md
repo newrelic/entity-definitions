@@ -395,8 +395,6 @@ Each fragment can be either a `hardcoded string`, an `attribute value`, or a `pa
 
 Optionally, the identifier can be hashed using one of the supported algorithms. Currently, the only supported algorithm is `farmHash`.
 
-If needed, a part of an attribute can be provided as a capture group in a regular expression.
-
 Finally, for specific scenarios, you have the option to extract the `type` from the GUID. 
 We provide a brief discussion of this feature in its dedicated section [here](#infra-na-for-buildguid).
 
