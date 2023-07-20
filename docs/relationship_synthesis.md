@@ -347,7 +347,7 @@ We briefly discuss this in its dedicated section [here](#infra-na-for-extractgui
 
 The `buildGuid` resolver allows constructing the GUID from different pieces of information.
 
-Entity GUIDs are composed by 4 parts: `account`, `domain`, `type` and `identifier`. 
+Entity GUIDs are composed of 4 parts: `account`, `domain`, `type` and `identifier`. 
 
 You can read more about the usage of those fields on the GUID [here](entities/guid_spec.md).
 
@@ -371,13 +371,15 @@ source:
       hashAlgorithm: FARM_HASH
 ```
 
-The `account` field can be defined using an attribute in the telemetry or by specifying a lookup key. 
-When a lookup key is defined, it will be searched within the accounts of the trusted account for the current data point (and used via candidate relationships).
+The `account` field can be defined using an attribute in the telemetry or by specifying a lookup attribute. 
+When a lookup attribute is defined, it will be searched within the accounts of the trusted account for the current data point.
 
 The `domain` and `type` fields can be either hardcoded values or attributes.
 
-The `identifier` can be constructed using one or multiple fragments. Each fragment can be a hardcoded string, an attribute, or a part of an attribute. 
-The identifier can be hashed using one of the supported hashing algorithms, with farmHash being the currently supported algorithm.
+The `identifier` can be constructed using one or multiple fragments. 
+Each fragment can be either a `hardcoded string`, an `attribute value`, or a `part of an attribute value`. 
+
+Optionally, the identifier can be hashed using one of the supported algorithms. Currently, the only supported algorithm is `farmHash`.
 
 If needed, a part of an attribute can be provided as a capture group in a regular expression.
 
@@ -386,9 +388,9 @@ We provide a brief discussion of this feature in its dedicated section [here](#i
 
 ##### lookupGuid
 The `lookupGuid` resolver comes into play when the GUID cannot be determined from the telemetry, requiring a lookup 
-process using [candidate relationships](candidate_relationships.md).
+process using [candidates](candidate_relationships.md).
 
-**Candidate relationships** serve as a critical mechanism for handling more intricate use cases and are 
+**Candidate relationships** serve as a powerful mechanism for handling more intricate use cases and are 
 further explained in their [dedicated documentation](candidate_relationships.md).
 
 Make sure to explore this resource if you find situations where your desired relationship 
@@ -408,11 +410,11 @@ The `lookupGuid` points to the candidate category to be used and maps the fields
 
 #### Dealing with unknown infrastructure types
 
-Due to an internal limitation, we cannot precisely know the type for some infrastructure entity domainTypes.
+Due to internal limitations, we cannot precisely know the type for some infrastructure entity domainTypes.
 Due to that, we need to provide type hints for relationships in some scenarios.
 Below we explain how to overcome this issue by resolver type.
 
-#### INFRA-NA for extractGuid
+##### INFRA-NA for extractGuid
 
 In case the resolved GUID corresponds to an `INFRA-NA` GUID, it is necessary to supply the actual type
 associated with the GUID. This can be accomplished by providing a second field that either specifies
@@ -436,7 +438,7 @@ Example:
         attribute: nr.entityType
 ```
 
-#### INFRA-NA for buildGuid
+##### INFRA-NA for buildGuid
 
 The `type` field enables you to specify the `value` as the type in the GUID using `valueInGuid`,
 which is particularly helpful for constructing `INFRA-NA` GUIDs.
