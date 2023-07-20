@@ -213,7 +213,7 @@ Example:
 ```yaml
 conditions:
   - attribute: host.guid
-    present: yes
+    present: true
 ```
 
 ##### anyOf
