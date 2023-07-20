@@ -68,12 +68,10 @@ Example of a valid relationship definition:
 ```yaml
 relationships:
   - name: extServiceCallsExtPixieDns
-    version: 1
+    version: "1"
     origins:
       - OpenTelemetry
     conditions:
-      - attribute: eventType
-        anyOf: [ "MetricRaw" ]
       - attribute: entity.type
         anyOf: [ "PIXIE_DNS" ]
     relationship:
@@ -122,6 +120,14 @@ Example:
 The `version` field indicates the rule version. This allows for introducing new breaking changes to the formats 
 without requiring immediate updates to all engines. 
 The engine discards any unsupported versions.
+
+The expected data format for this field is a string representation of an integer.
+
+Example:
+
+```yaml
+    version: "1"
+```
 
 ## Origin(s)
 
