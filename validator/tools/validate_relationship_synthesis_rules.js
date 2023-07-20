@@ -11,13 +11,15 @@ function validateAndRecord(rule) {
 }
 
 function twoLookupResolvers(rule) {
-    if (rule.relationship.source.hasOwnProperty("lookupGuid") &&
-    rule.relationship.target.hasOwnProperty("lookupGuid") ) {
-        throw rule.name + `: we don't allow two lookup resolvers`
+    if (rule.relationship.source != null &&
+        rule.relationship.target != null &&
+        rule.relationship.source.hasOwnProperty("lookupGuid") &&
+        rule.relationship.target.hasOwnProperty("lookupGuid") ) {
+            throw rule.name + `: we don't allow two lookup resolvers`
     }
 }
 
-function twoResolvers(rule){
+function exactlyOneResolver(rule){
     function checkTwoResolvers(input, name, field){
         cont = 0
         if (input.hasOwnProperty("lookupGuid")) cont +=1
@@ -25,8 +27,14 @@ function twoResolvers(rule){
         if (input.hasOwnProperty("buildGuid")) cont +=1
         if (cont >1) throw name + `: only one resolver is allowed per ` + field
     }
-    checkTwoResolvers(rule.relationship.source, rule.name, "source")
-    checkTwoResolvers(rule.relationship.target, rule.name, "target")
+    if (rule.relationship.source == null)
+        throw rule.name + " should have one resolver in the relationship source"
+    else
+        checkTwoResolvers(rule.relationship.source, rule.name, "source")
+    if (rule.relationship.target == null)
+        throw rule.name + " should have one resolver in the relationship target"
+    else
+        checkTwoResolvers(rule.relationship.target, rule.name, "target")
 }
 
 const RULES = [
@@ -39,8 +47,8 @@ const RULES = [
         apply: rule => twoLookupResolvers(rule)
     },
     {
-        name: 'Relationship Synthesis rules cannot have 2 resolvers for source/target',
-        apply: rule => twoResolvers(rule)
+        name: 'Relationship Synthesis should have exactly one resolver per source/target',
+        apply: rule => exactlyOneResolver(rule)
     }
 ]
 

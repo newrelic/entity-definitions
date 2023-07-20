@@ -21,7 +21,7 @@ module.exports = {
         const files = await getFiles(RELATIONSHIPS_SYNTHESIS_DIR)
         const definitionFiles = files.filter(file => file.includes('.yml'))
         return definitionFiles.map((filename) => {
-            justFileName=filename.split('/').pop()
+            justFileName = filename.split('/').pop()
             if (regex.test(justFileName))
                 return yaml.load(fs.readFileSync(filename, 'utf8'))
             else
