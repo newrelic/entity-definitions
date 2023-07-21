@@ -78,7 +78,9 @@ The [next section](#how-to-configure-a-new-candidate-relationship) provides deta
 
 7. Once approved, merged to the main branch and a new release is issued, it is available for you to use.
 
-8. Enjoy your new candidate relationship! :tada:
+8. Ensure you also have a matching [relationship synthesis rule](relationship_synthesis.md) that [utilizes](relationship_synthesis.md#lookupguid) the provided candidate.
+
+9. Enjoy your new candidate relationship! :tada:
 
 # How to configure a new Candidate Relationship
 
