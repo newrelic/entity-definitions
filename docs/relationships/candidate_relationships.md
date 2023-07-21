@@ -26,13 +26,13 @@ To create a new candidate relationship, follow these steps:
 
 1. Create a `<candidate-type>.yml` file under the `relationships/candidates` directory.
    1. In this directory, you'll find all existing candidates, so it's also an excellent source of inspiration for crafting new ones.
-2. Using the current definition of `AWSSQSQUEUE` as an example, the `candidate-type` should match the
-filename (`AWSSQSQUEUE.yml`) and the category, which is `AWSSQSQUEUE`.
+2. Using the current definition of `AWSS3BUCKET` as an example, the `candidate-type` should match the
+filename (`AWSS3BUCKET.yml`) and the category, which is `AWSS3BUCKET`.
 
 Example:
 
 ```yaml
-category: AWSSQSQUEUE
+category: AWSS3BUCKET
 ```
 
 3. Define one or more `lookups` for the candidate. Each lookup specifies the `entityTypes` related to the category.
@@ -40,36 +40,35 @@ category: AWSSQSQUEUE
 Example:
 
 ```yaml
-category: AWSSQSQUEUE
+category: AWSS3BUCKET
 lookups:
   - entityTypes:
+    tags:
     onMatch:
     onMiss:
 ```
 
-4. Fill in the required fields for each lookup. For the AWSSQSQUEUE example, the fields are `entityTypes`, `tags`, `onMatch` and `onMiss`.
+4. Fill in the required fields for each lookup. For the AWSS3BUCKET example, the fields are `entityTypes`, `tags`, `onMatch` and `onMiss`.
 
 Example:
 
 ```yaml
-category: AWSSQSQUEUE
+category: AWSS3BUCKET
 lookups:
-  - entityTypes:
-      - domain: INFRA
-        type: AWSSQSQUEUE
-    tags:
-      matchingMode: ALL
-      predicates:
-        - tagKeys: ["aws.sqs.QueueName"]
-          field: queueName
-        - tagKeys: ["aws.region"]
-          field: region
-    onMatch:
-      onMultipleMatches: RELATE_ALL
-    onMiss:
-      action: CREATE_UNINSTRUMENTED
-      uninstrumented:
-        type: AWSSQSQUEUE
+   - entityTypes:
+        - domain: INFRA
+          type: AWSS3BUCKET
+     tags:
+        matchingMode: ANY
+        predicates:
+           - tagKeys: ["aws.bucketName", "aws.s3.BucketName"]
+             field: bucketName
+     onMatch:
+        onMultipleMatches: RELATE_ALL
+     onMiss:
+        action: CREATE_UNINSTRUMENTED
+        uninstrumented:
+           type: AWSS3BUCKET
 ```
 
 The [next section](#how-to-configure-a-new-candidate-relationship) provides detailed explanations of the configurable elements for a candidate relationship definition.
@@ -164,5 +163,5 @@ Example:
     onMiss:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
-        type: AWSSQSQUEUE
+        type: AWSS3BUCKET
 ```
