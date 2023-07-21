@@ -363,7 +363,7 @@ The `buildGuid` resolver allows constructing the GUID from different pieces of i
 
 Entity GUIDs are composed of 4 parts: `account`, `domain`, `type` and `identifier`. 
 
-You can read more about the usage of those fields on the GUID [here](entities/guid_spec.md).
+You can read more about the usage of those fields on the GUID [here](../entities/guid_spec.md).
 
 Example:
 
