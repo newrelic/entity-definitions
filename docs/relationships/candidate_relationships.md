@@ -27,6 +27,7 @@ To create a new candidate relationship, follow these steps:
    1. In this directory, you'll find all existing candidates, so it's also an excellent source of inspiration for crafting new ones.
 2. Using the current definition of `AWSS3BUCKET` as an example, the `candidate-type` should match the
 filename (`AWSS3BUCKET.yml`) and the category, which is `AWSS3BUCKET`.
+   1. A recommended practice is to use the entity type as the candidate type where possible.
 
 Example:
 
@@ -34,7 +35,12 @@ Example:
 category: AWSS3BUCKET
 ```
 
-3. Define one or more `lookups` for the candidate. Each lookup specifies the `entityTypes` related to the category.
+3. Define one or more `lookups` for the candidate. 
+   1. These are rules that specify the `entityTypes` related to the `category`. 
+   They allow you to target entities of specific types during the lookup process. 
+   For instance, if you have an entity type called `INFRA-HOST`, and you define a lookup for it, 
+   the relationship synthesis process will inspect only entities of type `INFRA-HOST` to find potential matches for the candidate relationship. 
+   This focused approach enhances the precision and efficiency of the relationship synthesis.
 
 Example:
 
@@ -47,7 +53,7 @@ lookups:
     onMiss:
 ```
 
-4. Fill in the required fields for each lookup. For the AWSS3BUCKET example, the fields are `entityTypes`, `tags`, `onMatch` and `onMiss`.
+4. Fill in the required fields for each lookup. For the `AWSS3BUCKET` example, the fields are `entityTypes`, `tags`, `onMatch` and `onMiss`.
 
 Example:
 
