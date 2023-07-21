@@ -103,8 +103,9 @@ The category is also used as the uninstrumented type when creating a new entity.
 
 ## Lookups
 
-Lookups define the rules for the category. Each lookup specifies the entityTypes related to the category.
-During the lookup process, only the specified entityTypes will be inspected.
+Lookups define the rules for the category and specify the entity types related to it. 
+These rules are used during the lookup process to inspect only entities on the specified entity types, 
+allowing for a targeted search for a specific entity type.
 
 ## Tags
 
