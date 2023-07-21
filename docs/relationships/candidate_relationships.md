@@ -14,9 +14,8 @@ Establishing these relationships requires joining data from the Infrastructure a
 with data from the New Relic agent, which identifies applications connected to databases using their connection URIs. 
 By combining data from both agents, candidate relationships are formed, including the association between an APM application and a database. 
 
-In the [relationship synthesis](relationship_synthesis.md) pipeline, the data provided by candidate relationships is combined with the rules defined by the 
-relationship synthesis rules. 
-This integration results in the generation of new relationships, further enhancing the Observability experience for our users.
+In the [relationship synthesis](relationship_synthesis.md), the candidate is combined with the relationship synthesis rules. 
+This integration significantly enhances the Observability experience for our users, offering a more comprehensive understanding of the interconnected entities.
 
 In the next section, we explain the steps needed to define a new Candidate Relationship.
 
