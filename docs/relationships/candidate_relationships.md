@@ -38,7 +38,7 @@ category: AWSS3BUCKET
 3. Define one or more `lookups` for the candidate. 
    1. These are rules that specify the `entityTypes` related to the `category`. 
    They allow you to target entities of specific types during the lookup process. 
-   For instance, if you have an entity type called `INFRA-HOST`, and you define a lookup for it, 
+   2. For instance, if you have an entity type called `INFRA-HOST`, and you define a lookup for it, 
    the relationship synthesis process will inspect only entities of type `INFRA-HOST` to find potential matches for the candidate relationship. 
    This focused approach enhances the precision and efficiency of the relationship synthesis.
 
