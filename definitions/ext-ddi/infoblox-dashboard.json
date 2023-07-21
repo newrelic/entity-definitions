@@ -50,17 +50,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider = 'kentik-ipam'"
-                }
-              ],
-              "thresholds": [
-                {
-                  "alertSeverity": "WARNING",
-                  "value": 90
-                },
-                {
-                  "alertSeverity": "CRITICAL",
-                  "value": 95
+                  "query": "FROM Metric SELECT latest(kentik.snmp.hrProcessorLoad) AS 'CPU Utilization %' WHERE provider = 'kentik-ipam'"
                 }
               ]
             }
@@ -83,16 +73,6 @@
                   "accountId": 0,
                   "query": "FROM Metric SELECT latest(kentik.snmp.MemoryUtilization) AS 'Current Memory Utilization %' WHERE provider = 'kentik-ipam'"
                 }
-              ],
-              "thresholds": [
-                {
-                  "alertSeverity": "WARNING",
-                  "value": 90
-                },
-                {
-                  "alertSeverity": "CRITICAL",
-                  "value": 95
-                }
               ]
             }
           },
@@ -114,7 +94,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES"
+                  "query": "FROM Metric SELECT latest(kentik.snmp.hrProcessorLoad) AS 'CPU Utilization %' WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES slide by max"
                 }
               ],
               "yAxisLeft": {
@@ -142,7 +122,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES"
+                  "query": "FROM Metric SELECT min(kentik.snmp.MemoryUtilization) AS 'Min Memory', max(kentik.snmp.MemoryUtilization) AS 'Max Memory', average(kentik.snmp.MemoryUtilization) AS 'Average Memory' WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES slide by max"
                 }
               ],
               "yAxisLeft": {
@@ -265,7 +245,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus) OR latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_name or if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed AS 'Interface Speed' WHERE provider = 'kentik-ipam' LIMIT MAX"
+                  "query": "FROM Metric SELECT latest(kentik.snmp.IfInUtilization) AS 'RX %', latest(kentik.snmp.IfOutUtilization) AS 'TX %', latest(ifOperStatus) OR latest(if_OperStatus) AS 'Operational Status', latest(kentik.snmp.ifInErrorPercent) AS 'RX Error %', latest(kentik.snmp.ifOutErrorPercent) AS 'TX Error %' FACET if_interface_name AS 'Interface', if_Alias AS 'Interface Alias', if_Speed AS 'Interface Speed' WHERE provider = 'kentik-ipam' LIMIT MAX"
                 }
               ]
             }
@@ -291,7 +271,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_name or if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfInUtilization) as 'RX %' FACET if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
@@ -322,7 +302,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'TX %' FACET if_name or if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT average(kentik.snmp.IfOutUtilization) as 'TX %' FACET if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
@@ -353,7 +333,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_name or if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCInOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
@@ -382,7 +362,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_name or if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT rate(max(kentik.snmp.ifHCOutOctets)*8/1000/1000, 1 second) AS 'Mbps' FACET device_name, if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
@@ -411,7 +391,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT max(kentik.snmp.ifInErrorPercent) FACET if_name or if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT max(kentik.snmp.ifInErrorPercent) FACET if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
@@ -442,7 +422,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT max(kentik.snmp.ifOutErrorPercent) FACET if_name or if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
+                  "query": "FROM Metric SELECT max(kentik.snmp.ifOutErrorPercent) FACET if_interface_name WHERE provider = 'kentik-ipam' TIMESERIES 5 MINUTES LIMIT 10"
                 }
               ],
               "yAxisLeft": {
