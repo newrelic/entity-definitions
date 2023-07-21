@@ -125,14 +125,15 @@ The `tags` field is a composed object with the following subfields:
 
 Example:
 ```yaml
-    tags:
-      matchingMode: ALL
-      predicates:
-        - tagKeys: ["aws.sqs.QueueName"]
-          field: queueName
-        - tagKeys: ["aws.region"]
-          field: region
+     tags:
+        matchingMode: ANY
+        predicates:
+           - tagKeys: ["aws.bucketName", "aws.s3.BucketName"]
+             field: bucketName
 ```
+
+In this case, entities with the tag keys `aws.bucketName` or `aws.s3.BucketName` will be matched (using their tag values) 
+with data from the `bucketName` field.
 
 ## onMatch
 
@@ -149,7 +150,7 @@ Example:
 
 ## onMiss
 
-If the system fails to match with any entity, an uninstrumented entity will be created.
+If the system fails to match with any entity, an uninstrumented entity could be created.
 
 The uninstrumented entity indicates that additional instrumentation can be configured to gain more visibility.
 
@@ -164,5 +165,5 @@ Example:
     onMiss:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
-        type: AWSS3BUCKET
+        type: AWSS3BUCKET # The final domain-type will be UNINSTRUMENTED-AWSS3BUCKET
 ```
