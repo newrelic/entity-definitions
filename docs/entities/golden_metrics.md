@@ -8,7 +8,7 @@ We allow a maximum of 10 metrics, although we recommend no more than 3.
 
 Golden metrics should be defined under the file name `golden_metrics.yml`.
 
-They're defined in a map with a unique key, which defines the intention of the metric: 
+They're defined in a map with a unique key, which defines the intention of the metric:
 
 * We allow the `[a-zA-Z0-9_]` characters, with a maximum of 100 characters.
 * Provide a `title`, with a brief explanation of the query.
@@ -46,7 +46,7 @@ memoryUsage:
 
 ### Metric options
 
-| **Name** | **Mandatory** | **Default** | **Description**                                            | 
+| **Name** | **Mandatory** | **Default** | **Description**                                            |
 | -------- | ------------- | ------------ | ---------------------------------------------             |
 | title    |      Yes      |  | Provide a meaningful title to the graph or value you are displaying.|
 | displayAsValue |   No    | `false` | Use this option if you want to display a value instead of a line of data (`TIMESERIES`) when viewing the information of **one** entity. |
@@ -57,7 +57,7 @@ memoryUsage:
 
 When multiple sources of data exist, provide a query for each source. Otherwise use `newRelic` as the key.
 
-| **Name** | **Mandatory** | **Default** | **Description**                                            | 
+| **Name** | **Mandatory** | **Default** | **Description**                                            |
 | -------- | ------------- | ------------ | ---------------------------------------------             |
 | select    |      Yes      |  | Provide the field and function you want to display in the metric. You must only provide one field, but you can do aggregations, sums, etc. Always name the fields to make it easier to read: for example, `sum((provider.httpCodeElb4XXCount.Sum OR 0) + (provider.httpCodeElb5XXCount.Sum OR 0)) AS 'Errors'`|
 | from |   No    | `Metric` | Choose where your metric gathers the information from. |
@@ -122,6 +122,39 @@ destinations:
       from: KFlow
       where: "provider = 'kentik-flow-device'"
 ```
+
+Last but not least, there's also a very important concept that needs to be considered - each query implementation from each source **must be of same metric kind**, otherwise, _**the platform will simply reject it**_. In an attempt to make it simple and clear, you can think of a metric kind as something that's inferred from each query definition that tells the platform how to really interpret the values from the source stream so that, when the time comes to combine many sources, the platform has a very valuable hint on how to synteshize each stream in a way to "fit all of them into the same golden-metric vessel". The metric kind is the type of vessel. 
+
+i.e. let's start simple and explore the example above:
+
+![metric_kind-correct](images/metric_kind_correct.png)
+
+This definition is valid since both query implementations are expressing an **AVERAGE** metric kind seeing as, well, they both rely on the **average** function. Given that both expressions are of the same kind, there won't hard to fit all streams into the shape of an **average**, so it will be considered as valid.
+
+Now let's move on to a different example, this time we'll keep **average** function on one definition but, given the nature of the provider instrumentation, you need to use **max** on the second one, something like this:
+
+![metric_kind-correct](images/metric_kind_invalid.png)
+
+The problem with this particular definition is that there's no way to fit both *average* and *max* in a "single vessel" due to the fact that they both have different semantics (How would you query an *average* and a *max* using just a single expression so that they are both part of the same metric? Ruminate that for a minute). For this particular case, given that both expressions are of different kinds, the definition will end up being rejected since there's no way to represent that as a single timeseries. But what if we need to calculate an average by dividing two different aggregates then? Does it mean it's not going to work? Something like this:
+
+![metric_kind-correct](images/generalized_average_correct.png)
+
+Luckily, the engine is "smart enough" to infer if there's a kind that could accurately represent the expressed value. It should be noted that *it doesn't come without fail* and it's more about a best-effort solution, still, it is a powerful enough feature that allows building slighltly more complex expressions. For this particular example, even if `SUM(a)/SUM(b)` is used and a metric kind of **SUM** could seem like right kind (both parts are using the *sum* function), since both sums are divided as well, the engine will also see an **average** of **sums**, and that's why it will be inferred as **GENERALIZED_AVERAGE**, and since this type is compatible with **AVERAGE**, the overall definition would still be seen **AVERAGE** kind.
+
+In case you're curious, here's a list of supported metric kinds:
+
+- COUNT
+- SUM
+- MIN
+- MAX
+- AVERAGE
+- GENERALIZED AVERAGE
+- CONSTANT
+- PERCENTILE
+- BUCKET PERCENTILE
+- LATEST
+- UNIQUE COUNT
+- 
 
 ### Currently supported NRQL expressions
 
