@@ -1,6 +1,6 @@
 # Relationship docs
 
-Please note that relationships via entity-definitions are currently in the experimental phase.
+Please note that the relationship synthesis mechanism is currently in the experimental phase.
 
 For newcomers, we recommend starting with [relationship synthesis](../docs/relationships/relationship_synthesis.md).
 This document will walk you through creating relationships using the synthesis process.
