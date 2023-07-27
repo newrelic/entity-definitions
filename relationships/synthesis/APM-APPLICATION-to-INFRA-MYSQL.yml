@@ -1,0 +1,30 @@
+relationships:
+  - name: apmApplicationCallsInfraRedisInstance
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: peer.address
+        present: true
+      - attribute: component
+        anyOf: [ "MySQL" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MYSQLNODE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "node:"
+              - attribute: peer.address
+            hashAlgorithm: FARM_HASH
