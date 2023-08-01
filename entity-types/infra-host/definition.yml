@@ -119,6 +119,62 @@ synthesis:
       tags:
         host.name:
         instrumentation.provider:
+
+    # Prometheus node exporter entities
+    # AWS by taskArn
+    - identifier: taskarn
+      name: taskarn
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: instanceid
+        present: false
+      - attribute: instance
+        present: false
+      - attribute: metricName
+        prefix: "node_"
+      - attribute: instrumentation.provider
+        value: "prometheus"
+      # Value added for test entities only
+      - attribute: newrelicOnly
+        value: "true"
+      tags:
+        taskArn:
+        nodename:
+        instrumentation.provider:
+    # AWS EC2 by instanceid
+    - identifier: instanceid
+      name: instanceid
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: instance
+        present: false
+      - attribute: metricName
+        prefix: "node_"
+      - attribute: instrumentation.provider
+        value: "prometheus"
+      # Value added for test entities only
+      - attribute: newrelicOnly
+        value: "true"
+      tags:
+        instanceid:
+        nodename:
+        instrumentation.provider:
+    # On a host
+    - identifier: instance
+      name: instance
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: metricName
+        prefix: "node_"
+      - attribute: instrumentation.provider
+        value: "prometheus"
+      # Value added for test entities only
+      - attribute: newrelicOnly
+        value: "true"
+      tags:
+        instance:
+        nodename:
+        instrumentation.provider:
 configuration:
   entityExpirationTime: DAILY
   alertable: true
