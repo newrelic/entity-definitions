@@ -1,0 +1,131 @@
+cpuUsage:
+  title: CPU usage (%)
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(host.cpuPercent)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(cpuPercent)
+      from: SystemSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(1 - system.cpu.utilization) * 100
+      where: state = 'idle'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: (filter(sum(node_cpu_seconds_total), where mode != 'idle') / sum(node_cpu_seconds_total)) * 100
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+memoryUsage:
+  title: Memory usage (%)
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(host.memoryUsedPercent)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(memoryUsedPercent)
+      from: SystemSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(system.memory.utilization) * 100
+      where: state = 'used'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: 100 - (sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)) * 100
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+storageUsage:
+  title: Storage usage (%)
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(host.disk.usedPercent)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(diskUsedPercent)
+      from: StorageSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(system.filesystem.utilization) * 100
+      # squashfs will always have a utilization of 100%
+      where: type != 'squashfs'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: 100 - (sum(node_filesystem_avail_bytes) / sum(node_filesystem_size_bytes)) * 100
+      from: Metric
+      where: fstype != 'tmpfs'
+      eventId: entity.guid
+      eventName: entity.name
+networkTrafficTx:
+  title: Network transmit traffic (bytes/s)
+  unit: BYTES_PER_SECOND
+  queries:
+    newRelic:
+      select: average(host.net.transmitBytesPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(transmitBytesPerSecond)
+      from: NetworkSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      # emulate a rate of 1 second in order to get bytes/second
+      select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND direction='transmit'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: sum(node_network_transmit_bytes_total) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND metricName='node_network_transmit_bytes_total'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+networkTrafficRx:
+  title: Network receive traffic (bytes/s)
+  unit: BYTES_PER_SECOND
+  queries:
+    newRelic:
+      select: average(host.net.receiveBytesPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(receiveBytesPerSecond)
+      from: NetworkSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      # emulate a rate of 1 second in order to get bytes/second
+      select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND direction='receive'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: sum(node_network_receive_bytes_total) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND metricName='node_network_receive_bytes_total'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
