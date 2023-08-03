@@ -2,12 +2,11 @@ relationships:
   - name: apmApplicationCallsInfraRedisInstance
     version: "1"
     origins:
-      - Distributed Tracing
+      - APM Metrics
     conditions:
-      - attribute: peer.address
-        present: true
-      - attribute: component
-        anyOf: [ "Redis" ]
+      - attribute: metricName
+        # "datastore/instance/redis/$host/$port"
+        startsWith: "datastore/instance/redis/"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -17,7 +16,7 @@ relationships:
       target:
         buildGuid:
           account:
-            attribute: accountId
+            lookup: yes
           domain:
             value: INFRA
           type:
@@ -26,5 +25,7 @@ relationships:
           identifier:
             fragments:
               - value: "instance:"
-              - attribute: peer.address
+              - attribute: metricName__4 # hostname
+              - value: ":"
+              - attribute: metricName__5 # port
             hashAlgorithm: FARM_HASH
