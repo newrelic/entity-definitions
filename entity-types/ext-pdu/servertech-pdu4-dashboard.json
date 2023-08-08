@@ -1,0 +1,252 @@
+{
+    "name": "Servertech PDU",
+    "description": null,
+    "pages": [
+      {
+        "name": "Servertech PDU",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 3,
+              "height": 6
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "recent-relative"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(device_name) AS 'Device Name',\n  latest(src_addr) AS 'Device IP',\n  latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)',\n  latest(SysLocation) AS 'Location',\n  latest(SysObjectID) AS 'SysObjectID',\n  latest(entity.type) AS 'NR Entity Type',\n  latest(instrumentation.name) AS 'Ktranslate Profile',\n  latest(timestamp) AS 'Last Update',\n  latest(tags.container_service) AS 'Docker Container',\n  latest(PollingHealth) AS 'Polling Health',\n  latest(PollingHealthReason) AS 'Health Reason'\nWHERE provider = 'kentik-pdu'\nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Unit Details",
+            "layout": {
+              "column": 4,
+              "row": 1,
+              "width": 3,
+              "height": 6
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(st4UnitName) AS 'Unit Name',\n  latest(entity_serial) AS 'Unit Serial',\n  latest(st4UnitModel) AS 'Unit Model',\n  latest(st4UnitType) AS 'Unit Type',\n  latest(st4SystemFirmwareVersion) AS 'Unit Firmware',\n  latest(st4UnitProductMfrDate) AS 'Unit Manufacturer Date'\nWHERE provider = 'kentik-pdu'\nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Unit Status",
+            "layout": {
+              "column": 7,
+              "row": 1,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(st4UnitStatus)\nFACET st4UnitName\nWHERE provider = 'kentik-pdu'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Input Cord Status",
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "width": 2,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT latest(st4InputCordStatus) AS 'Input Status'\nFACET\n  st4InputCordName AS 'Input Name'\nWHERE provider = 'kentik-pdu'\nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Line Status",
+            "layout": {
+              "column": 7,
+              "row": 4,
+              "width": 4,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(st4LineState) AS 'Line State',\n  latest(st4LineStatus) AS 'Line Status',\n  latest(st4LineCurrentStatus) AS 'Line Current (V) Status'\nFACET st4LineID\nWHERE provider = 'kentik-pdu'\nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Outlet Status",
+            "layout": {
+              "column": 1,
+              "row": 7,
+              "width": 10,
+              "height": 5
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(st4OutletState) AS 'Outlet State',\n  latest(st4OutletStatus) AS 'Outlet Status'\nFACET st4OutletID AS 'Outlet ID', st4OutletName AS 'Outlet Name'\nWHERE provider = 'kentik-pdu'\nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Phase Status",
+            "layout": {
+              "column": 1,
+              "row": 12,
+              "width": 10,
+              "height": 2
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(st4PhaseState) AS 'Phase State',\n  latest(st4PhaseStatus) AS 'Phase Status',\n  latest(st4PhaseVoltageStatus) AS 'Phase Voltage Status',\n  latest(st4PhasePowerFactorStatus) AS 'Phase Power Factor Status'\nFACET\n  st4PhaseID AS 'Phase ID',\n  st4PhaseLabel AS 'Phase Label'\nWHERE provider = 'kentik-pdu'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Branch Status",
+            "layout": {
+              "column": 1,
+              "row": 14,
+              "width": 5,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(st4BranchState) AS 'Branch State',\n  latest(st4BranchStatus) AS 'Branch Status',\n  latest(st4BranchCurrentStatus) AS 'Branch Current (V) Status'\nFACET st4BranchID AS 'Branch ID', st4BranchLabel AS 'Branch Name'\nWHERE provider = 'kentik-pdu'\nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Over-Current Protection Status",
+            "layout": {
+              "column": 6,
+              "row": 14,
+              "width": 5,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(st4OcpStatus) AS 'OCP Status'\nFACET\n  st4OcpID AS 'OCP ID',\n  st4OcpLabel AS 'OCP Label',\n  st4OcpType AS 'OCP Type'\nWHERE provider = 'kentik-pdu'\nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
