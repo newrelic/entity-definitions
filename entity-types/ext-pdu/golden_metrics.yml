@@ -1,7 +1,14 @@
 outputLoadCapacity:
   title: Aggregate load (amps)
   unit: COUNT
-  query:
-    select: max(kentik.snmp.rPDULoadStatusLoad)*10
-    from: Metric
-    where: "provider = 'kentik-pdu'"
+  queries:
+    # Kentik profiles (default)
+    kentik:
+      select: max(kentik.snmp.rPDULoadStatusLoad)*10
+      from: Metric
+      where: "provider = 'kentik-pdu'"
+    # Servertech PDU 4 profiles
+    kentik/servertech-pdu4:
+      select: max(kentik.snmp.st4PhaseCurrent)*100 #Centiamperes to Amperes
+      from: Metric
+      where: "provider = 'kentik-pdu'"
