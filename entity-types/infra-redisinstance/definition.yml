@@ -1,10 +1,60 @@
 domain: INFRA
 type: REDISINSTANCE
+
+synthesis:
+  # Apart from this rule REDISINSTANCE entities are also created from infra pipeline.
+  rules:
+    # Redis receiver from otel collector.
+    # Currently the receiver doesn't have an identifier, added redis.instance.id with a processor for POC
+  - identifier: redis.instance.id
+    name: redis.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: MetricRaw
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: otelcol/redisreceiver
+    tags:
+      # Default resource attributes
+      redis.instance.id:
+      redis.version:
+      # Attributes
+      redis.role:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+    # AWS tags
+    aws.region:
+
+dashboardTemplates:
+  # This should match the entity created from nri-redis in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  # Redis receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+
 goldenTags:
 - redis.port
 - redis.hostname
 - redis.version
 - redis.clusterRole
+
 configuration:
   entityExpirationTime: DAILY
   alertable: true
