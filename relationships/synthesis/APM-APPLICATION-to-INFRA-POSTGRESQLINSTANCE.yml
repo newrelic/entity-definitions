@@ -1,0 +1,31 @@
+relationships:
+  - name: apmApplicationCallsInfraPostgreSQLInstance
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "datastore/instance/Postgres/$host/$port"
+        startsWith: "datastore/instance/Postgres/"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: yes
+          domain:
+            value: INFRA
+          type:
+            value: POSTGRESQLINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "pg-instance:"
+              - attribute: metricName__4 # hostname
+              - value: ":"
+              - attribute: metricName__5 # port
+            hashAlgorithm: FARM_HASH
