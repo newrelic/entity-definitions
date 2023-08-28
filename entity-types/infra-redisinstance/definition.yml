@@ -4,23 +4,29 @@ type: REDISINSTANCE
 synthesis:
   # Apart from this rule REDISINSTANCE entities are also created from infra pipeline.
   rules:
-    # Redis receiver from otel collector.
-    # Currently the receiver doesn't have an identifier, added redis.instance.id with a processor for POC
-  - identifier: redis.instance.id
-    name: redis.instance.id
+  # Redis receiver from otel collector.
+  # Currently the receiver doesn't have an identifier, there is an issue open to add it but it is 
+  # unique per-run so we have to ask the user to add `redis.instance.name` manually so we have a
+  # deterministic way to add it.
+  - identifier: redis.instance.name
+    name: redis.instance.name
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
         value: MetricRaw
+      # All metrics from the receiver starts with the 'redis.' prefix.
       - attribute: metricName
         prefix: redis.
       - attribute: instrumentation.provider
         value: opentelemetry
+      # This filters only metrics coming from redis receiver, given that metrics
+      # could deffer between different runtime receivers. 
       - attribute: otel.library.name
         value: otelcol/redisreceiver
     tags:
       # Default resource attributes
-      redis.instance.id:
+      # redis.instance.id:  # TODO: This is still not reported by the receiver.
+      redis.instance.name:
       redis.version:
       # Attributes
       redis.role:
@@ -50,10 +56,14 @@ dashboardTemplates:
     template: opentelemetry_dashboard.json
 
 goldenTags:
+# Redis OHI
 - redis.port
 - redis.hostname
 - redis.version
 - redis.clusterRole
+# Open Telemetry
+# - redis.instance.id  # TODO: This is still not reported by the receiver.
+- redis.instance.name
 
 configuration:
   entityExpirationTime: DAILY
