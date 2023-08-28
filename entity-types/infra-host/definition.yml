@@ -1,0 +1,184 @@
+domain: INFRA
+type: HOST
+goldenTags:
+- account
+- windowsPlatform
+- linuxDistribution
+- aws.awsRegion
+- aws.region
+- aws.availabilityZone
+- aws.accountId
+- azure.regionName
+- azure.subscriptionId
+- azure.resourceGroup
+- gcp.zone
+- gcp.projectId
+# opentelemetry semantic conventions for cloud instances
+- cloud.provider
+- cloud.account.id
+- cloud.region
+- cloud.availability_zone
+- cloud.platform
+synthesis:
+  rules:
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from New Relic sap solutions 
+    - identifier: host.id
+      name: host.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: SAP_ETYPE
+          value: HOST
+      tags:
+        host.name:
+        instrumentation.provider:
+
+    # Prometheus node exporter entities
+    # AWS by taskArn
+    - identifier: taskarn
+      name: taskarn
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: instanceid
+        present: false
+      - attribute: instance
+        present: false
+      - attribute: metricName
+        prefix: "node_"
+      - attribute: instrumentation.provider
+        value: "prometheus"
+      # Value added for test entities only
+      - attribute: newrelicOnly
+        value: "true"
+      tags:
+        taskArn:
+        nodename:
+          entityTagNames: [hostname]
+        instrumentation.provider:
+    # AWS EC2 by instanceid
+    - identifier: instanceid
+      name: instanceid
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: instance
+        present: false
+      - attribute: metricName
+        prefix: "node_"
+      - attribute: instrumentation.provider
+        value: "prometheus"
+      # Value added for test entities only
+      - attribute: newrelicOnly
+        value: "true"
+      tags:
+        instanceid:
+          entityTagNames: [host.id, instanceid]
+        nodename:
+          entityTagNames: [hostname]
+        instrumentation.provider:
+    # On a host
+    - identifier: instance
+      name: instance
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: metricName
+        prefix: "node_"
+      - attribute: instrumentation.provider
+        value: "prometheus"
+      # Value added for test entities only
+      - attribute: newrelicOnly
+        value: "true"
+      tags:
+        instance:
+        nodename:
+          entityTagNames: [hostname]
+        instrumentation.provider:
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true

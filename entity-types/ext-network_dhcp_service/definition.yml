@@ -1,0 +1,38 @@
+domain: EXT
+type: NETWORK_DHCP_SERVICE
+synthesis:
+  rules:
+  # IPv4 DHCP Service via Gigamon
+  - identifier: dst_ip
+    name: dst_ip
+    conditions:
+    - attribute: app_name
+      value: dhcp
+    - attribute: instrumentation.provider
+      value: Gigamon
+    - attribute: dhcp_ip_lease_time
+      present: true
+    - attribute: eventType
+      value: Gigamon
+    tags:
+      dst_ip:
+        entityTagName: dstIp
+        multiValue: false
+      dst_port:
+        entityTagName: dstPort
+        multiValue: false
+      dst_mac:
+        entityTagName: dstMacAddr
+        multiValue: false
+
+configuration:
+  entityExpirationTime: DAILY
+
+goldenTags:
+- dst_ip
+- dst_ipv6
+- dst_mac
+
+dashboardTemplates:
+  gigamon/dhcpIpV4:
+    template: giga-dhcpv4-dashboard.json

@@ -1,0 +1,43 @@
+domain: EXT
+type: NET_SNMP
+
+synthesis:
+  rules:
+    # Generic net-snmp server
+    - identifier: device_name
+      name: device_name
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: provider
+        value: kentik-net-snmp
+      tags:
+        src_addr:
+          entityTagName: device_ip
+          multiValue: false
+        tags.container_service:
+          entityTagName: container_service
+          multiValue: false
+
+    # VMWare ESX server
+    - identifier: device_name
+      name: device_name
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: provider
+        value: kentik-esx
+      tags:
+        src_addr:
+          entityTagName: device_ip
+          multiValue: false
+
+goldenTags:
+- device_ip
+- container_service
+
+dashboardTemplates:
+  # Default
+  kentik:
+    template: dashboard.json
+  # ESX
+  kentik/esx:
+    template: esx-dashboard.json

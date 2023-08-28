@@ -1,0 +1,59 @@
+throughput:
+  title: Throughput (rpm)
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    opentelemetry:
+      select: rate(count(*), 1 minute)
+      from: Span
+      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+    newrelic-opentelemetry:
+      select: rate(count(apm.service.transaction.duration), 1 minute)
+      from: Metric
+    kamon-agent:
+      select: rate(sum(http.server.requests), 1 minute) as 'count'
+      from: Metric
+    micrometer:
+      select: rate(sum(http.server.requests), 1 minute) as 'count'
+      from: Metric
+    pixie:
+      select: rate(count(http.server.duration), 1 minute)
+      from: Metric
+errorRate:
+  title: Error rate (%)
+  queries:
+    opentelemetry:
+      select: (filter(count(*), WHERE otel.status_code = 'ERROR') * 100) / count(*)
+      from: Span
+      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+    newrelic-opentelemetry:
+      select: sum(apm.service.error.count) * 100 / count(apm.service.transaction.duration)
+      from: Metric
+    kamon-agent:
+      select: (filter(sum(http.server.requests), where http.status_code = '5xx') * 100) / sum(http.server.requests)
+      from: Metric
+    micrometer:
+      select: (filter(sum(http.server.requests), where exception IS NOT NULL and exception != 'None') * 100) / sum(http.server.requests)
+      from: Metric
+    pixie:
+      select: (filter(count(http.server.duration), where numeric(http.status_code) >= 400 AND numeric(http.status_code) != 404) * 100) / count(http.server.duration)
+      from: Metric
+responseTimeMs:
+  title: Response time (ms)
+  unit: MS
+  queries:
+    opentelemetry:
+      select: average(duration.ms)
+      from: Span
+      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+    newrelic-opentelemetry:
+      select: average(apm.service.transaction.duration * 1000)
+      from: Metric
+    kamon-agent:
+      select: average(http.server.requests)
+      from: Metric
+    micrometer:
+      select: average(http.server.requests)
+      from: Metric
+    pixie:
+      select: average(http.server.duration)
+      from: Metric

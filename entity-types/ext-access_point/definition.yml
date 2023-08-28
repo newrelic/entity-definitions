@@ -1,0 +1,55 @@
+domain: EXT
+type: ACCESS_POINT
+synthesis:
+  rules:
+    # kentik - cisco
+    - identifier: device_name
+      name: device_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: provider
+          value: kentik-cisco-ap
+      tags:
+        src_addr:
+          entityTagName: device_ip
+          multiValue: false
+    # kentik - others
+    - identifier: device_name
+      name: device_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: provider
+          value: kentik-wap
+      tags:
+        src_addr:
+          entityTagName: device_ip
+          multiValue: false
+   # prometheus provider
+    - identifier: serial
+      name: ip
+      debug: true 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: MetricRaw
+        - attribute: metricName
+          value: 'unifipoller_device_info'
+      tags:
+        model:
+        version:
+        mac:
+        ip:
+          entityTagName: device_ip
+          multiValue: false  
+          
+goldenTags:
+- device_ip
+dashboardTemplates:
+  kentik:
+    template: default-dashboard.json  
+  kentik/aruba-access-point:
+    template: aruba-access-point-dashboard.json
+  kentik/unifi-access-point:
+    template: unifi-access-point-dashboard.json
+  kentik/cisco-access-point:
+    template: cisco-access-point-dashboard.json
