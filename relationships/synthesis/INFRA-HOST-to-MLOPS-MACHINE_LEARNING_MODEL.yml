@@ -1,0 +1,67 @@
+relationships:
+  - name: mlEndpointHostsModelFromEndpointName
+    version: "1"
+    origins: 
+      - Metric API
+    conditions:
+      - attribute: "aws..aws.sagemaker.endpoints.EndpointName"
+        present: true
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: aws.Namespace
+        anyOf: [ "/aws/sagemaker/Endpoints" ]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+      target:
+        buildGuid:
+          account:
+            attribute: accountId  
+          domain:
+            value: MLOPS
+          type:
+            value: MACHINE_LEARNING_MODEL
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: "aws..aws.sagemaker.endpoints.EndpointName"
+            hashAlgorithm: IDENTITY
+  - name: mlEndpointHostModel
+    version: "1"
+    origins: 
+      - Metric API
+    conditions:
+      - attribute: "aws.sagemaker.EndpointName"
+        present: true
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: aws.Namespace
+        anyOf: [ "AWS/SageMaker" ]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+      target:
+        buildGuid:
+          account:
+            attribute: accountId  
+          domain:
+            value: MLOPS
+          type:
+            value: MACHINE_LEARNING_MODEL
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: "aws.sagemaker.EndpointName"
+            hashAlgorithm: IDENTITY
+        
+    
