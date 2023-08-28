@@ -1,0 +1,30 @@
+relationships:
+  - name: k8sClusterContainsExtPixieCassandra
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "PIXIE_CASSANDRA" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: yes  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETESCLUSTER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:cluster:"
+              - attribute: k8s.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
