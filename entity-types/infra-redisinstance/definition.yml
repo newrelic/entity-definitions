@@ -6,10 +6,10 @@ synthesis:
   rules:
   # Redis receiver from otel collector.
   # Currently the receiver doesn't have an identifier, there is an issue open to add it but it is 
-  # unique per-run so we have to ask the user to add `redis.instance.name` manually so we have a
+  # unique per-run so we have to ask the user to add `newrelic.redis.instance_name` manually so we have a
   # deterministic way to add it.
-  - identifier: redis.instance.name
-    name: redis.instance.name
+  - identifier: newrelic.redis.instance_name
+    name: newrelic.redis.instance_name
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -26,7 +26,6 @@ synthesis:
     tags:
       # Default resource attributes
       # redis.instance.id:  # TODO: This is still not reported by the receiver.
-      redis.instance.name:
       redis.version:
       # Attributes
       redis.role:
@@ -35,10 +34,13 @@ synthesis:
       cloud.provider:
       cloud.account.id:
       cloud.region:
+      # OTel attributes
       # The library name contains the name of the receiver that is used to identify the source
       # and select the dashboard.
       otel.library.name:
         entityTagName: instrumentation.name
+      server.address:
+      server.port:
 
   tags:
     # For OpenTelemetry
@@ -63,7 +65,7 @@ goldenTags:
 - redis.clusterRole
 # Open Telemetry
 # - redis.instance.id  # TODO: This is still not reported by the receiver.
-- redis.instance.name
+- newrelic.redis.instance_name
 
 configuration:
   entityExpirationTime: DAILY
