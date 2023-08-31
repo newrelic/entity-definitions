@@ -2,7 +2,7 @@ const utils = require('./utils');
 
 let ALL_RELATIONSHIP_SYNTHESIS;
 function validateAndRecord (rule) {
-  if (ALL_RELATIONSHIP_SYNTHESIS.has(rule.name)) {
+  if (rule.name in ALL_RELATIONSHIP_SYNTHESIS) {
     throw new Error('There already exists a rule with name ' + rule.name);
   }
   ALL_RELATIONSHIP_SYNTHESIS.set(rule.name, rule);
@@ -60,7 +60,7 @@ const RULES = [
       });
     });
   });
-})().catch( error => {
+})().catch(error => {
   console.error(error);
-  process.exit(1)
-})
+  process.exit(1);
+});
