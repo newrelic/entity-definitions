@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const githubHelper = require('./ghHelper');
 
 let ALL_RELATIONSHIP_SYNTHESIS;
 function validateAndRecord (rule) {
@@ -45,6 +46,7 @@ const RULES = [
 ];
 
 (async () => {
+  ALL_RELATIONSHIP_SYNTHESIS = new Map();
   const allRelationships = await utils.getAllRelationshipSynthesisDefinitions();
   allRelationships.forEach(setDefinitionsInFile => {
     setDefinitionsInFile.relationships.forEach(relationship => {
@@ -52,10 +54,12 @@ const RULES = [
         try {
           rule.apply(relationship);
         } catch (errorMessage) {
-          console.error(`Definition for ${relationship.name} violates rule "${rule.name}":`);
+          const message = `Definition for ${relationship.name} violates rule "${rule.name}":`;
+          console.error(message);
           console.error(errorMessage);
-          // terminate early
-          process.exit(1);
+          githubHelper.createReviewPR(`${message}\n${errorMessage}`, githubHelper.GH_PR_EVENT_REQUEST_CHANGES)
+            .then(process.exit(1))
+            .catch(error => console.error(error));
         }
       });
     });
