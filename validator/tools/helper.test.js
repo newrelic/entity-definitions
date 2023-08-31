@@ -13,21 +13,21 @@ describe('load github loader', () => {
   test('if the github token is not defined in the env values the helper should not be enabled', () => {
     delete process.env.GITHUB_TOKEN;
 
-    const githubHelper = require('./helper');
+    const githubHelper = require('./ghHelper');
     expect(githubHelper.enabled).toBe(false);
   });
 
   test('if the github pr is not defined in the env values the helper should not be enabled', () => {
     delete process.env.PR_NUMBER;
 
-    const githubHelper = require('./helper');
+    const githubHelper = require('./ghHelper');
     expect(githubHelper.enabled).toBe(false);
   });
 
   test('if the github repository is not defined in the env values the helper should not be enabled', () => {
     delete process.env.GITHUB_REPOSITORY;
 
-    const githubHelper = require('./helper');
+    const githubHelper = require('./ghHelper');
     expect(githubHelper.enabled).toBe(false);
   });
 
@@ -37,7 +37,7 @@ describe('load github loader', () => {
     process.env.PR_NUMBER = '1';
     process.env.GITHUB_REPOSITORY = 'newrelic/entity_definitions';
 
-    const githubHelper = require('./helper');
+    const githubHelper = require('./ghHelper');
     expect(githubHelper.enabled).toBe(true);
   });
 });

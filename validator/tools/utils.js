@@ -1,7 +1,7 @@
 const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
-const githubHelper = require('./helper');
+const githubHelper = require('./ghHelper');
 const { readdir } = fs.promises;
 const { DEFINITIONS_DIR } = require('./props');
 const { RELATIONSHIPS_SYNTHESIS_DIR } = require('./props');
