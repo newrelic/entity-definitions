@@ -45,22 +45,22 @@ const RULES = [
 ];
 
 (async () => {
-  RULES.forEach(rule => {
-    ALL_RELATIONSHIP_SYNTHESIS = new Map();
-    utils.getAllRelationshipSynthesisDefinitions().then(
-      allRelationships => allRelationships.forEach(setOfDefinitionsInFile => {
-        setOfDefinitionsInFile.relationships.forEach(relationship => {
-          try {
-            rule.apply(relationship);
-          } catch (errorMessage) {
-            console.error(`Definition for ${relationship.name} violates rule "${rule.name}":`);
-            console.error(errorMessage);
-            // terminate early
-            process.exit(1);
-          }
-        });
-      }))
-      .catch(err => console.log(err));
-  }
-  );
-})();
+  const allRelationships = await utils.getAllRelationshipSynthesisDefinitions();
+  allRelationships.forEach(setDefinitionsInFile => {
+    setDefinitionsInFile.relationships.forEach(relationship => {
+      RULES.forEach(rule => {
+        try {
+          rule.apply(relationship);
+        } catch (errorMessage) {
+          console.error(`Definition for ${relationship.name} violates rule "${rule.name}":`);
+          console.error(errorMessage);
+          // terminate early
+          process.exit(1);
+        }
+      });
+    });
+  });
+})().catch( error => {
+  console.error(error);
+  process.exit(1)
+})
