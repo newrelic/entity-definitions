@@ -3,6 +3,7 @@ const { readdir } = require('fs').promises;
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
+const { FILE_ENCODING } = require('./props');
 
 (async () => {
   const folderDefinitions = await readdir(DEFINITIONS_DIR, { withFileTypes: true });
@@ -12,7 +13,7 @@ const yaml = require('js-yaml');
       console.error(`expected ${DEFINITION_FILE_NAME} in the definitions folder ${folderDefinition.name}`);
       process.exit(1);
     }
-    const { domain, type } = yaml.load(fs.readFileSync(definitionPath, 'utf-8'));
+    const { domain, type } = yaml.load(fs.readFileSync(definitionPath, FILE_ENCODING));
     const folderDefinitionExpectedName = `${domain.toLowerCase()}-${type.toLowerCase()}`;
     if (folderDefinition.name !== folderDefinitionExpectedName) {
       console.error(`bad definition folder for ${domain} ${type}... expected ${folderDefinitionExpectedName}`);
