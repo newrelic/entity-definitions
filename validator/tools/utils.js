@@ -24,7 +24,7 @@ module.exports = {
     return await Promise.all(definitionFiles.map(async (filename) => {
       const justFileName = filename.split('/').pop();
       if (regex.test(justFileName)) { return yaml.load(fs.readFileSync(filename, 'utf8')); } else {
-        const message = 'Incorrect filename. Format must be <ORIGIN>-to-<TARGET>: ' + justFileName;
+        const message = `Incorrect filename. Format must be ORIGIN-to-TARGET: ${justFileName}`;
         await githubHelper.createReviewPR(message, githubHelper.GH_PR_EVENT_REQUEST_CHANGES);
         throw message;
       }
