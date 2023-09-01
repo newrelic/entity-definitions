@@ -1,0 +1,19 @@
+relationships:
+  - name: otelCallsS3
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: name
+        regex: ".*S3.*"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+    source:
+      extractGuid:
+        attribute: entity.guid
+    target:
+      extractGuid:
+        attribute: s3.guid
