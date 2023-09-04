@@ -4,12 +4,12 @@ type: REDISINSTANCE
 synthesis:
   # Apart from this rule REDISINSTANCE entities are also created from infra pipeline.
   rules:
-  # Redis receiver from otel collector.
-  # Currently the receiver doesn't have an identifier, there is an issue open to add it but it is 
-  # unique per-run so we have to ask the user to add `newrelic.redis.instance_name` manually so we have a
-  # deterministic way to add it.
-  - identifier: newrelic.redis.instance_name
-    name: newrelic.redis.instance_name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - server.address
+        - server.port
+    name: server.address
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -65,7 +65,8 @@ goldenTags:
 - redis.clusterRole
 # Open Telemetry
 # - redis.instance.id  # TODO: This is still not reported by the receiver.
-- newrelic.redis.instance_name
+- server.address
+- server.port
 
 configuration:
   entityExpirationTime: DAILY
