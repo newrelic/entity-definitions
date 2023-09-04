@@ -2,20 +2,20 @@ responseTimeMs:
   title: Response time (ms)
   unit: MS
   query:
-    select: average(newrelic.goldenmetrics.ext.key_transaction.responseTimeMs) AS 'Response time (ms)'
+    select: average(apm.key.transaction.duration) * 1000 as 'Response time (ms)'
     from: Metric
     eventId: entity.guid  
 throughput:
   title: Throughput
   unit: REQUESTS_PER_MINUTE
   query:
-    select: rate(count(newrelic.goldenmetrics.ext.key_transaction.throughput), 1 minute) AS 'Throughput'
+    select: rate(count(apm.key.transaction.duration), 1 minute) as 'Throughput'
     from: Metric
     eventId: entity.guid  
 errorRate:
   title: Error rate
   unit: PERCENTAGE
   query:
-    select: average(newrelic.goldenmetrics.ext.key_transaction.errorRate) AS 'Error %'
+    select: count(apm.key.transaction.error.count) / count(apm.key.transaction.duration) as 'Error rate'
     from: Metric
     eventId: entity.guid  
