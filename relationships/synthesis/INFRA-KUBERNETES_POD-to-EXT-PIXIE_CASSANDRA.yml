@@ -1,0 +1,69 @@
+relationships:
+  - name: k8sPodCallsExtPixieCassandra
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "PIXIE_CASSANDRA" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            lookup: yes  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":pod:"
+              - attribute: service.instance.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+  - name: k8sPodContainsExtPixieCassandra
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "PIXIE_CASSANDRA" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: yes  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":pod:"
+              - attribute: cassandra.pod.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+        
+    
