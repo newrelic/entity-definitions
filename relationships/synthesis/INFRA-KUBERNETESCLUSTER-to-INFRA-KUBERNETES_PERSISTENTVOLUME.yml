@@ -1,0 +1,30 @@
+relationships:
+  - name: k8sClusterContainsPersistentVolume
+    version: "1"
+    origins:
+      - Kubernetes Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "K8sPersistentVolumeSample" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: yes  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETESCLUSTER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:cluster:"
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_PERSISTENTVOLUME
