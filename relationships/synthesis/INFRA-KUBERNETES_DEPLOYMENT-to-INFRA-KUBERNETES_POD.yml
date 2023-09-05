@@ -1,0 +1,34 @@
+relationships:
+  - name: k8sDeploymentContainsPod
+    version: "1"
+    origins: 
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "K8sPodSample" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: yes 
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_DEPLOYMENT
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":deployment:"
+              - attribute: deploymentName
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD
