@@ -1,0 +1,32 @@
+relationships:
+  - name: ibmMqManagerManagesIbmMqQueue
+    version: "1"
+    origins: 
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId  
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "targetName"
+              - value: ":"
+              - attribute: "qmgr"
+            hashAlgorithm: IDENTITY
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type

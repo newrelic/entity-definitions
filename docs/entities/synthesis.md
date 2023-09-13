@@ -161,7 +161,7 @@ synthesis:
 
 If the attribute `k8s.status` is present in the data point that matched this specific rule, its value will be copied to an entity's tag named `k8s.status`.
 
-- One value per tag
+#### One value per tag
 
 By default, an entity tag is a list of values: Any new tag will be added to the list. 
 
@@ -177,7 +177,7 @@ synthesis:
           multiValue: false
 ```
 
-- Rename tags
+#### Rename tags
 
 You can also change the name of the tag to another value, rather than using the name in the attribute. In general, we suggest not to use this configuration unless you are trying to use more standard namings, since sometimes it's difficult for the user to see the difference between entity tags and telemetry attributes, and changing the names could cause even more confusion.
 
@@ -198,7 +198,7 @@ synthesis:
         entityTagNames: [container.state, k8s.status]
 ```
 
-- TTL tags
+#### TTL tags
 
 
 | **Name** | **Type** | **Required** | **Description**  |
