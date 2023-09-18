@@ -8,12 +8,15 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: npm --prefix validator install
       - name: Validate definition
         run: npm --prefix validator run check
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Ensure sanitize was run
         # Runs the sanitize script and checks errors if the dashboards were not sanitized.
         # If the dashboards were sanitized, the git command will return 0 and the step will pass.
