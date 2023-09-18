@@ -1,0 +1,31 @@
+relationships:
+  - name: hostContainsPackage
+    version: "1"
+    origins:
+      - OS Query
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: nr.entity_type
+        value: package 
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            # This is an otel host hence no use of NA on the type.
+            value: HOST
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
