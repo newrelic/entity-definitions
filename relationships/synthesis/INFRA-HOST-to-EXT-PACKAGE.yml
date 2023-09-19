@@ -1,28 +1,30 @@
 relationships:
-  - name: extServiceCallsExtPixieAmqp
+  - name: hostContainsPackage
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: entity.type
-        anyOf: [ "PIXIE_AMQP" ]
+        anyOf: [ "Log" ]
+      - attribute: nr.entity_type
+        anyOf: [ "package" ]
     relationship:
       expires: P75M
-      relationshipType: CALLS
+      relationshipType: CONTAINS
       source:
         buildGuid:
           account:
             attribute: accountId
           domain:
-            value: EXT
+            value: INFRA
           type:
-            value: SERVICE
+            value: HOST
           identifier:
             fragments:
-              - attribute: service.name
+              - attribute: host.id
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
+          entityType:
+            attribute: entity.type
