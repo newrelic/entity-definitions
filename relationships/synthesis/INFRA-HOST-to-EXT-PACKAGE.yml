@@ -1,0 +1,30 @@
+relationships:
+  - name: hostContainsPackage
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: nr.entity_type
+        anyOf: [ "package" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: yes
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type

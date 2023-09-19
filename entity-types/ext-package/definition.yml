@@ -13,7 +13,6 @@ synthesis:
         separator: ":"
         attributes:
           - name
-          - type
           - version
           - architecture
       name: name
@@ -26,8 +25,28 @@ synthesis:
       tags:
         architecture:
         name:
-        type:
         version:
+    # osquery logs sent through the otel collector
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - columns.name
+          - columns.version
+          - columns.arch
+      name: name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: nr.entity_type
+          value: package
+      tags:
+        column.arch:
+          entityTagName: arch
+        column.name:
+          entityTagName: name
+        column.version:
+          entityTagName: version
 configuration:
   entityExpirationTime: DAILY
   alertable: true
