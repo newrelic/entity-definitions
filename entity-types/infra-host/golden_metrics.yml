@@ -28,11 +28,27 @@ cpuUsage:
       from: Metric
       eventId: entity.guid
       eventName: entity.name
+    awsSample:
+      select: average(provider.cpuUtilization.Average)
+      where: provider = 'Ec2Instance'
+      from: ComputeSample
+      eventId: entityGuid
+      eventName: entityName      
     azure:
       select: average(azure.compute.virtualmachines.PercentageCPU)
       from: Metric
       eventId: entity.guid
-      eventName: entity.name      
+      eventName: entity.name
+    azureSample:
+      select: average(cpuUsagePercent.Average)
+      from: AzureVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName
+    gcpSample:
+      select: average(instance.cpu.Utilization)
+      from: GcpVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName          
 memoryUsage:
   title: Memory usage (%)
   unit: PERCENTAGE
@@ -117,11 +133,27 @@ networkTrafficTx:
       from: Metric
       eventId: entity.guid
       eventName: entity.name
+    awsSample:
+      select: average(provider.networkOutBytes.Average)
+      where: provider = 'Ec2Instance'
+      from: ComputeSample
+      eventId: entityGuid
+      eventName: entityName         
     azure:
       select: average(azure.compute.virtualmachines.NetworkOutTotal)
       from: Metric
       eventId: entity.guid
-      eventName: entity.name       
+      eventName: entity.name
+    azureSample:
+      select: average(networkOutBytes.Average)
+      from: AzureVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName
+    gcpSample:
+      select: average(instance.network.SentBytes)
+      from: GcpVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName        
 networkTrafficRx:
   title: Network receive traffic (bytes/s)
   unit: BYTES_PER_SECOND
@@ -154,8 +186,24 @@ networkTrafficRx:
       from: Metric
       eventId: entity.guid
       eventName: entity.name
+    awsSample:
+      select: average(provider.networkInBytes.Average)
+      where: provider = 'Ec2Instance'
+      from: ComputeSample
+      eventId: entityGuid
+      eventName: entityName       
     azure:
       select: average(azure.compute.virtualmachines.NetworkInTotal)
       from: Metric
       eventId: entity.guid
-      eventName: entity.name     
+      eventName: entity.name
+    azureSample:
+      select: average(networkInBytes.Average)
+      from: AzureVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName
+    gcpSample:
+      select: average(instance.network.ReceivedBytes)
+      from: GcpVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName      
