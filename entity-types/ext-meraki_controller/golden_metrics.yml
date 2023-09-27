@@ -1,45 +1,56 @@
+# Count of Meraki Organizations
 organizations:
-  title: "Total count of all organizations being monitored under this Meraki Controller"
+  title: "Orgs"
   unit: COUNT
   queries:
     kentik:
       select: uniqueCount(org_id)
       from: Metric
-      where: "metricName LIKE 'kentik.meraki.%'"
+      where: "provider = 'meraki-cloud-controller'"
       eventId: entity.guid
       eventName: entity.name
-      displayAsValue: true
-
+  displayAsValue: true
+# Count of all networks monitored
 networks:
-  title: "Total count of all networks being monitored under this Meraki Controller"
+  title: "Networks"
   unit: COUNT
   queries:
     kentik:
-      select: uniqueCount(network)
+      select: uniqueCount(network_id)
       from: Metric
-      where: "metricName LIKE 'kentik.meraki.%'"
+      where: "provider = 'meraki-cloud-controller'"
       eventId: entity.guid
       eventName: entity.name
-      displayAsValue: true
-
-appliances:
-  title: "Total count of all Meraki appliances being monitored under this Meraki Controller"
+# Count of all uplinks monitored
+uplinks:
+  title: "Uplinks"
   unit: COUNT
   queries:
     kentik:
-      select: uniqueCount(device_mac_addr)
+      select: uniqueCount(network_id, serial, interface)
       from: Metric
-      where: "metricName LIKE 'kentik.meraki.%'"
+      where: "metricName LIKE 'kentik.meraki.uplink%'"
       eventId: entity.guid
       eventName: entity.name
-
-clients:
-  title: "Total count of all connected clients being monitored under this Meraki Controller"
+# Count of all devices monitored
+devices:
+  title: "Devices"
   unit: COUNT
   queries:
     kentik:
-      select: uniqueCount(client_mac_addr)
+      select: uniqueCount(network_id, serial, device_name)
       from: Metric
-      where: "metricName LIKE 'kentik.meraki.%'"
+      where: "metricName = 'kentik.meraki.device_status.Status'"
+      eventId: entity.guid
+      eventName: entity.name
+# Count of all VPNs monitored
+vpn:
+  title: "VPNs"
+  unit: COUNT
+  queries:
+    kentik:
+      select: uniqueCount(network_id, serial, wan1, wan2)
+      from: Metric
+      where: "metricName = 'kentik.meraki.vpn_status.Status'"
       eventId: entity.guid
       eventName: entity.name
