@@ -6,11 +6,37 @@
       "description": null,
       "widgets": [
         {
-          "title": "Commands calls",
+          "title": "",
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 4,
+            "width": 2,
+            "height": 9
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric \nSELECT\nrate(sum(redis.commands.processed), 1 second) AS 'Commands per second',\naverage(redis.clients.connected) AS 'Clients connected',\naverage(redis.clients.blocked) AS 'Clients blocked',\naverage(redis.memory.used) as 'Memory used', \naverage(redis.connections.received) AS 'Connections received',\naverage(redis.connections.rejected) AS 'Connections rejected'\n   compare with 1 hour ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Comands per second",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 5,
             "height": 3
           },
           "visualization": {
@@ -26,7 +52,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(redis.cmd.calls) FACET cmd TIMESERIES"
+                "query": "FROM Metric SELECT rate(sum(redis.commands.processed), 1 second) AS 'Commands per second' TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -38,11 +64,11 @@
           }
         },
         {
-          "title": "Execution time",
+          "title": "Clients",
           "layout": {
-            "column": 5,
+            "column": 8,
             "row": 1,
-            "width": 4,
+            "width": 5,
             "height": 3
           },
           "visualization": {
@@ -58,7 +84,304 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(redis.cmd.usec) FACET cmd TIMESERIES "
+                "query": "FROM Metric SELECT average(redis.clients.connected) AS 'Connected', average(redis.clients.blocked)  AS 'Blocked' TIMESERIES "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Memory used",
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(redis.memory.used) as 'Bytes' TIMESERIES "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Network I/O",
+          "layout": {
+            "column": 8,
+            "row": 4,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(redis.net.input), 1 second) AS 'Input bytes/s', rate(sum(redis.net.output), 1 second) AS  'Output Bytes/s' TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Connections",
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(redis.connections.received) AS 'Received', average(redis.connections.rejected)  AS 'Rejected' TIMESERIES "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Expired and Evicted Keys",
+          "layout": {
+            "column": 8,
+            "row": 7,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(redis.keys.expired) AS 'Expired', average(redis.key.evicted) AS 'Evicted' TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Keyspaces hits",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 2,
+            "height": 6
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT (average(redis.keyspace.misses) + average(redis.keyspace.hits))/average(redis.keyspace.hits) AS 'Rate', average(redis.keyspace.hits) AS 'Hits', average(redis.keyspace.misses) AS 'Misses' compare with 1 hour ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "CPU time by state per second",
+          "layout": {
+            "column": 3,
+            "row": 10,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(redis.cpu.time), 1 second) AS 'CPU time' FACET state TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Keys",
+          "layout": {
+            "column": 8,
+            "row": 10,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(redis.db.keys) AS 'Keys' TIMESERIES "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Keyspace hits and misses",
+          "layout": {
+            "column": 3,
+            "row": 13,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(redis.keyspace.hits) AS 'Hits'  TIMESERIES "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(redis.keyspace.misses) AS 'Misses' TIMESERIES "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Keys per DB",
+          "layout": {
+            "column": 8,
+            "row": 13,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(redis.db.keys) AS 'Total',  \naverage(redis.db.expires) AS 'With expiration',\naverage(redis.db.avg_ttl) AS 'Average TTL'\nfacet db"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Changes since last save",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 7,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(redis.rdb.changes_since_last_save) AS 'rdb changes' TIMESERIES "
               }
             ],
             "platformOptions": {
