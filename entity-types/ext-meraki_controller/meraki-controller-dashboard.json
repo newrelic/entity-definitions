@@ -1,316 +1,178 @@
 {
-    "name": "Meraki Cloud Controller",
-    "description": null,
-    "pages": [
-      {
-        "name": "Meraki Cloud Controller",
-        "description": null,
-        "widgets": [
-          {
-            "title": "Summary",
-            "layout": {
-              "column": 1,
-              "row": 1,
-              "width": 6,
-              "height": 4
-            },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT uniqueCount(device_mac_addr) AS 'Meraki Devices', uniqueCount(client_mac_addr) AS 'Connected Clients' FACET org_name AS 'Organization', network WHERE metricName LIKE 'kentik.meraki.clients.%'"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              }
-            }
+  "name": "Meraki Controller",
+  "description": null,
+  "pages": [
+    {
+      "name": "Meraki Controller",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 4
           },
-          {
-            "title": "Connected Clients",
-            "layout": {
-              "column": 7,
-              "row": 1,
-              "width": 6,
-              "height": 4
-            },
-            "visualization": {
-              "id": "viz.area"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT uniqueCount(client_mac_addr) AS 'Connected Clients' FACET concat(org_name,' - ',network) WHERE metricName LIKE 'kentik.meraki.clients.%' TIMESERIES 5 MINUTES LIMIT MAX"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              }
-            }
+          "visualization": {
+            "id": "viz.billboard"
           },
-          {
-            "title": "WAN Health",
-            "layout": {
-              "column": 1,
-              "row": 5,
-              "width": 12,
-              "height": 5
-            },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "dataFormatters": [
-                {
-                  "name": "Latency MS",
-                  "precision": 2,
-                  "type": "decimal"
-                },
-                {
-                  "name": "Total Xmt GB",
-                  "precision": 3,
-                  "type": "decimal"
-                },
-                {
-                  "name": "Total Rcv GB",
-                  "precision": 3,
-                  "type": "decimal"
-                }
-              ],
-              "facet": {
-                "showOtherSeries": false
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Network Count",
+                "type": "decimal"
               },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT 100 - latest(kentik.meraki.uplinks.LossPct) AS 'Availability %' ,average(kentik.meraki.uplinks.LatencyMS) AS 'Latency MS' ,max(kentik.meraki.uplinks.Recv)/1000/1000/1000 AS 'Total Rcv GB' ,max(kentik.meraki.uplinks.Sent)/1000/1000/1000 AS 'Total Xmt GB' WHERE status IS NOT NULL FACET network AS 'Network Name', interface, status AS 'Uplink Status' LIMIT MAX"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
+              {
+                "name": "Organization Count",
+                "type": "decimal"
               }
-            }
-          },
-          {
-            "title": "Top 10 - Clients by Recv Bytes",
-            "layout": {
-              "column": 1,
-              "row": 10,
-              "width": 6,
-              "height": 4
+            ],
+            "facet": {
+              "showOtherSeries": false
             },
-            "visualization": {
-              "id": "viz.line"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Recv) AS 'Recv' FACET concat(network,' - ',client_id) TIMESERIES 5 MINUTES LIMIT 10"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              },
-              "yAxisLeft": {
-                "zero": true
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric, KExtEvent SELECT\n  // Total Meraki Organizations\n  filter(uniqueCount(org_id), WHERE provider = 'meraki-cloud-controller') AS 'Organization Count',\n  // Total Meraki Networks\n  filter(uniqueCount(network_id), WHERE provider = 'meraki-cloud-controller') AS 'Network Count',\n  // Are we monitoring uplinks?\n  if(filter(latest(kentik.meraki.uplinks.LossPct[max]), WHERE provider = 'meraki-cloud-controller') >= 0 OR latest(kentik.meraki.uplink_status.Status[max]) >= 0, 'True', 'False') AS 'monitor_uplinks enabled',\n  // Are we monitoring device status?\n  if(filter(latest(kentik.meraki.device_status.Status[max]), WHERE provider = 'meraki-cloud-controller') >= 0, 'True', 'False') AS 'device_status enabled',\n  // Are we monitoring the organization change log?\n  if(filter(count(*), WHERE eventType() = 'KExtEvent'), 'True', 'False') AS 'monitor_org_changes enabled',\n  // Are we monitoring vpn status?\n  if(filter(latest(kentik.meraki.vpn_status.Status[max]), WHERE provider = 'meraki-cloud-controller') >= 0, 'True', 'False') AS 'vpn_status enabled',\n  // Are we decorating vpn status with peer info?\n  if(filter(latest(kentik.meraki.vpn_status.PeerStatus[max]), WHERE provider = 'meraki-cloud-controller') >= 0, 'True', 'False') AS 'show_vpn_peers enabled',\n  // What is the name of the agent running this collection?\n  filter(latest(tags.container_service), WHERE provider = 'meraki-cloud-controller') AS 'Agent Name'"
               }
-            }
-          },
-          {
-            "title": "Top 10 - Clients by Sent Bytes",
-            "layout": {
-              "column": 7,
-              "row": 10,
-              "width": 6,
-              "height": 4
-            },
-            "visualization": {
-              "id": "viz.line"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Sent) AS 'Sent' FACET concat(network,' - ',client_id) TIMESERIES 5 MINUTES LIMIT 10"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              },
-              "yAxisLeft": {
-                "zero": true
-              }
-            }
-          },
-          {
-            "title": "Top 10 - Applications by Recv Bytes",
-            "layout": {
-              "column": 1,
-              "row": 14,
-              "width": 6,
-              "height": 4
-            },
-            "visualization": {
-              "id": "viz.line"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Recv) AS 'Recv' FACET application TIMESERIES 5 MINUTES LIMIT 10"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              },
-              "yAxisLeft": {
-                "zero": true
-              }
-            }
-          },
-          {
-            "title": "Top 10 - Applications by Sent Bytes",
-            "layout": {
-              "column": 7,
-              "row": 14,
-              "width": 6,
-              "height": 4
-            },
-            "visualization": {
-              "id": "viz.line"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "legend": {
-                "enabled": true
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Sent) AS 'Sent' FACET application TIMESERIES 5 MINUTES LIMIT 10"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              },
-              "yAxisLeft": {
-                "zero": true
-              }
-            }
-          },
-          {
-            "title": "Device Inventory",
-            "layout": {
-              "column": 1,
-              "row": 18,
-              "width": 12,
-              "height": 5
-            },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT latest(org_name) AS 'Organization' FACET device_name, device_model, device_firmware, device_serial, device_mac_addr, device_tags, network WHERE metricName LIKE 'kentik.meraki.clients.%' LIMIT MAX"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              }
-            }
-          },
-          {
-            "title": "Client Summary",
-            "layout": {
-              "column": 1,
-              "row": 23,
-              "width": 12,
-              "height": 5
-            },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM Metric SELECT average(kentik.meraki.clients.Recv) AS ' Avg Receive Bytes', average(kentik.meraki.clients.Sent) AS 'Avg Sent Bytes' FACET org_name AS 'Organization', network, device_name, client_id, client_mac_addr LIMIT MAX"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              }
-            }
-          },
-          {
-            "title": "Meraki Configuration Changes",
-            "layout": {
-              "column": 1,
-              "row": 28,
-              "width": 12,
-              "height": 5
-            },
-            "visualization": {
-              "id": "viz.table"
-            },
-            "rawConfiguration": {
-              "facet": {
-                "showOtherSeries": false
-              },
-              "nrqlQueries": [
-                {
-                  "accountId": 0,
-                  "query": "FROM KExtEvent SELECT * SINCE 1 WEEK AGO LIMIT MAX"
-                }
-              ],
-              "platformOptions": {
-                "ignoreTimeRange": false
-              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
             }
           }
-        ]
-      }
-    ]
-  }
+        },
+        {
+          "title": "WAN Health Table",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 8,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT \n  latest(status) AS 'Uplink Status',\n  100 - latest(kentik.meraki.uplinks.LossPct) AS 'Availability %',\n  average(kentik.meraki.uplinks.LatencyMS) AS 'Latency MS',\n  max(kentik.meraki.uplinks.Recv) / 1000 / 1000 / 1000 AS 'Total Rcv GB',\n  max(kentik.meraki.uplinks.Sent) / 1000 / 1000 / 1000 AS 'Total Xmt GB'\nWHERE metricName LIKE 'kentik.meraki.uplink%'\nFACET org_name,\n  network AS 'Network Name',\n  interface AS 'Interface',\n  src_addr AS 'Source Address',\n  serial AS 'Serial',\n  model AS 'Model'\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Device Status",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT\n  latest(status) AS 'Status'\nFACET\n  org_name AS 'Organization Name',\n  network AS 'Network Name',\n  device_name AS 'Device Name',\n  product_type AS 'Product Type',\n  serial AS 'Serial',\n  model AS 'Model'\nWHERE metricName = 'kentik.meraki.device_status.Status'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "VPN Status",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT\n  latest(status) AS 'Status'\nFACET\n  org_name AS 'Organization Name',\n  network AS 'Network Name',\n  device_name AS 'Device Name',\n  wan1 AS 'WAN 1 IP',\n  wan2 AS 'WAN 2 IP',\n  serial AS 'Serial',\n  vpn_mode AS 'VPN Mode'\nWHERE metricName = 'kentik.meraki.vpn_status.Status'\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "VPN Peer Status",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT\n  latest(status) AS 'Peer Status'\nFACET\n  //org_name AS 'Organization Name',\n  network AS 'Network Name',\n  device_name AS 'Device Name',\n  peer_name AS 'Peer Name', // Name of this peer\n  //peer_reachability AS 'Peer Reachability', // Latest results of reachability test for this peer\n  peer_reachablity AS 'Peer Reachability', // Latest results of reachability test for this peer\n  peer_network_id AS 'Peer Network ID', // Network ID for this peer\n  peer_type AS 'Peer Type' // Type of Peer (Meraki vs Third-party)\nWHERE metricName = 'kentik.meraki.vpn_status.PeerStatus'\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Organization Change Log",
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KExtEvent SELECT\n  admin_name AS 'Admin Name',\n  org_name AS 'Organization Name',\n  network_name AS 'Network Name',\n  page AS 'Meraki UI Page',\n  label AS 'Recorded Action',\n  old_value AS 'Old Value',\n  new_value AS 'New Value'\nSINCE 1 WEEK AGO\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

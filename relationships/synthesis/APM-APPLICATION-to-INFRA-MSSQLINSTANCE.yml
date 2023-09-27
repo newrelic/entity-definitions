@@ -1,0 +1,34 @@
+relationships:
+  - name: apmApplicationCallsInfraMSSQLInstance
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "datastore/instance/MSSQL/$host/$port"
+        startsWith: "datastore/instance/MSSQL/"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: yes
+          domain:
+            value: INFRA
+          type:
+            value: MSSQLINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "ms-instance:"
+              - attribute: metricName__4 # hostname
+              - value: ":instance="
+              # This rule assumes that the instance name is equal to the db hostname in lower case.
+              - attribute: metricName__4 # hostname in lowerCase
+                operations:
+                  - operation: toLowerCase
+            hashAlgorithm: FARM_HASH
