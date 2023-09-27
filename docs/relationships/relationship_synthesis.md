@@ -390,7 +390,20 @@ When a lookup attribute is defined, it will be searched within the accounts of t
 The `domain` and `type` fields can be either hardcoded values or attributes.
 
 The `identifier` can be constructed using one or multiple fragments. 
-Each fragment can be either a `hardcoded string`, an `attribute value`, or a `part of an attribute value`. 
+Each fragment can be either a `hardcoded string`, an `attribute value`, or a `part of an attribute value`.
+
+Aditionally, you can also specify operations on strings, like toLowerCase or toUpperCase as such:
+
+```yaml
+identifier:
+   fragments:
+   - value: "k8s:"
+   - attribute: "service.name"
+     operations:
+        - operation: toUpperCase
+   - value: ":pod:"
+   hashAlgorithm: FARM_HASH
+```
 
 Optionally, the identifier can be hashed using one of the supported algorithms. Currently, the only supported algorithm is `farmHash`.
 
