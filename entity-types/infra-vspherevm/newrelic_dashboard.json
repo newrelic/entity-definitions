@@ -1,0 +1,170 @@
+{
+  "name": "VSphereVmSample",
+  "pages": [
+    {
+      "name": "VSphereVmSample",
+      "widgets": [
+        {
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "title": "Power state",
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`vsphere.vmPowerState`) FROM Metric "
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "title": "Overall status",
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`vsphere.vmOverallStatus`) FROM Metric "
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "title": "Host CPU utilization %",
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`vsphere.vm.cpu.hostUsagePercent`) FROM Metric  TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "title": "CPU overall usage and allocation limit MHz",
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`vsphere.vm.cpu.overallUsage`),filter(average(`vsphere.vm.cpu.allocationLimit`),WHERE vsphere.vm.cpu.allocationLimit[total] >= 0) FROM Metric  TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "title": "CPU cores",
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`vsphere.vm.cpu.cores`) FROM Metric "
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 4,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "title": "Memory utilization %",
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`vsphere.vm.mem.usage`) / average(`vsphere.vm.mem.size`) * 100 FROM Metric  TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "title": "Memory usage and size MiB",
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`vsphere.vm.mem.usage`),average(`vsphere.vm.mem.size`) FROM Metric  TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 10,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "title": "Total storage space MiB",
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`vsphere.vm.disk.totalMiB`) FROM Metric "
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
