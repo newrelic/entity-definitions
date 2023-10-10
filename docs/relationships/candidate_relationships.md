@@ -163,7 +163,7 @@ The uninstrumented entity indicates that additional instrumentation can be confi
 
 There are two options for handling `onMiss`:
 
-* **DISCARD**: Discards misses instead of generating an uninstrumented entity.
+* **NO_OP**: Discards misses instead of generating an uninstrumented entity.
 * **CREATE_UNINSTRUMENTED**: Generates an uninstrumented entity.
 When using `CREATE_UNINSTRUMENTED`, you need to provide the type used for the created entities.
 
