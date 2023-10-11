@@ -1,0 +1,29 @@
+domain: EXT
+type: PINECONE_INDEX
+
+synthesis:
+  rules:
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - project_name
+          - index_name
+      encodeIdentifierInGUID: true
+      name: index_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: pinecone_
+      tags:
+        project_name:
+        index_name:
+        replica:
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true

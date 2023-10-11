@@ -1,0 +1,110 @@
+{
+  "name": "ApacheSample",
+  "pages": [
+    {
+      "name": "ApacheSample",
+      "widgets": [
+        {
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "title": "Requests per second",
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`apache.server.net.requestsPerSecond`) as 'Requests' FROM Metric  TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "title": "Bytes sent per request",
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (average(`apache.server.net.bytesPerSecond`)/average(`apache.server.net.requestsPerSecond`)) as 'Bytes sent per request' FROM Metric  TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 3
+          },
+          "title": "Status",
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`apache.server.idleWorkers` * 1) as 'Idle workers', latest(`apache.server.busyWorkers`) as 'Busy workers', latest(`apache.server.scoreboard.totalWorkers`) as 'Total workers', latest(`apache.server.scoreboard.readingWorkers`) as 'Reading request', latest(`apache.server.scoreboard.writingWorkers`) as 'Writing', latest(`apache.server.scoreboard.loggingWorkers`) as 'Logging', latest(`apache.server.scoreboard.finishingWorkers`) as 'Finishing', latest(`apache.server.scoreboard.closingWorkers`) as 'Closing connection', latest(`apache.server.scoreboard.keepAliveWorkers`) as 'Keep alive', latest(`apache.server.scoreboard.dnsLookupWorkers`) as 'DNS lookup', latest(`apache.server.scoreboard.idleCleanupWorkers`) as 'Idle cleanup', latest(`apache.server.scoreboard.startingWorkers`) as 'Starting' FROM Metric "
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "title": "Busy worker status",
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`apache.server.scoreboard.readingWorkers`) as 'Reading request', average(`apache.server.scoreboard.writingWorkers`) as 'Writing', average(`apache.server.scoreboard.loggingWorkers`) as 'Logging', average(`apache.server.scoreboard.finishingWorkers`) as 'Finishing', average(`apache.server.scoreboard.closingWorkers`) as 'Closing connection', average(`apache.server.scoreboard.keepAliveWorkers`) as 'Keep alive', average(`apache.server.scoreboard.dnsLookupWorkers`) as 'DNS lookup', average(`apache.server.scoreboard.idleCleanupWorkers`) as 'Idle cleanup', average(`apache.server.scoreboard.startingWorkers`) as 'Starting' FROM Metric  TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "title": "Total vs idle vs busy workers",
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`apache.server.idleWorkers`) as 'Idle workers', average(`apache.server.busyWorkers`) as 'Busy workers', average(`apache.server.scoreboard.totalWorkers`) as 'Total workers' FROM Metric  TIMESERIES auto"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
