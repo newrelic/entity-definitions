@@ -1,0 +1,486 @@
+{
+  "name": "RServiceV2",
+  "description": null,
+  "pages": [
+    {
+      "name": "RServiceV2",
+      "description": null,
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`Http.RequestReceived.Rate.Rate1`), 1 minute ) AS 'Throughput (rpm)' \nFROM Metric "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`Http.RequestReceived.Duration.Histogram.Mean`) AS 'Response time (ms)'\nFROM Metric"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`Http.RequestReceived.Duration.Histogram.Percentile99`) AS 'Response time P99 (ms)'\nFROM Metric "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT ((filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '5%')) / (filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '2%') + filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '5%'))) * 100 AS 'Error Rate' \nFROM Metric "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Throughput (rpm)",
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`Http.RequestReceived.Rate.Rate1`), 1 minute) AS 'Throughput (rpm)' \nFROM Metric\nTIMESERIES 1 minute SLIDE BY MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Response time (ms)",
+          "layout": {
+            "column": 4,
+            "row": 2,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`Http.RequestReceived.Duration.Histogram.Mean`) AS 'Response time (ms)'\nFROM Metric \nTIMESERIES 1 minute SLIDE BY MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Response time P99 (ms)",
+          "layout": {
+            "column": 7,
+            "row": 2,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`Http.RequestReceived.Duration.Histogram.Percentile99`) AS 'Response time P99 (ms)' \nFROM Metric\nTIMESERIES 1 minute SLIDE BY MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Error Rate",
+          "layout": {
+            "column": 10,
+            "row": 2,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT ((filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '5%')) / (filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '2%') + filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '5%'))) * 100 AS 'Error Rate' \nFROM Metric \nTIMESERIES 1 minute SLIDE BY MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Summary breakdown",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Response time P99 (ms)",
+                "precision": 2,
+                "type": "decimal"
+              },
+              {
+                "name": "Response time (ms)",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`Http.RequestReceived.Rate.Rate1`), 1 minute) AS 'Throughput (rpm)', average(`Http.RequestReceived.Duration.Histogram.Mean`) AS 'Response time (ms)', average(`Http.RequestReceived.Duration.Histogram.Percentile99`) AS 'Response time P99 (ms)', ((filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '5%')) / (filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '2%') + filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '5%'))) * 100 AS 'Error Rate' \nFROM Metric  facet rfc190_datacenter, rfc190_deployment "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Host breakdown",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 5,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Response time P99 (ms)",
+                "precision": 2,
+                "type": "decimal"
+              },
+              {
+                "name": "Response time (ms)",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`Http.RequestReceived.Rate.Rate1`), 1 minute) AS 'Throughput (rpm)', average(`Http.RequestReceived.Duration.Histogram.Mean`) AS 'Response time (ms)', average(`Http.RequestReceived.Duration.Histogram.Percentile99`) AS 'Response time P99 (ms)', ((filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '5%')) / (filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '2%') + filter(sum(`Http.RequestReceived.Rate.Rate1`), where StatusCode LIKE '5%'))) * 100 AS 'Error Rate' \nFROM Metric facet rfc460Hostname since 12 hours ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Host throughput",
+          "layout": {
+            "column": 6,
+            "row": 6,
+            "width": 7,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`Http.RequestReceived.Rate.Rate1`), 1 minute) AS 'Throughput (rpm)'\nFROM Metric facet rfc460Hostname TIMESERIES 1 minute SLIDE BY MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Host avg response time",
+          "layout": {
+            "column": 6,
+            "row": 8,
+            "width": 7,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`Http.RequestReceived.Duration.Histogram.Mean`) AS 'Response time (ms)', average(`Http.RequestReceived.Duration.Histogram.Percentile99`) AS 'Response time P99 (ms)' \nFROM Metric facet rfc460Hostname TIMESERIES 1 minute SLIDE BY MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "API breakdown",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Response time P99 (ms)",
+                "precision": 2,
+                "type": "decimal"
+              },
+              {
+                "name": "Response time (ms)",
+                "precision": 2,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "WITH aparse(metricName, '*.*.*.*') AS (FirstLevel, Contract, Api, GoldenSignal)\nSELECT rate(sum(`Http.RequestReceived.Rate.Rate1`), 1 minute ) AS 'Throughput (rpm)', average(`Http.RequestReceived.Duration.Histogram.Mean`) AS 'Response time (ms)', average(`Http.RequestReceived.Duration.Histogram.Percentile99`) AS 'Response time P99 (ms)' \nFROM Metric FACET Operation, HttpMethod LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "API avg response ",
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "WITH aparse(metricName, '*.*.*.*') AS (FirstLevel, Contract, Api, GoldenSignal)\nSELECT rate(sum(`Http.RequestReceived.Duration.Histogram.Mean`), 1 minute )\nFROM Metric FACET Operation, HttpMethod\nTIMESERIES 1 minute SLIDE BY MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "API avg P99 response",
+          "layout": {
+            "column": 10,
+            "row": 10,
+            "width": 3,
+            "height": 3
+          },          
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "WITH aparse(metricName, '*.*.*.*') AS (FirstLevel, Contract, Api, GoldenSignal)\nSELECT rate(sum(`Http.RequestReceived.Duration.Histogram.Percentile99`), 1 minute )\nFROM Metric FACET Operation, HttpMethod\nTIMESERIES 1 minute SLIDE BY MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+    "name": "Fortinet Access Point",
+    "description": null,
+    "pages": [
+      {
+        "name": "Fortinet Access Point",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 2,
+              "height": 6
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Last Update",
+                  "type": "date"
+                },
+                {
+                  "name": "Uptime (Days)",
+                  "precision": 2,
+                  "type": "decimal"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(src_addr) AS 'Polling IP',\n  latest(SysObjectID) AS 'SysObjectID',\n  latest(entity.type) AS 'NR Entity Type',\n  latest(instrumentation.name) AS 'Ktranslate Profile',\n  latest(tags.container_service) AS 'Ktranslate Instance',\n  latest(kentik.snmp.Uptime)/8640000 AS 'Uptime (Days)',\n  latest(timestamp) AS 'Last Update',\n  latest(PollingHealth) AS 'Current Polling Health',\n  if(latest(PollingHealth) = 'GOOD', '', latest(PollingHealthReason)) AS 'Health Reason'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "AP Details",
+            "layout": {
+              "column": 3,
+              "row": 1,
+              "width": 2,
+              "height": 6
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(fapHostName) AS 'AP Hostname',\n  latest(fapWtpApIpAddr) AS 'AP IP',\n  latest(fapWtpApIpNetmask) AS 'AP Netmask',\n  latest(fapWtpApDnsAddr) AS 'DNS IP',\n  latest(fapWtpApAddrMode) AS 'Address Mode',\n  latest(fapWtpWanMode) AS 'WAN Mode',\n  latest(fapBaseMacAddr) AS 'AP MAC',\n  latest(fapSerialNum) AS 'Serial Number',\n  latest(fapVersion) AS 'AP Version',\n  latest(fapBiosVer) AS 'BIOS Version',\n  latest(fapBiosDataVer) AS 'BIOS Data Version',\n  latest(fapRegionCode) AS 'Operating Region Code',\n  latest(fapWtpLocation) AS 'AP Location',\n  latest(fapSysPartNum) AS 'Hardware Part Number'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "AC Details",
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "width": 7,
+              "height": 2
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(fapWtpApAcHostname1) AS 'AC1 Hostname',\n  latest(fapWtpApAcAddr1) AS 'AC1 IP',\n  latest(fapWtpApAcHostname2) AS 'AC2 Hostname',\n  latest(fapWtpApAcAddr2) AS 'AC2 IP',\n  latest(fapWtpApAcHostname3) AS 'AC3 Hostname',\n  latest(fapWtpApAcAddr3) AS 'AC3 IP'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Interface Status",
+            "layout": {
+              "column": 5,
+              "row": 3,
+              "width": 7,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(if_OperStatus) AS 'Operational Status'\nFACET\n  if_Description AS 'Interface'\nWHERE if_AdminStatus = 'up'\nLIMIT MAX"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
