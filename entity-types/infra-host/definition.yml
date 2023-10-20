@@ -179,6 +179,28 @@ synthesis:
         nodename:
           entityTagNames: [hostname]
         instrumentation.provider:
+    # metric-streams AWS EC2
+    - identifier: aws.ec2.InstanceId
+      name: aws.ec2.InstanceId
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: aws.Namespace
+        value: AWS/EC2
+      - attribute: metricName
+        prefix: aws.ec2.
+      - attribute: instrumentation.provider
+        value: "aws"
+      - attribute: newrelic.source
+        value: metricAPI
+      tags:
+        aws.ec2.InstanceId:
+          entityTagNames: [host.id]
+        newrelic.cloudIntegrations.providerAccountName:
+          entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+        instrumentation.provider:        
+
 configuration:
   entityExpirationTime: DAILY
   alertable: true
