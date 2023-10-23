@@ -1,9 +1,29 @@
 domain: INFRA
 type: KUBERNETES_DEPLOYMENT
-configuration:
-  entityExpirationTime: DAILY
-  alertable: true
 goldenTags:
 - k8s.deploymentName
 - k8s.clusterName
 - k8s.namespaceName
+synthesis:
+  rules:
+    - identifier: entityId
+      name: deploymentName
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: K8sDeploymentSample
+        - attribute: podsAvailable
+          present: true
+      tags:
+        deploymentName:
+          entityTagNames: [k8s.deploymentName, deployment]
+        clusterName:
+          entityTagName: k8s.clusterName
+        namespaceName:
+          entityTagNames: [k8s.namespaceName, namespace]
+        newrelic.integrationName:
+        newrelic.integrationVersion:
+        newrelic.agentVersion:
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
