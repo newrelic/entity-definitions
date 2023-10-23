@@ -35,18 +35,71 @@ synthesis:
       # and select the dashboard.
       otel.library.name:
         entityTagName: instrumentation.name
-  tags:
-    newrelic.integrationName:
-    newrelic.integrationVersion:
-    newrelic.agentVersion:
-    host.instanceType:
-    # For OpenTelemetry
-    telemetry.sdk.name:
-      entityTagName: instrumentation.provider
-    telemetry.sdk.language:
-      entityTagName: language
-    # AWS tags
-    aws.region:
+      newrelic.integrationName:
+      newrelic.integrationVersion:
+      newrelic.agentVersion:
+      host.instanceType:
+      # For OpenTelemetry
+      telemetry.sdk.name:
+        entityTagName: instrumentation.provider
+      telemetry.sdk.language:
+        entityTagName: language
+      # AWS tags
+      aws.region:
+  # K8s Container from Samples
+  - identifier: entityId
+    name: containerName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: K8sContainerSample
+    tags:
+      clusterName:
+        entityTagName: k8s.clusterName
+      namespaceName:
+        entityTagName: k8s.namespaceName
+      status:
+        entityTagNames: [k8s.status, container.state]
+      podName:
+        entityTagName: k8s.podName
+      containerImage:
+        entityTagName: k8s.containerImage
+      nodeName:
+        entityTagName: k8s.nodeName
+      containerName:
+        entityTagName: k8s.containerName
+      containerID:
+        entityTagName: k8s.containerId
+      integrationName:
+        entityTagName: newrelic.integrationName
+      integrationVersion:
+        entityTagName: newrelic.integrationVersion
+  # Docker Container from Samples
+  - identifier: entityId
+    name: name
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: ContainerSample
+      - attribute: containerId
+        present: true
+    tags:
+      status:
+        entityTagName: container.state
+      containerId:
+        entityTagName: docker.containerId
+      shortContainerId:
+        entityTagName: docker.shortContainerId
+      imageName:
+        entityTagName: docker.imageName
+      integrationName:
+        entityTagName: newrelic.integrationName
+      integrationVersion:
+        entityTagName: newrelic.integrationVersion
 
 goldenTags:
 - environment
