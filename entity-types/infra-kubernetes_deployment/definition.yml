@@ -8,23 +8,41 @@ synthesis:
   rules:
     - identifier: entityId
       name: deploymentName
+      legacyFeatures:
+        overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: K8sDeploymentSample
+        - attribute: deploymentName
+          present: true
         - attribute: podsAvailable
           present: true
       tags:
         deploymentName:
-          entityTagNames: [k8s.deploymentName, deployment]
+          entityTagName: k8s.deploymentName
         clusterName:
           entityTagName: k8s.clusterName
         namespaceName:
-          entityTagNames: [k8s.namespaceName, namespace]
+          entityTagName: k8s.namespaceName
+        conditionAvailable:
+          entityTagName: k8s.deployment.conditionAvailable
+        conditionProgressing:
+          entityTagName: k8s.deployment.conditionProgressing
+        conditionReplicaFailure:
+          entityTagName: k8s.deployment.conditionReplicaFailure
         integrationName:
           entityTagName: newrelic.integrationName
         integrationVersion:
           entityTagName: newrelic.integrationVersion
+        agentVersion:
+          entityTagName: newrelic.agentVersion
+        awsRegion:
+          entityTagName: aws.region
+        provider.awsRegion:
+          entityTagName: aws.region
+      prefixedTags:
+        label.:
 configuration:
   entityExpirationTime: DAILY
   alertable: true
