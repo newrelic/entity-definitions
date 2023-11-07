@@ -2,11 +2,6 @@ domain: INFRA
 type: MYSQLINSTANCE
 
 synthesis:
-  tags:
-    # For OpenTelemetry
-    telemetry.sdk.name:
-      entityTagName: instrumentation.provider
-
   rules:
     # based on the OTEL semantic convention for MySQL https://github.com/open-telemetry/semantic-conventions/blob/main/docs/database/sql.md#example
     - identifier: db.system
@@ -16,11 +11,11 @@ synthesis:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: mysql. #check for the potential conflict with `mysql.node` from OHI
+          prefix: mysql. #check for the potential conflict with existing NR `mysql.node` from OHI
         - attribute: instrumentation.provider
           value: opentelemetry
         # This filters only metrics coming from mysqlreceiver , given that metrics
-        # could deffer between different runtime receivers.
+        # could differ between different runtime receivers.
         - attribute: otel.library.name
           value: otelcol/mysqlreceiver
       tags:
@@ -28,21 +23,27 @@ synthesis:
           entityTagName: instrumentation.name
         server.address:
         server.port:
-        server.socket.address:
 
-goldenTags:
-  - mysql.port
-  - mysql.version
-  - mysql.edition
-  - mysql.hostname
-  - mysql.clusterNodeType
 
-configuration:
-  entityExpirationTime: DAILY
-  alertable: true
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
 
-## TBD: queries need fix
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+
+goldenTags:
+  - mysql.instance.endpoint #As per OTEL spec/metadata.yaml
+  - mysql.version
+  - mysql.edition
+  - mysql.hostname
+  # Open Telemetry
+  - server.address
+  - server.port
+  
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
