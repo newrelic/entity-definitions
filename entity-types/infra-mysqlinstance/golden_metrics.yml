@@ -1,0 +1,70 @@
+# TBD: Update as per OTEL definitions for metrics
+queriesPerSecond:
+  title: Queries per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(mysql.instance.query.queriesPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(query.queriesPerSecond)
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+slowQueriesPerMinute:
+  title: Slow queries per minute
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    newRelic:
+      select: average(mysql.instance.query.slowQueriesPerSecond) * 60
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(query.slowQueriesPerSecond) * 60
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+connectionsPerSecond:
+  title: Connections per second
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(mysql.instance.net.connectionsPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      select: average(net.connectionsPerSecond)
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+queriesQuestions:
+  queries:
+    newRelic:
+      select: average(mysql.instance.query.questionsPerSecond)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    newRelicSample:
+      eventId: entityGuid
+      select: average(`query.questionsPerSecond`)
+      from: MysqlSample
+      eventName: entityName
+  unit: OPERATIONS_PER_SECOND
+  title: Query questions
+threads:
+  queries:
+    newRelic:
+      from: Metric
+      eventId: entity.guid
+      select: latest(`mysql.instance.net.threadsConnected`)
+    newRelicSample:
+      eventId: entityGuid
+      eventName: entityName
+      select: latest(`net.threadsConnected`)
+      from: MysqlSample
+  unit: COUNT
+  title: Threads connected
