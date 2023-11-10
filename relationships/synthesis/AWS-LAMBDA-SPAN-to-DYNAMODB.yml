@@ -1,0 +1,19 @@
+relationships:
+  - name: lambdaCallsDynamoDb
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: name
+        regex: "*dynamodb*"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+    source:
+      extractGuid:
+        attribute: entity.guid
+    target:
+      extractGuid:
+        attribute: dynamoDb.guid
