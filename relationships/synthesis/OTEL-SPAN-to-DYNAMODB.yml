@@ -1,11 +1,13 @@
 relationships:
-  - name: lambdaCallsS3
+  - name: otelCallsDynamoDb
     version: "1"
     origins:
-      - AWS Integration
+      - OpenTelemetry
     conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
       - attribute: name
-        regex: "^s3\\..*\\.amazonaws\\.com"
+        regex: "*dynamodb*"
     relationship:
       expires: P75M
       relationshipType: CALLS
