@@ -1,16 +1,13 @@
 outputLoadCapacity:
   title: Output load (amps)
-  displayAsValue: true
   unit: COUNT
   queries:
     # Kentik profiles (generic)
     kentik:
       # atsOutputCurrent's resolution is 0.1A
-      # This is not an aggregate; it is simply the maximum amps any single
-      # output phase is supplying. For a single-phase ATS, this is sufficient,
-      # but could be decieving for a multi-phase ATS.
       select: max(kentik.snmp.atsOutputCurrent)/10
       from: Metric
+      facet: output_phase_index, output_phase_number
       where: "provider = 'kentik-ats'"
 
 hardwareStatus:
