@@ -71,7 +71,7 @@ memoryUsage:
       eventId: entity.guid
       eventName: entity.name
     prometheus:
-      select: (sum(node_memory_MemTotal_bytes) - sum(node_memory_MemAvailable_bytes)) * 100 / sum(node_memory_MemTotal_bytes)
+      select: average(node_memory_ratio)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -97,7 +97,7 @@ storageUsage:
       eventId: entity.guid
       eventName: entity.name
     prometheus:
-      select: filter((sum(node_filesystem_size_bytes * 100) - sum(node_filesystem_avail_bytes * 100)) / sum(node_filesystem_size_bytes), where device != 'tmpfs')
+      select: average(node_filesystem_ratio)
       from: Metric
       where: fstype != 'tmpfs'
       eventId: entity.guid
