@@ -1,7 +1,52 @@
 domain: INFRA
 type: RABBITMQQUEUE
+
+synthesis:
+  # Apart from this rule RABBITMQQUEUE entities are also created from infra pipeline.
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+      - rabbitmq.node.name
+      - rabbitmq.queue.name	
+      - rabbitmq.vhost.name
+    name: rabbitmq.queue.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # All metrics from the receiver starts with the 'rabbitmq.' prefix.
+      - attribute: metricName
+        prefix: rabbitmq.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics coming from rabbitmq receiver, given that metrics
+      # could deffer between different runtime receivers. 
+      - attribute: otel.library.name
+        value: otelcol/rabbitmqreceiver
+    tags:
+      # Default resource attributes
+      rabbitmq.node.name:
+      rabbitmq.queue.name:
+      rabbitmq.vhost.name:
+      # OTel attributes
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+
 goldenTags:
+- rabbitmq.node.name
+- rabbitmq.queue.name	
+- rabbitmq.vhost.name
 - account
+
 configuration:
   entityExpirationTime: DAILY
   alertable: true
