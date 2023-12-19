@@ -19,7 +19,7 @@ cpuUsage:
       eventId: entity.guid
       eventName: entity.name
     prometheus:
-      select: (filter(sum(node_cpu_seconds_total), where mode != 'idle') / sum(node_cpu_seconds_total)) * 100
+      select: (sum(node_memory_MemTotal_bytes) - sum(node_memory_MemAvailable_bytes)) * 100 / sum(node_memory_MemTotal_bytes)
       where: node_cpu_seconds_total != 0
       from: Metric
       eventId: entity.guid
@@ -97,7 +97,7 @@ storageUsage:
       eventId: entity.guid
       eventName: entity.name
     prometheus:
-      select: (sum(node_filesystem_size_bytes * 100) - sum(node_filesystem_avail_bytes * 100)) / sum(node_filesystem_size_bytes)
+      select: filter((sum(node_filesystem_size_bytes * 100) - sum(node_filesystem_avail_bytes * 100)) / sum(node_filesystem_size_bytes), where device != 'tmpfs')
       from: Metric
       where: fstype != 'tmpfs'
       eventId: entity.guid
