@@ -146,8 +146,8 @@ with data from the `bucketName` field.
 
 The `onMatch` section controls the behavior after matching entities. The `onMultipleMatches` field specifies how to handle multiple matches:
 
-* ***ALL***: Relates the known GUID with all the matched entities.
-* ***ONLY_ONE***: Relates the known GUID with a single entity, discarding additional matches.
+* ***RELATE_ALL***: Relates the known GUID with all the matched entities.
+* ***DISCARD_ALL***: Assumes a conflict and discards all matches.
 
 Example:
 ```yaml
@@ -163,7 +163,7 @@ The uninstrumented entity indicates that additional instrumentation can be confi
 
 There are two options for handling `onMiss`:
 
-* **DISCARD**: Discards misses instead of generating an uninstrumented entity.
+* **NO_OP**: Discards misses instead of generating an uninstrumented entity.
 * **CREATE_UNINSTRUMENTED**: Generates an uninstrumented entity.
 When using `CREATE_UNINSTRUMENTED`, you need to provide the type used for the created entities.
 
