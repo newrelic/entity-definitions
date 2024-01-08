@@ -187,7 +187,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "from Metric SELECT latest(k8s.nodeName) as 'Node Name', latest(if(k8s.pod.isReady = 1, 'True', 'False')) as 'Ready', latest(if(k8s.pod.isScheduled = 1, 'True', 'False')) as 'Scheduled', latest(if(k8s.status IS NOT NULL,k8s.status,'-')) as 'Status' where k8s.podName in (FROM Metric SELECT uniques(k8s.podName) as 'Pod Name' WHERE metricName = 'k8s.volume.fsAvailableBytes' AND k8s.pvcName = '{{{tags.k8s.pvcName}}}') and metricName = 'k8s.pod.createdAt' FACET k8s.podName AS 'Pod Name'"
+                "query": "from K8sPodSample SELECT latest(nodeName) as 'Node Name', latest(if(isReady = 1, 'True', 'False')) as 'Ready', latest(if(isScheduled = 1, 'True', 'False')) as 'Scheduled', latest(if(status IS NOT NULL, status,'-')) as 'Status' where podName in (FROM K8sVolumeSample SELECT uniques(podName) as 'Pod Name' WHERE pvcName = '{{{tags.k8s.pvcName}}}') FACET podName AS 'Pod Name'"
               }
             ]
           }
