@@ -256,7 +256,7 @@
       "rawConfiguration" : {
         "dataFormatters" : [ ],
         "nrqlQueries" : [ {
-          "query" : "from (FROM Metric SELECT latest(k8s.pod.isReady) as 'ready', latest(k8s.pod.isScheduled) as 'scheduled', latest(k8s.status) as 'status' WHERE k8s.clusterName = '{{{tags.k8s.clusterName}}}' AND k8s.podName like '{{{entity.name}}}-%' AND k8s.namespaceName = '{{{tags.k8s.namespaceName}}}' FACET k8s.podName as 'podname', k8s.nodeName as 'nodename' limit max) select latest(if(ready = 1, 'True', 'False')) as 'Ready', latest(if(scheduled = 1, 'True', 'False')) as 'Scheduled', latest(status) as 'Status' facet podname as 'Pod Name', if(nodename != '', nodename, 'Unassigned') as 'Node Name' limit max",
+          "query" : "from (SELECT latest(K8sPodSample.isReady) AS `ready`, latest(K8sPodSample.isScheduled) AS `scheduled`, latest(status) AS `status` FROM K8sPodSample WHERE clusterName = '{{{tags.k8s.clusterName}}}' AND podName LIKE '{{{entity.name}}}-%' AND namespaceName = '{{{tags.k8s.namespaceName}}}' FACET tuple(podName AS `podname`, nodeName AS `nodename`) LIMIT MAX) select latest(if(ready = 1, 'True', 'False')) as 'Ready', latest(if(scheduled = 1, 'True', 'False')) as 'Scheduled', latest(status) as 'Status' facet podname as 'Pod Name', if(nodename != '', nodename, 'Unassigned') as 'Node Name' limit max",
           "accountId" : 0
         } ],
         "facet" : {
