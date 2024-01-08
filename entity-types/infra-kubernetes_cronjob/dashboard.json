@@ -29,7 +29,7 @@
       "title" : "",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
-          "query" : "SELECT filter(uniqueCount(jobName), WHERE (((`eventType`() IN ('K8sContainerSample', 'K8sPodSample')) AND NOT (`k8s`.`job.isComplete` IS NULL)) OR ((`eventType`() = 'K8sJobSample') AND NOT (isComplete IS NULL)))) AS `Completed Jobs` FROM K8sContainerSample, K8sJobSample, K8sPodSample WHERE (((clusterName = '{{{tags.k8s.clusterName}}}') AND (namespaceName = '{{{tags.k8s.namespaceName}}}')) AND (jobName LIKE '{{{entity.name}}}-%')) LIMIT MAX",
+          "query" : "SELECT filter(uniqueCount(jobName), WHERE isComplete = 'true') AS `Completed Jobs` FROM K8sJobSample WHERE clusterName = '{{{tags.k8s.clusterName}}}' AND namespaceName = '{{{tags.k8s.namespaceName}}}' AND jobName LIKE '{{{entity.name}}}-%' LIMIT MAX",
           "accountId" : 0
         } ],
         "facet" : {
