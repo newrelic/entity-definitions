@@ -86,7 +86,7 @@ You can test that the synthesis rules from your entity definition match the expe
 
 3. Create your pull request normally and the test would be executed in the background. If the synthesis rules from the definition don't match the test data, a bot will let you know with an explanatory comment in the pull request.
 
-See [ext-pihole definition](https://github.com/newrelic/entity-definitions/tree/main/definitions/ext-pihole/tests/) for an example of test data.
+See [ext-pihole definition](https://github.com/newrelic/entity-definitions/tree/main/entity-types/ext-pihole/tests/) for an example of test data.
 
 
 ## Support
