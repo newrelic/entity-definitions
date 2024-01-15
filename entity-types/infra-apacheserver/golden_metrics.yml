@@ -12,6 +12,11 @@ requestsPerSecond:
       from: ApacheSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(apache.requests)
+      from: Metric
+      eventId: entityGuid
+      eventName: entityName
 totalBytesSentPerSecond:
   title: Total bytes sent per second
   unit: BYTES_PER_SECOND
@@ -24,6 +29,11 @@ totalBytesSentPerSecond:
     newRelicSample:
       select: average(net.bytesPerSecond)
       from: ApacheSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(apache.traffic) / 60
+      from: Metric
       eventId: entityGuid
       eventName: entityName
 busyWorkers:
@@ -40,6 +50,12 @@ busyWorkers:
       from: ApacheSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(apache.workers)
+      from: Metric
+      where: state = 'busy'
+      eventId: entityGuid
+      eventName: entityName
 idleWorkers:
   title: Current number of idle workers
   unit: COUNT
@@ -52,5 +68,11 @@ idleWorkers:
     newRelicSample:
       select: average(server.idleWorkers)
       from: ApacheSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(apache.workers)
+      from: Metric
+      where: state = 'idle'
       eventId: entityGuid
       eventName: entityName
