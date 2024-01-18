@@ -1,0 +1,22 @@
+category: AWSDYNAMODBTABLE
+lookups:
+  - entityTypes:
+      - domain: INFRA
+        type: AWSDYNAMODBTABLE
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.region"]
+          field: region
+        - tagKeys: ["aws.dynamodb.table_names"]
+          field: tableNames
+        - tagKeys: ["db.system"]
+          field: dbSystem
+        - tagKeys: ["db.operation"]
+          field: dbOperation
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: AWSDYNAMODBTABLE
