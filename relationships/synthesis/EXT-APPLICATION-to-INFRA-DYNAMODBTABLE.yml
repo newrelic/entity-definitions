@@ -1,0 +1,24 @@
+relationships:
+  - name: extApplicationCallsInfraDynamoDBTable
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: region
+              attribute: aws.region
+            - field: tableName
+              attribute: aws.dynamodb.table_names
+            - field: awsAccountId
+              attribute: aws.accountId
