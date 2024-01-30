@@ -8,7 +8,7 @@ The GUID `MXxBUE18QVBQTElDQVRJT058MjM` decodes into `1|APM|APPLICATION|23`.
 |-------------|-------------|-----------|------------|
 | Account ID | Source account for the entity | Unique in all New Relic | Numeric `/\d{1,10}/` |
 | Domain | Domain of entity | Unique in all New Relic | Upper-case Alphanumeric (SCREAMING_SNAKE_CASE) `/[A-Z][A-Z0-9_]{2,14}/` |
-| Type | Type of the entity | Unique to the domain | Upper-case Alphanumeric (SCREAMING_SNAKE_CASE) `/[A-Z][A-Z0-9_]{2,49}/` |
+| Type | Type of the entity | Unique to the domain | Upper-case Alphanumeric (SCREAMING_SNAKE_CASE) `/[A-Z][A-Z0-9_]{1,49}/` |
 | Identifier | Value used to identify the entity within its domain's data model | Unique to Account ID, Domain and Type | A string with ascii chars 32-126 `/[\x20-\x7E]{1,50}/` |
 
 ## Account ID
