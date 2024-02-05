@@ -27,7 +27,7 @@ synthesis:
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
-          value: MetricRaw
+          value: Metric
         - attribute: metricName
           prefix: system.
         - attribute: newrelic.source
@@ -57,7 +57,7 @@ synthesis:
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
-          value: MetricRaw
+          value: Metric
         - attribute: metricName
           prefix: process.
         - attribute: newrelic.source
@@ -124,6 +124,8 @@ synthesis:
     # AWS by taskArn
     - identifier: taskarn
       name: taskarn
+      legacyFeatures:
+        overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
       - attribute: instanceid
@@ -134,9 +136,6 @@ synthesis:
         prefix: "node_"
       - attribute: instrumentation.provider
         value: "prometheus"
-      # Value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
       tags:
         taskArn:
         nodename:
@@ -145,6 +144,8 @@ synthesis:
     # AWS EC2 by instanceid
     - identifier: instanceid
       name: instanceid
+      legacyFeatures:
+        overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
       - attribute: instance
@@ -153,9 +154,6 @@ synthesis:
         prefix: "node_"
       - attribute: instrumentation.provider
         value: "prometheus"
-      # Value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
       tags:
         instanceid:
           entityTagNames: [host.id, instanceid]
@@ -165,20 +163,19 @@ synthesis:
     # On a host
     - identifier: instance
       name: instance
+      legacyFeatures:
+        overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
       - attribute: metricName
         prefix: "node_"
       - attribute: instrumentation.provider
         value: "prometheus"
-      # Value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
       tags:
         instance:
         nodename:
           entityTagNames: [hostname]
         instrumentation.provider:
 configuration:
-  entityExpirationTime: DAILY
+  entityExpirationTime: EIGHT_DAYS
   alertable: true
