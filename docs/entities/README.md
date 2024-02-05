@@ -27,7 +27,7 @@ Overall, these are the files you can provide to configure your new entity:
 
 ## The PiHole entity
 
-For example, let's create a [PiHole](https://pi-hole.net/) entity. This is an actual New Relic entity, and you can read more [here](https://github.com/newrelic/entity-definitions/tree/main/definitions/ext-pihole).
+For example, let's create a [PiHole](https://pi-hole.net/) entity. This is an actual New Relic entity, and you can read more [here](https://github.com/newrelic/entity-definitions/tree/main/entity-types/ext-pihole).
 
 We need to answer the following questions:
 
