@@ -13,7 +13,7 @@ By proposing changes to this repository you can achieve the following:
 
 ## Changelog
 
-All notable changes are defined in the [releases page](https://github.com/newrelic/entity-definitions/releases).
+All  notable changes are defined in the [releases page](https://github.com/newrelic/entity-definitions/releases).
 
 ## Getting started
 
