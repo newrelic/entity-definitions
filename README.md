@@ -15,7 +15,7 @@ By proposing changes to this repository you can achieve the following:
 
 All notable changes are defined in the [releases page](https://github.com/newrelic/entity-definitions/releases).
 
-## Getting started
+## Getting started       
 
 For newcomers, we recommend checking the [creating an entity type example](docs/entities/README.md).
 This document will walk through creating an entity type from scratch.
