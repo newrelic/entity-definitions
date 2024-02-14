@@ -11,7 +11,7 @@ By proposing changes to this repository you can achieve the following:
 - Modify the summary of an entity type
 - Modify the lifecycle of an entity and make them `alertable` (see [Lifecycle](docs/entities/lifecycle.md) for more information about this attribute)
 
-## Changelog
+## Changelog   
 
 All notable changes are defined in the [releases page](https://github.com/newrelic/entity-definitions/releases).
 
