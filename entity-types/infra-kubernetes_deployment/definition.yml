@@ -7,3 +7,35 @@ goldenTags:
 - k8s.deploymentName
 - k8s.clusterName
 - k8s.namespaceName
+synthesis:
+  rules:
+    # kube-state-metrics data via opentelemetry prometheusReceiver 
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - namespace
+          - deployment
+      encodeIdentifierInGUID: true
+      name: deployment
+      conditions:
+        # kube-state-metrics deployment prefix
+        - attribute: metricName
+          prefix: kube_deployment_
+        # identifier attributes
+        - attribute: deployment
+          present: true
+        - attribute: namespace
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+
