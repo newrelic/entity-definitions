@@ -34,3 +34,41 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_POD
+  - name: otelKsmK8sStatefulSetContainsPod
+    # use kube-state-metrics kube_pod_owner metric
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        value: kube_pod_owner
+      - attribute: owner_kind
+        value: StatefulSet
+      - attribute: newrelicOnly
+        value: "true"
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: yes  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_STATEFULSET
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: namespace
+              - value: ":"
+              - attribute: owner_name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD
