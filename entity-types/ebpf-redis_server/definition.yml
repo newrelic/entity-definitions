@@ -1,0 +1,24 @@
+domain: EBPF
+type: REDIS_SERVER
+synthesis:
+  rules:
+  # Server Entity for Server-Captured Spans (kind == server)
+  - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - local_addr
+          - local_port
+    name: local_addr
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: redis.req_cmd
+      present: true
+    - attribute: instrumentation.provider
+      value: "nr_ebpf_agent"
+    - attribute: kind
+      value: "server"
+    tags:
+      local_addr:
+        entityTagName: "ip"
+      local_port:
+        entityTagName: "port"

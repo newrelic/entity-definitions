@@ -10,3 +10,34 @@ dashboardTemplates:
 goldenTags:
 - k8s.volumeName
 - k8s.clusterName
+synthesis:
+  rules:
+    # kube-state-metrics data via opentelemetry prometheusReceiver 
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - namespace
+          - persistentvolume
+      encodeIdentifierInGUID: true
+      name: persistentvolume
+      conditions:
+        # kube-state-metrics persistentvolume prefix
+        - attribute: metricName
+          prefix: kube_persistentvolume_
+        # identifier attributes
+        - attribute: persistentvolume
+          present: true
+        - attribute: namespace
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
