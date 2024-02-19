@@ -1,0 +1,28 @@
+relationships:
+  - name: awsLambdaFunctionAliasIsLambdaFunction
+    version: 1
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSLAMBDAFUNCTIONALIAS", "AWS_LAMBDA_FUNCTION_ALIAS" ]
+    relationship:
+      expires: P75M
+      relationshipType: IS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSLAMBDAFUNCTIONALIAS
+      target:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAFUNCTION
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+            - field: awsLambdaFunctionName
+              attribute: aws.lambda.FunctionName
