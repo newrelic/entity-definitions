@@ -1,0 +1,28 @@
+relationships:
+  - name: awsElasticsearchClusterContainsElasticsearchNode
+    version: 1
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSELASTICSEARCHNODE", "AWS_ELASTICSEARCH_NODE" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSELASTICSEARCHCLUSTER
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+            - field: awsElasticsearchDomainName
+              attribute: aws.es.DomainName
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSELASTICSEARCHNODE
