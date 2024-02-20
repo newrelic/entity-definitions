@@ -1,0 +1,28 @@
+relationships:
+  - name: awsMskClusterContainsMskBroker
+    version: 1
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSMSKBROKER", "AWS_MSK_BROKER" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSMSKCLUSTER
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+            - field: awsMskClusterName
+              attribute: aws.kafka.ClusterName
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSMSKBROKER

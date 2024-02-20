@@ -28,3 +28,35 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_DAEMONSET
+  - name: otelKsmK8sClusterContainsDaemonSet
+    # use kube-state-metrics kube_daemonset_created
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        value: kube_daemonset_created     
+      - attribute: newrelicOnly
+        value: "true"
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: yes  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETESCLUSTER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name            
+            hashAlgorithm: FARM_HASH
+      target:  
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_DAEMONSET

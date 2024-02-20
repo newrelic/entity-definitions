@@ -1,0 +1,28 @@
+relationships:
+  - name: awsFsxFileServerContainsFsxVolume
+    version: 1
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSFSXVOLUME" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSFSXWINDOWSFILESERVER
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+            - field: awsFsxFileSystemId
+              attribute: aws.fsx.FileSystemId
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSFSXVOLUME
