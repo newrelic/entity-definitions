@@ -1,12 +1,15 @@
 relationships:
   - name: apmApplicationCallsInfraMSSQLInstance
-    version: "1"
+    version: "2"
     origins:
       - APM Metrics
     conditions:
       - attribute: metricName
         # "datastore/instance/MSSQL/$host/$port"
-        startsWith: "datastore/instance/MSSQL/"
+        # ex: "datastore/instance/MSSQL/abc123.mydomain.local/1663" - keeps "abc123"
+        # ex: "datastore/instance/MSSQL/hostname/default"  - keeps "hostname"
+        regex: "datastore/instance/MSSQL\/([^\\.\\/]+).*/.*"
+        caseSensitive: false
     relationship:
       expires: P75M
       relationshipType: CALLS
