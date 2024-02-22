@@ -1,0 +1,34 @@
+relationships:
+  - name: apmApplicationCallsInfraOracle
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "datastore/instance/Oracle/$host/$port"
+        startsWith: "datastore/instance/Oracle/"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: yes
+          domain:
+            value: INFRA
+          type:
+            value: ORACLEDBINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "ora-instance:"
+              - attribute: metricName__4 # hostname
+               # This rule assumes that the instance name is equal to the db hostname in lower case.
+              - value: ":servicename="
+              - attribute: metricName__4  # hostname in lowerCase
+                operations:
+                  - operation: toLowerCase
+            hashAlgorithm: FARM_HASH
