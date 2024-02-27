@@ -51,7 +51,7 @@ type: PIHOLE
 
 	You can use `instrumentation.provider` only, or combine `instrumentation.provider` and `instrumentation.name` together. When both are used, configuration files look similar to `$instrumentation.name/$instrumentation.provider`. 
 
-	The pihole.exporter provides an attribute named `insturmentation.name: pihole-exporter`, while the windows exporter uses `instrumentation.name: pihole-windows`.
+	The pihole.exporter provides an attribute named `instrumentation.name: pihole-exporter`, while the windows exporter uses `instrumentation.name: pihole-windows`.
 </details>
 
 ## Create entities
