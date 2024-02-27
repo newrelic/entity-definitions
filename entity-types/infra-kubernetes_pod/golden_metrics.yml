@@ -7,6 +7,12 @@ podReadiness:
       from: K8sPodSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(phase = 'Ready')
+      where: metricName = 'kube_pod_status_phase'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 podScheduled:
   title: Scheduling status over time
   unit: COUNT
@@ -16,6 +22,12 @@ podScheduled:
       from: K8sPodSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(condition)
+      where: metricName = 'kube_pod_status_scheduled'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 networkErrors:
   title: Network errors (per second)
   unit: COUNT
