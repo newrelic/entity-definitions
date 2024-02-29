@@ -1,0 +1,24 @@
+relationships:
+  - name: awsEcsClusterContainsEcsService
+    version: 1
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSECSSERVICE", "AWS_ECS_SERVICE" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSECSCLUSTER
+          fields:
+            - field: awsEcsClusterArn
+              attribute: aws.ecs.ClusterName
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSECSSERVICE
