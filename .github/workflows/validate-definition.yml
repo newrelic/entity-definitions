@@ -1,6 +1,6 @@
 name: validate entity synthesis definitions
 on:
-  pull_request:
+  pull_request_target:
 
 permissions:
   pull-requests: write
@@ -9,7 +9,15 @@ jobs:
   validate:
     name: Validation
     runs-on: ubuntu-latest
+    env:
+      RELATIONSHIPS_SYNTHESIS_DIR: ../prcode/relationships/synthesis/
+      DEFINITIONS_DIR: ../prcode/entity-types/
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: "${{ github.event.pull_request.merge_commit_sha }}"
+          path: "prcode"
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
@@ -17,11 +25,11 @@ jobs:
       - name: Install dependencies
         run: npm --prefix validator install
       - name: Validate definition
-        run: npm --prefix validator run check
+        run: npm --prefix validator run check-pr
         env:
           PR_NUMBER: ${{ github.event.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Ensure sanitize was run
         # Runs the sanitize script and checks errors if the dashboards were not sanitized.
         # If the dashboards were sanitized, the git command will return 0 and the step will pass.
-        run: npm --prefix validator run sanitize-dashboards &&  git diff-index --quiet HEAD -- entity-types/
+        run: npm --prefix validator run sanitize-dashboards &&  git -C prcode diff-index --quiet HEAD -- entity-types/
