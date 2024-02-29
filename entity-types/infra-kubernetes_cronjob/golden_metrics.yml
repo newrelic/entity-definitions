@@ -7,6 +7,12 @@ isSuspended:
       from: K8sCronjobSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_cronjob_spec_suspend = 1)
+      where: metricName = 'kube_cronjob_spec_suspend'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 isActive:
   title: Active
   unit: COUNT
@@ -16,6 +22,12 @@ isActive:
       from: K8sCronjobSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_cronjob_status_active > 0)
+      where: metricName = 'kube_cronjob_status_active'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 lastScheduled:
   title: Last Scheduled
   unit: TIMESTAMP
@@ -25,4 +37,10 @@ lastScheduled:
       from: K8sCronjobSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_cronjob_status_last_schedule_time) * 1000
+      where: metricName = 'kube_cronjob_status_last_schedule_time'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 
