@@ -10,17 +10,11 @@ jobs:
     name: Validation
     runs-on: ubuntu-latest
     steps:
-      - name: Show current directory
-        run: pwd
-      - name: Show directory content
-        run: ls -la
-      - name: Show current directory content recursively
-        run: du
-      - name: Show $GITHUB_WORKSPACE
-        run: echo $GITHUB_WORKSPACE
-      - name: Checkout code
+      - name: Checkout code from base branch
         uses: actions/checkout@v4
-      - name: Checkout pr code
+        with:
+          persist-credentials: false
+      - name: Checkout PR code
         uses: actions/checkout@v4
         with:
           ref: "${{ github.event.pull_request.merge_commit_sha }}"
@@ -33,11 +27,9 @@ jobs:
         run: npm --prefix validator install
       - name: Show current directory
         run: pwd
-      - name: Show directory content
+      - name: Show base directory content
         run: ls -la
-      - name: Show current directory content recursively 2
-        run: du
-      - name: Show directory content 2
+      - name: Show PR directory content
         run: ls -la prcode
       - name: Validate definition
         run: npm --prefix validator run check
