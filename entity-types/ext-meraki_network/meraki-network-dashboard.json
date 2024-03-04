@@ -31,7 +31,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT\n  latest(network) AS 'Network Name',\n  latest(network_id) AS 'Network ID',\n  latest(org_name) AS 'Parent Organization',\n  latest(org_id) AS 'Parent Organization ID',\n  latest(tags.container_service) AS 'Network Agent',\n  latest(timestamp) AS 'Last Update'\nWHERE instrumentation.name = 'meraki.network'\nAND entity.guid = {{entity.id}}"
+                "query": "FROM Metric SELECT\n  latest(network) AS 'Network Name',\n  latest(network_id) AS 'Network ID',\n  latest(org_name) AS 'Parent Organization',\n  latest(org_id) AS 'Parent Organization ID',\n  latest(tags.container_service) AS 'Network Agent',\n  latest(timestamp) AS 'Last Update'\nWHERE instrumentation.name = 'meraki.network'\nAND entity.guid = '{{entity.id}}'"
               }
             ],
             "platformOptions": {
@@ -57,7 +57,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT\n  latest(kentik.meraki.uplink_status.Status)\nFACET uplink_name, status\nWHERE network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = {{entity.id}}\n)"
+                "query": "FROM Metric SELECT\n  latest(kentik.meraki.uplink_status.Status)\nFACET uplink_name, status\nWHERE network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = '{{entity.id}}'\n)"
               }
             ],
             "platformOptions": {
@@ -89,7 +89,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT\n  uniqueCount(serial) AS 'Total Devices',\n  filter(uniqueCount(serial), WHERE status != 'online') AS 'Problem Devices',\n  ((filter(uniqueCount(serial), WHERE status = 'online')) / uniqueCount(serial))*100 AS '% Online'\nWHERE metricName = 'kentik.meraki.device_status.Status'\nAND network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = {{entity.id}}\n)\nCOMPARE WITH 1 DAY AGO"
+                "query": "FROM Metric SELECT\n  uniqueCount(serial) AS 'Total Devices',\n  filter(uniqueCount(serial), WHERE status != 'online') AS 'Problem Devices',\n  ((filter(uniqueCount(serial), WHERE status = 'online')) / uniqueCount(serial))*100 AS '% Online'\nWHERE metricName = 'kentik.meraki.device_status.Status'\nAND network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = '{{entity.id}}'\n)\nCOMPARE WITH 1 DAY AGO"
               }
             ],
             "platformOptions": {
@@ -115,7 +115,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT\n  uniqueCount(wan1,wan2) AS 'Total VPNs',\n  filter(uniqueCount(wan1,wan2), WHERE status != 'online') AS 'Problem VPNs',\n  ((filter(uniqueCount(wan1,wan2), WHERE status = 'online')) / uniqueCount(wan1,wan2))*100 AS '% Online'\nWHERE metricName = 'kentik.meraki.vpn_status.Status'\nAND network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = {{entity.id}}\n)\nCOMPARE WITH 1 DAY AGO"
+                "query": "FROM Metric SELECT\n  uniqueCount(wan1,wan2) AS 'Total VPNs',\n  filter(uniqueCount(wan1,wan2), WHERE status != 'online') AS 'Problem VPNs',\n  ((filter(uniqueCount(wan1,wan2), WHERE status = 'online')) / uniqueCount(wan1,wan2))*100 AS '% Online'\nWHERE metricName = 'kentik.meraki.vpn_status.Status'\nAND network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = '{{entity.id}}'\n)\nCOMPARE WITH 1 DAY AGO"
               }
             ],
             "platformOptions": {
@@ -141,7 +141,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT\n  latest(kentik.meraki.device_status.Status) AS 'Status Code'\nFACET\n  device_name AS 'Device',\n  model AS 'Model',\n  product_type AS 'Type',\n  serial AS 'Serial',\n  status AS 'Status'\nWHERE network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = {{entity.id}}\n)\nLIMIT 1000"
+                "query": "FROM Metric SELECT\n  latest(kentik.meraki.device_status.Status) AS 'Status Code'\nFACET\n  device_name AS 'Device',\n  model AS 'Model',\n  product_type AS 'Type',\n  serial AS 'Serial',\n  status AS 'Status'\nWHERE network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = '{{entity.id}}'\n)\nLIMIT 1000"
               }
             ],
             "platformOptions": {
@@ -167,7 +167,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT\n  latest(kentik.meraki.vpn_status.Status) AS 'Status Code'\nFACET\n  device_name AS 'Device',\n  serial AS 'Serial',\n  vpn_mode AS 'VPN Mode',\n  status AS 'Status',\n  wan1 AS 'WAN 1',\n  wan2 AS 'WAN 2'\nWHERE network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = {{entity.id}}\n)\nLIMIT 1000"
+                "query": "FROM Metric SELECT\n  latest(kentik.meraki.vpn_status.Status) AS 'Status Code'\nFACET\n  device_name AS 'Device',\n  serial AS 'Serial',\n  vpn_mode AS 'VPN Mode',\n  status AS 'Status',\n  wan1 AS 'WAN 1',\n  wan2 AS 'WAN 2'\nWHERE network_id IN (\n  FROM Metric SELECT\n    network_id\n  WHERE instrumentation.name = 'meraki.network'\n  AND entity.guid = '{{entity.id}}'\n)\nLIMIT 1000"
               }
             ],
             "platformOptions": {
