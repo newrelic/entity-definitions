@@ -28,8 +28,11 @@ relationships:
               - value: "ms-instance:"
               - capture:
                 attribute: metricName  
-                # ex1: "datastore/instance/MSSQL/abc123.mydomain.local/1663" - keeps "abc123"
-                # ex2: "datastore/instance/MSSQL/hostname/default"  - keeps "hostname"
+                regex: "datastore/instance/MSSQL\/([^\\.\\/]+).*/.*"
+              # This rule assumes that the instance name is equal to the db hostname in lower case.
+              - value: ":instance="
+              - capture:
+                attribute: metricName  
                 regex: "datastore/instance/MSSQL\/([^\\.\\/]+).*/.*"
                 operations:
                   - operation: toLowerCase
