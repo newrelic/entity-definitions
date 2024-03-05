@@ -1,0 +1,185 @@
+{
+    "name": "Temporal-Entity",
+    "description": null,
+    "pages": [{
+        "name": "Temporal-Entity",
+        "description": null,
+        "widgets": [{
+                "title": "Temporal Request Latency",
+                "layout": {
+                    "column": 1,
+                    "row": 1,
+                    "width": 4,
+                    "height": 3
+                },
+                "visualization": {
+                    "id": "viz.heatmap"
+                },
+                "rawConfiguration": {
+                    "facet": {
+                        "showOtherSeries": false
+                    },
+                    "nrqlQueries": [{
+                        "accountIds": 0,
+                        "query": "SELECT histogram(temporal_request_latency_bucket) FROM Metric FACET operation"
+                    }],
+                    "platformOptions": {
+                        "ignoreTimeRange": false
+                    }
+                }
+            },
+            {
+                "title": "Visibility Persistence Latency",
+                "layout": {
+                    "column": 5,
+                    "row": 1,
+                    "width": 4,
+                    "height": 3
+                },
+                "visualization": {
+                    "id": "viz.heatmap"
+                },
+                "rawConfiguration": {
+                    "facet": {
+                        "showOtherSeries": false
+                    },
+                    "nrqlQueries": [{
+                        "accountIds": 0,
+                        "query": "SELECT histogram(visibility_persistence_latency_bucket) FROM Metric FACET service_name"
+                    }],
+                    "platformOptions": {
+                        "ignoreTimeRange": false
+                    }
+                }
+            },
+            {
+                "title": "Activity Execution Failed",
+                "layout": {
+                    "column": 9,
+                    "row": 1,
+                    "width": 4,
+                    "height": 3
+                },
+                "visualization": {
+                    "id": "viz.billboard"
+                },
+                "rawConfiguration": {
+                    "facet": {
+                        "showOtherSeries": false
+                    },
+                    "nrqlQueries": [{
+                        "accountIds": 0,
+                        "query": "SELECT latest(temporal_activity_execution_failed_total) AS 'execution failed' FROM Metric"
+                    }],
+                    "platformOptions": {
+                        "ignoreTimeRange": false
+                    },
+                    "thresholds": [{
+                        "alertSeverity": "CRITICAL",
+                        "value": 1
+                    }]
+                }
+            },
+            {
+                "title": "Temporal Activity Execution Latency",
+                "layout": {
+                    "column": 1,
+                    "row": 4,
+                    "width": 4,
+                    "height": 3
+                },
+                "visualization": {
+                    "id": "viz.line"
+                },
+                "rawConfiguration": {
+                    "facet": {
+                        "showOtherSeries": false
+                    },
+                    "legend": {
+                        "enabled": true
+                    },
+                    "nrqlQueries": [{
+                        "accountIds": 0,
+                        "query": "SELECT sum(temporal_activity_execution_latency_seconds_sum) FROM Metric TIMESERIES"
+                    }],
+                    "platformOptions": {
+                        "ignoreTimeRange": false
+                    },
+                    "thresholds": {
+                        "isLabelVisible": false,
+                        "thresholds": [{
+                                "from": 4,
+                                "name": "critical alert",
+                                "severity": "critical",
+                                "to": 5
+                            },
+                            {
+                                "from": 3,
+                                "name": "warning",
+                                "severity": "warning",
+                                "to": 4
+                            }
+                        ]
+                    },
+                    "yAxisLeft": {
+                        "zero": true
+                    },
+                    "yAxisRight": {
+                        "zero": true
+                    }
+                }
+            },
+            {
+                "title": "Allocated Memory (MB)",
+                "layout": {
+                    "column": 5,
+                    "row": 4,
+                    "width": 4,
+                    "height": 3
+                },
+                "visualization": {
+                    "id": "viz.pie"
+                },
+                "rawConfiguration": {
+                    "facet": {
+                        "showOtherSeries": true
+                    },
+                    "legend": {
+                        "enabled": true
+                    },
+                    "nrqlQueries": [{
+                        "accountIds": 0,
+                        "query": "SELECT latest(memory_allocated) / 1e+6 FROM Metric FACET service_name"
+                    }],
+                    "platformOptions": {
+                        "ignoreTimeRange": false
+                    }
+                }
+            },
+            {
+                "title": "Heap Memory (MB)",
+                "layout": {
+                    "column": 9,
+                    "row": 4,
+                    "width": 4,
+                    "height": 3
+                },
+                "visualization": {
+                    "id": "viz.bar"
+                },
+                "rawConfiguration": {
+                    "facet": {
+                        "showOtherSeries": false
+                    },
+                    "nrqlQueries": [{
+                        "accountIds": 0,
+                        "query": "SELECT latest(memory_heap) / 1e+6 FROM Metric FACET service_name"
+                    }],
+                    "platformOptions": {
+                        "ignoreTimeRange": false
+                    }
+                }
+            }
+        ]
+    }]
+}
