@@ -1,0 +1,56 @@
+# Count of Meraki Organizations
+organizations:
+  title: "Orgs"
+  unit: COUNT
+  queries:
+    kentik:
+      select: uniqueCount(org_id)
+      from: Metric
+      where: "provider = 'meraki-cloud-controller'"
+      eventId: entity.guid
+      eventName: entity.name
+  displayAsValue: true
+# Count of all networks monitored
+networks:
+  title: "Networks"
+  unit: COUNT
+  queries:
+    kentik:
+      select: uniqueCount(network_id)
+      from: Metric
+      where: "provider = 'meraki-cloud-controller'"
+      eventId: entity.guid
+      eventName: entity.name
+# Count of all uplinks monitored
+uplinks:
+  title: "Uplinks"
+  unit: COUNT
+  queries:
+    kentik:
+      select: uniqueCount(network_id, serial, interface)
+      from: Metric
+      where: "metricName LIKE 'kentik.meraki.uplink%'"
+      eventId: entity.guid
+      eventName: entity.name
+# Count of all devices monitored
+devices:
+  title: "Devices"
+  unit: COUNT
+  queries:
+    kentik:
+      select: uniqueCount(network_id, serial, device_name)
+      from: Metric
+      where: "metricName = 'kentik.meraki.device_status.Status'"
+      eventId: entity.guid
+      eventName: entity.name
+# Count of all VPNs monitored
+vpn:
+  title: "VPNs"
+  unit: COUNT
+  queries:
+    kentik:
+      select: uniqueCount(network_id, serial, wan1, wan2)
+      from: Metric
+      where: "metricName = 'kentik.meraki.vpn_status.Status'"
+      eventId: entity.guid
+      eventName: entity.name
