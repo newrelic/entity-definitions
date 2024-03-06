@@ -28,3 +28,35 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_DEPLOYMENT
+  - name: otelKsmK8sClusterContainsDeployment
+    # use kube-state-metrics kube_deployment_created metrics
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        anyOf: [ "kube_deployment_created" ]
+      - attribute: newrelicOnly
+        anyOf: [ "true" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: yes  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETESCLUSTER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name            
+            hashAlgorithm: FARM_HASH
+      target:  
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_DEPLOYMENT
