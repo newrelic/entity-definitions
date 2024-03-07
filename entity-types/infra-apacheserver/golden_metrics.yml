@@ -7,6 +7,8 @@ requestsPerSecond:
       from: ApacheSample
       eventId: entityGuid
       eventName: entityName
+    # currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
 totalBytesSentPerSecond:
   title: Total bytes sent per second
   unit: BYTES_PER_SECOND
@@ -16,6 +18,9 @@ totalBytesSentPerSecond:
       from: ApacheSample
       eventId: entityGuid
       eventName: entityName
+    # currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
+
 busyWorkers:
   title: Current number of busy workers
   unit: COUNT
@@ -23,6 +28,12 @@ busyWorkers:
     newRelic:
       select: average(server.busyWorkers)
       from: ApacheSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(apache.workers)
+      from: Metric
+      where: state = 'busy'
       eventId: entityGuid
       eventName: entityName
 idleWorkers:
@@ -34,4 +45,9 @@ idleWorkers:
       from: ApacheSample
       eventId: entityGuid
       eventName: entityName
-
+    opentelemetry:
+      select: average(apache.workers)
+      from: Metric
+      where: state = 'idle'
+      eventId: entityGuid
+      eventName: entityName
