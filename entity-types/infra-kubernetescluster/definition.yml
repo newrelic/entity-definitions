@@ -3,3 +3,22 @@ type: KUBERNETESCLUSTER
 configuration:
   entityExpirationTime: DAILY
   alertable: true
+synthesis:
+  rules:
+    - identifier: k8s.cluster.name
+      encodeIdentifierInGUID: true
+      name: k8s.cluster.name
+      conditions:
+        - attribute: metricName
+          value: k8s.cluster.info
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
