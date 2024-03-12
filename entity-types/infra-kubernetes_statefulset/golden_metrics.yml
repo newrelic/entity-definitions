@@ -7,6 +7,12 @@ podsDesired:
       from: K8sStatefulsetSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_statefulset_replicas)
+      where: metricName = 'kube_statefulset_replicas'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 podsReady:
   title: Pods ready over time
   unit: COUNT
@@ -16,6 +22,12 @@ podsReady:
       from: K8sStatefulsetSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_statefulset_status_replicas_ready)
+      where: metricName = 'kube_statefulset_status_replicas_ready'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 podsMissing:
   title: Pods missing over time
   unit: COUNT
@@ -25,4 +37,8 @@ podsMissing:
       from: K8sStatefulsetSample
       eventId: entityGuid
       eventName: entityName
-
+    opentelemetry:
+      select:  latest(kube_statefulset_replicas - kube_statefulset_status_replicas_ready)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
