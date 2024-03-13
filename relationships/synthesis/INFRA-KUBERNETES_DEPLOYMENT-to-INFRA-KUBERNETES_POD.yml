@@ -41,7 +41,7 @@ relationships:
       - attribute: metricName
         anyOf: [ "kube_pod_owner" ]
       - attribute: owner_kind
-        anyOf: [ "Deployment" ]
+        anyOf: [ "ReplicaSet" ]
       - attribute: newrelicOnly
         anyOf: [ "true" ]
     relationship:
@@ -61,7 +61,16 @@ relationships:
               - value: ":"
               - attribute: namespace
               - value: ":"
-              - attribute: owner_name
+              # The immediate owner is a ReplicaSet; its name is composed `DeploymentName-hash`
+              # This extracts the name of the Deployment which created the ReplicaSet. 
+              # In fringe scenarios this may fail due to find the correct name due to the 
+              # Deployment name being truncated so the ReplicaSet name isn't too long.
+              # Ideally this would use a join of the data on `kube_replicaset_owner` 
+              # (which has the raw deployment name) with `kube_pod_owner`, but joins aren't 
+              # available in this streaming context.
+              - capture:                
+                attribute: owner_name
+                regex: "^(.*)-(?:[^-]+)$"
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
