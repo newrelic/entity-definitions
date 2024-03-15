@@ -62,3 +62,32 @@ synthesis:
       created_by_kind:
         # from kube-state-metrics kube_pod_info
         entityTagNames: [k8s.createdKind]
+
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - k8s.cluster.name
+        - k8s.namespace.name
+        - k8s.pod.name
+    encodeIdentifierInGUID: true
+    name: k8s.pod.name
+    conditions:
+      # identifier attributes
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.cluster.name
+        present: true
+      # ebpf data
+      - attribute: instrumentation.provider
+        value: "nr_ebpf_agent"
+    tags:
+      k8s.pod.name:
+        entityTagNames: [k8s.podName]
+      k8s.namespace.name:
+        entityTagNames: [k8s.namespaceName]
+      k8s.cluster.name:
+        entityTagNames: [k8s.clusterName]
+      k8s.node.name:
+        entityTagNames: [k8s.nodeName]
