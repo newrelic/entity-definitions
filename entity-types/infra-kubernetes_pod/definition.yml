@@ -69,6 +69,7 @@ synthesis:
         - k8s.cluster.name
         - k8s.namespace.name
         - k8s.pod.name
+        - local_addr
     encodeIdentifierInGUID: true
     name: k8s.pod.name
     conditions:
@@ -82,6 +83,8 @@ synthesis:
       # ebpf data
       - attribute: instrumentation.provider
         value: "nr_ebpf_agent"
+      - attribute: trace_role
+        value: "client"
     tags:
       k8s.pod.name:
         entityTagNames: [k8s.podName]
@@ -91,3 +94,42 @@ synthesis:
         entityTagNames: [k8s.clusterName]
       k8s.node.name:
         entityTagNames: [k8s.nodeName]
+      local_addr:
+        entityTagNames: ["ip"]
+
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - k8s.cluster.name
+        - k8s.namespace.name
+        - k8s.pod.name
+        - local_addr
+        - local_port
+    encodeIdentifierInGUID: true
+    name: k8s.pod.name
+    conditions:
+      # identifier attributes
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.cluster.name
+        present: true
+      # ebpf data
+      - attribute: instrumentation.provider
+        value: "nr_ebpf_agent"
+      - attribute: trace_role
+        value: "server"
+    tags:
+      k8s.pod.name:
+        entityTagNames: [k8s.podName]
+      k8s.namespace.name:
+        entityTagNames: [k8s.namespaceName]
+      k8s.cluster.name:
+        entityTagNames: [k8s.clusterName]
+      k8s.node.name:
+        entityTagNames: [k8s.nodeName]
+      local_addr:
+        entityTagNames: ["ip"]
+      local_port:
+        entityTagNames: ["port"]

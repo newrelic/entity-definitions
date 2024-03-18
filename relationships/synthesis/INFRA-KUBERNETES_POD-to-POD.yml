@@ -1,0 +1,84 @@
+relationships:
+  - name: clientCallsK8sPodFromServerSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: trace_role
+        anyOf: [ "server" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "nr_ebpf_agent" ]
+      - attribute: k8s.cluster.name
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        # TODO(@benkilimnik): consider using lookup guid here if the target k8s pod is not in cluster / un-instrumented
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":pod:" # why is this string here before the podName?
+              - attribute: podName
+              - value: ":"
+              - attribute: ip
+              - value: ":"
+              - attribute: port
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+        
+  - name: clientCallsK8sPodFromClientSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: trace_role
+        anyOf: [ "client" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "nr_ebpf_agent" ]
+      - attribute: k8s.cluster.name
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        # TODO(@benkilimnik): consider using lookup guid here if the target k8s pod is not in cluster / un-instrumented
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":pod:"
+              - attribute: podName
+              - value: ":"
+              - attribute: ip
+            hashAlgorithm: FARM_HASH
