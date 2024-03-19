@@ -45,3 +45,33 @@ synthesis:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
+    # Infrastructure event data via opentelemetry 
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8.namespace.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: event.name
+          value: InfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Deployment
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: api.metrics.otlp
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
