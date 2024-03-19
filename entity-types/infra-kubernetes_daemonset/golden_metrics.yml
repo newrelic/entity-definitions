@@ -3,40 +3,38 @@ podsDesired:
   unit: COUNT
   queries:
     newRelic:
-      select: latest(k8s.daemonset.podsDesired)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(podsDesired)
       from: K8sDaemonsetSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_daemonset_status_desired_number_scheduled)
+      where: metricName = 'kube_daemonset_status_desired_number_scheduled'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 podsReady:
   title: Pods ready over time
   unit: COUNT
   queries:
     newRelic:
-      select: latest(k8s.daemonset.podsReady)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(podsReady)
       from: K8sDaemonsetSample
       eventId: entityGuid
       eventName: entityName
-podsMissing:
-  title: Pods missing over time
-  unit: COUNT    
-  queries:
-    newRelic:
-      select: latest(k8s.daemonset.podsMissing)
+    opentelemetry:
+      select: latest(kube_daemonset_status_number_ready)
+      where: metricName = 'kube_daemonset_status_number_ready'
       from: Metric
       eventId: entity.guid
       eventName: entity.name
-    newRelicSample:
+podsMissing:
+  title: Pods missing over time
+  unit: COUNT
+  queries:
+    newRelic:
       select: latest(podsMissing)
       from: K8sDaemonsetSample
       eventId: entityGuid
       eventName: entityName
+

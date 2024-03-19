@@ -44,6 +44,7 @@ synthesis:
         cloud.region:
         cloud.availability_zone:
         cloud.platform:
+        host.id:
         host.name:
         host.type:
         host.arch:
@@ -74,6 +75,7 @@ synthesis:
         cloud.region:
         cloud.availability_zone:
         cloud.platform:
+        host.id:
         host.name:
         host.type:
         host.arch:
@@ -102,6 +104,92 @@ synthesis:
         cloud.region:
         cloud.availability_zone:
         cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
         host.name:
         host.type:
         host.arch:
@@ -117,6 +205,7 @@ synthesis:
         - attribute: SAP_ETYPE
           value: HOST
       tags:
+        host.id:
         host.name:
         instrumentation.provider:
 
@@ -136,9 +225,6 @@ synthesis:
         prefix: "node_"
       - attribute: instrumentation.provider
         value: "prometheus"
-      # Value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
       tags:
         taskArn:
         nodename:
@@ -157,9 +243,6 @@ synthesis:
         prefix: "node_"
       - attribute: instrumentation.provider
         value: "prometheus"
-      # Value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
       tags:
         instanceid:
           entityTagNames: [host.id, instanceid]
@@ -177,11 +260,10 @@ synthesis:
         prefix: "node_"
       - attribute: instrumentation.provider
         value: "prometheus"
-      # Value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
       tags:
         instance:
+        instanceid:
+          entityTagNames: [host.id, instanceid]
         nodename:
           entityTagNames: [hostname]
         instrumentation.provider:
