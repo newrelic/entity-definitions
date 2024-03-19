@@ -1,0 +1,26 @@
+domain: EBPF
+type: AMQP_SERVER
+synthesis:
+  rules:
+  # Server Entity for Server-Captured Spans (kind == server)
+  - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - local_addr
+          - local_port
+    name: local_addr
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: protocol.name
+      value: "amqp"
+    - attribute: instrumentation.provider
+      value: "nr_ebpf_agent"
+    - attribute: trace_role
+      value: "server"
+    - attribute: k8s.cluster.name
+      present: false
+    tags:
+      local_addr:
+        entityTagName: "ip"
+      local_port:
+        entityTagName: "port"
