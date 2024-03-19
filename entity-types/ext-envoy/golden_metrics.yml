@@ -1,0 +1,42 @@
+connections_per_second:
+  goldenMetric: connections_per_second
+  title: Provides the downstream and upstream connections per second.
+  unit: COUNT
+  query:
+    select: rate(sum(envoy_http_downstream_cx_total), 1 second) as 'Downstream', rate(sum(envoy_cluster_upstream_cx_total), 1 second) as 'Upstream'
+    from: Metric
+requests_per_second:
+  goldenMetric: requests_per_second
+  title: Provides the downstream and upstream requests per second.
+  unit: COUNT
+  query:
+    select: rate(sum(envoy_http_downstream_rq_total), 1 second) as 'Downstream', rate(sum(envoy_cluster_upstream_rq_total), 1 second) as 'Upstream'
+    from: Metric
+uptime:
+  goldenMetric: uptime
+  title: Provides the uptime in seconds.
+  unit: SECONDS
+  query:
+    select: latest(envoy_server_uptime)
+    from: Metric
+bind_errors:
+  goldenMetric: cluster_bind_errors
+  title: Provides the cluster bind errors.
+  unit: COUNT
+  query:
+    select: latest(envoy_cluster_bind_errors)
+    from: Metric
+cluster_membership_status:
+  goldenMetric: cluster_membership_status
+  title: Provides the cluster membership status.
+  unit: COUNT
+  query:
+    select: latest(envoy_cluster_membership_degraded) as 'Degraded', latest(envoy_cluster_membership_excluded) as 'Excluded', latest(envoy_cluster_membership_healthy) as 'Healthy', latest(envoy_cluster_membership_total) as 'Total'
+    from: Metric
+listener_status:
+  goldenMetric: listener_status
+  title: Provides the listener status.
+  unit: COUNT
+  query:
+    select: latest(envoy_listener_manager_total_listeners_active) as 'Active', latest(envoy_listener_manager_total_listeners_draining) as 'Draining', latest(envoy_listener_manager_total_listeners_warming) as 'Warming'
+    from: Metric
