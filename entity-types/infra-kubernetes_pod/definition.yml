@@ -62,6 +62,7 @@ synthesis:
       created_by_kind:
         # from kube-state-metrics kube_pod_info
         entityTagNames: [k8s.createdKind]
+
   # Infrastructure event data via opentelemetry 
   - compositeIdentifier:
       separator: ":"
@@ -120,3 +121,63 @@ synthesis:
         entityTagNames: [k8s.clusterName]
       k8s.node.name:
         entityTagNames: [k8s.nodeName]
+
+  - identifier: entityId
+    name: podName
+    legacyFeatures:
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        value: K8sPodSample
+      - attribute: podName
+        present: true
+      - attribute: isScheduled
+        present: true
+    tags:
+      clusterName:
+        entityTagName: k8s.clusterName
+      createdBy:
+        entityTagName: k8s.createdBy
+      createdKind:
+        entityTagName: k8s.createdKind
+      deploymentName:
+        entityTagName: k8s.deploymentName
+      daemonsetName:
+        entityTagName: k8s.daemonsetName
+      jobName:
+        entityTagName: k8s.jobName
+      replicasetName:
+        entityTagName: k8s.replicasetName
+      statefulsetName:
+        entityTagName: k8s.statefulsetName
+      namespaceName:
+        entityTagName: k8s.namespaceName
+      namespace:
+        entityTagName: k8s.namespaceName
+      nodeIp:
+        entityTagName: k8s.nodeIp
+      podIp:
+        entityTagName: k8s.podIp
+      nodeName:
+        entityTagName: k8s.nodeName
+      podName:
+        entityTagName: k8s.podName
+      reason:
+        entityTagName: k8s.reason
+      status:
+        entityTagName: k8s.status
+        multiValue: false
+      instanceType:
+        entityTagName: host.instanceType
+      integrationName:
+        entityTagName: newrelic.integrationName
+      integrationVersion:
+        entityTagName: newrelic.integrationVersion
+      agentVersion:
+        entityTagName: newrelic.agentVersion
+      awsRegion:
+        entityTagName: aws.region
+      provider.awsRegion:
+        entityTagName: aws.region
+    prefixedTags:
+      label.:
