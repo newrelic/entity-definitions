@@ -22,3 +22,24 @@ synthesis:
         # value added for test entities only
         - attribute: newrelicOnly
           value: "true"
+    # Infrastructure event data via opentelemetry 
+    - identifier: k8s.cluster.name
+      encodeIdentifierInGUID: true
+      name: k8s.cluster.name
+      conditions:
+        - attribute: event.name
+          value: InfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Cluster
+        # identifier attributes
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: api.metrics.otlp
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
