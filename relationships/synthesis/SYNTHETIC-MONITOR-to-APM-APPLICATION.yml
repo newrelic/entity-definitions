@@ -1,0 +1,20 @@
+relationships:
+  - name: syntheticMonitorCallsApmApplication
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Transaction" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: SYNTHETICMONITOR
+          fields:
+            - field: syntheticsMonitorId
+              attribute: aws.db.host
+      target:
+        extractGuid:
+          attribute: entity.guid
