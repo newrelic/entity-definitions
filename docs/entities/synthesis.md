@@ -228,10 +228,14 @@ Every attribute name including any of the provided prefixes will get indexed as 
 * There is no explicit tag rule that matches the attribute's name including the prefix. 
 * If there are multiple attributes matching against the same prefix, all of them will get indexed.
 * The prefix gets removed from the final tag name.
-* The prefix "tags." doesn't get specified as part of this structure, it still works independently. 
+* The prefix "tags." doesn't need to be specified as part of this structure, it's implicitly taken into account. However, it's possible to override its default configuration.
 
 > With a `label.` prefix as part of the `prefixedTags` list, and the telemetry containing any attribute prefixed with it,
 for instance, `label.name`, the final tag name will be `name`.
+
+| **Name** | **Type** | **Required** | **Description**  |
+| -------- | -------- | ------------ | ---------------- |
+| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). |
 
 Finally, notice the `prefixedTags` structure is not a nested child hanging from `tags`, but directly from `rules`.
 
@@ -243,6 +247,7 @@ synthesis:
       prefixedTags:
         example.:
         example2_:
+          ttl: P1D
 ```
 
 ### Legacy features
