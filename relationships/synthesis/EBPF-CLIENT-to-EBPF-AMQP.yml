@@ -1,0 +1,56 @@
+relationships:
+  - name: clientCallsAMQPServerFromServerSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: trace_role
+        anyOf: [ "server" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "nr_ebpf_agent" ]
+      - attribute: k8s.cluster.name
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: EBPFCLIENT
+          fields:
+            - field: ip
+              attribute: remote_addr # clientIP from server's perspective
+      target:
+        extractGuid:
+          attribute: entity.guid
+
+  - name: clientCallsAMQPServerFromClientSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: trace_role
+        anyOf: [ "client" ]
+      - attribute: protocol.name
+        anyOf: [ "amqp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "nr_ebpf_agent" ]
+      - attribute: k8s.cluster.name
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: EBPFSERVER
+          fields:
+            - field: ip
+              attribute: remote_addr # serverIP from client's perspective
+            - field: port
+              attribute: remote_port # serverPort from client's perspective
