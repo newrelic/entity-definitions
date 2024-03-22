@@ -48,30 +48,15 @@ relationships:
       expires: P75M
       relationshipType: CONTAINS
       source:
-        buildGuid:
-          account:
-            lookup: true 
-          domain:
-            value: INFRA
-          type:
-            value: KUBERNETES_DEPLOYMENT
-          identifier:
-            fragments:
-              - attribute: k8s.cluster.name
-              - value: ":"
-              - attribute: namespace
-              - value: ":"
-              # The immediate owner is a ReplicaSet; its name is composed `DeploymentName-hash`
-              # This extracts the name of the Deployment which created the ReplicaSet. 
-              # In fringe scenarios this may fail due to find the correct name due to the 
-              # Deployment name being truncated so the ReplicaSet name isn't too long.
-              # Ideally this would use a join of the data on `kube_replicaset_owner` 
-              # (which has the raw deployment name) with `kube_pod_owner`, but joins aren't 
-              # available in this streaming context.
-              - capture:                
-                attribute: owner_name
-                regex: "^(.*)-(?:[^-]+)$"
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: KUBERNETES_DEPLOYMENT
+          fields:
+            - field: replicaset # replicaset owned by deployment
+              attribute: owner_name # replicaset which owns pod
+            - field: namespace # namespace of deployment
+              attribute: namespace # namespace of pod
+            - field: cluster # cluster of deployment
+              attribute: k8s.cluster.name # cluster of pod
       target:
         extractGuid:
           attribute: entity.guid

@@ -8,8 +8,8 @@ podReadiness:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(phase = 'Ready')
-      where: metricName = 'kube_pod_status_phase'
+      select: latest(if(condition = 'true', 1, 0))
+      where: metricName = 'kube_pod_status_ready' AND kube_pod_status_ready['latest'] = 1.0
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -23,8 +23,8 @@ podScheduled:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(condition)
-      where: metricName = 'kube_pod_status_scheduled'
+      select: latest(if(condition = 'true', 1, 0))
+      where: metricName = 'kube_pod_status_scheduled' AND kube_pod_status_scheduled['latest'] = 1.0
       from: Metric
       eventId: entity.guid
       eventName: entity.name
