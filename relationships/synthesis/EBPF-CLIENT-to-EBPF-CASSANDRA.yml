@@ -1,15 +1,17 @@
 relationships:
-  - name: clientCallsRedisServerFromServerSpan
+  - name: clientCallsCassandraServerFromServerSpan
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: entity.type
-        anyOf: [ "REDIS_SERVER" ]
+      - attribute: trace_role
+        anyOf: [ "server" ]
       - attribute: instrumentation.provider
-        value: "nr_ebpf_agent"
+        anyOf: [ "nr_ebpf_agent" ]
+      - attribute: k8s.cluster.name
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -23,19 +25,21 @@ relationships:
         extractGuid:
           attribute: entity.guid
 
-  - name: clientCallsRedisServerFromClientSpan
+  - name: clientCallsCassandraServerFromClientSpan
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: entity.type
-        anyOf: [ "CLIENT" ]
-      - attribute: redis.req_cmd
-        present: true
+      - attribute: trace_role
+        anyOf: [ "client" ]
+      - attribute: protocol.name
+        anyOf: [ "cassandra" ]
       - attribute: instrumentation.provider
-        value: "nr_ebpf_agent"
+        anyOf: [ "nr_ebpf_agent" ]
+      - attribute: k8s.cluster.name
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS

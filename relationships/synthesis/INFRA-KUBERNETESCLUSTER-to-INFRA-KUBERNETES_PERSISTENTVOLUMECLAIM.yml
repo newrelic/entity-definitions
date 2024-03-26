@@ -12,7 +12,7 @@ relationships:
       source:
         buildGuid:
           account:
-            lookup: yes  
+            lookup: true  
           domain:
             value: INFRA
           type:
@@ -34,19 +34,17 @@ relationships:
     origins: 
       - OpenTelemetry
     conditions:
-      - attribute: eventType
-        value: Metric
       - attribute: metricName
-        value: kube_persistentvolumeclaim_created     
+        anyOf: [ "kube_persistentvolumeclaim_created" ]
       - attribute: newrelicOnly
-        value: "true"
+        anyOf: [ "true" ]
     relationship:
       expires: P75M
       relationshipType: CONTAINS
       source:
         buildGuid:
           account:
-            lookup: yes  
+            lookup: true  
           domain:
             value: INFRA
           type:
@@ -57,6 +55,6 @@ relationships:
             hashAlgorithm: FARM_HASH
       target:  
         extractGuid:
-          attribute: entityGuid
+          attribute: entity.guid
           entityType:
             value: KUBERNETES_PERSISTENTVOLUMECLAIM
