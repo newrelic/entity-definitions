@@ -1,0 +1,22 @@
+relationships:
+  - name: syntheticMonitorCallsApmApplication
+    version: "1"
+    origins:
+      - <Need Transaction Events from APM agent as source>
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Transaction" ]
+      - attribute: nr.syntheticsMonitorId
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: SYNTHETICMONITOR
+          fields:
+            - field: nr.syntheticsMonitorId
+              attribute: nr.syntheticsMonitorId
+      target:
+        extractGuid:
+          attribute: entity.guid
