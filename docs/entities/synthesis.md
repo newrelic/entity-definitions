@@ -290,6 +290,7 @@ For example, given telemetry that follows this basic pattern:
       "type": "count",
       "value": 9
     }
+  ]
 }
 ```
 
