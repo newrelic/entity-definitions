@@ -1,21 +1,26 @@
+# Network monitoring entity
 domain: EXT
 type: MERAKI_ORGANIZATION
 synthesis:
   rules:
-    - name: org_name
-      identifier: org_id
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: instrumentation.provider
-          value: kentik
-        - attribute: instrumentation.name
-          value: meraki.organization
-      tags:
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-        org_id:
-          multiValue: false
+  - name: org_name
+    identifier: org_id
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.provider
+      value: kentik
+    - attribute: instrumentation.name
+      value: meraki.organization
+    tags:
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+      org_id:
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
   - container_service
