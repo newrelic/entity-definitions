@@ -1,60 +1,64 @@
+# Network monitoring entity
 domain: EXT
 type: IDRAC
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
-
-  conditions:
-  - attribute: provider
-    value: kentik-idrac
-
-  tags:
-    src_addr:
-      entityTagName: device_ip
-      multiValue: false
-    systemStateAmperageStatusCombined:
-      multiValue: false
-      entityTagName: amperage_status
-    systemStateChassisIntrusionStatusCombined:
-      multiValue: false
-      entityTagName: chassis_intrusion_status
-    systemStateChassisStatus:
-      multiValue: false
-      entityTagName: chassis_status
-    systemStateCoolingDeviceStatusCombined:
-      multiValue: false
-      entityTagName: cooling_device_status
-    systemStateCoolingUnitStatusCombined:
-      multiValue: false
-      entityTagName: cooling_unit_status
-    systemStateCoolingUnitStatusRedundancy:
-      multiValue: false
-      entityTagName: cooling_unit_redundancy
-    systemStateMemoryDeviceStatusCombined:
-      multiValue: false
-      entityTagName: memory_device_status
-    systemStatePowerSupplyStatusCombined:
-      multiValue: false
-      entityTagName: power_supply_status
-    systemStatePowerUnitStatusCombined:
-      multiValue: false
-      entityTagName: power_unit_status
-    systemStatePowerUnitStatusRedundancy:
-      multiValue: false
-      entityTagName: power_unit_redundance
-    systemStateProcessorDeviceStatusCombined:
-      multiValue: false
-      entityTagName: processor_device_status
-    systemStateTemperatureStatisticsStatusCombined:
-      multiValue: false
-      entityTagName: temperature_statistics_status
-    systemStateTemperatureStatusCombined:
-      multiValue: false
-      entityTagName: temperature_status
-    tags.container_service:
-      entityTagName: container_service
-      multiValue: false
+  rules:
+  - name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-idrac
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      systemStateAmperageStatusCombined:
+        multiValue: false
+        entityTagName: amperage_status
+      systemStateChassisIntrusionStatusCombined:
+        multiValue: false
+        entityTagName: chassis_intrusion_status
+      systemStateChassisStatus:
+        multiValue: false
+        entityTagName: chassis_status
+      systemStateCoolingDeviceStatusCombined:
+        multiValue: false
+        entityTagName: cooling_device_status
+      systemStateCoolingUnitStatusCombined:
+        multiValue: false
+        entityTagName: cooling_unit_status
+      systemStateCoolingUnitStatusRedundancy:
+        multiValue: false
+        entityTagName: cooling_unit_redundancy
+      systemStateMemoryDeviceStatusCombined:
+        multiValue: false
+        entityTagName: memory_device_status
+      systemStatePowerSupplyStatusCombined:
+        multiValue: false
+        entityTagName: power_supply_status
+      systemStatePowerUnitStatusCombined:
+        multiValue: false
+        entityTagName: power_unit_status
+      systemStatePowerUnitStatusRedundancy:
+        multiValue: false
+        entityTagName: power_unit_redundance
+      systemStateProcessorDeviceStatusCombined:
+        multiValue: false
+        entityTagName: processor_device_status
+      systemStateTemperatureStatisticsStatusCombined:
+        multiValue: false
+        entityTagName: temperature_statistics_status
+      systemStateTemperatureStatusCombined:
+        multiValue: false
+        entityTagName: temperature_status
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip
