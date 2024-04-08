@@ -200,6 +200,50 @@ synthesis:
 
 #### TTL tags
 
+By default, unique `key:value` tuples for tags are stored on the entity object indefinitely. You can override this behavior using the `ttl` configuration option.
+
+For example, given this configuration:
+
+```yaml
+synthesis:
+  rules:
+    - identifier: entity.id
+      name: device_name
+      tags:
+        environment:
+        owner_group:
+```
+
+The tag named `environment` will maintain all received values in a list by default. In other words, if this tag value was `production` and then later changed to `testing` the entity UI the tags component would show 2 unique tuples. Additionally, if we stop using the `owner_group` tag, its tuple would also by default be kept on the entity object indefinitely:
+
+```
+environment: production
+environment: testing
+owner_group: devops
+```
+
+Updating the configuration to add a 4 hour TTL on each tag key like this:
+
+```yaml
+synthesis:
+  rules:
+    - identifier: entity.id
+      name: device_name
+      tags:
+        environment:
+          ttl: P4H
+        owner_group:
+          ttl: P4H
+```
+
+Would result in the original `environment: production` value being purged after 4 hours of telemetry on this entity, where this tuple is absent. In addition, the lack of telemetry using the tag key `owner_group` would also capture that any tuples using this key are absent, and thus expired.
+
+The final result for the entity UI is a tags component with only the unique tuple that is currently being sent with this entity's telemetry.
+
+```
+environment: testing
+```
+
 
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
@@ -224,14 +268,61 @@ Also, if present in the telemetry, these attributes are also added to the entity
 
 #### Prefixed tags
 
+Similar to the tag configuration, the `prefixedTags` option allows you to synthesize tags from entity telemetry attributes that match the defined prefix.
+
+For example, given telemetry that follows this basic pattern:
+
+```json
+{
+  "common" : {
+    "timestamp": 1531414060739,
+    "interval.ms": 10000,
+    "attributes": {
+      "device_name": "foo",
+      "org.name": "bar",
+      "org.environment": "production",
+      "org.owner_group": "devops"
+    }
+  },
+  "metrics": [
+    {
+      "name": "service.errors.all",
+      "type": "count",
+      "value": 9
+    }
+  ]
+}
+```
+
+A configuration like this will ensure all attributes with the `org.` prefix are indexed as tags:
+
+```yaml
+synthesis:
+  rules:
+    - identifier: entity.id
+      name: device_name
+      prefixedTags:
+        org.:
+```
+
+Resulting in these tag tuples:
+
+```
+name: bar
+environment: production
+owning_team: devops
+```
+
+##### Default rules
+
 Every attribute name including any of the provided prefixes will get indexed as a tag, taking into account the following:
 * There is no explicit tag rule that matches the attribute's name including the prefix. 
 * If there are multiple attributes matching against the same prefix, all of them will get indexed.
 * The prefix gets removed from the final tag name.
-* The prefix "tags." doesn't need to be specified as part of this structure, it's implicitly taken into account. However, it's possible to override its default configuration.
+  * _Note that the `org.name` attribute above is indexed as `name`_
+* The prefix `tags.` will always index tags and doesn't need to be specified as part of this structure. However, it's possible to override its default configuration by including the prefix here.
 
-> With a `label.` prefix as part of the `prefixedTags` list, and the telemetry containing any attribute prefixed with it,
-for instance, `label.name`, the final tag name will be `name`.
+
 
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
