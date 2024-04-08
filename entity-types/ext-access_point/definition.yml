@@ -1,67 +1,80 @@
+# Network monitoring entity
 domain: EXT
 type: ACCESS_POINT
 synthesis:
   rules:
-    # kentik - cisco
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: provider
-          value: kentik-cisco-ap
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-    # kentik - fortinet
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: provider
-          value: kentik-fortinet-ap
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-    # kentik - others
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: provider
-          value: kentik-wap
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-   # prometheus provider
-    - identifier: serial
-      name: ip
-      debug: true 
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          value: 'unifipoller_device_info'
-      tags:
-        model:
-        version:
-        mac:
-        ip:
-          entityTagName: device_ip
-          multiValue: false  
-          
+  # kentik - cisco
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cisco-ap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # kentik - fortinet
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-fortinet-ap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # kentik - others
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-wap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # prometheus provider
+  - identifier: serial
+    name: ip
+    debug: true 
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: metricName
+      value: 'unifipoller_device_info'
+    tags:
+      model:
+      version:
+      mac:
+      ip:
+        entityTagName: device_ip
+        multiValue: false
+
 goldenTags:
 - device_ip
 - container_service
