@@ -8,6 +8,8 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: newrelic.source
         anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
     relationship:
       expires: P75M
       relationshipType: HOSTS
@@ -39,6 +41,41 @@ relationships:
         anyOf: [ "Metric" ]
       - attribute: newrelic.source
         anyOf: [ "api.metrics.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  - name: otelServiceHostLog
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
     relationship:
       expires: P75M
       relationshipType: HOSTS
