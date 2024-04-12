@@ -20,3 +20,25 @@ relationships:
           fields:
             - field: cloudResourceId
               attribute: cloud.resource_id
+  
+  - name: apmServiceCallsInfraDynamoDBTable
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "DynamoDB" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: cloudResourceId
+              attribute: cloud.resource_id
