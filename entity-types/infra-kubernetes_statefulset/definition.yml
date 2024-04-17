@@ -7,3 +7,106 @@ goldenTags:
 - k8s.statefulsetName
 - k8s.clusterName
 - k8s.namespaceName
+synthesis:
+  rules:
+    # kube-state-metrics data via opentelemetry prometheusReceiver 
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - namespace
+          - statefulset
+      encodeIdentifierInGUID: true
+      name: statefulset
+      conditions:
+        # kube-state-metrics statefulset prefix
+        - attribute: metricName
+          prefix: kube_statefulset_
+        # identifier attributes
+        - attribute: statefulset
+          present: true
+        - attribute: namespace
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+      tags:
+        statefulset:
+          entityTagNames: [k8s.statefulsetName]
+        namespace:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+    # Infrastructure event data via opentelemetry 
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8.namespace.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: event.name
+          value: InfrastructureEvent
+        - attribute: k8s.object.kind
+          value: StatefulSet
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: api.events.otlp
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+
+    - identifier: entityId
+      name: statefulsetName
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          value: K8sStatefulsetSample
+        - attribute: statefulsetName
+          present: true
+        - attribute: podsDesired
+          present: true
+      tags:
+        clusterName:
+          entityTagName: k8s.clusterName
+        namespaceName:
+          entityTagName: k8s.namespaceName
+        namespace:
+          entityTagName: k8s.namespaceName
+        statefulsetName:
+          entityTagName: k8s.statefulsetName
+        instanceType:
+          entityTagName: host.instanceType
+        integrationName:
+          entityTagName: newrelic.integrationName
+        integrationVersion:
+          entityTagName: newrelic.integrationVersion
+        agentVersion:
+          entityTagName: newrelic.agentVersion
+        awsRegion:
+          entityTagName: aws.region
+        provider.awsRegion:
+          entityTagName: aws.region
+      prefixedTags:
+        label.:
