@@ -1,21 +1,25 @@
-# Network Switch devices from Kentik using Metric API
----
+# Network monitoring entity
 domain: EXT
 type: SWITCH
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
-  conditions:
+  rules:
+  - name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
     - attribute: provider
       value: kentik-switch
-  tags:
-    src_addr:
-      entityTagName: device_ip
-      multiValue: false
-    tags.container_service:
-      entityTagName: container_service
-      multiValue: false
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip

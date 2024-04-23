@@ -371,7 +371,7 @@ source:
   buildGuid:
     account:
       attribute: accountId
-      # or lookup: yes
+      # or lookup: true
     domain:
       value: EXT
     type:

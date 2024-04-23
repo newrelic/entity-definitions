@@ -12,6 +12,7 @@ cpuUtilization:
     newRelic:
       select: max(docker.container.cpuPercent) or max(k8s.container.cpuCoresUtilization) AS 'CPU Utilization (%)'
     opentelemetry:
+      # via dockerstatsreceiver & kubeletstatsreceiver – which send equivalent value named container.cpu.utilization
       select: max(container.cpu.utilization) AS 'CPU Utilization (%)'
 memoryUsage:
   title: Memory usage (bytes)
@@ -20,7 +21,8 @@ memoryUsage:
     newRelic:
       select: max(docker.container.memoryUsageBytes) or max(k8s.container.memoryWorkingSetBytes) AS 'Memory used (bytes)'
     opentelemetry:
-      select: max(container.memory.usage.total) AS 'Memory used (bytes)'
+      # via dockerstatsreceiver OR kubeletstatsreceiver respectively
+      select: max(container.memory.usage.total) or max(container.memory.usage) AS 'Memory used (bytes)'
 storageUsage:
   title: Storage usage (bytes)
   unit: BYTES
@@ -28,7 +30,8 @@ storageUsage:
     newRelic:
       select: max(docker.container.ioTotalBytes) or max(k8s.container.fsUsedPercent) AS 'Storage used (bytes)'
     opentelemetry:
-      select: max(container.blockio.io_service_bytes_recursive) AS 'Storage used (bytes)'
+      # via dockerstatsreceiver OR kubeletstatsreceiver respectively
+      select: max(container.blockio.io_service_bytes_recursive) or max(container.filesystem.usage) AS 'Storage used (bytes)'
 networkTrafficTotal:
   title: Network traffic (bytes per second)
   unit: BYTES_PER_SECOND

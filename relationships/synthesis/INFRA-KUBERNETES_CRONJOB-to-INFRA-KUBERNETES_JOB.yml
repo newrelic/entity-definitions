@@ -14,7 +14,7 @@ relationships:
       source:
         buildGuid:
           account:
-            lookup: yes  
+            lookup: true  
           domain:
             value: INFRA
           type:
@@ -40,21 +40,19 @@ relationships:
     origins: 
       - OpenTelemetry
     conditions:
-      - attribute: eventType
-        value: Metric
       - attribute: metricName
-        value: kube_job_owner
+        anyOf: [ "kube_job_owner" ]
       - attribute: owner_kind
-        value: CronJob
+        anyOf: [ "CronJob" ]
       - attribute: newrelicOnly
-        value: "true"
+        anyOf: [ "true" ]
     relationship:
       expires: P75M
       relationshipType: CONTAINS
       source:
         buildGuid:
           account:
-            lookup: yes  
+            lookup: true  
           domain:
             value: INFRA
           type:
@@ -69,6 +67,6 @@ relationships:
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entityGuid
+          attribute: entity.guid
           entityType:
             value: KUBERNETES_JOB
