@@ -1,0 +1,44 @@
+relationships:
+  - name: extServiceCallsInfraElasticacheMemcache
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: rpc.service
+        anyOf: [ "memcache" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSELASTICACHEMEMCACHE
+          fields:
+            - field: urlFull
+              attribute: cloud.url_full
+  
+  - name: apmServiceCallsInfraDynamoDBTable
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: db.system
+        anyOf: [ "memcache" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSELASTICACHEMEMCACHE
+          fields:
+            - field: urlFull
+              attribute: cloud.url_full
