@@ -114,4 +114,3 @@ If you believe you have found a security vulnerability in this project or any of
 
 ## License
 Entity Synthesis Definitions is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.
-
