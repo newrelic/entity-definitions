@@ -1,0 +1,20 @@
+relationships:
+  - name: extServiceCallsInfraAwsSqsQueue
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSSQSQUEUE
+          fields:
+            - field: awsSqsQueueUrl
+              attribute: url.full
