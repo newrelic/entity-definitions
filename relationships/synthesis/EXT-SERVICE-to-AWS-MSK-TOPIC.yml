@@ -1,0 +1,41 @@
+relationships:
+  - name: extServiceCallsInfraAwsMskTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMSKTOPIC
+          fields:
+            - field: cloudResourceId
+              attribute: cloud.resource_id
+
+
+  - name: apmServiceCallsInfraAwsMskTopic
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMSKTOPIC
+          fields:
+            - field: cloudResourceId
+              attribute: cloud.resource_id
