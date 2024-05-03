@@ -1,12 +1,12 @@
 relationships:
-  - name: extServiceCallsInfraElasticacheMemcached
+  - name: extServiceCallsInfraElasticacheMemcachedCluster
     version: "1"
     origins:
-      - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: rpc.service
+      - attribute: db.system
         anyOf: [ "memcached" ]
     relationship:
       expires: P75M
@@ -16,12 +16,12 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: AWSELASTICACHEMEMCACHED
+          candidateCategory: AWSELASTICACHEMEMCACHEDCLUSTER
           fields:
-            - field: urlFull
-              attribute: cloud.url_full
+            - field: awsEndpoint
+              attribute: url.full
   
-  - name: apmServiceCallsInfraElasticacheMemcached
+  - name: apmServiceCallsInfraElasticacheMemcachedCluster
     version: "1"
     origins:
       - Distributed Tracing
@@ -38,7 +38,7 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: AWSELASTICACHEMEMCACHED
+          candidateCategory: AWSELASTICACHEMEMCACHEDCLUSTER
           fields:
-            - field: urlFull
-              attribute: cloud.url_full
+            - field: awsEndpoint
+              attribute: url.full
