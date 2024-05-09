@@ -18,27 +18,10 @@ relationships:
         lookupGuid:
           candidateCategory: AWSELASTICACHEMEMCACHEDCLUSTER
           fields:
-            - field: cloud.resource_endpoint
-              attribute: cloud.resource_endpoint
+            - field: cloud.resource_endpoint_address
+              attribute: net.peer.name
+            - field: cloud.resource_endpoint_port
+              attribute: net.peer.port
+            - field: cloud.elasticache_engine
+              attribute: db.system
   
-  - name: apmServiceCallsInfraElasticacheMemcachedCluster
-    version: "1"
-    origins:
-      - Distributed Tracing
-    conditions:
-      - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: db.system
-        anyOf: [ "memcached" ]
-    relationship:
-      expires: P75M
-      relationshipType: CALLS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: AWSELASTICACHEMEMCACHEDCLUSTER
-          fields:
-            - field: cloud.resource_endpoint
-              attribute: cloud.resource_endpoint
