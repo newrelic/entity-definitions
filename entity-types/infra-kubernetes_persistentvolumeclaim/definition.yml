@@ -13,47 +13,48 @@ goldenTags:
 - k8s.pvcNamespace
 synthesis:
   rules:
+    # Commenting the below rule until our 2nd release 
     # kube-state-metrics data via opentelemetry prometheusReceiver 
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - persistentvolumeclaim
-      encodeIdentifierInGUID: true
-      name: persistentvolumeclaim
-      conditions:
+    #- compositeIdentifier:
+    #    separator: ":"
+    #    attributes:
+    #      - k8s.cluster.name
+    #      - namespace
+    #      - persistentvolumeclaim
+    #  encodeIdentifierInGUID: true
+    #  name: persistentvolumeclaim
+    #  conditions:
         # kube-state-metrics persistentvolumeclaim prefix
-        - attribute: metricName
-          prefix: kube_persistentvolumeclaim_
+    #    - attribute: metricName
+    #      prefix: kube_persistentvolumeclaim_
         # identifier attributes
-        - attribute: persistentvolumeclaim
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
+    #    - attribute: persistentvolumeclaim
+    #      present: true
+    #    - attribute: namespace
+    #      present: true
+    #    - attribute: k8s.cluster.name
+    #      present: true
         # open telemetry
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
+    #    - attribute: newrelic.source
+    #      value: 'api.metrics.otlp'
         # if service.name is present, it's a service
-        - attribute: service.name
-          present: false
+    #    - attribute: service.name
+    #      present: false
         # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
-      tags:
-        persistentvolumeclaim:
-          entityTagNames: [k8s.pvcName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
-        phase:
-          multiValue: false
-          entityTagNames: [k8s.persistentvolumeclaim.statusPhase]
-        volumename:
-          entityTagNames: [k8s.persistentvolumeclaim.volumeName]
+    #    - attribute: newrelicOnly
+    #      value: "true"
+    #  tags:
+    #    persistentvolumeclaim:
+    #      entityTagNames: [k8s.pvcName]
+    #    namespace:
+    #      entityTagNames: [k8s.namespaceName]
+    #    k8s.cluster.name:
+    #      entityTagNames: [k8s.clusterName]
+    #    phase:
+    #      multiValue: false
+    #      entityTagNames: [k8s.persistentvolumeclaim.statusPhase]
+    #    volumename:
+    #      entityTagNames: [k8s.persistentvolumeclaim.volumeName]
     # Infrastructure event data via opentelemetry 
     - compositeIdentifier:
         separator: ":"
