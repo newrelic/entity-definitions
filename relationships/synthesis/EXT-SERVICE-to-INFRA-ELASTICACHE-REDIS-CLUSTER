@@ -25,3 +25,30 @@ relationships:
             - field: cloud.elasticache_engine
               attribute: db.system
               
+  - name: apmServiceCallsInfraElastiCacheRedisCluster
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSELASTICACHEREDISCLUSTER
+          fields:
+            - field: cloud.resource_endpoint_address
+              attribute: peer.hostname
+            - field: cloud.resource_endpoint_port
+              attribute: server.port
+            - field: cloud.elasticache_engine
+              attribute: db.system
+              
+
