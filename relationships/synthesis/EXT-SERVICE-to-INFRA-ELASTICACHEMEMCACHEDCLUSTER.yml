@@ -31,10 +31,8 @@ relationships:
     origins:
       - APM Metrics
     conditions:
-      - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: db.system
-        anyOf: [ "memcached" ]
+      -attribute: metricName
+        regex: "^Datastore/instance/Memcached/[^/]*\\.cache.amazonaws\\.com/9[0-9]+"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -46,9 +44,13 @@ relationships:
           candidateCategory: AWSELASTICACHEMEMCACHEDCLUSTER
           fields:
             - field: cloud.resource_endpoint_address
-              attribute: peer.hostname
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.cache\\.amazonaws\\.com"
             - field: cloud.resource_endpoint_port
-              attribute: server.port
+              capture:
+                attribute: metricName__5
+                regex: "[1-9][0-9]+"
             - field: cloud.elasticache_engine
-              attribute: db.system
+              attribute: metricName__3
   
