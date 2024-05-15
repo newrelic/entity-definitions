@@ -22,27 +22,3 @@ relationships:
               attribute: net.peer.name
             - field: port
               attribute: net.peer.port
-              
-- name: apmServiceCallsInfraElastiCacheRedisCluster
-  version: "1"
-  origins:
-    - APM Metrics
-  conditions:
-    - attribute: metricName
-      regex: "^Datastore/instance/Redis/[^/]*\\.cache.amazonaws\\.com/[0-9]+"
-  relationship:
-    expires: P75M
-    relationshipType: CALLS
-    source:
-      extractGuid:
-        attribute: entity.guid
-    target:
-      lookupGuid:
-        candidateCategory: AWSELASTICACHEREDISCLUSTER
-        fields:
-          - field: cloud.resource_endpoint_address
-            capture:
-              attribute: metricName__4
-          - field: cloud.resource_endpoint_port
-            capture:
-              attribute: metricName__5
