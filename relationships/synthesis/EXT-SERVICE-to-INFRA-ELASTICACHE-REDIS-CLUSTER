@@ -5,7 +5,7 @@ relationships:
       - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Metric" ]
+        anyOf: [ "Span" ]
       - attribute: db.system
         anyOf: [ "redis" ]
     relationship:
@@ -18,12 +18,10 @@ relationships:
         lookupGuid:
           candidateCategory: AWSELASTICACHEREDISCLUSTER
           fields:
-            - field: cloud.resource_endpoint_address
+            - field: endpoint
               attribute: net.peer.name
-            - field: cloud.resource_endpoint_port
+            - field: port
               attribute: net.peer.port
-            - field: cloud.elasticache_engine
-              attribute: db.system
               
 - name: apmServiceCallsInfraElastiCacheRedisCluster
   version: "1"
@@ -45,10 +43,6 @@ relationships:
           - field: cloud.resource_endpoint_address
             capture:
               attribute: metricName__4
-              regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.cache\\.amazonaws\\.com"
           - field: cloud.resource_endpoint_port
             capture:
               attribute: metricName__5
-              regex: "([0-9]+)"
-          - field: cloud.elasticache_engine
-            attribute: metricName__3
