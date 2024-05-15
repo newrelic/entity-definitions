@@ -1,0 +1,21 @@
+relationships:
+  - name: apmConsumesApm
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        startsWith: "MessageBroker/Kafka/Internal/"
+        caseSensitive: true
+      - attribute: metricName
+        regex: ".*/topic/.*/client/.*"
+        caseSensitive: false
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+        attribute: entity.guid
+      target:
+        extractGuid:
+          attribute: entity.guid
