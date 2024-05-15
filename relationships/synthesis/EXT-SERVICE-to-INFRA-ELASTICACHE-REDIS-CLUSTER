@@ -25,30 +25,30 @@ relationships:
             - field: cloud.elasticache_engine
               attribute: db.system
               
-  - name: apmServiceCallsInfraElastiCacheRedisCluster
-    version: "1"
-    origins:
-      - APM Metrics
-    conditions:
-      - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: db.system
-        anyOf: [ "redis" ]
-    relationship:
-      expires: P75M
-      relationshipType: CALLS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: AWSELASTICACHEREDISCLUSTER
-          fields:
-            - field: cloud.resource_endpoint_address
-              attribute: peer.hostname
-            - field: cloud.resource_endpoint_port
-              attribute: server.port
-            - field: cloud.elasticache_engine
-              attribute: db.system
-              
-
+- name: apmServiceCallsInfraElastiCacheRedisCluster
+  version: "1"
+  origins:
+    - APM Metrics
+  conditions:
+    - attribute: metricName
+      regex: "^Datastore/instance/Redis/[^/]*\\.cache.amazonaws\\.com/[0-9]+"
+  relationship:
+    expires: P75M
+    relationshipType: CALLS
+    source:
+      extractGuid:
+        attribute: entity.guid
+    target:
+      lookupGuid:
+        candidateCategory: AWSELASTICACHEREDISCLUSTER
+        fields:
+          - field: cloud.resource_endpoint_address
+            capture:
+              attribute: metricName__4
+              regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.cache\\.amazonaws\\.com"
+          - field: cloud.resource_endpoint_port
+            capture:
+              attribute: metricName__5
+              regex: "([0-9]+)"
+          - field: cloud.elasticache_engine
+            attribute: metricName__3
