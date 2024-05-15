@@ -1,21 +1,25 @@
+# Network monitoring entity
 domain: EXT
 type: CISCO_APIC
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
-
-  conditions:
-  - attribute: provider
-    value: kentik-cisco-apic
-
-  tags:
-    src_addr:
-      entityTagName: device_ip
-      multiValue: false
-    tags.container_service:
-      entityTagName: container_service
-      multiValue: false
+  rules:
+  - name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cisco-apic
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip

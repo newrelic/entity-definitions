@@ -24,6 +24,8 @@ synthesis:
     # opentelemetry host data from opentelemetry-collector
     - identifier: host.id
       name: host.name
+      legacyFeatures:
+        overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -44,6 +46,7 @@ synthesis:
         cloud.region:
         cloud.availability_zone:
         cloud.platform:
+        host.id:
         host.name:
         host.type:
         host.arch:
@@ -54,6 +57,8 @@ synthesis:
     # opentelemetry host data from opentelemetry-collector
     - identifier: host.id
       name: host.name
+      legacyFeatures:
+        overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -74,6 +79,7 @@ synthesis:
         cloud.region:
         cloud.availability_zone:
         cloud.platform:
+        host.id:
         host.name:
         host.type:
         host.arch:
@@ -84,6 +90,8 @@ synthesis:
     # opentelemetry host data from opentelemetry-collector
     - identifier: host.id
       name: host.name
+      legacyFeatures:
+        overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -102,6 +110,7 @@ synthesis:
         cloud.region:
         cloud.availability_zone:
         cloud.platform:
+        host.id:
         host.name:
         host.type:
         host.arch:
@@ -109,6 +118,94 @@ synthesis:
         host.image.id:
         host.image.version:
         instrumentation.provider:
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        service.name:
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        service.name:
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        service.name:
     # opentelemetry host data from New Relic sap solutions 
     - identifier: host.id
       name: host.id
@@ -117,6 +214,7 @@ synthesis:
         - attribute: SAP_ETYPE
           value: HOST
       tags:
+        host.id:
         host.name:
         instrumentation.provider:
 
@@ -141,26 +239,7 @@ synthesis:
         nodename:
           entityTagNames: [hostname]
         instrumentation.provider:
-    # AWS EC2 by instanceid
-    - identifier: instanceid
-      name: instanceid
-      legacyFeatures:
-        overrideGuidType: true
-      encodeIdentifierInGUID: true
-      conditions:
-      - attribute: instance
-        present: false
-      - attribute: metricName
-        prefix: "node_"
-      - attribute: instrumentation.provider
-        value: "prometheus"
-      tags:
-        instanceid:
-          entityTagNames: [host.id, instanceid]
-        nodename:
-          entityTagNames: [hostname]
-        instrumentation.provider:
-    # On a host
+    # AWS EC2 or On a host
     - identifier: instance
       name: instance
       legacyFeatures:
@@ -173,6 +252,8 @@ synthesis:
         value: "prometheus"
       tags:
         instance:
+        instanceid:
+          entityTagNames: [host.id, instanceid]
         nodename:
           entityTagNames: [hostname]
         instrumentation.provider:

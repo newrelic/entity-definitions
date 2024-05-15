@@ -10,3 +10,152 @@ dashboardTemplates:
 goldenTags:
 - k8s.volumeName
 - k8s.clusterName
+synthesis:
+  rules:
+    # Commenting the below rule until our 2nd release
+    # kube-state-metrics data via opentelemetry prometheusReceiver 
+    #- compositeIdentifier:
+    #    separator: ":"
+    #    attributes:
+    #      - k8s.cluster.name
+    #      - persistentvolume
+    #  encodeIdentifierInGUID: true
+    #  name: persistentvolume
+    #  conditions:
+        # kube-state-metrics persistentvolume prefix
+    #    - attribute: metricName
+    #      prefix: kube_persistentvolume_
+        # identifier attributes
+    #    - attribute: persistentvolume
+    #      present: true
+    #    - attribute: k8s.cluster.name
+    #      present: true
+        # open telemetry
+    #    - attribute: newrelic.source
+    #      value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+    #    - attribute: service.name
+    #      present: false
+        # value added for test entities only
+    #    - attribute: newrelicOnly
+    #      value: "true"
+    #  tags:
+    #    persistentvolume:
+    #      entityTagNames: [k8s.volumeName]
+    #    k8s.cluster.name:
+    #      entityTagNames: [k8s.clusterName]
+    #    phase:
+    #      multiValue: false
+    #      entityTagNames: [k8s.persistentvolume.statusPhase]
+    #    claim_namespace:
+    #      entityTagNames: [k8s.pvcNamespace]
+    #    name:
+    #      entityTagNames: [k8s.pvcName]
+    #    storageclass:
+    #      entityTagNames: [k8s.persistentvolume.storageClass]
+    # Infrastructure event data via opentelemetry 
+    #- compositeIdentifier:
+    #    separator: ":"
+    #    attributes:
+    #      - k8s.cluster.name
+    #      - k8s.object.name
+    #  encodeIdentifierInGUID: true
+    #  name: k8s.object.name
+    #  conditions:
+    #    - attribute: event.name
+    #      value: InfrastructureEvent
+    #    - attribute: k8s.object.kind
+    #      value: PersistentVolume
+        # identifier attributes
+    #   - attribute: k8s.object.name
+    #      present: true
+    #    - attribute: k8s.cluster.name
+    #      present: true
+        # open telemetry
+    #    - attribute: newrelic.source
+    #      value: api.events.otlp
+        # if service.name is present, handle as one
+    #    - attribute: service.name
+    #      present: false
+        # value added for test entities only
+    #    - attribute: newrelicOnly
+    #      value: "true"
+    - identifier: entityId
+      name: volumeName
+      legacyFeatures:
+        overrideGuidType: true
+        useNonStandardAttributes: true
+      conditions:
+        - attribute: eventType
+          value: K8sPersistentVolumeSample
+        - attribute: volumeName
+          present: true
+        - attribute: statusPhase
+          present: true
+      tags:
+        statusPhase:
+          entityTagName: k8s.persistentvolume.statusPhase
+        volumeName:
+          entityTagName: k8s.volumeName
+        pvcName:
+          entityTagName: k8s.pvcName
+        pvcNamespace:
+          entityTagName: k8s.pvcNamespace
+        storageClass:
+          entityTagName: k8s.persistentvolume.storageClass
+        hostPath:
+          entityTagName: k8s.persistentvolume.hostPath
+        hostPathType:
+          entityTagName: k8s.persistentvolume.hostPathType
+        localFs:
+          entityTagName: k8s.persistentvolume.localFs
+        localPath:
+          entityTagName: k8s.persistentvolume.localPath
+        csiVolumeHandle:
+          entityTagName: k8s.persistentvolume.csiVolumeHandle
+        csiDriver:
+          entityTagName: k8s.persistentvolume.csiDriver
+        nfsPath:
+          entityTagName: k8s.persistentvolume.nfsPath
+        nfsServer:
+          entityTagName: k8s.persistentvolume.nfsServer
+        iscsiInitiatorName:
+          entityTagName: k8s.persistentvolume.iscsiInitiatorName
+        iscsiLun:
+          entityTagName: k8s.persistentvolume.iscsiLun
+        iscsiIqn:
+          entityTagName: k8s.persistentvolume.iscsiIqn
+        iscsiTargetPortal:
+          entityTagName: k8s.persistentvolume.iscsiTargetPortal
+        fcTargetWwns:
+          entityTagName: k8s.persistentvolume.fcTargetWwns
+        fcLun:
+          entityTagName: k8s.persistentvolume.fcLun
+        fcWwids:
+          entityTagName: k8s.persistentvolume.fcWwids
+        azureDiskName:
+          entityTagName: k8s.persistentvolume.azureDiskName
+        ebsVolumeId:
+          entityTagName: k8s.persistentvolume.ebsVolumeId
+        gcePersistentDisk:
+          entityTagName: k8s.persistentvolume.gcePersistentDisk
+        namespaceName:
+          entityTagName: k8s.namespaceName
+        namespace:
+          entityTagName: k8s.namespaceName
+        clusterName:
+          entityTagName: k8s.clusterName
+        instanceType:
+          entityTagName: host.instanceType
+        integrationName:
+          entityTagName: newrelic.integrationName
+        integrationVersion:
+          entityTagName: newrelic.integrationVersion
+        agentVersion:
+          entityTagName: newrelic.agentVersion
+        awsRegion:
+          entityTagName: aws.region
+        provider.awsRegion:
+          entityTagName: aws.region
+      prefixedTags:
+        label.:

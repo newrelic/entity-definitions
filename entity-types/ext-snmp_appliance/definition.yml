@@ -1,51 +1,64 @@
+# Network monitoring entity
 domain: EXT
 # Catch all definition for assorted SNMP based devices from Kentik's ktranslate agent that do not have a wide use case and only use CPU/MEM golden metrics, if any
 type: SNMP_APPLIANCE
 
 synthesis:
   rules:
-    # Generic Appliances
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-      - attribute: provider
-        value: kentik-appliance
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-    # Aruba Clearpass Network Access Controller
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-      - attribute: provider
-        value: kentik-clearpass
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-    # HP Bladesystem Enclosure
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-      - attribute: provider
-        value: kentik-server-chassis
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
+  # Generic Appliances
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-appliance
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # Aruba Clearpass Network Access Controller
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-clearpass
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # HP Bladesystem Enclosure
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-server-chassis
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip
