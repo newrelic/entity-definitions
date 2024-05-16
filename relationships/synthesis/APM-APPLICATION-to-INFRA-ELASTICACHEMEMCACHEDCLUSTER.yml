@@ -1,13 +1,11 @@
 relationships:
-  - name: extServiceCallsInfraElasticacheMemcachedCluster
+  - name: apmApplicationCallsInfraElastiCacheMemcachedCluster
     version: "1"
     origins:
-      - OpenTelemetry
+      - APM Metrics
     conditions:
-      - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: db.system
-        anyOf: [ "memcached" ]
+      - attribute: metricName
+        regex: "^Datastore/instance/Memcached/[^/]*\\.cache.amazonaws\\.com/[0-9]+"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -19,6 +17,6 @@ relationships:
           candidateCategory: AWSELASTICACHEMEMCACHEDCLUSTER
           fields:
             - field: endpoint
-              attribute: net.peer.name
-            - field: port
-              attribute: net.peer.port
+              attribute: metricName__4             
+            - field: port       
+              attribute: metricName__5
