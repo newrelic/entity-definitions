@@ -127,7 +127,6 @@ Example:
 - name: extServiceCallsExtPixieRedis
 ```
 
-
 ### Version
 
 The `version` field indicates the rule version. This allows for introducing new breaking changes to the formats 
