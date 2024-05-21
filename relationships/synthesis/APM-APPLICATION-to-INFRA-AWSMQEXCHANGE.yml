@@ -1,0 +1,45 @@
+relationships:
+  - name: apmProducesAwsMqExchange
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+      # MessageBroker/instance/RabbitMQ/b-8e247f24-04dc-4e76-aaf0-94d4e6689d16.mq.us-east-2.amazonaws.com/5671/Produce/Exchange/Named/default
+        regex: "^MessageBroker/instance/RabbitMQ/[^/]*\\.mq\\.[^/]*\\.amazonaws\\.com/[0-9]+/Produce/Exchange/Named/[^/]*"
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQEXCHANGE
+          fields:
+            - field: endpoint
+              attribute: metricName__4              
+            - field: port 
+              attribute: metricName__5
+
+  - name: apmConsumesAwsMqExchange
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/instance/RabbitMQ/[^/]*\\.mq\\.[^/]*\\.amazonaws\\.com/[0-9]+/Consume/Exchange/Named/[^/]*"
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQEXCHANGE
+           fields:
+            - field: endpoint
+              attribute: metricName__4              
+            - field: port 
+              attribute: metricName__5

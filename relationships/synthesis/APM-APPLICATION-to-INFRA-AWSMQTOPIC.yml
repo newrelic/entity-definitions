@@ -1,0 +1,44 @@
+relationships:
+  - name: apmProducesAwsMqTopic
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/instance/JMS/[^/]*\\.mq\\.[^/]*\\.amazonaws\\.com/[0-9]+/Produce/Topic/Named/[^/]*"
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQTOPIC
+          fields:
+            - field: endpoint
+              attribute: metricName__4              
+            - field: port 
+              attribute: metricName__5
+
+  - name: apmConsumesAwsMqTopic
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/instance/JMS/[^/]*\\.mq\\.[^/]*\\.amazonaws\\.com/[0-9]+/Consume/Topic/Named/[^/]*"
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQTOPIC
+          fields:
+            - field: endpoint
+              attribute: metricName__4              
+            - field: port 
+              attribute: metricName__5
