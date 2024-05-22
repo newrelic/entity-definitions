@@ -11,3 +11,121 @@ goldenTags:
 - k8s.jobName
 - k8s.clusterName
 - k8s.namespaceName
+synthesis:
+  rules:
+    # Commenting the below rule until our 2nd release
+    # kube-state-metrics data via opentelemetry prometheusReceiver 
+    # - compositeIdentifier:
+    #    separator: ":"
+    #    attributes:
+    #      - k8s.cluster.name
+    #      - namespace
+    #      - job_name
+    #  encodeIdentifierInGUID: true
+    #  name: job_name
+    #  conditions:
+        # kube-state-metrics job prefix
+    #    - attribute: metricName
+    #      prefix: kube_job_
+        # identifier attributes
+    #    - attribute: job_name
+    #      present: true
+    #    - attribute: namespace
+    #      present: true
+    #    - attribute: k8s.cluster.name
+    #      present: true
+        # open telemetry
+    #    - attribute: newrelic.source
+    #      value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+    #    - attribute: service.name
+    #      present: false
+        # value added for test entities only
+    #    - attribute: newrelicOnly
+    #      value: "true"
+    #  tags:
+    #    job_name:
+    #      entityTagNames: [k8s.jobName]
+    #    namespace:
+    #      entityTagNames: [k8s.namespaceName]
+    #    k8s.cluster.name:
+    #      entityTagNames: [k8s.clusterName]
+    # Infrastructure event data via opentelemetry 
+    
+    # Commenting the below rule until our 2nd release
+    #- compositeIdentifier:
+    #    separator: ":"
+    #    attributes:
+    #      - k8s.cluster.name
+    #      - k8.namespace.name
+    #      - k8s.object.name
+    #  encodeIdentifierInGUID: true
+    #  name: k8s.object.name
+    #  conditions:
+    #    - attribute: event.name
+    #      value: InfrastructureEvent
+    #    - attribute: k8s.object.kind
+    #      value: Job
+        # identifier attributes
+    #    - attribute: k8s.object.name
+    #      present: true
+    #    - attribute: k8.namespace.name
+    #      present: true
+    #    - attribute: k8s.cluster.name
+    #      present: true
+        # open telemetry
+    #    - attribute: newrelic.source
+    #      value: api.events.otlp
+        # if service.name is present, handle as one
+    #    - attribute: service.name
+    #      present: false
+        # value added for test entities only
+    #    - attribute: newrelicOnly
+    #      value: "true"
+    - identifier: entityId
+      name: jobName
+      legacyFeatures:
+        overrideGuidType: true
+        useNonStandardAttributes: true
+      conditions:
+        - attribute: eventType
+          value: K8sJobSample
+        - attribute: jobName
+          present: true
+        - attribute: activePods
+          present: true
+      tags:
+        clusterName:
+          entityTagName: k8s.clusterName
+        namespaceName:
+          entityTagName: k8s.namespaceName
+        namespace:
+          entityTagName: k8s.namespaceName
+        jobName:
+          entityTagName: k8s.jobName
+        isComplete:
+          entityTagName: k8s.job.isComplete
+        failed:
+          entityTagName: k8s.job.failed
+        failedPodsReason:
+          entityTagName: k8s.job.failedPodsReason
+        ownerName:
+          entityTagName: k8s.job.ownerName
+        ownerKind:
+          entityTagName: k8s.job.ownerKind
+        ownerIsController:
+          entityTagName: k8s.job.ownerIsController
+        instanceType:
+          entityTagName: host.instanceType
+        integrationName:
+          entityTagName: newrelic.integrationName
+        integrationVersion:
+          entityTagName: newrelic.integrationVersion
+        agentVersion:
+          entityTagName: newrelic.agentVersion
+        awsRegion:
+          entityTagName: aws.region
+        provider.awsRegion:
+          entityTagName: aws.region
+      prefixedTags:
+        label.:

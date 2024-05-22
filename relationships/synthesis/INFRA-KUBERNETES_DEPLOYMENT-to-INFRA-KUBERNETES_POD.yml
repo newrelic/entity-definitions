@@ -12,7 +12,7 @@ relationships:
       source:
         buildGuid:
           account:
-            lookup: yes 
+            lookup: true 
           domain:
             value: INFRA
           type:
@@ -30,5 +30,35 @@ relationships:
       target:
         extractGuid:
           attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD
+  - name: otelKsmK8sDeploymentContainsPod
+    # use kube-state-metrics kube_pod_owner metric
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_pod_owner" ]
+      - attribute: owner_kind
+        anyOf: [ "ReplicaSet" ]
+      - attribute: newrelicOnly
+        anyOf: [ "true" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: KUBERNETES_DEPLOYMENT
+          fields:
+            - field: replicaset # replicaset owned by deployment
+              attribute: owner_name # replicaset which owns pod
+            - field: namespace # namespace of deployment
+              attribute: namespace # namespace of pod
+            - field: cluster # cluster of deployment
+              attribute: k8s.cluster.name # cluster of pod
+      target:
+        extractGuid:
+          attribute: entity.guid
           entityType:
             value: KUBERNETES_POD

@@ -3,40 +3,44 @@ podsDesired:
   unit: COUNT
   queries:
     newRelic:
-      select: latest(k8s.deployment.podsDesired)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(podsDesired)
       from: K8sDeploymentSample
       eventId: entityGuid
       eventName: entityName
-podsAvailable:
-  title: Pods ready over time
-  unit: COUNT 
-  queries:
-    newRelic:
-      select: latest(k8s.deployment.podsAvailable)
+    opentelemetry:
+      select: latest(kube_deployment_spec_replicas)
+      where: metricName = 'kube_deployment_spec_replicas'
       from: Metric
       eventId: entity.guid
       eventName: entity.name
-    newRelicSample:
+podsAvailable:
+  title: Pods ready over time
+  unit: COUNT
+  queries:
+    newRelic:
       select: latest(podsAvailable)
       from: K8sDeploymentSample
       eventId: entityGuid
       eventName: entityName
-podsMissing:
-  title: Pods missing over time
-  unit: COUNT   
-  queries:
-    newRelic:
-      select: latest(k8s.deployment.podsMissing)
+    opentelemetry:
+      select: latest(kube_deployment_status_replicas_available)
+      where: metricName = 'kube_deployment_status_replicas_available'
       from: Metric
       eventId: entity.guid
       eventName: entity.name
-    newRelicSample:
+podsMissing:
+  title: Pods missing over time
+  unit: COUNT
+  queries:
+    newRelic:
       select: latest(podsMissing)
       from: K8sDeploymentSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select:  latest(kube_deployment_pods_missing)
+      from: Metric
+      where: newrelicOnly = 'true'
+      eventId: entity.guid
+      eventName: entity.name
+
