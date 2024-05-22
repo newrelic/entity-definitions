@@ -1,0 +1,20 @@
+category: REDIS
+lookups:
+  - entityTypes:
+      - domain: INFRA
+        type: AWSELASTICACHEREDISCLUSTER
+      - domain: INFRA
+        type: AWSELASTICACHEREDISNODE
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.elasticache.endpointAddress"]
+          field: endpoint
+        - tagKeys: ["aws.elasticache.endpointPort"]
+          field: port
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: REDIS
