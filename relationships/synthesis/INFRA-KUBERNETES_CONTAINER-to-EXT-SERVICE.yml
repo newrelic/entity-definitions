@@ -4,8 +4,10 @@ relationships:
     origins:
       - OpenTelemetry
     conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
       - attribute: entity.type
-        anyOf: [ "SERVICE" ]
+        anyOf: [ "CONTAINER" ]
     relationship:
       expires: P75M
       relationshipType: HOSTS
@@ -17,19 +19,15 @@ relationships:
             value: INFRA
           type:
             value: CONTAINER
-            valueInGuid: NA
           identifier:
             fragments:
               - value: "k8s:"
-              - attribute: clusterName
+              - attribute: k8s.cluster.name
               - value: ":"
-              - attribute: namespaceName
+              - attribute: k8s.namespace.name
               - value: ":pod:"
-              - attribute: podName
+              - attribute: k8s.pod.name
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
-          entityType:
-            attribute: entity.type
-            value: SERVICE
