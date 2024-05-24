@@ -8,21 +8,21 @@ dashboardTemplates:
     template: dashboard.json
     filterNRQLByEntityID: false
 goldenTags:
-- k8s.jobName
-- k8s.clusterName
-- k8s.namespaceName
+  - k8s.jobName
+  - k8s.clusterName
+  - k8s.namespaceName
 synthesis:
   rules:
-    # kube-state-metrics data via opentelemetry prometheusReceiver 
-     - compositeIdentifier:
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - namespace
           - job_name
-       encodeIdentifierInGUID: true
-       name: job_name
-       conditions:
+      encodeIdentifierInGUID: true
+      name: job_name
+      conditions:
         # kube-state-metrics job prefix
         - attribute: metricName
           prefix: kube_job_
@@ -35,7 +35,7 @@ synthesis:
           present: true
         # open telemetry
         - attribute: newrelic.source
-          value: 'api.metrics.otlp'
+          value: "api.metrics.otlp"
         # if service.name is present, it's a service
         - attribute: service.name
           present: false
@@ -49,8 +49,8 @@ synthesis:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
-    # Infrastructure event data via opentelemetry 
-    
+    # Infrastructure event data via opentelemetry
+
     - compositeIdentifier:
         separator: ":"
         attributes:
@@ -80,6 +80,7 @@ synthesis:
         # value added for test entities only
         - attribute: newrelicOnly
           value: "true"
+
     - identifier: entityId
       name: jobName
       legacyFeatures:
