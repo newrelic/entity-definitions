@@ -8,19 +8,19 @@ dashboardTemplates:
     template: dashboard.json
     filterNRQLByEntityID: false
 goldenTags:
-- k8s.cronjobName
-- k8s.clusterName
-- k8s.namespaceName
+  - k8s.cronjobName
+  - k8s.clusterName
+  - k8s.namespaceName
 synthesis:
   rules:
-    # kube-state-metrics data via opentelemetry prometheusReceiver 
+    # kube-state-metrics data via opentelemetry prometheusReceiver
     - compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - namespace
           - cronjob
-     encodeIdentifierInGUID: true
+      encodeIdentifierInGUID: true
       name: cronjob
       conditions:
         # kube-state-metrics cronjob prefix
@@ -35,7 +35,7 @@ synthesis:
           present: true
         # open telemetry
         - attribute: newrelic.source
-          value: 'api.metrics.otlp'
+          value: "api.metrics.otlp"
         # if service.name is present, it's a service
         - attribute: service.name
           present: false
@@ -51,8 +51,8 @@ synthesis:
           entityTagNames: [k8s.clusterName]
         schedule:
           entityTagNames: [k8s.cronjob.schedule]
-    
-    # Infrastructure event data via opentelemetry 
+
+    # Infrastructure event data via opentelemetry
     - compositeIdentifier:
         separator: ":"
         attributes:
