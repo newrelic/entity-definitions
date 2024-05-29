@@ -1,0 +1,24 @@
+relationships:
+  - name: extServiceCallsInfraElasticacheMemcachedCluster
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric"]
+      - attribute: db.system
+        anyOf: [ "memcached" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+            - field: port
+              attribute: net.peer.port
