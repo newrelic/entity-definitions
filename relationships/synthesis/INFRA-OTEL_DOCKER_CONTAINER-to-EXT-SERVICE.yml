@@ -1,0 +1,32 @@
+relationships:
+  - name: dockerContainerEXTService
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: ["CONTAINER"]
+      - attribute: metricName
+        prefix: container.
+      - attribute: otel.library.name
+        anyOf: ["otelcol/dockerstatsreceiver"]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
