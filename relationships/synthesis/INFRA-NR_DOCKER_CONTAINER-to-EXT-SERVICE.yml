@@ -1,0 +1,31 @@
+relationships:
+  - name: nrInfraDockerContainerEXTService
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "ContainerSample" ]
+      - attribute: entity.type
+        anyOf: ["CONTAINER"]
+      - attribute: container.id
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: container.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
