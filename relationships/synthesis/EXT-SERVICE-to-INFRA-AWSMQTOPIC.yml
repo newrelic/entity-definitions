@@ -1,11 +1,13 @@
 relationships:
-  - name: apmCallsAwsMqTopic
+  - name: extServiceCallsAwsMqTopic
     version: "1"
     origins:
-      - APM Metrics
+      - OpenTelemetry
     conditions:
-      - attribute: metricName
-        regex: "^MessageBroker/instance/[^/]*\\.mq\\.[^/]*\\.amazonaws\\.com/[0-9]+/Topic/Named/[^/]*"
+      - attribute: eventType
+        anyOf: [ "Span"]
+      - attribute: messaging.destinationkind
+        anyOf: [ "topic" ]
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -17,5 +19,4 @@ relationships:
           candidateCategory: AWSMQTOPIC
           fields:
             - field: endpoint
-              attribute: metricName__3             
-
+              attribute: net.peer.name
