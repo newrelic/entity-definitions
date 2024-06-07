@@ -1,0 +1,34 @@
+relationships:
+  - name: extServiceCallsInfraAwsSqsQueue
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: rpc.service
+        anyOf: [ "SQS" ]
+      - attribute: metricName
+        regex: '^https:\/\/sqs\.([^.]+)\.amazonaws\.com\/([0-9]{12})\/([^.]+)$'
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSSQSQUEUE
+          fields:
+            - field: region
+              capture:
+                attribute: metricName__1
+                regex: '^https:\/\/sqs\.([^.]+)\.amazonaws\.com\/[0-9]{12}\/[^.]+$'
+            - field: accountId
+              capture:
+                attribute: metricName__2
+                regex: '^https:\/\/sqs\.[^.]+\.amazonaws\.com\/([0-9]{12})\/[^.]+$'
+            - field: queueName
+              capture:
+                attribute: metricName__3
+                regex: '^https:\/\/sqs\.[^.]+\.amazonaws\.com\/[0-9]{12}\/([^.]+)$'
