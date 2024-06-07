@@ -1,0 +1,18 @@
+category: MEMCACHEDCLUSTER
+lookups:
+  - entityTypes:
+      - domain: INFRA
+        type: AWSELASTICACHEMEMCACHEDCLUSTER
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.elasticache.configurationEndpointAddress"]
+          field: endpoint
+        - tagKeys: ["aws.elasticache.configurationEndpointPort"]
+          field: port
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: MEMCACHEDCLUSTER
