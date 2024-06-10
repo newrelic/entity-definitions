@@ -20,3 +20,25 @@ relationships:
               attribute: metricName__4
             - field: port
               attribute: metricName__5
+
+  - name: apmServiceCallsInfraElastiCacheRedisNode
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^Datastore/instance/Redis/[^/]*\\.cache\\.amazonaws\\.com/[0-9]+"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: REDIS
+          fields:
+            - field: endpoint
+              attribute: metricName__4
+            - field: port
+              attribute: metricName__5

@@ -22,3 +22,27 @@ relationships:
               attribute: net.peer.name
             - field: port
               attribute: net.peer.port
+
+  - name: extServiceCallsInfraElastiCacheRedisNode
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: REDIS
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+            - field: port
+              attribute: net.peer.port
