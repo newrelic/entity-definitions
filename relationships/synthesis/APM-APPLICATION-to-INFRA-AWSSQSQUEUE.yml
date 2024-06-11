@@ -8,8 +8,6 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: messaging.system
         anyOf: [ "aws_sqs" ]
-      - attribute: metricName
-        regex: '^https:\/\/sqs\.([^.]+)\.amazonaws\.com\/([0-9]{12})\/([^.]+)$'
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -21,14 +19,8 @@ relationships:
           candidateCategory: AWSSQSQUEUE
           fields:
             - field: region
-              capture:
-                attribute: metricName__1
-                regex: '^https:\/\/sqs\.([^.]+)\.amazonaws\.com\/[0-9]{12}\/[^.]+$'
+              attribute: cloud.region
             - field: accountId
-              capture:
-                attribute: metricName__2
-                regex: '^https:\/\/sqs\.[^.]+\.amazonaws\.com\/([0-9]{12})\/[^.]+$'
+              attribute: cloud.account.id
             - field: queueName
-              capture:
-                attribute: metricName__3
-                regex: '^https:\/\/sqs\.[^.]+\.amazonaws\.com\/[0-9]{12}\/([^.]+)$'
+              attribute: messaging.destination.name
