@@ -1,0 +1,61 @@
+domain: EXT
+type: DBT_FAILED_RESOURCE_RUN
+
+synthesis:
+  rules:
+    - identifier: entity_id 
+      name: entity_name 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: dbt_resource_run 
+        - attribute: dbt_source
+          present: True
+        - attribute: status
+          value: fail 
+    - identifier: entity_id 
+      name: entity_name 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: dbt_resource_run 
+        - attribute: dbt_source
+          present: True
+        - attribute: status 
+          value: warn 
+    - identifier: entity_id 
+      name: entity_name 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: dbt_resource_run 
+        - attribute: dbt_source
+          present: True
+        - attribute: status 
+          value: error
+
+  tags:
+    run_team:
+    team:
+    project_name:
+    environment_name:
+    resource_type:
+    slack_mentions:
+    run_href:
+
+goldenTags:
+  - job_name
+  - run_created_at 
+  - status
+  - error
+  - name
+  - description
+  - dbt_source
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS 
+  alertable: true 
