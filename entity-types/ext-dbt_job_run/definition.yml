@@ -1,0 +1,43 @@
+domain: EXT
+type: DBT_JOB_RUN 
+
+synthesis:
+  rules:
+    - identifier: entity_id 
+      name: entity_name 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: dbt_job_run 
+        - attribute: dbt_source
+          present: True
+    - identifier: entity_id 
+      name: entity_name 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: metricName 
+          prefix: dbt_job_run_ 
+        - attribute: dbt_source
+          present: True
+  tags:
+    run_team:
+    slack_mentions:
+    run_started_at:
+    run_status_message:
+    run_href:
+
+goldenTags:
+  - job_name
+  - run_created_at 
+  - run_status_humanized 
+  - project_name
+  - environment_name 
+  - dbt_source
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS 
+  alertable: true 
