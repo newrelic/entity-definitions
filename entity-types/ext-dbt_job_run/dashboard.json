@@ -1,0 +1,64 @@
+{
+    "name": "Dbt Run Summary",
+    "description": "Summary dashboard for dbt job runs",
+    "pages": [
+      {
+        "name": "Dbt Run",
+        "description": "Summary for dbt job run",
+        "widgets": [
+          {
+            "title": "Failed Models",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 12,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "select count(dbt_job_run_failed_resource_count) as num_failed from Metric where metricName = 'dbt_job_run_failed_resource_count' and resource_type != 'test' facet run_team, team, resource_type, name, database_name, schema_name, status, error since 7 days ago"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Failed Tests",
+            "layout": {
+              "column": 1,
+              "row": 4,
+              "width": 12,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "select count(dbt_job_run_failed_resource_count) as num_failed from Metric where metricName = 'dbt_job_run_failed_resource_count' and resource_type = 'test' facet run_team, team, name, database_name, schema_name, test_model_name, test_column_name, status, errors since 7 days ago"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
