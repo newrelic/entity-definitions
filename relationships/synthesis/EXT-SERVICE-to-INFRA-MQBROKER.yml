@@ -1,16 +1,42 @@
 relationships:
-  - name: extServiceCallsAwsMqBroker
+  - name: extServiceConsumesAwsMqBroker
     version: "1"
     origins:
       - Distributed Tracing 
     conditions:
       - attribute: eventType
-        anyOf: [ "Span"]
+        value: "Span"
+      - attribute: span.kind
+        value: "consumer"
       - attribute: messaging.system
         anyOf: [ "rabbitmq", "activemq" ]
     relationship:
       expires: P75M
-      relationshipType: CALLS
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQBROKER
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+  
+   - name: extServiceConsumesAwsMqBroker
+    version: "1"
+    origins:
+      - Distributed Tracing 
+    conditions:
+      - attribute: eventType
+        value: "Span"
+      - attribute: span.kind
+        value: "producer"
+      - attribute: messaging.system
+        anyOf: [ "rabbitmq", "activemq" ]
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
       source:
         extractGuid:
           attribute: entity.guid
