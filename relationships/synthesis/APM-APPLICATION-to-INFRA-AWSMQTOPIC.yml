@@ -1,0 +1,46 @@
+relationships:
+  - name: apmProducesAwsMqTopic
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+     - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: name
+        regex: "MessageBroker/[^/]*/Topic/Produce/Named/[^/]*\\.mq\\.[^/]*\\.amazonaws\\.com/[0-9]+"
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQTOPIC
+          fields:
+            - field: endpoint
+              attribute: server.address         
+
+relationships:
+  - name: apmConsumesAwsMqTopic
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+     - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: name
+        regex: "MessageBroker/[^/]*/Topic/Consume/Named/[^/]*\\.mq\\.[^/]*\\.amazonaws\\.com/[0-9]+"
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQTOPIC
+          fields:
+            - field: endpoint
+              attribute: server.address             
+

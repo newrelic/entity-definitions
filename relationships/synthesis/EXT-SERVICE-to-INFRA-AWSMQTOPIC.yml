@@ -1,0 +1,22 @@
+relationships:
+  - name: extServiceCallsAwsMqTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span"]
+      - attribute: messaging.destinationkind
+        anyOf: [ "topic" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQTOPIC
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
