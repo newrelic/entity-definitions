@@ -1,0 +1,20 @@
+category: KAFKATOPIC
+lookups:
+  - entityTypes:
+    - domain: INFRA
+      type: AWSMSKTOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.clusterName", "aws.kafka.ClusterName"]
+          field: clusterName
+        - tagKeys: ["aws.awsRegion", "aws.region"]
+          field: region
+        - tagKeys: ["aws.topic", "aws.kafka.Topic"]
+          field: topic
+    onMatch:
+     onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
