@@ -1,0 +1,22 @@
+relationships:
+  - name: k8sContainerEXTService
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "CONTAINER" ]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+      candidateCategory: SERVICE
+      fields:
+        - field: podName
+          attribute: "k8s.pod.name"
