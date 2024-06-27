@@ -1,0 +1,35 @@
+domain: INFRA
+type: CONFLUENTCLOUDCLUSTER
+goldenTags:
+- principal_id
+- kafka_id
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - principal_id
+        - kafka_id
+    name: kafka.cluster_name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: confluent_kafka_server_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics coming from apache receiver, given that metrics
+      # could deffer between different runtime receivers. 
+      - attribute: otel.library.name
+        value: otelcol/prometheusreceiver
+  tags:
+    entity.name:
+    instrumentation.provider:
+    newrelic.source:
+    otel.library.name:
+      entityTagName: instrumentation.name
