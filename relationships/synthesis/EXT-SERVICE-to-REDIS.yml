@@ -1,11 +1,15 @@
 relationships:
-  - name: apmServiceCallsInfraElastiCacheRedisCluster
+  - name: extServiceCallsRedis
     version: "1"
     origins:
-      - APM Metrics
+      - OpenTelemetry
     conditions:
-      - attribute: metricName
-        regex: "^Datastore/instance/Redis/[^/]*\\.cache\\.amazonaws\\.com/[0-9]+"
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+      - attribute: net.peer.name
+        regex: "^.*\\.cache\\.amazonaws\\.com$"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -17,6 +21,6 @@ relationships:
           candidateCategory: REDIS
           fields:
             - field: endpoint
-              attribute: metricName__4
+              attribute: net.peer.name
             - field: port
-              attribute: metricName__5
+              attribute: net.peer.port
