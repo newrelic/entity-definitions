@@ -1,13 +1,13 @@
 relationships:
-  - name: extServiceCallsInfraElastiCacheRedisCluster
+  - name: extServiceCallsMemcached
     version: "1"
     origins:
-      - OpenTelemetry
+      - Distributed Tracing
     conditions:
       - attribute: eventType
-        anyOf: [ "Metric" ]
+        anyOf: [ "Span"]
       - attribute: db.system
-        anyOf: [ "redis" ]
+        anyOf: [ "memcached" ]
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -16,7 +16,7 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: REDIS
+          candidateCategory: MEMCACHED
           fields:
             - field: endpoint
               attribute: net.peer.name

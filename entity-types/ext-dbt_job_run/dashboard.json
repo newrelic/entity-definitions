@@ -1,0 +1,64 @@
+{
+    "name": "Dbt Run Summary",
+    "description": "Summary dashboard for dbt job runs",
+    "pages": [
+      {
+        "name": "Dbt Run",
+        "description": "Summary for dbt job run",
+        "widgets": [
+          {
+            "title": "Failed Models",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 12,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "select project_name, environment_name, run_team, team, resource_type, name, database_name, schema_name, status, error from dbt_resource_run where job_account_id = {{tags.job_account_id}} and project_id = {{tags.project_id}} and run_id = {{tags.run_id}} and resource_type != 'test' and status not in ('success', 'None', 'skipped') since 7 days ago"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": true 
+              }
+            }
+          },
+          {
+            "title": "Failed Tests",
+            "layout": {
+              "column": 1,
+              "row": 4,
+              "width": 12,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "select run_team, team, name, database_name, schema_name, test_model_name, test_column_name, status, errors from dbt_resource_run where job_account_id = {{tags.job_account_id}} and project_id = {{tags.project_id}} and run_id = {{tags.run_id}} and resource_type = 'test' and status not in  ('pass', 'None', 'skipped') since 7 days ago"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": true 
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
