@@ -1,0 +1,61 @@
+relationships:
+  - name: extServiceProducesAwsMskTopic
+    version: "1"
+    origins:
+      - Distributed Tracing 
+    conditions:
+      - attribute: eventType
+        value: "Span"
+      - attribute: span.kind
+        value: "producer"
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              capture:
+                attribute: net.peer.name
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com"
+            - field: region
+              capture:
+                attribute: net.peer.name
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com"
+            - field: topic
+              attribute: topic
+
+  - name: extServiceConsumesAwsMskTopic
+    version: "1"
+    origins:
+      - Distributed Tracing 
+    conditions:
+      - attribute: eventType
+        value: "Span"
+      - attribute: span.kind
+        value: "consumer"
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              capture:
+                attribute: net.peer.name
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com"
+            - field: region
+              capture:
+                attribute: net.peer.name
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com"
+            - field: topic
+              attribute: topic
+
