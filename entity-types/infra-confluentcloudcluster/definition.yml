@@ -1,10 +1,22 @@
 domain: INFRA
 type: CONFLUENTCLOUDCLUSTER
 
+
 synthesis:
   rules:
-  - identifier: kafka_id
-    name: description
-    conditions:
-      - attribute: eventType
-        value: Metric
+    - identifier: kafka_id
+      name: kafka.cluster_name
+      encodeIdentifierInGUID: true
+      tags:
+        entity.name:
+        instrumentation.provider:
+        newrelic.source:
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: confluent_kafka_server_
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: kafka.cluster_name
+          present: true
