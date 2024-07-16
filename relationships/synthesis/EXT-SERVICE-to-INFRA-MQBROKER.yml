@@ -2,12 +2,13 @@ relationships:
   - name: extServiceConsumesAwsMqBroker
     version: "1"
     origins:
-      - Distributed Tracing 
+      - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        value: "Span"
+        anyOf: [ "Span" ]
       - attribute: span.kind
-        value: "consumer"
+        anyOf: [ "consumer" ]
       - attribute: messaging.system
         anyOf: [ "rabbitmq", "activemq" ]
     relationship:
@@ -23,15 +24,16 @@ relationships:
             - field: endpoint
               attribute: net.peer.name
   
-  - name: extServiceConsumesAwsMqBroker
+  - name: extServiceProducesAwsMqBroker
     version: "1"
     origins:
-      - Distributed Tracing 
+      - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        value: "Span"
+        anyOf: [ "Span" ]
       - attribute: span.kind
-        value: "producer"
+        anyOf: [ "producer" ]
       - attribute: messaging.system
         anyOf: [ "rabbitmq", "activemq" ]
     relationship:
