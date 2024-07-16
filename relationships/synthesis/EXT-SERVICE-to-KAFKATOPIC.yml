@@ -2,7 +2,7 @@ relationships:
   - name: extServiceProducesAwsMskTopic
     version: "1"
     origins:
-      - Distributed Tracing 
+      - OpenTelemetry
     conditions:
       - attribute: eventType
         value: "Span"
@@ -20,19 +20,19 @@ relationships:
           fields:
             - field: clusterName
               capture:
-                attribute: net.peer.name
-                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com"
+                attribute: messaging.url              
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
             - field: region
               capture:
-                attribute: net.peer.name
-                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com"
+                attribute: messaging.url
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:[0-9]+.*"
             - field: topic
-              attribute: topic
+              attribute: messaging.destination
 
   - name: extServiceConsumesAwsMskTopic
     version: "1"
     origins:
-      - Distributed Tracing 
+      - OpenTelemetry
     conditions:
       - attribute: eventType
         value: "Span"
@@ -50,12 +50,12 @@ relationships:
           fields:
             - field: clusterName
               capture:
-                attribute: net.peer.name
-                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com"
+                attribute: messaging.url
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
             - field: region
               capture:
-                attribute: net.peer.name
-                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com"
+                attribute: messaging.url
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:[0-9]+.*"
             - field: topic
-              attribute: topic
+              attribute: messaging.destination
 
