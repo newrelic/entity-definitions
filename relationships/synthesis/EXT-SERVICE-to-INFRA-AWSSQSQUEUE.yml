@@ -1,0 +1,26 @@
+relationships:
+  - name: extServiceCallsInfraAwsSqsQueue
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: rpc.service
+        anyOf: [ "SQS" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSSQSQUEUE
+          fields:
+            - field: region
+              attribute: aws.region
+            - field: accountId
+              attribute: aws.account.id
+            - field: queueName
+              attribute: messaging.destination
