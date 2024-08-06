@@ -1,4 +1,5 @@
 relationships:
+  # infra metrics from NR infra agent
   - name: nrInfraK8sContainerEXTService
     version: "1"
     origins:
@@ -34,3 +35,39 @@ relationships:
       target:
         extractGuid:
           attribute: entity.guid
+  # infra metrics from kubeletstats receiver
+  - name: extInfraK8sContainerEXTService
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+              - value: ":"
+              - attribute: k8s.container.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
