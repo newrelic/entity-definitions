@@ -19,3 +19,25 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_POD
+  - name: k8sHostContainsPodOtel
+    version: "1"
+    origins:
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: entity.type
+        value: KUBERNETES_POD
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: host.guid
+          entityType:
+            value: HOST
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD            
