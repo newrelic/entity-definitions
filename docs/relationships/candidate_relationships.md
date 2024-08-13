@@ -142,6 +142,10 @@ Example:
 In this case, entities with the tag keys `aws.bucketName` or `aws.s3.BucketName` will be matched (using their tag values) 
 with data from the `bucketName` field.
 
+#### Case sensitivity for tags
+
+Our processing system is case-insensitive when it comes to tags. This means that `aws.bucketName` and `aws.bucketname` are treated as identical during processing. Therefore, it is unnecessary to provide both versions of these tags in your configuration.
+
 ## onMatch
 
 The `onMatch` section controls the behavior after matching entities. The `onMultipleMatches` field specifies how to handle multiple matches:
