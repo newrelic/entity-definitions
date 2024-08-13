@@ -1,0 +1,24 @@
+relationships:
+  - name: apmCallsLambdaAlias
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: cloud.platform
+        anyOf: [ "aws_lambda"]
+      - attribute: cloud.resource_id
+        regex: "^arn:aws:lambda:([^:]*):([^:]*):function:([^:]*):([^/]*)$"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAALIAS
+          fields:
+            - field: awsLambdaAliasArn
+              attribute: cloud.resource_id
