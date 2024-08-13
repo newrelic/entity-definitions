@@ -14,6 +14,13 @@ synthesis:
     - attribute: service_name
     - attribute: newrelic.entity.type
       present: false
+    # Exclude data from INFRA-WIN_SERVICE telemetry sources. Typically, data from these sources
+    # includes entity info (guid, type, name) from the client side. But due to race conditions,
+    # data is occasionally emitted without entity info and is erroneously classified as EXT-SERVICE.
+    # Ideally, we would skip data where collector.name = infrastructure-agent, but it's not possible
+    # to express that condition. Excluding all data with attribute collector.name is probably fine.
+    - attribute: collector.name
+      present: false
     tags:
       telemetry.sdk.name:
         entityTagName: instrumentation.provider
