@@ -1,0 +1,24 @@
+relationships:
+  - name: awsAutoScalingGroupManagesEc2
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSAUTOSCALINGGROUP", "AWS_AUTO_SCALING_GROUP" ]
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        lookupGuid:
+          candidateCategory: AWSAUTOSCALINGGROUP
+          fields:
+            - field: awsAutoScalingGroupArn
+              attribute: aws.autoscaling.instanceId
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSEC2
