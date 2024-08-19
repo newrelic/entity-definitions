@@ -1,0 +1,24 @@
+relationships:
+  - name: awsMskClusterConsumesAwsS3Bucket
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSMSKCLUSTER" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSMSKCLUSTER
+      target:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: bucketName
+              attribute: aws.msk.loggingBucket
