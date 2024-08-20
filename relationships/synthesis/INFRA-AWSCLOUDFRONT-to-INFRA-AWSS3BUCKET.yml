@@ -1,0 +1,26 @@
+relationships:
+  - name: awsCloudfrontConsumesAwsS3Bucket
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSCLOUDFRONT" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSCLOUDFRONT
+      target:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: bucketName
+              capture:
+                attribute: metricName__1
+                regex: "^[^\\.]+\\.s3\\.amazonaws\\.com"
