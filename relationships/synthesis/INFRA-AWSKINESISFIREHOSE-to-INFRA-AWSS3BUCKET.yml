@@ -1,0 +1,24 @@
+relationships:
+  - name: awsKinesisFireHoseProducesAwsS3Bucket
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWS_KINESIS_DELIVERY_STREAM" ]
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWS_KINESIS_DELIVERY_STREAM
+      target:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: awsS3arn
+              attribute: aws.firehose.s3DestinationBucket
