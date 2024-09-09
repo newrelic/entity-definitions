@@ -3,7 +3,7 @@ const githubHelper = require('./ghHelper');
 
 let ALL_RELATIONSHIP_SYNTHESIS;
 function validateAndRecord (rule) {
-  if (rule.name in ALL_RELATIONSHIP_SYNTHESIS) {
+  if (ALL_RELATIONSHIP_SYNTHESIS.has(rule.name)) {
     throw new Error('There already exists a rule with name ' + rule.name);
   }
   ALL_RELATIONSHIP_SYNTHESIS.set(rule.name, rule);
