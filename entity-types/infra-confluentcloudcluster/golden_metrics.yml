@@ -3,26 +3,40 @@ clusterLoadPercent:
   unit: PERCENTAGE
   queries:
     opentelemetry:
-      select: min(confluent_kafka_server_cluster_load_percent) * 100
+      select: average(confluent_kafka_server_cluster_load_percent) * 100
       from: Metric
       where: kafka_id is not null
       eventName: kafka_id
     confluent:
-      select: min(confluent.kafka.server.cluster_load_percent) * 100
+      select: average(confluent.kafka.server.cluster_load_percent) * 100
       from: Metric
       where: confluent.clusterId is not null
       eventName: confluent.clusterId
-partitionsCount:
-  title: Partitions count
+hotPartitionIngress:
+  title: Hot Partition Ingress
   unit: COUNT
   queries:
     opentelemetry:
-      select: min(confluent_kafka_server_partition_count)
+      select: filter(uniqueCount(topic), WHERE metricName='confluent_kafka_server_hot_partition_ingress')
       from: Metric
       where: kafka_id is not null
       eventName: kafka_id
     confluent:
-      select: min(confluent.kafka.server.partition_count)
+      select: filter(uniqueCount(confluent.kafka.server.metric.topic), WHERE metricName='confluent.kafka.server.hot_partition_ingress')
+      from: Metric
+      where: confluent.clusterId is not null
+      eventName: confluent.clusterId
+hotPartitionEgress:
+  title: Hot Partition Egress
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: filter(uniqueCount(topic), WHERE metricName='confluent_kafka_server_hot_partition_egress')
+      from: Metric
+      where: kafka_id is not null
+      eventName: kafka_id
+    confluent:
+      select: filter(uniqueCount(confluent.kafka.server.metric.topic), WHERE metricName='confluent.kafka.server.hot_partition_egress')
       from: Metric
       where: confluent.clusterId is not null
       eventName: confluent.clusterId

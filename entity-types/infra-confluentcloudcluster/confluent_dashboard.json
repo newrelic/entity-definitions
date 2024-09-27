@@ -7,26 +7,11 @@
       "description": null,
       "widgets": [
         {
-          "title": "Confluent Cloud",
+          "title": "Cluster Specs",
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 2,
-            "height": 4
-          },
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "![ConfluentLogo](https://cdn.confluent.io/wp-content/uploads/seo-logo-meadow.png)\n# Confluent Cloud Kafka\n#### [Confluent API docs](https://api.telemetry.confluent.cloud/docs/descriptors/datasets/cloud?_ga=2.214885143.1264186867.1705940186-6520871.1686857317&_gl=1*xevtc5*_ga*NjUyMDg3MS4xNjg2ODU3MzE3*_ga_D2D3EGKSGD*MTcwNTk0MDA5MC41My4xLjE3MDU5NDAxODUuNjAuMC4w)"
-          }
-        },
-        {
-          "title": "Cluster Specs",
-          "layout": {
-            "column": 3,
-            "row": 1,
-            "width": 5,
+            "width": 6,
             "height": 4
           },
           "visualization": {
@@ -45,7 +30,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT uniqueCount(confluent.kafka.server.metric.topic) as 'Topics', latest(confluent.kafka.server.partition_count) as 'Partitions', uniqueCount(confluent.kafka.server.metric.consumer_group_id) as 'Consumer Groups' FROM Metric FACET `confluent.clusterId`)"
+                "query": "SELECT uniqueCount(confluent.kafka.server.metric.topic) as 'Topics', average(confluent.kafka.server.partition_count) as 'Partitions', uniqueCount(confluent.kafka.server.metric.consumer_group_id) as 'Consumer Groups' FROM Metric"
               }
             ],
             "platformOptions": {
@@ -56,9 +41,9 @@
         {
           "title": "Request Bytes (bytes/second) Per Type",
           "layout": {
-            "column": 8,
+            "column": 7,
             "row": 1,
-            "width": 5,
+            "width": 6,
             "height": 4
           },
           "visualization": {
@@ -74,7 +59,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.request_bytes), 1 second) FROM Metric FACET confluent.clusterId, confluent.kafka.server.metric.type LIMIT MAX"
+                "query": "SELECT rate(sum(confluent.kafka.server.request_bytes), 1 second) FROM Metric FACET confluent.kafka.server.metric.type LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -103,7 +88,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(confluent.kafka.server.retained_bytes) FROM Metric TIMESERIES FACET confluent.clusterId, confluent.kafka.server.metric.topic LIMIT MAX"
+                "query": "SELECT average(confluent.kafka.server.retained_bytes) FROM Metric TIMESERIES FACET confluent.kafka.server.metric.topic LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -141,7 +126,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.sent_records),1 minute ) FROM Metric TIMESERIES FACET `confluent.kafka.server.metric.topic`, confluent.clusterId LIMIT MAX"
+                "query": "SELECT rate(sum(confluent.kafka.server.sent_records),1 minute) FROM Metric TIMESERIES FACET confluent.kafka.server.metric.topic LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -173,7 +158,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(confluent.kafka.server.active_connection_count) AS 'Active Connections' FROM Metric facet confluent.clusterId LIMIT MAX TIMESERIES"
+                "query": "SELECT max(confluent.kafka.server.active_connection_count) AS 'Active Connections' FROM Metric LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -188,7 +173,7 @@
           }
         },
         {
-          "title": "Partitions ",
+          "title": "Partitions",
           "layout": {
             "column": 1,
             "row": 8,
@@ -208,7 +193,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(confluent.kafka.server.partition_count) AS partitions FROM Metric FACET confluent.clusterId LIMIT MAX TIMESERIES"
+                "query": "SELECT average(confluent.kafka.server.partition_count) AS partitions FROM Metric LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -240,7 +225,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(confluent.kafka.server.received_bytes) FROM Metric TIMESERIES FACET `confluent.kafka.server.metric.topic`, confluent.clusterId LIMIT MAX"
+                "query": "SELECT sum(confluent.kafka.server.received_bytes) FROM Metric TIMESERIES FACET confluent.kafka.server.metric.topic"
               }
             ],
             "platformOptions": {
@@ -275,7 +260,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.received_records),1 minute ) FROM Metric TIMESERIES FACET `confluent.kafka.server.metric.topic`, confluent.clusterId LIMIT MAX"
+                "query": "SELECT rate(sum(confluent.kafka.server.received_records),1 minute) FROM Metric TIMESERIES FACET confluent.kafka.server.metric.topic LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -307,7 +292,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.successful_authentication_count), 1 minute) AS 'Auths Per Minute' FROM Metric FACET confluent.clusterId LIMIT MAX TIMESERIES"
+                "query": "SELECT rate(sum(confluent.kafka.server.successful_authentication_count), 1 minute) AS 'Auths Per Minute' FROM Metric LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -342,7 +327,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(l) as egress from (SELECT rate(sum(confluent.kafka.server.response_bytes), 1 minute) as l FROM Metric FACET confluent.clusterId TIMESERIES) LIMIT MAX TIMESERIES"
+                "query": "SELECT rate(sum(confluent.kafka.server.response_bytes), 1 minute) as 'Egres' FROM Metric LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -377,7 +362,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(confluent.kafka.server.sent_bytes) FROM Metric TIMESERIES FACET `confluent.kafka.server.metric.topic`, confluent.clusterId LIMIT MAX "
+                "query": "SELECT sum(confluent.kafka.server.sent_bytes) FROM Metric TIMESERIES FACET confluent.kafka.server.metric.topic LIMIT MAX "
               }
             ],
             "platformOptions": {
@@ -412,7 +397,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.response_bytes), 1 second) FROM Metric FACET confluent.clusterId) FACET confluent.kafka.server.metric.type LIMIT MAX TIMESERIES"
+                "query": "SELECT rate(sum(confluent.kafka.server.response_bytes), 1 second) FROM Metric FACET confluent.kafka.server.metric.type LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -447,7 +432,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.request_count), 1 minute) as 'Requests Per Minute' FROM Metric FACET confluent.clusterId LIMIT MAX TIMESERIES"
+                "query": "SELECT rate(sum(confluent.kafka.server.request_count), 1 minute) as 'Requests Per Minute' FROM Metric LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -482,7 +467,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.request_bytes), 1 minute) as 'Ingress' FROM Metric FACET confluent.clusterId LIMIT MAX TIMESERIES"
+                "query": "SELECT rate(sum(confluent.kafka.server.request_bytes), 1 minute) as 'Ingress' FROM Metric LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -517,7 +502,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.request_bytes), 1 second) FROM Metric FACET confluent.kafka.server.metric.type, confluent.clusterId LIMIT MAX TIMESERIES"
+                "query": "SELECT rate(sum(confluent.kafka.server.request_bytes), 1 second) FROM Metric FACET confluent.kafka.server.metric.type LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -532,7 +517,7 @@
           }
         },
         {
-          "title": "Response Rate ",
+          "title": "Response Rate",
           "layout": {
             "column": 7,
             "row": 17,
@@ -552,7 +537,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(confluent.kafka.server.response_bytes), 1 minute) as 'Bytes Per Minute' FROM Metric FACET confluent.clusterId LIMIT MAX TIMESERIES"
+                "query": "SELECT rate(sum(confluent.kafka.server.response_bytes), 1 minute) as 'Bytes Per Minute' FROM Metric LIMIT MAX TIMESERIES"
               }
             ],
             "platformOptions": {
