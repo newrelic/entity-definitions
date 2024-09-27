@@ -2,6 +2,8 @@ domain: INFRA
 type: CONFLUENTCLOUDCLUSTER
 goldenTags:
   - confluent.clusterName
+  - kafka_id
+  - confluent.clusterId
   - confluent.metricNamespace
   - collector.name
   - instrumentation.provider
@@ -25,6 +27,8 @@ synthesis:
     name: kafka.cluster_name
     encodeIdentifierInGUID: true
     tags:
+      kafka_id:
+      kafka.cluster_name:
       instrumentation.provider:
       newrelic.source:
     conditions:
@@ -34,7 +38,7 @@ synthesis:
         prefix: confluent_kafka_server_
       - attribute: instrumentation.provider
         value: opentelemetry
-      - attribute: kafka.cluster_name
+      - attribute: kafka_id
         present: true
   
   # telemetry from confluent-cloud provider
@@ -42,6 +46,8 @@ synthesis:
     name: confluent.clusterName
     encodeIdentifierInGUID: true
     tags:
+      confluent.clusterId:
+      confluent.clusterName:
       collector.name:
       confluent.metricNamespace:
       instrumentation.provider:
@@ -57,5 +63,5 @@ synthesis:
         value: confluent
       - attribute: confluent.resourceType
         value: kafka.server
-      - attribute: confluent.clusterName
+      - attribute: confluent.clusterId
         present: true
