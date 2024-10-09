@@ -1,0 +1,67 @@
+domain: INFRA
+type: CONFLUENTCLOUDCLUSTER
+goldenTags:
+  - confluent.clusterName
+  - kafka_id
+  - confluent.clusterId
+  - confluent.metricNamespace
+  - collector.name
+  - instrumentation.provider
+  - newrelic.source
+  - kafka.cluster_name
+  - confluent.resourceType
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+  confluent:
+    template: confluent_dashboard.json
+
+synthesis:
+  rules:
+  # telemetry from opentelemetry provider
+  - identifier: kafka_id
+    name: kafka.cluster_name
+    encodeIdentifierInGUID: true
+    tags:
+      kafka_id:
+      kafka.cluster_name:
+      instrumentation.provider:
+      newrelic.source:
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: confluent_kafka_server_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: kafka_id
+        present: true
+  
+  # telemetry from confluent-cloud provider
+  - identifier: confluent.clusterId
+    name: confluent.clusterName
+    encodeIdentifierInGUID: true
+    tags:
+      confluent.clusterId:
+      confluent.clusterName:
+      collector.name:
+      confluent.metricNamespace:
+      instrumentation.provider:
+      newrelic.source:
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: collector.name
+        value: confluent-monitor
+      - attribute: metricName
+        prefix: confluent.kafka.server.
+      - attribute: instrumentation.provider
+        value: confluent
+      - attribute: confluent.resourceType
+        value: kafka.server
+      - attribute: confluent.clusterId
+        present: true
