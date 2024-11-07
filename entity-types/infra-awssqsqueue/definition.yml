@@ -8,3 +8,52 @@ goldenTags:
 configuration:
   entityExpirationTime: DAILY
   alertable: true
+
+synthesis:
+  rules:
+    # Legacy API Polling entities not using the ARN to compute the entity.guid, but directly providing the entityId
+    - identifier: entityId
+      name: entity.name
+      encodeIdentifierInGUID: false
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: entity.type
+          value: AWSSQSQUEUE
+        - attribute: entityId
+          present: true
+      tags:
+        aws.Arn:
+          entityTagNames: [ aws.arn ]
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        aws.sqs.QueueName:
+          entityTagNames: [ entity.name ]
+        displayName:
+          entityTagNames: [ entity.name ]
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        aws.accountId:
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        aws.region:
+    # Metrics Streams and API Polling entities using the ARN to compute the entity.guid
+    - identifier: aws.arn
+      name: entity.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: entity.type
+          value: AWSSQSQUEUE
+        - attribute: entityId
+          present: false
+      tags:
+        aws.Arn:
+          entityTagNames: [ aws.arn ]
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        aws.sqs.QueueName:
+          entityTagNames: [ entity.name ]
+        displayName:
+          entityTagNames: [ entity.name ]
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        aws.accountId:
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        aws.region:

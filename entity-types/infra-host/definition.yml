@@ -291,6 +291,52 @@ synthesis:
         nodename:
           entityTagNames: [hostname]
         instrumentation.provider:
+    # AWS EC2 host synthesized via ElasticBeanstalk logs
+    # Legacy API Polling entities not using the ARN to compute the entity.guid, but directly providing the entityId
+    - identifier: entityId
+      name: entity.name
+      encodeIdentifierInGUID: false
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: entity.type
+          value: HOST
+        - attribute: entityId
+          present: true
+      tags:
+        aws.Arn:
+          entityTagNames: [ aws.arn ]
+        # Used in AWSEC2.yml for entity relationship candidates
+        aws.ec2.InstanceId:
+          entityTagNames: [ entity.name ]
+        displayName:
+          entityTagNames: [ entity.name ]
+        # These may not be present, but will be included if so
+        aws.accountId:
+        aws.region:
+    # AWS EC2 host synthesized via ElasticBeanstalk logs
+    # Metrics Streams and API Polling entities using the ARN to compute the entity.guid
+    - identifier: aws.arn
+      name: entity.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: entity.type
+          value: HOST
+        - attribute: entityId
+          present: false
+      tags:
+        aws.Arn:
+          entityTagNames: [ aws.arn ]
+        # Used in AWSEC2.yml for entity relationship candidates
+        aws.ec2.InstanceId:
+          entityTagNames: [ entity.name ]
+        displayName:
+          entityTagNames: [ entity.name ]
+        # These may not be present, but will be included if so
+        aws.accountId:
+        aws.region:
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true

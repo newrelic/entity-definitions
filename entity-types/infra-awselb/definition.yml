@@ -9,3 +9,48 @@ goldenTags:
 configuration:
   entityExpirationTime: DAILY
   alertable: true
+
+synthesis:
+  rules:
+    # Legacy API Polling entities not using the ARN to compute the entity.guid, but directly providing the entityId
+    - identifier: entityId
+      name: entity.name
+      encodeIdentifierInGUID: false
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: entity.type
+          value: AWSELB
+        - attribute: entityId
+          present: true
+      tags:
+        aws.Arn:
+          entityTagNames: [ aws.arn ]
+        aws.elb.LoadBalancerName:
+          entityTagNames: [ entity.name ]
+        displayName:
+          entityTagNames: [ entity.name ]
+        # These may not be present, but will be included if so
+        aws.accountId:
+        aws.region:
+    # Metrics Streams and API Polling entities using the ARN to compute the entity.guid
+    - identifier: aws.arn
+      name: entity.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: entity.type
+          value: AWSELB
+        - attribute: entityId
+          present: false
+      tags:
+        aws.Arn:
+          entityTagNames: [ aws.arn ]
+        aws.elb.LoadBalancerName:
+          entityTagNames: [ entity.name ]
+        displayName:
+          entityTagNames: [ entity.name ]
+        # These may not be present, but will be included if so
+        aws.accountId:
+        aws.region:
