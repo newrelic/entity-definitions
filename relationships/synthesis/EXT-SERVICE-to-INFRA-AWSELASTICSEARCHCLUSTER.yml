@@ -1,0 +1,22 @@
+relationships:
+  - name: extServiceCallsElasticsearch
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "elasticsearch" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSELASTICSEARCHCLUSTER
+          fields:
+            - field: endpoint
+              attribute: url.full
