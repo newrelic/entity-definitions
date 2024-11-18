@@ -1,15 +1,15 @@
 relationships:
-  - name: AWSKINESISSTREAM
+  - name: extServiceCallsInfraKinesisStream
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: cloud.platform
-        anyOf: [ "aws_kinesis_data_streams"]
-      - attribute: cloud.resource_id
-        regex: "^arn:aws:kinesis:([^:]*):([^:]*):stream\/([^:]*)"
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: rpc.service
+        anyOf: [ "kinesis" ]
     relationship:
       expires: P75M
       relationshipType: CALLS

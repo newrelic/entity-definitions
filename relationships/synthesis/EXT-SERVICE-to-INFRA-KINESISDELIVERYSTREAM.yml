@@ -1,15 +1,16 @@
 relationships:
-  - name: AWSKINESISSTREAM
+  - name: extServiceCallsInfraKinesisDeliveryStream
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: cloud.platform
-        anyOf: [ "aws_kinesis_data_streams"]
-      - attribute: cloud.resource_id
-        regex: "^arn:aws:kinesis:([^:]*):([^:]*):stream\/([^:]*)"
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: rpc.service
+        anyOf: [ "Firehose" ]
+      
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -18,7 +19,7 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: AWSKINESISSTREAM
+          candidateCategory: AWSKINESISDELIVERYSTREAM
           fields:
             - field: cloudResourceId
               attribute: cloud.resource_id
