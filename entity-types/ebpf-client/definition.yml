@@ -1,0 +1,18 @@
+domain: EBPF
+type: CLIENT
+synthesis:
+  rules:
+  # Client Entity for Client-Captured Spans (kind == client)
+  - name: local_addr
+    identifier: local_addr
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.provider
+      value: "nr_ebpf"
+    - attribute: trace_role
+      value: "client"
+    - attribute: k8s.cluster.name
+      present: false
+    tags:
+      local_addr:
+        entityTagName: "ip"

@@ -1,36 +1,44 @@
+# Network monitoring entity
 domain: EXT
 type: SD_WAN
 synthesis:
   rules:
-    # SD-WAN devices from Kentik
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-      - attribute: provider
-        value: kentik-sd-wan
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-
-    # Secure Access Service Edge (SASE) from Kentik
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-      - attribute: provider
-        value: kentik-sase
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
+  # SD-WAN devices from Kentik
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-sd-wan
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # Secure Access Service Edge (SASE) from Kentik
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-sase
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip

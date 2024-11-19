@@ -3,54 +3,59 @@ completedAt:
   unit: TIMESTAMP
   queries:
     newRelic:
-      select: latest(k8s.job.completedAt) * 1000
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(completedAt) * 1000
       from: K8sJobSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_job_status_completion_time) * 1000
+      where: metricName = 'kube_job_status_completion_time'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 podsSucceeded:
   title: Pods succeded
   unit: COUNT
   queries:
     newRelic:
-      select: latest(k8s.job.succeededPods)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(succeededPods)
       from: K8sJobSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_job_status_succeeded)
+      where: metricName = 'kube_job_status_succeeded'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 podsActive:
   title: Pods active
   unit: COUNT
   queries:
     newRelic:
-      select: latest(k8s.job.activePods)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(activePods)
       from: K8sJobSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_job_status_active)
+      where: metricName = 'kube_job_status_active'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 podsFailed:
   title: Pods failed
   unit: COUNT
   queries:
     newRelic:
-      select: latest(k8s.job.failedPods)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(failedPods)
       from: K8sJobSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_job_status_failed)
+      where: metricName = 'kube_job_status_failed'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+

@@ -1,0 +1,66 @@
+relationships:
+  - name: apmProducesAwsMqBroker
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: name
+        regex: "MessageBroker/[^/]*/[^/]*/Produce/Named/[^/]*"
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQBROKER
+          fields:
+            - field: endpoint
+              attribute: server.address         
+
+  - name: apmConsumesAwsMqBroker
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: name
+        regex: "MessageBroker/[^/]*/[^/]*/Consume/Named/[^/]*"
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQBROKER
+          fields:
+            - field: endpoint
+              attribute: server.address
+
+  - name: apmCallsAwsMqBroker
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: name
+        regex: "OtherTransaction/Message/[^/]*/[^/]*"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQBROKER
+          fields:
+            - field: endpoint
+              attribute: server.address
