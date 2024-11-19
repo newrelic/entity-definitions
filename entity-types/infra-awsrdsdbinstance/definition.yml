@@ -6,3 +6,38 @@ goldenTags:
 configuration:
   entityExpirationTime: DAILY
   alertable: true
+
+synthesis:
+  rules:
+    # Legacy API Polling entities not using the ARN to compute the entity.guid, but directly providing the entityId
+    - identifier: entityId
+      name: aws.rds.DBInstanceIdentifier
+      encodeIdentifierInGUID: false
+      conditions:
+        - attribute: eventType
+          prefix: Log
+        - attribute: aws.rds.DBInstanceIdentifier
+          present: true
+        - attribute: aws.Arn
+          present: true
+        - attribute: entityId
+          present: true
+      tags:
+        aws.Arn:
+        aws.rds.DBInstanceIdentifier:
+    # Metrics Streams and API Polling entities using the ARN to compute the entity.guid
+    - identifier: aws.Arn
+      name: aws.rds.DBInstanceIdentifier
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: Log
+        - attribute: aws.Arn
+          present: true
+        - attribute: aws.rds.DBInstanceIdentifier
+          present: true
+        - attribute: entityId
+          present: false
+      tags:
+        aws.Arn:
+        aws.rds.DBInstanceIdentifier:
