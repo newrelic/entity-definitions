@@ -181,6 +181,18 @@ synthesis:
 
 You can also change the name of the tag to another value, rather than using the name in the attribute. In general, we suggest not to use this configuration unless you are trying to use more standard namings, since sometimes it's difficult for the user to see the difference between entity tags and telemetry attributes, and changing the names could cause even more confusion.
 
+This is the relevant syntax:
+```yaml
+synthesis:
+  rules:
+  - identifier: someIdAttribute
+    name: someNameAttribute
+    tags:
+      originalAttributeName:
+        entityTagNames: [desiredTagName1, desiredTagName2]
+```
+The above example will result in an entity having two tags, `desiredTagName1` and `desiredTagName2`, with the value present in the `originalAttributeName` attribute from the processed data point.
+
 A good use case for this feature is `CONTAINER`: A container has different sources (docker, kubernetes, etc.), and we rename the tags to use a standard naming and a "per source" name.
 
 ```yaml
