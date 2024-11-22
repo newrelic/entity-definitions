@@ -1,13 +1,15 @@
 relationships:
-  - name: apmServiceCallsElasticsearch
+  - name: extServiceCallsInfraKinesisStream
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: db.system
-        anyOf: [ "elasticsearch" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: rpc.service
+        anyOf: [ "kinesis" ]
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -16,7 +18,7 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: AWSELASTICSEARCHCLUSTER
+          candidateCategory: AWSKINESISSTREAM
           fields:
-            - field: endpoint
-              attribute: server.address
+            - field: cloudResourceId
+              attribute: cloud.resource_id
