@@ -1,0 +1,24 @@
+relationships:
+  - name: apmCallsInfraKinesisDeliveryStream
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: cloud.platform
+        anyOf: [ "aws_kinesis_delivery_streams" ]
+      - attribute: cloud.resource_id
+        regex: "^arn:aws:firehose:([^:]*):([^:]*):deliverystream\/([^:]*)"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSKINESISDELIVERYSTREAM
+          fields:
+            - field: cloudResourceId
+              attribute: cloud.resource_id
