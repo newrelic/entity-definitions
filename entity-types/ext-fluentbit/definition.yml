@@ -1,2 +1,16 @@
 domain: EXT
 type: FLUENTBIT
+synthesis:
+  rules:
+  - compositeIdentifier:
+        separator: "/"
+        attributes:
+          - namespace
+          - helm_release_name
+    name: helm_release_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: metricName
+      prefix: fluentbit_
