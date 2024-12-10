@@ -1,13 +1,13 @@
 relationships:
-  - name: apmServiceCallsElasticsearch
+  - name: apmCallsInfraAppSyncApi
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: server.address
-        regex: ^search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\.([a-zA-Z0-9-]+)\.es\.amazonaws\.com$
+      - attribute: peer.hostname
+        regex: '[a-z]+\d*[a-z]*\.appsync-api\.[a-z]{2}-[a-z]+-\d+\.amazonaws\.com'
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -16,7 +16,7 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: AWSELASTICSEARCHCLUSTER
+          candidateCategory: AWSAPPSYNCAPI
           fields:
-            - field: endpoint
-              attribute: server.address
+            - field: httpUrl
+              attribute: Http.Url
