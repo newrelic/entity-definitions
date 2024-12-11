@@ -1,0 +1,137 @@
+{
+  "name": "Kubernetes Fluent Bit monitoring",
+  "description": null,
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 6
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# README\n\n## About this page\nThis page represents most of [Fluent Bit's internal metrics](https://docs.fluentbit.io/manual/administration/monitoring#for-v2-metrics). The metric representations are grouped by categories and faceted by each plugin instance where appropriate.\n\n## How to filter\n1. Select the Kubernetes cluster you want to troubleshoot in the \"Cluster Name\" variable above.\n2. [OPTIONAL] You can use any of the values in the `Node name` and `Pod name` columns on the \"Fluent Bit version\" table to further filter the metrics displayed in the graphs below. To do so, you need to enable [facet filtering](https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/filter-new-relic-one-dashboards-facets/) on that table by clicking on the \"Edit\" submenu and select \"Filter the current dashboard\" under \"Facet Linking\". \n\n## Legend\n### Metric dimensions\n- **name**: the name of the Fluent Bit plugin. Version 1.21.0 of our Helm chart names them according to the plugin names described in the following section.\n- **pod_name**: the `newrelic-logging` pod (Fluent Bit instance) that emitted this metric.\n- **node_name**: physical Kubernetes node where the `newrelic-logging` pod is running.\n\n### Plugin names\n- **pod-logs-tailer**: `tail` *INPUT* plugin normally reading from `/var/log/containers/*.log`\n- **kubernetes-enricher**: `kubernetes` *FILTER* plugin that queries the Kubernetes API to enrich the logs with pod/container metadata.\n- **node-attributes-enricher**: `record_modifier` *FILTER* plugin that enriches logs with `cluster_name`.\n- **kubernetes-attribute-lifter** (only when in low data mode): `nest` *FILTER* plugin that lifts all the keys under `kubernetes`. This plugin is transparent to the final shape of the log.\n- **node-attributes-enricher-filter** (only when in low data mode): same as  node-attributes-enricher`, but it also removes attributes that are not strictly necessary for correct platform functioning.\n- **newrelic-logs-forwarder**: `newrelic` *OUTPUT* plugin that sends logs to the New Relic Logs API"
+          }
+        },
+        {
+          "title": "Fluent Bit version",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(os) as 'OS', latest(version) as 'FB version', latest(cluster_name)  FROM Metric where metricName = 'fluentbit_build_info' AND cluster_name IN ({{cluster_name}}) since 1 hour ago facet pod_name, node_name limit max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }, {
+          "title": "Fluent Bit uptime",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(fluentbit_uptime) FROM Metric where cluster_name IN ({{cluster_name}}) facet pod_name timeseries"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# INPUTS"
+          }
+        },
+        {
+          "title": "Input byte rate (bytes/minute)",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(fluentbit_input_bytes_total), 1 minute) as 'bytes/minute' FROM Metric where name != 'fb-metrics-collector' and cluster_name IN ({{cluster_name}}) timeseries max facet name, pod_name"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
