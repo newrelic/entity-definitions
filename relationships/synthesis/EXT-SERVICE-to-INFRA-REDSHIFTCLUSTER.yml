@@ -1,13 +1,15 @@
 relationships:
-  - name: apmServiceCallsElasticsearch
+  - name: extServiceCallsInfraRedshiftCluster
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: server.address
-        regex: ^search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\.([a-zA-Z0-9-]+)\.es\.amazonaws\.com$
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: rpc.service
+        anyOf: [ "Redshift" ]
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -16,7 +18,7 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: AWSELASTICSEARCHCLUSTER
+          candidateCategory: AWSREDSHIFTCLUSTER
           fields:
-            - field: endpoint
-              attribute: server.address
+            - field: cloudEndpointAddress
+              attribute: configuration.endpoint.address
