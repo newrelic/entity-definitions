@@ -1,0 +1,24 @@
+relationships:
+  - name: extServiceCallsInfraRedshiftCluster
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: rpc.service
+        anyOf: [ "Redshift" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSREDSHIFTCLUSTER
+          fields:
+            - field: cloudEndpointAddress
+              attribute: configuration.endpoint.address
