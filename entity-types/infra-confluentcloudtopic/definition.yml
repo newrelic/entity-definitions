@@ -1,8 +1,10 @@
 domain: INFRA
-type: CONFLUENTCLOUDCLUSTER
+type: CONFLUENTCLOUDKAFKATOPIC
 goldenTags:
   - confluent.clusterName
   - kafka_id
+  - topic
+  - confluent.kafka.server.metric.topic
   - confluent.clusterId
   - confluent.metricNamespace
   - collector.name
@@ -34,8 +36,12 @@ dashboardTemplates:
 synthesis:
   rules:
   # telemetry from opentelemetry provider
-  - identifier: kafka_id
-    name: kafka.cluster_name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - kafka_id
+        - topic
+    name: kafka.cluster_name || ":" || topic
     encodeIdentifierInGUID: true
     tags:
       kafka_id:
@@ -52,11 +58,15 @@ synthesis:
       - attribute: kafka_id
         present: true
       - attribute: topic
-        present: false
+        present: true
   
   # telemetry from confluent-cloud provider
-  - identifier: confluent.clusterId
-    name: confluent.clusterName
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - confluent.clusterId
+        - confluent.kafka.server.metric.topic
+    name: confluent.clusterName || ":" || confluent.kafka.server.metric.topic
     encodeIdentifierInGUID: true
     tags:
       confluent.clusterId:
@@ -79,4 +89,4 @@ synthesis:
       - attribute: confluent.clusterId
         present: true
       - attribute: confluent.kafka.server.metric.topic
-        present: false
+        present: true
