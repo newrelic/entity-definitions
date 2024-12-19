@@ -1,0 +1,865 @@
+{
+  "name": "Panduit PDU",
+  "description": null,
+  "pages": [
+    {
+      "name": "Panduit PDU",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupCurrentPercentLoad)\nFACET concat('B1: Load %')\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B1' AND pdug5GroupIndex=1}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 69
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 79
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 2,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupBreakerStatus) AS 'Branch Status'\nFACET concat('B1: ', pdug5GroupBreakerStatus)\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B1' AND pdug5GroupIndex=1}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "PDU Status",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  if(latest(kentik.snmp.pdug5Status) = 2, 0, latest(kentik.snmp.pdug5Status))  as 'PDU Status'\nWHERE provider = 'kentik-pdu'} limit max facet concat('PDU Status: ', pdug5Status)"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 3
+              },
+              {
+                "alertSeverity": "WARNING",
+                "value": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Unit Details",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(pdug5Name) AS 'Unit Name',\n  latest(pdug5SerialNumber) AS 'Unit Serial',\n  latest(pdug5FirmwareVersion) AS 'Unit Firmware'\nWHERE provider = 'kentik-pdu'} AND Index='1' \nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Summary",
+          "layout": {
+            "column": 6,
+            "row": 1,
+            "width": 2,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Last Update",
+                "type": "date"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(device_name) AS 'Rack',\n  latest(src_addr) as 'IP Address',\n  latest(pdug5MACAddress) as 'MAC Address',\n  latest(timestamp) AS 'Last Update',\n  latest(PollingHealth) AS 'Polling Health',\n  if(latest(PollingHealth) = 'GOOD', '', latest(PollingHealthReason)) AS 'Health Reason'\nWHERE provider = 'kentik-pdu'}\nLIMIT MAX WITH TIMEZONE 'America/Chicago'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Unit Details",
+          "layout": {
+            "column": 8,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(pdug5Name) AS 'Unit Name',\n  latest(pdug5SerialNumber) AS 'Unit Serial',\n  latest(pdug5FirmwareVersion) AS 'Unit Firmware'\nWHERE provider = 'kentik-pdu'} AND Index='2'\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "PDU Status",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  if(latest(kentik.snmp.pdug5Status) = 2, 0, latest(kentik.snmp.pdug5Status))  as 'PDU Status'\nWHERE provider = 'kentik-pdu'} limit max facet concat('PDU Status: ', pdug5Status)"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 3
+              },
+              {
+                "alertSeverity": "WARNING",
+                "value": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 11,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupBreakerStatus) AS 'Branch Status'\nFACET concat('B1: ', pdug5GroupBreakerStatus)\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B1' AND pdug5GroupIndex=2}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 12,
+            "row": 1,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupCurrentPercentLoad)\nFACET concat('B1: Load %')\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B1' AND pdug5GroupIndex=2}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 69
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 79
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupCurrentPercentLoad)\nFACET concat('B2: Load %')\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B2' AND pdug5GroupIndex=1}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 69
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 79
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 2,
+            "row": 2,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupBreakerStatus) AS 'Branch Status'\nFACET concat('B2: ', pdug5GroupBreakerStatus)\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B2' AND pdug5GroupIndex=1}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "Input Frequency",
+          "layout": {
+            "column": 3,
+            "row": 2,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5InputFrequencyStatus)  as 'Input Freq'\nWHERE provider = 'kentik-pdu'} limit max facet concat('Input Freq: ', pdug5InputFrequencyStatus)"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "title": "Input Frequency",
+          "layout": {
+            "column": 10,
+            "row": 2,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5InputFrequencyStatus)  as 'Input Freq'\nWHERE provider = 'kentik-pdu'} limit max facet concat('Input Freq: ', pdug5InputFrequencyStatus)"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 11,
+            "row": 2,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupBreakerStatus) AS 'Branch Status'\nFACET concat('B2: ', pdug5GroupBreakerStatus)\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B2' AND pdug5GroupIndex=2}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 12,
+            "row": 2,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupCurrentPercentLoad)\nFACET concat('B2: Load %')\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B2' AND pdug5GroupIndex=2}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 69
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 79
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupCurrentPercentLoad)\nFACET concat('B3: Load %')\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B3' AND pdug5GroupIndex=1}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 69
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 79
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 2,
+            "row": 3,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupBreakerStatus) AS 'Branch Status'\nFACET concat('B3: ', pdug5GroupBreakerStatus)\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B3' AND pdug5GroupIndex=1}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 11,
+            "row": 3,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupBreakerStatus) AS 'Branch Status'\nFACET concat('B3: ', pdug5GroupBreakerStatus)\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B3' AND pdug5GroupIndex=2}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 2
+              }
+            ]
+          }
+        },
+        {
+          "title": "Branch Status",
+          "layout": {
+            "column": 12,
+            "row": 3,
+            "width": 1,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5GroupCurrentPercentLoad)\nFACET concat('B3: Load %')\nWHERE provider = 'kentik-pdu' AND pdug5GroupName='B3' AND pdug5GroupIndex=2}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 69
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 79
+              }
+            ]
+          }
+        },
+        {
+          "title": "Outlet Status",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 5,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "initialSorting": {
+              "direction": "asc",
+              "name": "ID"
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(pdug5OutletName) AS 'Outlet Name',\n  latest(kentik.snmp.pdug5OutletCurrentPercentLoad) AS 'Load %',\n  latest(kentik.snmp.pdug5OutletCurrent)/100 AS 'Current',\n  latest(kentik.snmp.pdug5OutletVA) AS 'VA',\n  latest(kentik.snmp.pdug5OutletVAR) AS 'VAR',\n  latest(kentik.snmp.pdug5OutletWatts) AS 'Watts'\nFACET pdug5OutletIndex AS 'ID', concat('B', pdug5OutletBranch) as 'Branch'\nWHERE provider = 'kentik-pdu' AND pdug5OutletIndex>0 AND Index LIKE '1.%'}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Outlet Status",
+          "layout": {
+            "column": 8,
+            "row": 4,
+            "width": 5,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "initialSorting": {
+              "direction": "asc",
+              "name": "ID"
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(pdug5OutletName) AS 'Outlet Name',\n  latest(kentik.snmp.pdug5OutletCurrentPercentLoad) AS 'Load %',\n  latest(kentik.snmp.pdug5OutletCurrent)/100 AS 'Current',\n  latest(kentik.snmp.pdug5OutletVA) AS 'VA',\n  latest(kentik.snmp.pdug5OutletVAR) AS 'VAR',\n  latest(kentik.snmp.pdug5OutletWatts) AS 'Watts'\nFACET pdug5OutletIndex AS 'ID', concat('B', pdug5OutletBranch) as 'Branch'\nWHERE provider = 'kentik-pdu' AND pdug5OutletIndex>0 AND Index LIKE '2.%'}\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Branch Details",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 6,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "initialSorting": {
+              "direction": "asc",
+              "name": "Branch"
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(kentik.snmp.pdug5GroupCurrent)/100 as 'Current RMS(A)', latest(kentik.snmp.pdug5GroupVoltage)/10 as 'Voltage RMS (V)', latest(kentik.snmp.pdug5GroupCurrentPercentLoad) as 'Load(%)' WHERE provider = 'kentik-pdu' AND pdug5GroupName LIKE 'B%' AND Index LIKE '1.%'} SINCE 30 minutes ago UNTIL now limit max facet cases(where Index LIKE '1.%' as 'PDU 1', where Index LIKE '2.%' as 'PDU 2') as PDU , pdug5GroupName as 'Branch' "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Branch Details",
+          "layout": {
+            "column": 7,
+            "row": 8,
+            "width": 6,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "initialSorting": {
+              "direction": "asc",
+              "name": "Branch"
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(kentik.snmp.pdug5GroupCurrent)/100 as 'Current RMS(A)', latest(kentik.snmp.pdug5GroupVoltage)/10 as 'Voltage RMS (V)', latest(kentik.snmp.pdug5GroupCurrentPercentLoad) as 'Load(%)' WHERE provider = 'kentik-pdu' AND pdug5GroupName LIKE 'B%' AND Index LIKE '2.%'} SINCE 30 minutes ago UNTIL now limit max facet cases(where Index LIKE '1.%' as 'PDU 1', where Index LIKE '2.%' as 'PDU 2') as PDU , pdug5GroupName as 'Branch' "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Phase Status",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 6,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "initialSorting": {
+              "direction": "asc",
+              "name": "Phase Label"
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5InputPhaseCurrent) AS 'Current(A)',\n  latest(kentik.snmp.pdug5InputPhaseVoltage) AS 'Voltage(V)',\n  latest(kentik.snmp.pdug5InputPhasePowerVA) AS 'Apparent Power(VA)',\n  latest(kentik.snmp.pdug5InputPhasePowerWatts) AS 'Active Power(W)'\nFACET\n  cases(where Index LIKE '1.%' as 'PDU 1', where Index LIKE '2.%' as 'PDU 2') as PDU,\n  pdug5InputPhaseCurrentMeasType as 'Phase Label'\nWHERE provider = 'kentik-pdu' AND Index LIKE '1.%'}"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Phase Status",
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "width": 6,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "initialSorting": {
+              "direction": "asc",
+              "name": "Phase Label"
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT\n  latest(kentik.snmp.pdug5InputPhaseCurrent) AS 'Current(A)',\n  latest(kentik.snmp.pdug5InputPhaseVoltage) AS 'Voltage(V)',\n  latest(kentik.snmp.pdug5InputPhasePowerVA) AS 'Apparent Power(VA)',\n  latest(kentik.snmp.pdug5InputPhasePowerWatts) AS 'Active Power(W)'\nFACET\n  cases(where Index LIKE '1.%' as 'PDU 1', where Index LIKE '2.%' as 'PDU 2') as PDU,\n  pdug5InputPhaseCurrentMeasType as 'Phase Label'\nWHERE provider = 'kentik-pdu' AND Index LIKE '2.%'}"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Branch Load (Amps)",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 12,
+            "height": 5
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT max(kentik.snmp.pdug5GroupCurrent)/100 AS 'Branch Amps' WHERE provider = 'kentik-pdu' AND pdug5GroupName LIKE 'B%'} TIMESERIES AUTO SINCE 60 minutes ago UNTIL now facet pdug5GroupName, cases(where Index LIKE '1.%' as 'PDU 1', where Index LIKE '2.%' as 'PDU 2') as PDU"
+              }
+            ],
+            "nullValues": {
+              "nullValue": "preserve"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
