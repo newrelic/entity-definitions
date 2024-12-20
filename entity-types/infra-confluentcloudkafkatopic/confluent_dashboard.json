@@ -1,13 +1,13 @@
 {
-  "name": "Confluent Cloud Cluster",
+  "name": "Confluent Cloud Topic",
   "description": null,
   "pages": [
     {
-      "name": "Confluent Cloud Cluster",
+      "name": "Confluent Cloud Topic",
       "description": null,
       "widgets": [
         {
-          "title": "Cluster load percent",
+          "title": "Received throughput (bytes/seconds)",
           "layout": {
             "column": 1,
             "row": 1,
@@ -30,7 +30,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select average(confluent_kafka_server_cluster_load_percent) * 100 AS 'Cluster load percent' from Metric  TIMESERIES LIMIT MAX"
+                "query": "select rate(sum(confluent.kafka.server.received_bytes), 1 second) AS 'Received throughput' from Metric  TIMESERIES LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -39,7 +39,7 @@
           }
         },
         {
-          "title": "Request throughtput (bytes/second)",
+          "title": "Sent throughput (bytes/seconds)",
           "layout": {
             "column": 7,
             "row": 1,
@@ -59,7 +59,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select rate(sum(confluent_kafka_server_request_bytes), 1 second) AS 'Request throughtput' from Metric TIMESERIES LIMIT MAX"
+                "query": "select rate(sum(confluent.kafka.server.sent_bytes), 1 second) AS 'Sent throughput' from Metric TIMESERIES LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -68,7 +68,7 @@
           }
         },
         {
-          "title": "Response throughtput (bytes/second)",
+          "title": "Received records throughput (records/seconds)",
           "layout": {
             "column": 1,
             "row": 5,
@@ -88,7 +88,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select rate(sum(confluent_kafka_server_response_bytes), 1 second) AS 'Response throughtput' from Metric TIMESERIES LIMIT MAX"
+                "query": "select rate(sum(confluent.kafka.server.received_records), 1 second) AS 'Received records throughput' from Metric TIMESERIES LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -103,7 +103,7 @@
           }
         },
         {
-          "title": "Active connections",
+          "title": "Sent records throughput (records/seconds)",
           "layout": {
             "column": 5,
             "row": 5,
@@ -123,7 +123,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select max(confluent_kafka_server_active_connection_count) AS 'Active connections' from Metric TIMESERIES LIMIT MAX"
+                "query": "select rate(sum(confluent.kafka.server.sent_records), 1 second) AS 'Sent records throughput' from Metric TIMESERIES LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -135,7 +135,7 @@
           }
         },
         {
-          "title": "Requests",
+          "title": "Retained throughput (bytes/seconds)",
           "layout": {
             "column": 9,
             "row": 5,
@@ -155,7 +155,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select max(confluent_kafka_server_request_count) AS 'Requests' from Metric TIMESERIES  LIMIT MAX"
+                "query": "select rate(sum(confluent.kafka.server.retained_bytes), 1 second) AS 'Retained throughput' from Metric TIMESERIES  LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -170,7 +170,7 @@
           }
         },
         {
-          "title": "Partitions",
+          "title": "Consumer lag offsets",
           "layout": {
             "column": 1,
             "row": 8,
@@ -190,7 +190,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(confluent_kafka_server_partition_count) AS 'Partitions' from Metric TIMESERIES LIMIT MAX"
+                "query": "select latest(confluent.kafka.server.consumer_lag_offsets) from Metric TIMESERIES LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -202,7 +202,7 @@
           }
         },
         {
-          "title": "Successful Auth Attempts",
+          "title": "Link mirror topics offset lag",
           "layout": {
             "column": 5,
             "row": 8,
@@ -222,7 +222,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select sum(confluent_kafka_server_successful_authentication_count) AS 'Successful Authentications' from Metric  TIMESERIES LIMIT MAX"
+                "query": "select latest(confluent.kafka.server.cluster_link_mirror_topic_offset_lag) from Metric  TIMESERIES LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -234,7 +234,7 @@
           }
         },
         {
-          "title": "Rest produced request throughtput (bytes/second)",
+          "title": "Link mirror topics throughput (bytes/seconds)",
           "layout": {
             "column": 9,
             "row": 8,
@@ -254,7 +254,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select rate(sum(confluent_kafka_server_rest_produce_request_bytes), 1 second) AS 'Rest produced request throughtput' from Metric TIMESERIES  LIMIT MAX"
+                "query": "select rate(sum(confluent.kafka.server.cluster_link_mirror_topic_bytes), 1 second) AS 'Link mirror topics throughput' from Metric TIMESERIES  LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -266,7 +266,7 @@
           }
         },
         {
-          "title": "Link destination response throughtput (bytes/second)",
+          "title": "Hot partition ingress",
           "layout": {
             "column": 1,
             "row": 11,
@@ -286,7 +286,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select rate(sum(confluent_kafka_server_cluster_link_destination_response_bytes), 1 second) AS 'Cluster link destination response throughtput' from Metric  TIMESERIES LIMIT MAX"
+                "query": "select latest(confluent.kafka.server.hot_partition_ingress) from Metric  TIMESERIES LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -298,7 +298,7 @@
           }
         },
         {
-          "title": "Link source response throughtput (bytes/second)",
+          "title": "Hot partition egress",
           "layout": {
             "column": 5,
             "row": 11,
@@ -318,138 +318,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select rate(sum(confluent_kafka_server_cluster_link_source_response_bytes), 1 second) AS 'Cluster link source response throughtput' from Metric  TIMESERIES  LIMIT MAX"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            },
-            "yAxisRight": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Cluster links",
-          "layout": {
-            "column": 9,
-            "row": 11,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "select max(confluent_kafka_server_cluster_link_count) AS 'Cluster links' from Metric  TIMESERIES  LIMIT MAX"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Cluster link tasks",
-          "layout": {
-            "column": 1,
-            "row": 14,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "select max(confluent_kafka_server_cluster_link_task_count) AS 'Cluster link tasks' from Metric  TIMESERIES  LIMIT MAX"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Link mirror topics error count",
-          "layout": {
-            "column": 5,
-            "row": 14,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "select sum(confluent_kafka_server_cluster_link_mirror_transition_in_error) AS 'cluster link mirror topic errors' from Metric  TIMESERIES  LIMIT MAX"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Link mirror topics count",
-          "layout": {
-            "column": 9,
-            "row": 14,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "select sum(confluent_kafka_server_cluster_link_mirror_topic_count) AS 'Cluster link mirror topics' from Metric  TIMESERIES  LIMIT MAX"
+                "query": "select latest(confluent.kafka.server.hot_partition_egress) from Metric  TIMESERIES  LIMIT MAX"
               }
             ],
             "platformOptions": {
