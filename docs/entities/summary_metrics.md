@@ -46,6 +46,7 @@ The unit of the metric must be a string with one of the following values:
 - TIMESTAMP
 - STRING (Not supported for NRDB queries, please use tags instead)
 - CELSIUS
+- NUMBER
 
 ### Tag
 
