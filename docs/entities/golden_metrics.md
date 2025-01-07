@@ -87,7 +87,6 @@ The unit of the metric must be a string with one of the following values:
 - APDEX
 - TIMESTAMP
 - CELSIUS
-- NUMBER
 
 ### Multiple sources of data
 
