@@ -45,17 +45,17 @@ adStartFailures:
   title: Ad Start Failures
   unit: PERCENTAGE
   query:
-    select: (filter(count(*) WHERE actionName = 'AD_ERROR' and adPlayhead = 0 ) * 100) / (FROM VideoAdAction SELECT count(*) WHERE actionName = 'AD_START' and adPlayhead = 0)
+    select: (filter(count(*), WHERE actionName = 'AD_ERROR' and adPlayhead = 0 ) * 100) / (FROM VideoAdAction SELECT count(*) WHERE actionName = 'AD_START' and adPlayhead = 0)
     from: VideoErrorAction
 videoPlaybackFailures:
   title: Video Playback Failures
   unit: PERCENTAGE
   query:
-    select: count(*) WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0 * 100 / (FROM VideoAction SELECT count(*) WHERE actionName = 'CONENT_REQUEST')
+    select: count(*) * 100 / (FROM VideoAction SELECT count(*) WHERE actionName = 'CONENT_REQUEST') WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0
     from: VideoErrorAction
 adPlaybackFailures:
   title: Ad Playback Failures
   unit: PERCENTAGE
   query:
-    select: count(*) WHERE actionName = 'AD_ERROR' and adPlayhead > 0  * 100 / (FROM VideoAdAction SELECT count(*) WHERE actionName = 'AD_REQUEST')
+    select: count(*) * 100 / (FROM VideoAdAction SELECT count(*) WHERE actionName = 'AD_REQUEST') WHERE actionName = 'AD_ERROR' and adPlayhead > 0
     from: VideoErrorAction
