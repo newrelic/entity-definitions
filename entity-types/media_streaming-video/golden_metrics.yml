@@ -20,7 +20,7 @@ adAverageBitrate:
   title: Ad Average Bitrate (B/s)
   unit: BYTES_PER_SECOND
   query:
-    select: average(adBitrate / 16) +
+    select: average(adBitrate / 16)
     from: VideoAdAction
 averageStartTimeS:
   title: Average Start Time (s)
@@ -39,13 +39,13 @@ videoStartFailures:
   title: Video Start Failures
   unit: PERCENTAGE
   query:
-    select: count(*) WHERE actionName = 'CONENT_ERROR' and contentPlayhead = 0  * 100 / (FROM VideoAction SELECT count(*) WHERE actionName = 'CONENT_START' and contentPlayhead=0)
+    select: (filter(count(*), WHERE actionName = 'CONENT_ERROR' and contentPlayhead = 0) * 100) / (FROM VideoAction SELECT count(*) WHERE actionName = 'CONENT_START' and contentPlayhead=0)
     from: VideoErrorAction
 adStartFailures:
   title: Ad Start Failures
   unit: PERCENTAGE
   query:
-    select: count(*) WHERE actionName = 'AD_ERROR' and adPlayhead = 0  * 100 / (FROM VideoAdAction SELECT count(*) WHERE actionName = 'AD_START' and adPlayhead = 0)
+    select: (filter(count(*) WHERE actionName = 'AD_ERROR' and adPlayhead = 0 ) * 100) / (FROM VideoAdAction SELECT count(*) WHERE actionName = 'AD_START' and adPlayhead = 0)
     from: VideoErrorAction
 videoPlaybackFailures:
   title: Video Playback Failures
