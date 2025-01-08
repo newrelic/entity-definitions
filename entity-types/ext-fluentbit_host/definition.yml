@@ -1,0 +1,24 @@
+domain: EXT
+type: FLUENTBIT_HOST
+synthesis:
+  rules:
+  - identifier: hostname
+    name: hostname
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: metricName
+      prefix: fluentbit_
+    - attribute: source
+      value: host
+    tags:
+      version:
+        entityTagNames: [fluentbit.version]
+      hostname:
+        entityTagNames: [host.name]
+      os:
+        entityTagNames: [host.os]
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
