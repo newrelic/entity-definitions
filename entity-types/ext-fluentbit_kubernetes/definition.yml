@@ -1,0 +1,31 @@
+domain: EXT
+type: FLUENTBIT_KUBERNETES
+synthesis:
+  rules:
+  - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - namespace
+          - daemonset_name
+    name: daemonset_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: metricName
+      prefix: fluentbit_
+    - attribute: source
+      value: kubernetes
+    tags:
+      daemonset_name:
+        entityTagNames: [k8s.daemonsetName]
+      namespace:
+        entityTagNames: [k8s.namespaceName]
+      cluster_name:
+        entityTagNames: [k8s.clusterName]
+      version:
+        entityTagNames: [fluentbit.version]
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
