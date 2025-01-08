@@ -1,0 +1,30 @@
+relationships:
+  - name: awsMskBrokerManagesAwsMskTopic
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSMSKTOPIC", "AWS_MSK_TOPIC" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSMSKBROKER
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+            - field: awsMskClusterName
+              attribute: aws.kafka.ClusterName
+            - field: awsMskBrokerId
+              attribute: aws.kafka.BrokerID
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSMSKTOPIC
