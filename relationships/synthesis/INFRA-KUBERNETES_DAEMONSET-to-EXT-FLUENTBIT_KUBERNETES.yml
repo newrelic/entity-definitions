@@ -1,0 +1,96 @@
+relationships:
+  - name: k8sDaemonSetManagesFluentbit
+    version: "1"
+    origins: 
+      - Prometheus
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: "fluentbit_"
+      - attribute: "source"
+        anyOf: [ "kubernetes" ]
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_DAEMONSET
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: cluster_name
+              - value: ":"
+              - attribute: namespace
+              - value: ":daemonset:"
+              - attribute: daemonset_name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: FLUENTBIT_KUBERNETES
+          identifier:
+            fragments:
+              - attribute: cluster_name
+              - value: ":"
+              - attribute: namespace
+              - value: ":"
+              - attribute: daemonset_name
+            hashAlgorithm: FARM_HASH
+  - name: otelKsmK8sDaemonSetManagesFluentbit
+    version: "1"
+    origins: 
+      - Prometheus
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: "fluentbit_"
+      - attribute: "source"
+        anyOf: [ "kubernetes" ]
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_DAEMONSET
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: cluster_name
+              - value: ":"
+              - attribute: namespace
+              - value: ":"
+              - attribute: daemonset_name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: FLUENTBIT_KUBERNETES
+          identifier:
+            fragments:
+              - attribute: cluster_name
+              - value: ":"
+              - attribute: namespace
+              - value: ":"
+              - attribute: daemonset_name
+            hashAlgorithm: FARM_HASH
