@@ -7,7 +7,7 @@ relationships:
       - attribute: eventType
         anyOf: [ "Span" ]
       - attribute: server.address
-        regex: ^search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\.([a-zA-Z0-9-]+)\.es\.amazonaws\.com$
+        regex: ^search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\.((aos\.[a-zA-Z0-9-]+\.on\.aws)|(([a-zA-Z0-9-]+)\.(es|aos)\.amazonaws\.com))$
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -20,3 +20,24 @@ relationships:
           fields:
             - field: endpoint
               attribute: server.address
+  - name: apmServiceCallsThirdPartyLibraryElasticsearch
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^Datastore/instance/Elasticsearch/search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\\.((aos\\.[a-zA-Z0-9-]+\\.on\\.aws)|(([a-zA-Z0-9-]+)\\.(es|aos)\\.amazonaws\\.com))/[0-9]+"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSELASTICSEARCHCLUSTER
+          fields:
+            - field: endpoint
+              attribute: metricName__4
+            - field: port
+              attribute: metricName__5
