@@ -3,7 +3,6 @@ relationships:
     version: "1"
     origins: 
       - Metric API
-      - Kubernetes Integration
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
@@ -15,32 +14,32 @@ relationships:
       expires: P75M
       relationshipType: MANAGES
       source:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            value: KUBERNETES_DAEMONSET
-            valueInGuid: NA
-      target:
         buildGuid:
           account:
-            lookup: true
+            lookup: true  
           domain:
-            value: EXT
+            value: INFRA
           type:
-            value: FLUENTBIT_KUBERNETES
+            value: KUBERNETES_DAEMONSET
+            valueInGuid: NA
           identifier:
             fragments:
+              - value: "k8s:"
               - attribute: cluster_name
               - value: ":"
               - attribute: namespace
-              - value: ":"
+              - value: ":daemonset:"
               - attribute: daemonset_name
             hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: FLUENTBIT_KUBERNETES
   - name: otelKsmK8sDaemonSetManagesFluentbit
     version: "1"
     origins: 
       - Metric API
-      - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
@@ -52,18 +51,13 @@ relationships:
       expires: P75M
       relationshipType: MANAGES
       source:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
-            value: KUBERNETES_DAEMONSET
-      target:
         buildGuid:
           account:
-            lookup: true
+            lookup: true  
           domain:
-            value: EXT
+            value: INFRA
           type:
-            value: FLUENTBIT_KUBERNETES
+            value: KUBERNETES_DAEMONSET
           identifier:
             fragments:
               - attribute: cluster_name
@@ -72,3 +66,8 @@ relationships:
               - value: ":"
               - attribute: daemonset_name
             hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: FLUENTBIT_KUBERNETES
