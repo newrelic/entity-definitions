@@ -1,0 +1,158 @@
+domain: INFRA
+type: CONFLUENTCLOUDKAFKATOPIC
+goldenTags:
+  - confluent.clusterName
+  - kafka_id
+  - topic
+  - confluent.kafka.server.metric.topic
+  - confluent.clusterId
+  - confluent.metricNamespace
+  - confluent.clusterBootstrapServers
+  - collector.name
+  - instrumentation.provider
+  - newrelic.source
+  - kafka.cluster_name
+  - collector.version
+  - confluent.region
+  - confluent.resourceGroup
+  - confluent.resourceId
+  - confluent.resourceType
+  - http.scheme
+  - instrumentation.provider
+  - net.host.name
+  - net.host.port
+  - service.instance.id
+  - service.name
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+  confluent:
+    template: confluent_dashboard.json
+
+synthesis:
+  rules:
+  # telemetry from opentelemetry provider
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - kafka_id
+        - topic
+    name: displayName
+    encodeIdentifierInGUID: true
+    tags:
+      kafka_id:
+      kafka.cluster_name:
+      instrumentation.provider:
+      bootstrap.servers:
+      newrelic.source:
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: confluent_kafka_server_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: kafka_id
+        present: true
+      - attribute: topic
+        present: true
+      - attribute: displayName
+        present: true
+  
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - kafka_id
+        - topic
+    name: topic
+    encodeIdentifierInGUID: true
+    tags:
+      kafka_id:
+      kafka.cluster_name:
+      instrumentation.provider:
+      bootstrap.servers:
+      newrelic.source:
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: confluent_kafka_server_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: kafka_id
+        present: true
+      - attribute: topic
+        present: true
+      - attribute: displayName
+        present: false
+  
+  # telemetry from confluent-cloud provider
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - confluent.clusterId
+        - confluent.kafka.server.metric.topic
+    name: displayName
+    encodeIdentifierInGUID: true
+    tags:
+      confluent.clusterId:
+      confluent.clusterName:
+      collector.name:
+      confluent.clusterBootstrapServers:
+      confluent.metricNamespace:
+      instrumentation.provider:
+      newrelic.source:
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: collector.name
+        value: confluent-monitor
+      - attribute: metricName
+        prefix: confluent.kafka.server.
+      - attribute: instrumentation.provider
+        value: confluent
+      - attribute: confluent.resourceType
+        value: kafka.server
+      - attribute: confluent.clusterId
+        present: true
+      - attribute: confluent.kafka.server.metric.topic
+        present: true
+      - attribute: displayName
+        present: true
+
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - confluent.clusterId
+        - confluent.kafka.server.metric.topic
+    name: confluent.kafka.server.metric.topic
+    encodeIdentifierInGUID: true
+    tags:
+      confluent.clusterId:
+      confluent.clusterName:
+      collector.name:
+      confluent.metricNamespace:
+      confluent.clusterBootstrapServers:
+      instrumentation.provider:
+      newrelic.source:
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: collector.name
+        value: confluent-monitor
+      - attribute: metricName
+        prefix: confluent.kafka.server.
+      - attribute: instrumentation.provider
+        value: confluent
+      - attribute: confluent.resourceType
+        value: kafka.server
+      - attribute: confluent.clusterId
+        present: true
+      - attribute: confluent.kafka.server.metric.topic
+        present: true
+      - attribute: displayName
+        present: false
