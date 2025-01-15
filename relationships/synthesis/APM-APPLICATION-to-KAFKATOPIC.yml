@@ -54,3 +54,49 @@ relationships:
                 regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:9[0-9]+"
             - field: topic
               attribute: metricName__6
+
+  - name: apmProducesConfluentCloudKafkaTopic
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/([^.]*).([^.]*).([^.]*).confluent.cloud:9[0-9]+/Produce/.*"
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: bootstrapServers
+              capture:
+                attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+
+  - name: apmConsumesConfluentCloudKafkaTopic
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/([^.]*).([^.]*).([^.]*).confluent.cloud:9[0-9]+/Consume/.*"
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: bootstrapServers
+              capture:
+                attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
