@@ -16,6 +16,8 @@ synthesis:
     - identifier: entityId
       name: aws.elb.loadBalancer
       encodeIdentifierInGUID: false
+      legacyFeatures:
+        overrideGuidType: true
       conditions:
         - attribute: eventType
           prefix: Log
@@ -23,20 +25,18 @@ synthesis:
           present: true
         - attribute: aws.elb.loadBalancer
           present: true
-        - attribute: aws.applicationelb.type
-          present: false
-        - attribute: aws.networkelb.type
-          present: false
         - attribute: entityId
           present: true
       tags:
         aws.Arn:
-        aws.elb.LoadBalancerName:
-          entityTagNames: [ aws.elb.loadBalancer ]
+        aws.elb.loadBalancer:
+          entityTagNames: [ aws.elb.LoadBalancerName ]
     # Metrics Streams and API Polling entities using the ARN to compute the entity.guid
     - identifier: aws.Arn
       name: aws.elb.loadBalancer
       encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
       conditions:
         - attribute: eventType
           prefix: Log
@@ -44,13 +44,9 @@ synthesis:
           present: true
         - attribute: aws.elb.loadBalancer
           present: true
-        - attribute: aws.applicationelb.type
-          present: false
-        - attribute: aws.networkelb.type
-          present: false
         - attribute: entityId
           present: false
       tags:
         aws.Arn:
-        aws.elb.LoadBalancerName:
-          entityTagNames: [ aws.elb.loadBalancer ]
+        aws.elb.loadBalancer:
+          entityTagNames: [ aws.elb.LoadBalancerName ]
