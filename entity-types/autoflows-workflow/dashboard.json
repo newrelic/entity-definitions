@@ -1,0 +1,144 @@
+{
+  "name": "Autoflow Overview",
+  "description": null,
+  "pages": [
+    {
+      "name": "Autoflow Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Workflows Started",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT COUNT(*) FROM Log where autoflow.runId IS NOT NULL \nFACET  autoflow.name\nWHERE message like '[INFO] - Workflow: % has started'\nSINCE 1 hour ago limit max TIMESERIES auto"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+              "isLabelVisible": true
+            }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Steps Started",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT COUNT(*) as 'Steps' \nFROM Log where autoflow.runId IS NOT NULL \nWHERE message LIKE '[INFO] - Workflow: % Step % has started'\nSINCE 1 hour AGO LIMIT MAX TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+              "isLabelVisible": true
+            }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Recent Autoflow Run",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT *\nFROM Log\nWHERE autoflow.runId IS NOT null\nSINCE 10 minutes AGO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Audit Events",
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NrAuditEvent SELECT * SINCE 1 hour ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
