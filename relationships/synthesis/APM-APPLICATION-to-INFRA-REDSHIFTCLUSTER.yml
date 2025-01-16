@@ -1,15 +1,13 @@
 relationships:
-  - name: extServiceCallsInfraRedshiftCluster
+  - name: apmApplicationCallsInfraRedshiftCluster
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: rpc.service
-        anyOf: [ "Redshift" ]
+      - attribute: server.address
+        regex: '^[a-zA-Z0-9\-]+\.[a-z0-9]+\.[a-zA-Z0-9\-]+\.redshift\.amazonaws\.com$'
     relationship:
       expires: P75M
       relationshipType: CALLS
