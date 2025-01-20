@@ -1,13 +1,13 @@
 relationships:
-  - name: apmCallsInfraAppSyncApi
+  - name: apmApplicationCallsInfraRedshiftCluster
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: http.url
-        regex: 'https://[a-z0-9]+\.appsync-api\.[a-z0-9-]+\.amazonaws\.com/[a-z]+'
+      - attribute: server.address
+        regex: '^[a-zA-Z0-9\-]+\.[a-z0-9]+\.[a-zA-Z0-9\-]+\.redshift\.amazonaws\.com$'
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -16,7 +16,7 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: AWSAPPSYNCAPI
+          candidateCategory: AWSREDSHIFTCLUSTER
           fields:
-            - field: httpUrl
-              attribute: http.url
+            - field: serverAddress
+              attribute: server.address
