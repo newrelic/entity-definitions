@@ -1,22 +1,24 @@
 {
   "name": "Kentik Ping",
   "description": null,
+  "permissions": "PUBLIC_READ_WRITE",
   "pages": [
     {
       "name": "Kentik Ping",
       "description": null,
       "widgets": [
         {
-          "visualization": {
-            "id": "viz.billboard"
-          },
+          "title": "Summary",
           "layout": {
             "column": 1,
             "row": 1,
-            "height": 4,
-            "width": 3
+            "width": 3,
+            "height": 3
           },
-          "title": "Summary",
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
           "rawConfiguration": {
             "dataFormatters": [
               {
@@ -24,82 +26,75 @@
                 "type": "date"
               }
             ],
+            "facet": {
+              "showOtherSeries": false
+            },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(timestamp) AS 'Last Update', latest(src_as) AS 'AS Number', latest(src_as_name) AS 'AS Name', latest(src_geo) AS 'Country Code' WHERE instrumentation.name = 'ping'"
+                "accountIds": [
+                  0
+                ],
+                "query": "FROM Metric SELECT latest(device_name) AS 'Device Name', latest(src_addr) AS 'Device IP', latest(timestamp) AS 'Last Update', latest(src_as) AS 'AS Number', latest(src_as_name) AS 'AS Name', latest(src_geo) AS 'Country Code' WHERE instrumentation.name = 'ping' "
               }
             ],
-            "thresholds": []
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
           }
         },
         {
-          "visualization": {
-            "id": "viz.line"
-          },
+          "title": "latency (ms)",
           "layout": {
             "column": 4,
             "row": 1,
-            "height": 4,
-            "width": 4
+            "width": 3,
+            "height": 3
           },
-          "title": "Ping Response Times",
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
           "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
             "legend": {
               "enabled": true
             },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "FROM Metric SELECT max(kentik.ping.AvgRttMs) AS 'Average', max(kentik.ping.MinRttMs) AS 'Min', max(kentik.ping.MaxRttMs) AS 'Max' WHERE instrumentation.name = 'ping' TIMESERIES 5 MINUTES"
+                "accountIds": [
+                  0
+                ],
+                "query": "FROM Metric SELECT max(kentik.ping.AvgRttMs) AS 'Average', max(kentik.ping.MinRttMs) AS 'Min', max(kentik.ping.MaxRttMs) AS 'Max' WHERE instrumentation.name = 'ping' TIMESERIES  "
               }
             ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
             "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
               "zero": true
             }
           }
         },
         {
-          "visualization": {
-            "id": "viz.billboard"
-          },
+          "title": "loss (%)",
           "layout": {
-            "column": 8,
+            "column": 7,
             "row": 1,
-            "height": 4,
-            "width": 2
+            "width": 3,
+            "height": 3
           },
-          "title": "Failed Pings Count",
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT count(*) AS 'Failed Pings' WHERE instrumentation.name = 'ping' AND kentik.ping.AvgRttMs[latest] = 0"
-              }
-            ],
-            "thresholds": [
-              {
-                "alertSeverity": "CRITICAL",
-                "value": 0
-              }
-            ]
-          }
-        },
-        {
+          "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
-          "layout": {
-            "column": 10,
-            "row": 1,
-            "height": 4,
-            "width": 3
-          },
-          "title": "Failed Pings Timeline",
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
@@ -109,13 +104,190 @@
             },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "FROM Metric SELECT count(*) AS 'Failed Pings' WHERE instrumentation.name = 'ping' AND kentik.ping.AvgRttMs[latest] = 0 FACET device_name TIMESERIES 5 MINUTES"
+                "accountIds": [
+                  0
+                ],
+                "query": "FROM Metric SELECT average(`kentik.ping.PacketLossPct`) AS 'avg loss%', max(`kentik.ping.PacketLossPct`) AS 'max loss%' TIMESERIES"
               }
-            ]
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": false
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "jitter (ms)",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [
+                  0
+                ],
+                "query": "FROM Metric SELECT latest(`kentik.ping.StdDevRtt`) AS 'jitter' TIMESERIES "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "dropped ping packets",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [
+                  0
+                ],
+                "query": "FROM Metric SELECT sum(`kentik.ping.PacketsSent`)-sum(`kentik.ping.PacketsRecv`) AS 'dropped ping packets' FACET device_name TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "latency avg/max",
+          "layout": {
+            "column": 4,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [
+                  0
+                ],
+                "query": "FROM Metric SELECT latest(`kentik.ping.AvgRttMs`) AS 'avg latency ms', max(`kentik.ping.MaxRttMs`) AS 'max latency ms'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "loss avg/max",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [
+                  0
+                ],
+                "query": "FROM Metric SELECT average(`kentik.ping.PacketLossPct`) AS 'avg loss%', max(`kentik.ping.PacketLossPct`) AS 'max loss%'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "jitter avg/max",
+          "layout": {
+            "column": 10,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [
+                  0
+                ],
+                "query": "FROM Metric SELECT average(`kentik.ping.StdDevRtt`) AS 'avg jitter ms', max(`kentik.ping.StdDevRtt`) AS 'max jitter ms'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
           }
         }
       ]
     }
-  ]
+  ],
+  "variables": []
 }
