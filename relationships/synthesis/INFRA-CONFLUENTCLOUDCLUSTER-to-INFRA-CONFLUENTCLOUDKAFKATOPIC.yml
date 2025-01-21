@@ -1,13 +1,15 @@
 relationships:
-  - name: confluentCloudClusterManagesConfluentCloudKafkaTopic
+  - name: confluentCloudClusterManagesConfluentCloudKafkaTopicConfluentIntegration
     version: "1"
     origins:
-      - AWS Integration
+      - Metric API
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
       - attribute: entity.type
         anyOf: [ "CONFLUENTCLOUDKAFKATOPIC" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "confluent" ]
     relationship:
       expires: P75M
       relationshipType: MANAGES
@@ -19,6 +21,34 @@ relationships:
               attribute: confluent.clusterId
             - field: confluentCloudClusterName
               attribute: confluent.clusterName
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: CONFLUENTCLOUDKAFKATOPIC
+
+  - name: confluentCloudClusterManagesConfluentCloudKafkaTopicOpenTelemetryIntegration
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "CONFLUENTCLOUDKAFKATOPIC" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        lookupGuid:
+          candidateCategory: CONFLUENTCLOUDCLUSTER
+          fields:
+            - field: confluentCloudClusterId
+              attribute: kafka_id
+            - field: confluentCloudClusterName
+              attribute: kafka.cluster_name
       target:
         extractGuid:
           attribute: entity.guid
