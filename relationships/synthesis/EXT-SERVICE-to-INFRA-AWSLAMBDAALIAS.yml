@@ -1,0 +1,22 @@
+relationships:
+  - name: extServiceCallsInfraAwsLambdaAlias
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span"]
+      - attribute: rpc.service
+        anyOf: [ "Lambda" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAALIAS
+          fields:
+            - field: awsLambdaAliasArn
+              attribute: cloud.resource_id
