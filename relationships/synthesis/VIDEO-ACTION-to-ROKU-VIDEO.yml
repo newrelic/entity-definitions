@@ -1,0 +1,27 @@
+relationships:
+  - name: mediaStreamingRokuCallsRokuVideo  
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: ["VideoAction"]
+      - attribute: src
+        anyOf: ["Roku"]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: VIDEO
+          type:
+            value: ROKU_VIDEO
+          identifier:
+            fragments:
+              - attribute: appName
+      target:
+        extractGuid:
+          attribute: entity.guid
