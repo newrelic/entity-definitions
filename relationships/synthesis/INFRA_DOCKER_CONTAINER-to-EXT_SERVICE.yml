@@ -1,12 +1,14 @@
 relationships:
-  # infra metrics from oTel dockerstats receiver
+  # infra metrics from OTel dockerstats receiver
   - name: extInfraDockerContainerEXTService
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Metric" ]
+        anyOf: [ "Log", "Metric", "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
     relationship:
       expires: P75M
       relationshipType: HOSTS
@@ -25,8 +27,6 @@ relationships:
       target:
         extractGuid:
           attribute: entity.guid
-          entityType:
-            value: "SERVICE"
   # infra metrics from NR infra agent
   - name: nrInfraDockerContainerEXTService
     version: "1"
@@ -34,7 +34,9 @@ relationships:
       - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Metric" ]
+        anyOf: [ "Log", "Metric", "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
     relationship:
       expires: P75M
       relationshipType: HOSTS
@@ -55,5 +57,3 @@ relationships:
       target:
         extractGuid:
           attribute: entity.guid
-          entityType:
-            value: "SERVICE"

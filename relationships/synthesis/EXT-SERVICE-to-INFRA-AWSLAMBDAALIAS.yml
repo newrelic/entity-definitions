@@ -1,13 +1,13 @@
 relationships:
-  - name: apmCallsInfraAppSyncApi
+  - name: extServiceCallsInfraAwsLambdaAlias
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: http.url
-        regex: 'https://[a-z0-9]+\.appsync-api\.[a-z0-9-]+\.amazonaws\.com(?::\d+)?/[a-z]+'
+        anyOf: [ "Span"]
+      - attribute: rpc.service
+        anyOf: [ "Lambda" ]
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -16,7 +16,7 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: AWSAPPSYNCAPI
+          candidateCategory: AWSLAMBDAALIAS
           fields:
-            - field: httpUrl
-              attribute: http.url
+            - field: awsLambdaAliasArn
+              attribute: cloud.resource_id
