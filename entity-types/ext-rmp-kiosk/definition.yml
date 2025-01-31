@@ -1,0 +1,56 @@
+domain: EXT
+type: RMP_KIOSK
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+synthesis:
+  rules:
+  # RMP Kiosk (CSO)
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - country
+        - store.number
+        - device.type
+        - device.number
+  - identifier: hostname
+    name: hostname
+    encodeIdentifierInGUID: true
+    conditions:
+      attributes:
+        - country
+          present: true
+        - store.number
+          present: true
+        - device.type
+          value: "CSO"
+        - device.number
+          present: true
+    tags:
+      hostname:
+        multiValue: false
+      country:
+        multiValue: false
+        ttl: 7D
+      store.number:
+        multiValue: false
+        ttl: 7D
+      device.type:
+        multiValue: false
+        ttl: 7D
+      device.number:
+        multiValue: false
+        ttl: 7D
+      geo.location.lon:
+        multiValue: false
+        ttl: 7D
+      geo.location.lat:
+        multiValue: false
+        ttl: 7D
+goldenTags:
+- hostname
+- country
+- store.number
+- device.type
+- device.number
+- geo.location.lon
+- geo.location.lat
