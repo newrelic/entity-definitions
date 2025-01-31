@@ -5,18 +5,13 @@ configuration:
 synthesis:
   rules:
   # RMP Kiosk (CSO)
-  - compositeIdentifier:
-      separator: "/"
-      attributes:
-        - country
-        - store.number
-        - device.type
-        - device.number
-  - identifier: hostname
+  - identifier: hostname # Example: "UK00001CSO21"
     name: hostname
     encodeIdentifierInGUID: true
     conditions:
       attributes:
+        - newrelic.source
+          value: "api.logs"
         - country
           present: true
         - store.number
@@ -46,6 +41,9 @@ synthesis:
       geo.location.lat:
         multiValue: false
         ttl: 7D
+      host.ip:
+        multiValue: false
+        ttl: 7D
 goldenTags:
 - hostname
 - country
@@ -54,3 +52,4 @@ goldenTags:
 - device.number
 - geo.location.lon
 - geo.location.lat
+- host.ip
