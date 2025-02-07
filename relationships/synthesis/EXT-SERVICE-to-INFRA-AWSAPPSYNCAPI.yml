@@ -1,0 +1,24 @@
+relationships:
+  - name: extServiceCallsInfraAppSyncApi
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: http.url
+        regex: 'https://[a-z0-9]+\.appsync-api\.[a-z0-9-]+\.amazonaws\.com(?::\d+)?/[a-z]+'
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSAPPSYNCAPI
+          fields:
+            - field: httpUrl
+              attribute: http.url
