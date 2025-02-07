@@ -1,5 +1,5 @@
 relationships:
-  - name: extServiceCallsInfraAwsSqsQueue
+  - name: extServiceCallsInfraAwsSqsQueue1_20
     version: "1"
     origins:
       - Distributed Tracing
@@ -8,6 +8,12 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: rpc.service
         anyOf: [ "SQS" ]
+      - attribute: aws.region
+        present: true
+      - attribute: aws.account.id
+        present: true
+      - attribute: messaging.destination
+        present: true 
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -24,3 +30,35 @@ relationships:
               attribute: aws.account.id
             - field: queueName
               attribute: messaging.destination
+
+  - name: extServiceCallsInfraAwsSqsQueue1_23
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+       - attribute: messaging.system
+        anyOf: [ "aws_sqs" ]
+      - attribute: cloud.region
+        present: true
+      - attribute: cloud.account.id
+        present: true
+      - attribute: messaging.destination.name
+        present: true  
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSSQSQUEUE
+          fields:
+            - field: region
+              attribute: cloud.region
+            - field: accountId
+              attribute: cloud.account.id
+            - field: queueName
+              attribute: messaging.destination.name

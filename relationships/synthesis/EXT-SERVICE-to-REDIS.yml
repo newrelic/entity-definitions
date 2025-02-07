@@ -1,5 +1,5 @@
 relationships:
-  - name: extServiceCallsRedis
+  - name: extServiceCallsRedis1_20
     version: "1"
     origins:
       - Distributed Tracing
@@ -9,7 +9,9 @@ relationships:
       - attribute: db.system
         anyOf: [ "redis" ]
       - attribute: net.peer.name
-        regex: "^.*\\.cache\\.amazonaws\\.com$"
+        present: true
+      - attribute: net.peer.port
+        present: true
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -24,3 +26,87 @@ relationships:
               attribute: net.peer.name
             - field: port
               attribute: net.peer.port
+
+  - name: extServiceCallsRedis1_20_Default_Port
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+      - attribute: net.peer.name
+        present: true
+      - attribute: net.peer.port
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: REDIS
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+            - field: port
+              attribute: 6379 # Default port for redis
+
+  - name: extServiceCallsRedis1_23
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: REDIS
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: server.port
+
+- name: extServiceCallsMemcached1_23_Default_Port
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "memcached" ]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: 6379 # Default port for redis
