@@ -1,5 +1,5 @@
 relationships:
-  - name: extServiceProducesAwsMskTopic
+  - name: extServiceProducesAwsMskTopic1_20
     version: "1"
     origins:
       - Distributed Tracing
@@ -8,6 +8,8 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: span.kind
         anyOf: [ "producer" ]
+      - attribute: net.peer.name
+        present: true
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -20,16 +22,16 @@ relationships:
           fields:
             - field: clusterName
               capture:
-                attribute: server.address            
+                attribute: net.peer.name            
                 regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
             - field: region
               capture:
-                attribute: server.address
+                attribute: net.peer.name
                 regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:[0-9]+.*"
             - field: topic
               attribute: messaging.destination.name
 
-  - name: extServiceConsumesAwsMskTopic
+  - name: extServiceConsumesAwsMskTopic1_20
     version: "1"
     origins:
       - Distributed Tracing
@@ -38,6 +40,72 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: span.kind
         anyOf: [ "consumer" ]
+      - attribute: net.peer.name
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              capture:
+                attribute: net.peer.name
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
+            - field: region
+              capture:
+                attribute: net.peer.name
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:[0-9]+.*"
+            - field: topic
+              attribute: messaging.destination.name
+
+  - name: extServiceProducesAwsMskTopic1_23
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: span.kind
+        anyOf: [ "producer" ]
+      - attribute: server.address
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              capture:
+                attribute: server.address           
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
+            - field: region
+              capture:
+                attribute: server.address
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:[0-9]+.*"
+            - field: topic
+              attribute: messaging.destination.name
+
+  - name: extServiceConsumesAwsMskTopic1_23
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: span.kind
+        anyOf: [ "consumer" ]
+      - attribute: server.address
+        present: true
     relationship:
       expires: P75M
       relationshipType: CONSUMES

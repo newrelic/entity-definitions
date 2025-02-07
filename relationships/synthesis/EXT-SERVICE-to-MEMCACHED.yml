@@ -1,13 +1,71 @@
 relationships:
-  - name: extServiceCallsMemcached
+  - name: extServiceCallsMemcached1_20
     version: "1"
     origins:
       - Distributed Tracing
     conditions:
       - attribute: eventType
-        anyOf: [ "Span"]
-      - attribute: db.system.name
+        anyOf: [ "Span" ]
+      - attribute: db.system
         anyOf: [ "memcached" ]
+      - attribute: net.peer.name
+        present: true
+      - attribute: net.peer.port
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+            - field: port
+              attribute: net.peer.port
+  - name: extServiceCallsMemcached1_20_Default_Port
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "memcached" ]
+      - attribute: net.peer.name
+        present: true
+      - attribute: net.peer.port
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+            - field: port
+              attribute: 11211 # Default port for memcached
+  - name: extServiceCallsMemcached1_23
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "memcached" ]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -22,3 +80,30 @@ relationships:
               attribute: server.address
             - field: port
               attribute: server.port
+  - name: extServiceCallsMemcached1_23_Default_Port
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "memcached" ]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: 11211 # Default port for memcached
