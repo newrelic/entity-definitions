@@ -1,5 +1,5 @@
 relationships:
-  - name: extServiceConsumesAwsMqBroker
+  - name: extServiceConsumesAwsMqBroker1_20
     version: "1"
     origins:
       - Distributed Tracing
@@ -7,10 +7,81 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
       - attribute: span.kind
-        anyOf: [ "consumer" ]
+        anyOf: [ "consumer", "server" ]
       - attribute: messaging.system
         anyOf: [ "rabbitmq", "activemq" ]
+      - attribute: net.peer.name
+        present: true
+        regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQBROKER
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+  
+  - name: extServiceProducesAwsMqBroker1_20
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "producer", "client" ]
+      - attribute: messaging.system
+        anyOf: [ "rabbitmq", "activemq" ]
+      - attribute: net.peer.name
+        present: true
+        regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQBROKER
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+
+  - name: extServiceConsumesAwsMqBroker1_23
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+      - attribute: messaging.system
+        anyOf: [ "rabbitmq", "activemq" ]
+      - attribute: server.address
+        present: true
+        regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -24,7 +95,7 @@ relationships:
             - field: endpoint
               attribute: server.address
   
-  - name: extServiceProducesAwsMqBroker
+  - name: extServiceProducesAwsMqBroker1_23
     version: "1"
     origins:
       - Distributed Tracing
@@ -32,10 +103,17 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
       - attribute: span.kind
-        anyOf: [ "producer" ]
+        anyOf: [ "producer", "client" ]
       - attribute: messaging.system
         anyOf: [ "rabbitmq", "activemq" ]
+      - attribute: server.address
+        present: true
+        regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
     relationship:
       expires: P75M
       relationshipType: PRODUCES
