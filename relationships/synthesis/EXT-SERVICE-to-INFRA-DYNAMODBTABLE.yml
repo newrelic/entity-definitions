@@ -3,9 +3,16 @@ relationships:
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: cloud.resource_id
+        regex: "^arn:aws:dynamodb:([^:]*):([^:]*):table/([^/]*)$"
       - attribute: rpc.service
         anyOf: [ "DynamoDB" ]
     relationship:
