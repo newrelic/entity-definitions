@@ -1,0 +1,25 @@
+domain: EXT
+type: OTEL_COLLECTOR
+
+synthesis:
+  rules:
+    # OTel Collector telemetry with k8s.pod.name attribute
+  - identifier: k8s.pod.name
+    name: k8s.pod.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: metricName
+      prefix: otelcol_
+  tags:
+    instrumentation.provider:
+    instrumentation.name:
+    k8s.cluster.name:
+    k8s.namespace.name:
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: FOUR_HOURS
+  alertable: true
