@@ -59,3 +59,51 @@ synthesis:
         aws.Arn:
         # Used in AWSLAMBDAFUNCTION.yml for entity relationship candidates
         aws.lambda.FunctionName:
+    # Logs received via newrelic-lambda-extension and enriched by the Logs Pipeline with entityId. See: https://docs.newrelic.com/docs/logs/logs-context/aws-logs-in-context/
+    # Logs from legacy API Polling entities not using the ARN to compute the entity.guid, but directly providing the entityId
+    - identifier: entityId
+      name: faas.name
+      encodeIdentifierInGUID: false
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          prefix: Log
+        - attribute: plugin
+          prefix: newrelic-lambda-extension
+        - attribute: faas.arn
+          present: true
+        - attribute: faas.name
+          present: true
+        - attribute: entityId
+          present: true
+      tags:
+        faas.arn:
+          entityTagNames: [ aws.Arn ]
+        faas.name:
+          # Used in AWSLAMBDAFUNCTION.yml for entity relationship candidates
+          entityTagNames: [ aws.lambda.FunctionName ]
+    # Logs received via newrelic-lambda-extension. See: https://docs.newrelic.com/docs/logs/logs-context/aws-logs-in-context/
+    # Logs from Metrics Streams or API Polling entities using the ARN to compute the entity.guid, or entities only sending logs
+    - identifier: faas.arn
+      name: faas.name
+      encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          prefix: Log
+        - attribute: plugin
+          prefix: newrelic-lambda-extension
+        - attribute: faas.arn
+          present: true
+        - attribute: faas.name
+          present: true
+        - attribute: entityId
+          present: false
+      tags:
+        faas.arn:
+          entityTagNames: [ aws.Arn ]
+        faas.name:
+          # Used in AWSLAMBDAFUNCTION.yml for entity relationship candidates
+          entityTagNames: [ aws.lambda.FunctionName ]
