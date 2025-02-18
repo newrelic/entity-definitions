@@ -1,0 +1,175 @@
+# The relationships in this file allow users to explicitly declare
+# relationships between OpenTelemetry instrumented services and entities
+# created by the New Relic Amazon CloudWatch Metric Streams integration.
+#
+# https://docs.newrelic.com/install/aws-cloudwatch/
+#
+# For each component a service interacts with a log message should be emitted
+# with the newrelic.aws_metric_streams.arn attribute representing the ARN of
+# the component.
+#
+# For example, if a service interacts with a DynamoDB instance, first the ARN
+# of the DynamoDB instance needs to be fetched. Its format will be as follows:
+# arn:aws:dynamodb:{region}:{userID}:table/{tableName}. The service then should
+# emit a log with the newrelic.aws_metric_stream.arn attribute set to this ARN.
+#
+# The relationships have a TTL of 75 minutes, so the log messages must be
+# emitted periodically.
+
+relationships:
+  - name: extServiceCallsAwsDynamoDbTable_Explicit
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp" ] 
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:dynamodb:([^:]*):([^:]*):table/([^/]*)$"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
+  - name: extServiceCallsAwsFirehose_Explicit
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:firehose:([^:]*):([^:]*):deliverystream/([^:]*)"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSKINESISDELIVERYSTREAM
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
+  - name: extServiceCallsAwsKinesisStream_Explicit
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp" ] 
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:kinesis:([^:]*):([^:]*):stream/([^:]*)"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSKINESISSTREAM
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
+  - name: extServiceCallsAwsLambdaAlias_Explicit
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:lambda:([^:]*):([^:]*):function:([^:]*):([^/]*)$"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAALIAS
+          fields:
+            - field: awsLambdaAliasArn
+              attribute: newrelic.aws_metric_streams.arn
+  - name: extServiceCallsAwsLambdaFunction_Explicit
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAALIAS
+          fields:
+            - field: awsLambdaAliasArn
+              attribute: newrelic.aws_metric_streams.arn
+  - name: extServiceCallsAwsElastiCacheMemcached_Explicit
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "TODO: What is the format of the ARN?"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED_EXPLICIT # TODO: a new candidate category would be needed.
+          fields:
+            - field: cloudResourceId # QUESTION: Do ElastiCache Memcached entities have a tag with the full ARN?
+              attribute: newrelic.aws_metric_streams.arn
