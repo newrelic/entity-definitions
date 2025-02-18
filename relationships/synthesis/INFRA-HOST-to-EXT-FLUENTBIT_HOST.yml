@@ -2,7 +2,7 @@ relationships:
   - name: hostHostsFluentbit
     version: "1"
     origins: 
-      - Metric API
+      - Prometheus
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
@@ -24,21 +24,10 @@ relationships:
             valueInGuid: NA
           identifier:
             fragments:
-              - attribute: host.id
+              - attribute: hostname
             hashAlgorithm: FARM_HASH
       target:
-        buildGuid:
-          account:
-            lookup: true
-          domain:
-            value: EXT
-          type:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
             value: FLUENTBIT_HOST
-          identifier:
-            fragments:
-              - attribute: cluster_name
-              - value: ":"
-              - attribute: namespace
-              - value: ":"
-              - attribute: daemonset_name
-            hashAlgorithm: FARM_HASH
