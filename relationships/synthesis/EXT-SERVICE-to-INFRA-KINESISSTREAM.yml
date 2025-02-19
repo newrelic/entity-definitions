@@ -3,11 +3,16 @@ relationships:
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: cloud.resource_id
+        regex: "^arn:aws:kinesis:([^:]*):([^:]*):stream/([^:]*)"
       - attribute: rpc.service
         anyOf: [ "kinesis" ]
     relationship:
