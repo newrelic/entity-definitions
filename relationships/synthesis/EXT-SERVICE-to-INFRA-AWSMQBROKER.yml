@@ -1,5 +1,5 @@
 relationships:
-  - name: extServiceCallsMemcached1_20
+  - name: extServiceConsumesAwsMqBroker1_20
     version: "1"
     origins:
       - Distributed Tracing
@@ -11,29 +11,27 @@ relationships:
         anyOf: [ "api.traces.otlp" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
-      - attribute: db.system
-        anyOf: [ "memcached" ]
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+      - attribute: messaging.system
+        anyOf: [ "rabbitmq", "activemq" ]
       - attribute: net.peer.name
         present: true
-        regex: " .*\\.cache\\.amazonaws\\.com"
-      - attribute: net.peer.port
-        present: true
+        regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
     relationship:
       expires: P75M
-      relationshipType: CALLS
+      relationshipType: CONSUMES
       source:
         extractGuid:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: MEMCACHED
+          candidateCategory: AWSMQBROKER
           fields:
             - field: endpoint
               attribute: net.peer.name
-            - field: port
-              attribute: net.peer.port
-
-  - name: extServiceCallsMemcached1_20_Default_Port
+  
+  - name: extServiceProducesAwsMqBroker1_20
     version: "1"
     origins:
       - Distributed Tracing
@@ -45,29 +43,27 @@ relationships:
         anyOf: [ "api.traces.otlp" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
-      - attribute: db.system
-        anyOf: [ "memcached" ]
+      - attribute: span.kind
+        anyOf: [ "producer", "client" ]
+      - attribute: messaging.system
+        anyOf: [ "rabbitmq", "activemq" ]
       - attribute: net.peer.name
         present: true
-        regex: " .*\\.cache\\.amazonaws\\.com"
-      - attribute: net.peer.port
-        present: false
+        regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
     relationship:
       expires: P75M
-      relationshipType: CALLS
+      relationshipType: PRODUCES
       source:
         extractGuid:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: MEMCACHED
+          candidateCategory: AWSMQBROKER
           fields:
             - field: endpoint
               attribute: net.peer.name
-            - field: port
-              attribute: 11211 # Default port for memcached
 
-  - name: extServiceCallsMemcached1_23
+  - name: extServiceConsumesAwsMqBroker1_23
     version: "1"
     origins:
       - Distributed Tracing
@@ -79,29 +75,27 @@ relationships:
         anyOf: [ "api.traces.otlp" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
-      - attribute: db.system
-        anyOf: [ "memcached" ]
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+      - attribute: messaging.system
+        anyOf: [ "rabbitmq", "activemq" ]
       - attribute: server.address
         present: true
-        regex: " .*\\.cache\\.amazonaws\\.com"
-      - attribute: server.port
-        present: true
+        regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
     relationship:
       expires: P75M
-      relationshipType: CALLS
+      relationshipType: CONSUMES
       source:
         extractGuid:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: MEMCACHED
+          candidateCategory: AWSMQBROKER
           fields:
             - field: endpoint
               attribute: server.address
-            - field: port
-              attribute: server.port
-
-  - name: extServiceCallsMemcached1_23_Default_Port
+  
+  - name: extServiceProducesAwsMqBroker1_23
     version: "1"
     origins:
       - Distributed Tracing
@@ -113,24 +107,22 @@ relationships:
         anyOf: [ "api.traces.otlp" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
-      - attribute: db.system
-        anyOf: [ "memcached" ]
+      - attribute: span.kind
+        anyOf: [ "producer", "client" ]
+      - attribute: messaging.system
+        anyOf: [ "rabbitmq", "activemq" ]
       - attribute: server.address
         present: true
-        regex: " .*\\.cache\\.amazonaws\\.com"
-      - attribute: server.port
-        present: false
+        regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
     relationship:
       expires: P75M
-      relationshipType: CALLS
+      relationshipType: PRODUCES
       source:
         extractGuid:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: MEMCACHED
+          candidateCategory: AWSMQBROKER
           fields:
             - field: endpoint
               attribute: server.address
-            - field: port
-              attribute: 11211 # Default port for memcached
