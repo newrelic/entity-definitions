@@ -3,11 +3,18 @@ relationships:
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Span"]
       - attribute: rpc.service
         anyOf: [ "Lambda" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ] 
+      - attribute: cloud.resource_id
+        regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
     relationship:
       expires: P75M
       relationshipType: CALLS
