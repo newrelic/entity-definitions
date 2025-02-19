@@ -1,27 +1,25 @@
 relationships:
-  - name: mediaStreamingCallsMobileApplication
+  - name: mobileApplicationContainsVideoAction
     version: "1"
     origins:
       - APM Metrics
     conditions:
       - attribute: eventType
-        anyOf: ["VideoAction"]
+        startsWith: "Video"
+        caseSensitive: true
       - attribute: src
         anyOf: ["Android", "IOS"]
     relationship:
       expires: P75M
-      relationshipType: CALLS
+      relationshipType: CONTAINS
       source:
-        buildGuid:
-          account:
-            lookup: true
-          domain:
-            value: MOBILE
-          type:
-            value: APPLICATION
-          identifier:
-            fragments:
-              - attribute: appId
+        lookupGuid:
+          candidateCategory: VIDEO
+          fields:
+            - field: appName
+              capture:
+                attribute: appName
+                regex: ".*-mediaplayer$"
       target:
         extractGuid:
           attribute: entity.guid
