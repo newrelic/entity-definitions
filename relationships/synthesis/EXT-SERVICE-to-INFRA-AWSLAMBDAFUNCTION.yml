@@ -6,14 +6,14 @@ relationships:
       - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Span"]
+        anyOf: ["Log", "Span"]
       - attribute: rpc.service
         anyOf: [ "Lambda" ]
       - attribute: newrelic.source 
         anyOf: [ "api.traces.otlp" ] 
       - attribute: entity.type 
         anyOf: [ "SERVICE" ] 
-      - attribute: cloud.resource_id
+      - attribute: newrelic.aws_metric_streams.arn
         regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
     relationship:
       expires: P75M
@@ -26,4 +26,4 @@ relationships:
           candidateCategory: AWSLAMBDAFUNCTION
           fields:
             - field: awsLambdaArn
-              attribute: cloud.resource_id
+              attribute: newrelic.aws_metric_streams.arn
