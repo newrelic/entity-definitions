@@ -1,13 +1,49 @@
 relationships:
-  - name: extServiceCallsElasticsearch
+  - name: extServiceCallsElasticsearch1_20
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
       - attribute: db.system
-        anyOf: [ "elasticsearch" ]
+        anyOf: [ "elasticsearch", "opensearch" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ] 
+      - attribute: net.peer.name  
+        regex: ^search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\.((aos\.[a-zA-Z0-9-]+\.on\.aws)|(([a-zA-Z0-9-]+)\.(es|aos)\.amazonaws\.com))$
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSELASTICSEARCHCLUSTER
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+
+  - name: extServiceCallsElasticsearch1_23
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "elasticsearch", "opensearch" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ] 
+      - attribute: server.address
+        regex: ^search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\.((aos\.[a-zA-Z0-9-]+\.on\.aws)|(([a-zA-Z0-9-]+)\.(es|aos)\.amazonaws\.com))$
     relationship:
       expires: P75M
       relationshipType: CALLS
