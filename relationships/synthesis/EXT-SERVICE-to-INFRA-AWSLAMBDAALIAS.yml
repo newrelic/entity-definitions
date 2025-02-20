@@ -1,13 +1,18 @@
 relationships:
-  - name: extServiceCallsInfraAwsLambdaAlias
+  - name: extServiceCallsAwsLambdaAlias_Explicit
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Span"]
-      - attribute: rpc.service
-        anyOf: [ "Lambda" ]
+        anyOf: [ "Log", "Span" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp", "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:lambda:([^:]*):([^:]*):function:([^:]*):([^/]*)$"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -19,4 +24,4 @@ relationships:
           candidateCategory: AWSLAMBDAALIAS
           fields:
             - field: awsLambdaAliasArn
-              attribute: cloud.resource_id
+              attribute: newrelic.aws_metric_streams.arn
