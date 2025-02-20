@@ -1,15 +1,18 @@
 relationships:
-  - name: extServiceCallsInfraKinesisStream
+  - name: extServiceCallsAwsKinesisStream_Explicit
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: rpc.service
-        anyOf: [ "kinesis" ]
+        anyOf: [ "Log", "Span" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp", "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:kinesis:([^:]*):([^:]*):stream/([^:]*)"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -21,4 +24,4 @@ relationships:
           candidateCategory: AWSKINESISSTREAM
           fields:
             - field: cloudResourceId
-              attribute: cloud.resource_id
+              attribute: newrelic.aws_metric_streams.arn
