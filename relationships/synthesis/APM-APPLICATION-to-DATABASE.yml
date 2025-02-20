@@ -1,47 +1,10 @@
 relationships:
-  - name: apmCallsDatabase
-    version: "1"
-    origins:
-      - APM Metrics
-    conditions:
-      - attribute: metricName
-        regex: "^datastore/instance/[^/]*/([^/]*\\.rds\\.amazonaws\\.com[^/]*)/.*"
-    relationship:
-      expires: P75M
-      relationshipType: CALLS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: DATABASE
-          fields:
-            - field: endpoint
-              attribute: metricName__4
-  - name: apmCallsCustomDatabase
-    version: "1"
-    origins:
-      - APM Metrics
-    conditions:
-      - attribute: metricName
-        regex: "^datastore/instance/[^/]*/([^/]*\\.nr-ops\\.net[^/]*)/.*"
-    relationship:
-      expires: P75M
-      relationshipType: CALLS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: DATABASE
-          fields:
-            - field: endpoint
-              attribute: metricName__4
   - name: apmCallsGenericDatabase
     version: "1"
     origins:
       - APM Metrics
     conditions:
+      # Datastore/instance/JDBC/db.example.com/3306
       - attribute: metricName
         regex: "^datastore/instance/(?:mysql|postgres|mssql|oracle|mariadb|jdbc)/[^/;]*/.*"
     relationship:
