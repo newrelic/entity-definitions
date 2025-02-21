@@ -17,6 +17,8 @@ relationships:
         regex: "^.*\\.cache\\.amazonaws\\.com$"
       - attribute: net.peer.port
         present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -49,6 +51,8 @@ relationships:
       - attribute: net.peer.name
         regex: "^.*\\.cache\\.amazonaws\\.com$"
       - attribute: net.peer.port
+        present: false
+      - attribute: newrelic.aws_metric_streams.arn
         present: false
     relationship:
       expires: P75M
@@ -83,6 +87,8 @@ relationships:
         regex: "^.*\\.cache\\.amazonaws\\.com$"
       - attribute: server.port
         present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -116,6 +122,8 @@ relationships:
         regex: "^.*\\.cache\\.amazonaws\\.com$"
       - attribute: server.port
         present: false
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -130,3 +138,30 @@ relationships:
               attribute: server.address
             - field: port
               attribute: 6379 # Default port for redis
+
+  - name: extServiceCallsRedis_Explicit
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span", "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp", "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "arn:aws:elasticache:([^:]*):([^:]*):cluster:([^:]*)"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: REDIS_EXPLICIT
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
