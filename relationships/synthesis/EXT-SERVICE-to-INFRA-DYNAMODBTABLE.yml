@@ -1,13 +1,18 @@
 relationships:
-  - name: extServiceCallsInfraDynamoDBTable
+  - name: extServiceCallsAwsDynamoDbTable_Explicit
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: rpc.service
-        anyOf: [ "DynamoDB" ]
+        anyOf: [ "Log", "Span" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp", "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:dynamodb:([^:]*):([^:]*):table/([^/]*)$"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -19,7 +24,7 @@ relationships:
           candidateCategory: AWSDYNAMODBTABLE
           fields:
             - field: cloudResourceId
-              attribute: cloud.resource_id
+              attribute: newrelic.aws_metric_streams.arn
   
   - name: apmServiceCallsInfraDynamoDBTable
     version: "1"
