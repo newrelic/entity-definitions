@@ -15,6 +15,8 @@ relationships:
         anyOf: [ "SERVICE" ] 
       - attribute: net.peer.name  
         regex: ^search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\.((aos\.[a-zA-Z0-9-]+\.on\.aws)|(([a-zA-Z0-9-]+)\.(es|aos)\.amazonaws\.com))$
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -44,6 +46,8 @@ relationships:
         anyOf: [ "SERVICE" ] 
       - attribute: server.address
         regex: ^search-[a-zA-Z0-9-]+-[a-zA-Z0-9]+\.((aos\.[a-zA-Z0-9-]+\.on\.aws)|(([a-zA-Z0-9-]+)\.(es|aos)\.amazonaws\.com))$
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -56,3 +60,31 @@ relationships:
           fields:
             - field: endpoint
               attribute: server.address
+
+
+  - name: extServiceCallsElasticsearch_Explicit
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span", "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp", "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: arn:aws:es:([^:]+):([^:]+):domain/([^/]+)
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSELASTICSEARCHCLUSTER_EXPLICIT
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
