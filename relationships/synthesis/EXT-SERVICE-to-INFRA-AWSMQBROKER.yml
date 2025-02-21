@@ -18,6 +18,8 @@ relationships:
       - attribute: net.peer.name
         present: true
         regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -50,6 +52,8 @@ relationships:
       - attribute: net.peer.name
         present: true
         regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -82,6 +86,8 @@ relationships:
       - attribute: server.address
         present: true
         regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -114,6 +120,8 @@ relationships:
       - attribute: server.address
         present: true
         regex: "^[^\\.]+\\.mq\\.[^\\.]+\\.amazonaws\\.com"
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -126,3 +134,31 @@ relationships:
           fields:
             - field: endpoint
               attribute: server.address
+
+  - name: extServiceCallsAwsMqBroker_Explicit
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span", "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp", "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:mq:([^:]*):([^:]*):broker/([^:]*)"
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSMQBROKER_EXPLICIT
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
