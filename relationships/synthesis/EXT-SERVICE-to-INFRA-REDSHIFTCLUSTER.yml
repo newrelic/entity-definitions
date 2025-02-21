@@ -1,15 +1,18 @@
 relationships:
-  - name: extServiceCallsInfraRedshiftCluster
+  - name: extServiceCallsAwsRedshiftCluster_Explicit
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: rpc.service
-        anyOf: [ "Redshift" ]
+        anyOf: [ "Log", "Span" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp", "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:redshift:([^:]*):([^:]*):cluster:([^:]*)$"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -21,4 +24,4 @@ relationships:
           candidateCategory: AWSREDSHIFTCLUSTER
           fields:
             - field: serverAddress
-              attribute: server.address
+              attribute: newrelic.aws_metric_streams.arn
