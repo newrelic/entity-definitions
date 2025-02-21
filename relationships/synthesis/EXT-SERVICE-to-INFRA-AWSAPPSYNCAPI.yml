@@ -1,15 +1,18 @@
 relationships:
-  - name: extServiceCallsInfraAppSyncApi
+  - name: extServiceCallsAppsyncApi_Explicit
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: http.url
-        regex: 'https://[a-z0-9]+\.appsync-api\.[a-z0-9-]+\.amazonaws\.com(?::\d+)?/[a-z]+'
+        anyOf: [ "Log", "Span" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp", "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:appsync:([^:]*):([^:]*):apis/([^:]*)$"
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -20,5 +23,5 @@ relationships:
         lookupGuid:
           candidateCategory: AWSAPPSYNCAPI
           fields:
-            - field: httpUrl
-              attribute: http.url
+            - field: graphQLUrl
+              attribute: newrelic.aws_metric_streams.arn
