@@ -1,0 +1,22 @@
+relationships:
+  - name: apmApplicationCallsInfraRedshiftCluster
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: server.address
+        regex: '^[a-zA-Z0-9\-]+\.[a-z0-9]+\.[a-zA-Z0-9\-]+\.redshift\.amazonaws\.com$'
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSREDSHIFTCLUSTER
+          fields:
+            - field: serverAddress
+              attribute: server.address

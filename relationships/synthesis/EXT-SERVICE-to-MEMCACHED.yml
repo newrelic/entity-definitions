@@ -1,13 +1,25 @@
 relationships:
-  - name: extServiceCallsMemcached
+  - name: extServiceCallsMemcached1_20
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Span"]
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
       - attribute: db.system
         anyOf: [ "memcached" ]
+      - attribute: net.peer.name
+        present: true
+        regex: " .*\\.cache\\.amazonaws\\.com"
+      - attribute: net.peer.port
+        present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -22,3 +34,139 @@ relationships:
               attribute: net.peer.name
             - field: port
               attribute: net.peer.port
+
+  - name: extServiceCallsMemcached1_20_Default_Port
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system
+        anyOf: [ "memcached" ]
+      - attribute: net.peer.name
+        present: true
+        regex: " .*\\.cache\\.amazonaws\\.com"
+      - attribute: net.peer.port
+        present: false
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED
+          fields:
+            - field: endpoint
+              attribute: net.peer.name
+            - field: port
+              attribute: 11211 # Default port for memcached
+
+  - name: extServiceCallsMemcached1_23
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system
+        anyOf: [ "memcached" ]
+      - attribute: server.address
+        present: true
+        regex: " .*\\.cache\\.amazonaws\\.com"
+      - attribute: server.port
+        present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: server.port
+
+  - name: extServiceCallsMemcached1_23_Default_Port
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system
+        anyOf: [ "memcached" ]
+      - attribute: server.address
+        present: true
+        regex: " .*\\.cache\\.amazonaws\\.com"
+      - attribute: server.port
+        present: false
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: 11211 # Default port for memcached
+
+  - name: extServiceCallsAwsElastiCacheMemcached_Explicit
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span", "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp", "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:elasticache:[^:]*:[^:]*:cluster/[^:]*"
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED_EXPLICIT
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
