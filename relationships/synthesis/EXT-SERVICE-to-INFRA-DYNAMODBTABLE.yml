@@ -1,4 +1,57 @@
 relationships:
+  - name: extServiceCallsInfraDynamoDBTable
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: rpc.service
+        anyOf: [ "DynamoDB" ]
+      - attribute: cloud.resource_id
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: cloudResourceId
+              attribute: cloud.resource_id
+
+  - name: extServiceCallsAwsDynamoDbTable_Explicit
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log", "Span" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp", "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:dynamodb:([^:]*):([^:]*):table/([^/]*)$"
+      - attribute: cloud.resource_id
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
+
   - name: extServiceCallsAwsDynamoDbTable_Explicit
     version: "1"
     origins:
