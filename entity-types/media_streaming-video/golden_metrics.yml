@@ -26,9 +26,8 @@ averageStartTimeS:
   title: Average Start Time (s)
   unit: SECONDS
   query:
-    select: average(timeSinceRequested)
-    from: VideoAction
-    where: actionName = 'CONTENT_START'
+    select: average(avgStartTime)
+    from: (FROM VideoAction, VideoAdAction SELECT (filter(latest(timeSinceRequested),  WHERE actionName = 'CONTENT_START') -  filter(earliest(timeSinceAdStarted ), where actionName = 'AD_END' and timeSinceStarted = 0 or timeSinceStarted IS NULL)) AS 'avgStartTime' facet viewId {whereClause} LIMIT MAX)
 adAverageStartTimeS:
   title: Ad Average Start Time (s)
   unit: SECONDS
