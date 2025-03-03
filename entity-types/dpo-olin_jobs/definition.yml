@@ -1,0 +1,40 @@
+domain: DPO
+type: OLIN_JOBS
+synthesis:
+  rules:
+  - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - job.namespace
+          - job.name
+          - eventTime
+    name: job.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: newrelic.entity.type
+      value: DPO
+    - attribute: eventTime
+      present: true
+    - attribute: updatedAt
+      present: false
+    - attribute: producer
+      present: true
+    - attribute: schemaURL
+      present: true
+    - attribute: job.namespace
+      present: true
+    - attribute: job.name
+      present: true
+    tags:
+      job.namespace:
+        entityTagName: olin.job.namespace
+        multiValue: false
+      job.name:
+        entityTagName: olin.job.name
+        multiValue: false
+      pipeline.name:
+        entityTagName: olin.pipeline.name
+        multiValue: false
+configuration:
+  entityExpirationTime: MANUAL
+  alertable: true
