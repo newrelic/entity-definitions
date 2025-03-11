@@ -14,10 +14,11 @@ relationships:
       - attribute: db.system
         anyOf: [ "memcached" ]
       - attribute: net.peer.name
-        present: true
-        regex: " .*\\.cache\\.amazonaws\\.com"
+        regex: ".*\\.cache\\.amazonaws\\.com"
       - attribute: net.peer.port
         present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -48,9 +49,10 @@ relationships:
       - attribute: db.system
         anyOf: [ "memcached" ]
       - attribute: net.peer.name
-        present: true
-        regex: " .*\\.cache\\.amazonaws\\.com"
+        regex: ".*\\.cache\\.amazonaws\\.com"
       - attribute: net.peer.port
+        present: false
+      - attribute: newrelic.aws_metric_streams.arn
         present: false
     relationship:
       expires: P75M
@@ -82,10 +84,11 @@ relationships:
       - attribute: db.system
         anyOf: [ "memcached" ]
       - attribute: server.address
-        present: true
-        regex: " .*\\.cache\\.amazonaws\\.com"
+        regex: ".*\\.cache\\.amazonaws\\.com"
       - attribute: server.port
         present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -116,9 +119,10 @@ relationships:
       - attribute: db.system
         anyOf: [ "memcached" ]
       - attribute: server.address
-        present: true
-        regex: " .*\\.cache\\.amazonaws\\.com"
+        regex: ".*\\.cache\\.amazonaws\\.com"
       - attribute: server.port
+        present: false
+      - attribute: newrelic.aws_metric_streams.arn
         present: false
     relationship:
       expires: P75M
@@ -134,3 +138,30 @@ relationships:
               attribute: server.address
             - field: port
               attribute: 11211 # Default port for memcached
+
+  - name: extServiceCallsAwsElastiCacheMemcached_Explicit
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span", "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp", "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:elasticache:[^:]*:[^:]*:cluster:[^:]+$"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHED_EXPLICIT
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn

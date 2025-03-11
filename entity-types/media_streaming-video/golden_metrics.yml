@@ -12,50 +12,50 @@ adRebufferingRatio:
     from: VideoAdAction
 averageBitrate:
   title: Average Bitrate (B/s)
-  unit: BYTES_PER_SECOND
+  unit: BITS_PER_SECOND
   query:
-    select: average(contentBitrate / 16) + average(contentRenditionBitrate / 16)
+    select: filter(average(contenBitrate), WHERE contentBitrate > 0 OR contentBitrate IS NOT NULL)
     from: VideoAction
 adAverageBitrate:
   title: Ad Average Bitrate (B/s)
-  unit: BYTES_PER_SECOND
+  unit: BITS_PER_SECOND
   query:
-    select: average(adBitrate / 16)
+    select: filter(average(adBitrate), WHERE adBitrate > 0 OR adBitrate IS NOT NULL)
     from: VideoAdAction
 averageStartTimeS:
   title: Average Start Time (s)
-  unit: SECONDS
+  unit: MS
   query:
-    select: average(timeSinceRequested)
-    from: VideoAction
-    where: actionName = 'CONTENT_START'
+    select: average(avgStartTime)
+    from: (FROM VideoAction, VideoAdAction SELECT (filter(latest(timeSinceRequested),  WHERE actionName = 'CONTENT_START') -  filter(earliest(timeSinceAdStarted ), where actionName = 'AD_END' and timeSinceStarted = 0 or timeSinceStarted IS NULL)) AS 'avgStartTime' facet viewId LIMIT MAX)
 adAverageStartTimeS:
   title: Ad Average Start Time (s)
-  unit: SECONDS
+  unit: MS
   query:
     select: average(timeSinceAdRequested)
     from: VideoAdAction
+    where: actionName = 'AD_START'
 videoStartFailures:
   title: Video Start Failures
   unit: PERCENTAGE
   query:
-    select: (filter(count(*), WHERE actionName = 'CONENT_ERROR' and contentPlayhead = 0) * 100) / (FROM VideoAction SELECT count(*) WHERE actionName = 'CONENT_START' and contentPlayhead=0)
+    select: (filter(count(viewId), WHERE actionName = 'CONENT_ERROR' and contentPlayhead = 0) * 100) / (FROM VideoAction, VideoErrorAction SELECT count(viewId))
     from: VideoErrorAction
 adStartFailures:
   title: Ad Start Failures
   unit: PERCENTAGE
   query:
-    select: (filter(count(*), WHERE actionName = 'AD_ERROR' and adPlayhead = 0 ) * 100) / (FROM VideoAdAction SELECT count(*) WHERE actionName = 'AD_START' and adPlayhead = 0)
+    select: (filter(count(viewId), WHERE actionName = 'AD_ERROR' and adPlayhead = 0 ) * 100) / (FROM VideoAdAction, VideoErrorAction SELECT count(viewId))
     from: VideoErrorAction
 videoPlaybackFailures:
   title: Video Playback Failures
   unit: PERCENTAGE
   query:
-    select: count(*) * 100 / (FROM VideoAction SELECT count(*) WHERE actionName = 'CONENT_REQUEST')
-    from: VideoErrorAction WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0
+    select: (filter(count(viewId), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0) * 100) / (FROM VideoAction, VideoErrorAction SELECT count(viewId))
+    from: VideoErrorAction
 adPlaybackFailures:
   title: Ad Playback Failures
   unit: PERCENTAGE
   query:
-    select: count(*) * 100 / (FROM VideoAdAction SELECT count(*) WHERE actionName = 'AD_REQUEST')
-    from: VideoErrorAction WHERE actionName = 'AD_ERROR' and adPlayhead > 0
+    select: (filter(count(viewId), WHERE actionName = 'AD_ERROR' and adPlayhead > 0) * 100) / (FROM VideoAdAction, VideoErrorAction SELECT count(viewId))
+    from: VideoErrorAction

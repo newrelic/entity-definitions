@@ -14,10 +14,11 @@ relationships:
       - attribute: span.kind
         anyOf: [ "producer", "client" ]
       - attribute: net.peer.name
-        present: true
         regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
       - attribute: messaging.destination.name
         present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -54,10 +55,11 @@ relationships:
       - attribute: span.kind
         anyOf: [ "consumer", "server" ]
       - attribute: net.peer.name
-        present: true
         regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
       - attribute: messaging.destination.name
         present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -94,10 +96,11 @@ relationships:
       - attribute: span.kind
         anyOf: [ "producer", "client" ]
       - attribute: server.address
-        present: true
         regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
       - attribute: messaging.destination.name
         present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -134,10 +137,11 @@ relationships:
       - attribute: span.kind
         anyOf: [ "consumer", "server" ]
       - attribute: server.address
-        present: true
         regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
       - attribute: messaging.destination.name
         present: true
+      - attribute: newrelic.aws_metric_streams.arn
+        present: false
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -158,4 +162,31 @@ relationships:
                 regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:[0-9]+.*"
             - field: topic
               attribute: messaging.destination.name
+
+  - name: extServiceCallsAwsMskTopic_Explicit
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span", "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp", "api.logs.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:kafka:[^:]*:[^:]*:cluster/[^:]*"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC_EXPLICIT
+          fields:
+            - field: cloudResourceId
+              attribute: newrelic.aws_metric_streams.arn
 
