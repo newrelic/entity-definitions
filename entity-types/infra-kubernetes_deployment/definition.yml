@@ -14,18 +14,18 @@ synthesis:
         separator: ":"
         attributes:
           - k8s.cluster.name
-          - namespace
-          - deployment
+          - k8s.namespace.name
+          - k8s.deployment.name
       encodeIdentifierInGUID: true
-      name: deployment
+      name: k8s.deployment.name
       conditions:
         # kube-state-metrics deployment prefix
         - attribute: metricName
           prefix: kube_deployment_
         # identifier attributes
-        - attribute: deployment
+        - attribute: k8s.deployment.name
           present: true
-        - attribute: namespace
+        - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
           present: true
@@ -39,9 +39,9 @@ synthesis:
         - attribute: newrelicOnly
           value: "true"
       tags:
-        deployment:
+        k8s.deployment.name:
           entityTagNames: [k8s.deploymentName]
-        namespace:
+        k8s.namespace.name:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
@@ -52,7 +52,7 @@ synthesis:
         separator: ":"
         attributes:
           - k8s.cluster.name
-          - namespace
+          - k8s.namespace.name
           # owner_name is that of the deployment
           - owner_name
       encodeIdentifierInGUID: true
@@ -66,7 +66,7 @@ synthesis:
         # identifier attributes  
         - attribute: owner_name
           present: true      
-        - attribute: namespace
+        - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
           present: true
@@ -80,7 +80,7 @@ synthesis:
         - attribute: newrelicOnly
           value: "true"
       tags:
-        replicaset:
+        k8s.replicaset.name:
           # only most recent replicaset will have pods
           multiValue: false
           entityTagNames: [k8s.replicasetName]
