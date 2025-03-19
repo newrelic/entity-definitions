@@ -1,3 +1,8 @@
+# Store is a little different than the devices.
+# store.id is a very common attribute on all types of telemetry.
+# We recommend sending a kind of "store heartbeat" (could be a log or event).
+# This will be used to capture the store ids and insert entity ids into during synthesis.
+# We want to make sure we don't try to perform synthesis for multiple entities on the same record.
 id: store
 name: Store
 domain: EXT
@@ -18,6 +23,8 @@ synthesis:
           present: true
         - attribute: store.number
           present: true
+        - attribute: log.type  # This is the specific log we want to to look for here.
+          value: "heartbeat"
       tags:
         country:
           multiValue: false
@@ -25,6 +32,9 @@ synthesis:
         store.number:
           multiValue: false
           ttl: 7D
+
+
+# This relationshop code is not correct
 related_entities:
   - type: POS
     direction: TARGET
