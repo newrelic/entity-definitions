@@ -27,6 +27,26 @@ synthesis:
       version:
         entityTagName: fluentbit.version
         multiValue: false
+  - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - namespace_name
+          - annotations.log-forwarder/entity-name  
+    name: annotations.log-forwarder/entity-name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Log
+    - attribute: annotations.log-forwarder/type
+      value: fluent-bit-daemonset
+    tags:
+      annotations.log-forwarder/entity-name:
+        entityTagNames: [k8s.daemonsetName]
+      namespace_name:
+        entityTagNames: [k8s.namespaceName]
+      cluster_name:
+        entityTagNames: [k8s.clusterName]
 dashboardTemplates:
   newRelic:
     template: dashboard.json
