@@ -2,14 +2,49 @@ id: dt
 name: Drive Through Device
 domain: EXT
 type: DT
+configuration:
+  entityExpirationTime: EIGHT_DAYS
 synthesis:
   rules:
     - identifier: dt.id
+      name: dt.id
+      encodeIdentifierInGUID: true
       group_by: dt.id
       conditions:
         - attribute: device.type
-          matches: "DT"
-
+          value: "DT"
+        - attribute: newrelic.source
+          value: "api.logs"
+        - attribute: country
+          present: true
+        - attribute: store.number
+          present: true
+        - attribute: device.number
+          present: true
+      tags:
+        hostname:
+          multiValue: false
+        country:
+          multiValue: false
+          ttl: 7D
+        store.number:
+          multiValue: false
+          ttl: 7D
+        device.type:
+          multiValue: false
+          ttl: 7D
+        device.number:
+          multiValue: false
+          ttl: 7D
+        geo.location.lon:
+          multiValue: false
+          ttl: 7D
+        geo.location.lat:
+          multiValue: false
+          ttl: 7D
+        host.ip:
+          multiValue: false
+          ttl: 7D
 related_entities:
   - type: STORE
     direction: SOURCE

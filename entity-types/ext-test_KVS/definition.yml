@@ -2,14 +2,51 @@ id: kvs
 name: POS Device
 domain: EXT
 type: KVS
+configuration:
+  entityExpirationTime: EIGHT_DAYS
 synthesis:
   rules:
     - identifier: kvs.id
+      name: kvs.id
+      encodeIdentifierInGUID: true
       group_by: kvs.id
       conditions:
         - attribute: hostname
           matches: ".*KVS.*"
-
+        - attribute: device.type
+          value: "KVS"
+        - attribute: newrelic.source
+          value: "api.logs"
+        - attribute: country
+          present: true
+        - attribute: store.number
+          present: true
+        - attribute: device.number
+          present: true
+      tags:
+        hostname:
+          multiValue: false
+        country:
+          multiValue: false
+          ttl: 7D
+        store.number:
+          multiValue: false
+          ttl: 7D
+        device.type:
+          multiValue: false
+          ttl: 7D
+        device.number:
+          multiValue: false
+          ttl: 7D
+        geo.location.lon:
+          multiValue: false
+          ttl: 7D
+        geo.location.lat:
+          multiValue: false
+          ttl: 7D
+        host.ip:
+          multiValue: false
+          ttl: 7D
 related_entities:
   - type: STORE
     direction: SOURCE

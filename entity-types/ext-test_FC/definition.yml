@@ -2,14 +2,50 @@ id: fc
 name: Front Counter Device
 domain: EXT
 type: FC
+configuration:
+  entityExpirationTime: EIGHT_DAYS
 synthesis:
   rules:
-    - identifier: fs.id
-      group_by: fs.id
+    - identifier: fc.id
+      name: fc.id
+      encodeIdentifierInGUID: true
+      group_by: fc.id
       conditions:
         - attribute: device.type
-          matches: "FC"
-
+          value: "FC"
+        - attribute: newrelic.source
+          value: "api.logs"
+        - attribute: country
+          present: true
+        - attribute: store.number
+          present: true
+        - attribute: device.number
+          present: true
+    tags:
+      hostname:
+        multiValue: false
+      country:
+        multiValue: false
+        ttl: 7D
+      store.number:
+        multiValue: false
+        ttl: 7D
+      device.type:
+        multiValue: false
+        ttl: 7D
+      device.number:
+        multiValue: false
+        ttl: 7D
+      geo.location.lon:
+        multiValue: false
+        ttl: 7D
+      geo.location.lat:
+        multiValue: false
+        ttl: 7D
+      host.ip:
+        multiValue: false
+        ttl: 7D        
+        
 related_entities:
   - type: STORE
     direction: SOURCE

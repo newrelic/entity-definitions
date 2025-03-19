@@ -2,14 +2,29 @@ id: store
 name: Store
 domain: EXT
 type: STORE
+configuration:
+  entityExpirationTime: EIGHT_DAYS
 synthesis:
   rules:
     - identifier: store.number
+      name: store.number
       group_by: store.number
       conditions:
         - attribute: store.number
           present: true
-
+        - attribute: newrelic.source
+          value: "api.logs"
+        - attribute: country
+          present: true
+        - attribute: store.number
+          present: true
+      tags:
+        country:
+          multiValue: false
+          ttl: 7D
+        store.number:
+          multiValue: false
+          ttl: 7D
 related_entities:
   - type: POS
     direction: TARGET
