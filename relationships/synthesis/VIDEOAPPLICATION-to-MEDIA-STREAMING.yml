@@ -1,0 +1,50 @@
+relationships:
+  - name: mobileApplicationContainsMediaStreaming
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        startsWith: "Video"
+        caseSensitive: true
+      - attribute: src
+        anyOf: ["Android", "IOS"]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: VIDEOAPPLICATION
+          fields:
+            - field: appName
+              capture:
+                attribute: appName
+                regex: "(.*)-mediaplayer$"
+      target:
+        extractGuid:
+          attribute: entity.guid
+
+  - name: browserApplicationContainsMediaStreaming
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        startsWith: "Video"
+        caseSensitive: true
+      - attribute: src
+        anyOf: ["Browser"]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: VIDEOAPPLICATION
+          fields:
+            - field: appName
+              capture:
+                attribute: appName
+                regex: "(.*)-mediaplayer$"
+      target:
+        extractGuid:
+          attribute: entity.guid
