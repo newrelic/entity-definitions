@@ -1,0 +1,38 @@
+domain: EXT
+type: AWS_LAMBDA_LOG_FORWARDER
+goldenTags:
+  - aws.region
+  - aws.accountId
+configuration:
+  entityExpirationTime: QUARTERLY
+  alertable: true
+synthesis:
+  rules:
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - awsRealm
+          - instrumentation.name
+          - awsRegion
+          - awsAccountId
+          - FunctionName
+          - logForwarder
+      # Option 2: - identifier: awslogForwarderArn
+      name: functionName
+      encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          prefix: Metric
+        - attribute: logForwarder
+          present: true
+        - attribute: instrumentation.provider
+          value: aws
+        - attribute: instrumentation.name
+          value: lambda
+      tags:
+        # Can be Used for entity relationship candidates
+        # Metrics Streams and API Polling entities using the ARN to compute the entity.guid
+        aws.Arn:
+        aws.lambda.FunctionName:
