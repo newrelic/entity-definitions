@@ -8,3 +8,66 @@ goldenTags:
 configuration:
   entityExpirationTime: DAILY
   alertable: true
+
+synthesis:
+  rules:
+    # Logs received via Lambda/Firehose log forwarder and enriched by the Logs Pipeline. See: https://docs.newrelic.com/docs/logs/logs-context/aws-logs-in-context/
+    # Logs from legacy API Polling entities not using the ARN to compute the entity.guid, but directly providing the entityId
+    - identifier: entityId
+      name: aws.sqs.QueueName
+      encodeIdentifierInGUID: false
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        # CloudTrail sets an eventType attribute that conflicts with our eventType (Log), so using eventSource instead
+        - attribute: eventSource
+          value: sqs.amazonaws.com
+        - attribute: eventName
+          present: true
+        - attribute: aws.Arn
+          present: true
+        - attribute: aws.sqs.QueueName
+          present: true
+        - attribute: entityId
+          present: true
+      tags:
+        aws.Arn:
+        aws.sqs.queueUrl:
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        aws.sqs.QueueName:
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        recipientAccountId:
+          entityTagNames: [ aws.accountId ]
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        awsRegion:
+          entityTagNames: [ aws.region ]
+    # Logs received via Lambda/Firehose log forwarder and enriched by the Logs Pipeline. See: https://docs.newrelic.com/docs/logs/logs-context/aws-logs-in-context/
+    # Logs from Metrics Streams or API Polling entities using the ARN to compute the entity.guid, or entities only sending logs
+    - identifier: aws.Arn
+      name: aws.sqs.QueueName
+      encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        # CloudTrail sets an eventType attribute that conflicts with our eventType (Log), so using eventSource instead
+        - attribute: eventSource
+          value: sqs.amazonaws.com
+        - attribute: eventName
+          present: true
+        - attribute: aws.Arn
+          present: true
+        - attribute: aws.sqs.QueueName
+          present: true
+        - attribute: entityId
+          present: false
+      tags:
+        aws.Arn:
+        aws.sqs.queueUrl:
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        aws.sqs.QueueName:
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        recipientAccountId:
+          entityTagNames: [ aws.accountId ]
+        # Used in AWSSQSQUEUE.yml for entity relationship candidates
+        awsRegion:
+          entityTagNames: [ aws.region ]
