@@ -62,6 +62,41 @@ relationships:
             fragments:
               - attribute: cluster_name
               - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: daemonset_name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: FLUENTBIT_KUBERNETES
+  - name: otelKsmK8sDaemonSetManagesFluentbitPreview
+    version: "1"
+    origins: 
+      - Prometheus
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: "fluentbit_"
+      - attribute: "source"
+        anyOf: [ "kubernetes" ]
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_DAEMONSET
+          identifier:
+            fragments:
+              - attribute: cluster_name
+              - value: ":"
               - attribute: namespace
               - value: ":"
               - attribute: daemonset_name
