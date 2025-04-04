@@ -61,6 +61,42 @@ relationships:
             fragments:
               - attribute: k8s.cluster.name
               - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: owner_name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_POD
+  - name: otelKsmK8sJobContainsPodPreview
+    # use kube-state-metrics kube_pod_owner metric
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_pod_owner" ]
+      - attribute: owner_kind
+        anyOf: [ "Job" ]
+      - attribute: newrelicOnly
+        anyOf: [ "true" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_JOB
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
               - attribute: namespace
               - value: ":"
               - attribute: owner_name

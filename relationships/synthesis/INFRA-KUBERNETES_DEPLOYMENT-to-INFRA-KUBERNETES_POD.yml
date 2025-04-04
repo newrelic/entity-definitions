@@ -51,6 +51,36 @@ relationships:
         lookupGuid:
           candidateCategory: KUBERNETES_DEPLOYMENT
           fields:
+            - field: k8s.replicaset.name # replicaset owned by deployment
+              attribute: owner_name # replicaset which owns pod
+            - field: k8s.namespace.name # namespace of deployment
+              attribute: k8s.namespace.name # namespace of pod
+            - field: cluster # cluster of deployment
+              attribute: k8s.cluster.name # cluster of pod
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_POD
+  - name: otelKsmK8sDeploymentContainsPodPreview
+    # use kube-state-metrics kube_pod_owner metric
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_pod_owner" ]
+      - attribute: owner_kind
+        anyOf: [ "ReplicaSet" ]
+      - attribute: newrelicOnly
+        anyOf: [ "true" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: KUBERNETES_DEPLOYMENT
+          fields:
             - field: replicaset # replicaset owned by deployment
               attribute: owner_name # replicaset which owns pod
             - field: namespace # namespace of deployment
