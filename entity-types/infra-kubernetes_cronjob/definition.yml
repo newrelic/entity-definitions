@@ -18,6 +18,44 @@ synthesis:
         separator: ":"
         attributes:
           - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.cronjob.name
+      encodeIdentifierInGUID: true
+      name: k8s.cronjob.name
+      conditions:
+        # kube-state-metrics cronjob prefix
+        - attribute: metricName
+          prefix: kube_cronjob_
+        # identifier attributes
+        - attribute: k8s.cronjob.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: "api.metrics.otlp"
+        # if service.name is present, it's a service
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+      tags:
+        k8s.cronjob.name:
+          entityTagNames: [k8s.cronjobName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        schedule:
+          entityTagNames: [k8s.cronjob.schedule]
+    # kube-state-metrics data via opentelemetry prometheusReceiver preview
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
           - namespace
           - cronjob
       encodeIdentifierInGUID: true
@@ -51,7 +89,6 @@ synthesis:
           entityTagNames: [k8s.clusterName]
         schedule:
           entityTagNames: [k8s.cronjob.schedule]
-
     # Infrastructure event data via opentelemetry
     # - compositeIdentifier:
     #     separator: ":"
