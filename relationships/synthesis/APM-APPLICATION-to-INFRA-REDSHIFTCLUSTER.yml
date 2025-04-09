@@ -20,3 +20,26 @@ relationships:
           fields:
             - field: serverAddress
               attribute: server.address
+
+relationships:
+  - name: apmApplicationCallsInfraRedshiftClusterpeerHost
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: peer.hostname
+        regex: '^[a-zA-Z0-9\-]+\.[a-z0-9]+\.[a-zA-Z0-9\-]+\.redshift\.amazonaws\.com$'
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSREDSHIFTCLUSTER
+          fields:
+            - field: serverAddress
+              attribute: peer.hostname
