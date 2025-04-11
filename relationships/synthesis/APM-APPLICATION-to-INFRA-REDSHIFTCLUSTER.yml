@@ -1,5 +1,5 @@
 relationships:
-  - name: apmApplicationCallsInfraRedshiftCluster
+  - name: apmApplicationCallsInfraRedshiftClusterPeerHostServerAddress
     version: "1"
     origins:
       - Distributed Tracing
@@ -8,6 +8,37 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: server.address
         regex: '^[a-zA-Z0-9\-]+\.[a-z0-9]+\.[a-zA-Z0-9\-]+\.redshift\.amazonaws\.com$'
+      - attribute: peer.hostname
+        regex: '^[a-zA-Z0-9\-]+\.[a-z0-9]+\.[a-zA-Z0-9\-]+\.redshift\.amazonaws\.com$'
+      - attribute: server.address
+        present: true
+      - attribute: peer.hostname
+        present: true 
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSREDSHIFTCLUSTER
+          fields:
+            - field: serverAddress
+              attribute: peer.hostname
+  - name: apmApplicationCallsInfraRedshiftClusterServerAddress
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: server.address
+        regex: '^[a-zA-Z0-9\-]+\.[a-z0-9]+\.[a-zA-Z0-9\-]+\.redshift\.amazonaws\.com$'
+      - attribute: server.address
+        present: true
+      - attribute: peer.hostname
+        present: false
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -20,3 +51,28 @@ relationships:
           fields:
             - field: serverAddress
               attribute: server.address
+  - name: apmApplicationCallsInfraRedshiftClusterPeerHostname
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: peer.hostname
+        regex: '^[a-zA-Z0-9\-]+\.[a-z0-9]+\.[a-zA-Z0-9\-]+\.redshift\.amazonaws\.com$'
+      - attribute: server.address
+        present: false
+      - attribute: peer.hostname
+        present: true 
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSREDSHIFTCLUSTER
+          fields:
+            - field: serverAddress
+              attribute: peer.hostname
