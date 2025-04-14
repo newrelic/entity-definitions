@@ -1,19 +1,21 @@
 {
-  "name": "Autoflow Overview",
+  "name": "WorkflowAutomation-Overview",
   "description": null,
+  "permissions": "PUBLIC_READ_WRITE",
   "pages": [
     {
-      "name": "Autoflow Overview",
+      "name": "WorkflowAutomation-Overview",
       "description": null,
       "widgets": [
         {
-          "title": "Workflows Started",
+          "title": "Workflow Automation Started",
           "layout": {
             "column": 1,
             "row": 1,
             "width": 6,
             "height": 4
           },
+          "linkedEntityGuids": null,
           "visualization": {
             "id": "viz.line"
           },
@@ -24,20 +26,26 @@
             "legend": {
               "enabled": true
             },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "SELECT COUNT(*) FROM Log where autoflow.runId IS NOT NULL \nFACET  autoflow.name\nWHERE message like '[INFO] - Workflow: % has started'\nSINCE 1 hour ago limit max TIMESERIES auto"
+                "accountIds": 0,
+                "query": "SELECT COUNT(*) FROM Log where workflowAutomation.runId IS NOT NULL \nFACET  workflowAutomation.name\nWHERE message like '[INFO] - Workflow: % has started' and message NOT LIKE '%Step%'\nSINCE 1 hour ago limit max TIMESERIES auto"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
             },
-            "thresholds": [
-              {
+            "thresholds": {
               "isLabelVisible": true
-            }
-            ],
+            },
             "yAxisLeft": {
               "zero": true
             },
@@ -54,6 +62,7 @@
             "width": 6,
             "height": 4
           },
+          "linkedEntityGuids": null,
           "visualization": {
             "id": "viz.line"
           },
@@ -64,20 +73,26 @@
             "legend": {
               "enabled": true
             },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "SELECT COUNT(*) as 'Steps' \nFROM Log where autoflow.runId IS NOT NULL \nWHERE message LIKE '[INFO] - Workflow: % Step % has started'\nSINCE 1 hour AGO LIMIT MAX TIMESERIES AUTO"
+                "accountIds": 0,
+                "query": "SELECT COUNT(*) as 'Steps' \nFROM Log where workflowAutomation.runId IS NOT NULL \nWHERE message LIKE '[INFO] - Workflow: % Step % has started'\nSINCE 1 hour AGO LIMIT MAX TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
             },
-            "thresholds": [
-              {
+            "thresholds": {
               "isLabelVisible": true
-            }
-            ],
+            },
             "yAxisLeft": {
               "zero": true
             },
@@ -87,13 +102,14 @@
           }
         },
         {
-          "title": "Recent Autoflow Run",
+          "title": "Recent Runs",
           "layout": {
             "column": 1,
             "row": 5,
             "width": 6,
             "height": 4
           },
+          "linkedEntityGuids": null,
           "visualization": {
             "id": "viz.table"
           },
@@ -103,8 +119,8 @@
             },
             "nrqlQueries": [
               {
-                "accountId": 0,
-                "query": "SELECT *\nFROM Log\nWHERE autoflow.runId IS NOT null\nSINCE 10 minutes AGO"
+                "accountIds": 0,
+                "query": "SELECT *\nFROM Log\nWHERE workflowAutomation.runId IS NOT null\nSINCE 10 minutes AGO"
               }
             ],
             "platformOptions": {
@@ -120,6 +136,7 @@
             "width": 6,
             "height": 4
           },
+          "linkedEntityGuids": null,
           "visualization": {
             "id": "viz.table"
           },
@@ -129,7 +146,7 @@
             },
             "nrqlQueries": [
               {
-                "accountId": 0,
+                "accountIds": 0,
                 "query": "FROM NrAuditEvent SELECT * SINCE 1 hour ago"
               }
             ],
@@ -140,5 +157,6 @@
         }
       ]
     }
-  ]
+  ],
+  "variables": []
 }
