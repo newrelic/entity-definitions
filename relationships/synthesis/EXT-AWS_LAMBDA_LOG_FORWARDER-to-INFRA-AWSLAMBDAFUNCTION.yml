@@ -1,0 +1,33 @@
+relationships:
+  - name: awsLambdaLogForwarderIsAwsLambdaFunction
+    version: "1"
+    origins: 
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: awsLogForwarderArn
+        present: true
+      - attribute: instrumentation.name
+        anyOf: [ "lambda" ]
+    relationship:
+      expires: P75M
+      relationshipType: IS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWS_LAMBDA_LOG_FORWARDER
+      target:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: AWSLAMBDAFUNCTION
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: aws.Arn
+            hashAlgorithm: FARM_HASH
