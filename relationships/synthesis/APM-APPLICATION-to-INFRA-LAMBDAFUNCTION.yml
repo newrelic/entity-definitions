@@ -22,3 +22,25 @@ relationships:
           fields:
             - field: awsLambdaArn
               attribute: cloud.resource_id
+
+  - name: awsLambdaFunctionIsAPM
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: aws.lambda.arn
+        regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
+    relationship:
+      expires: P75M
+      relationshipType: IS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAFUNCTION
+          fields:
+            - field: awsLambdaArn
+              attribute: aws.lambda.arn
