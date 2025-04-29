@@ -1,0 +1,26 @@
+domain: EXT
+type: AWS_FIREHOSE_LOG_FORWARDER
+goldenTags:
+- aws.region
+- aws.accountId
+configuration:
+  entityExpirationTime: QUARTERLY
+  alertable: true
+synthesis:
+  rules:
+    - identifier: awsLogForwarderArn
+      name: logForwarderName
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: awsLogForwarderArn
+          present: true
+        - attribute: instrumentation.name
+          value: firehose
+      tags:
+        # Can be Used for entity relationship candidates
+        # Metrics Streams and API Polling entities using the ARN to compute the entity.guid
+        aws.Arn:
+        instrumentation.version:
+          multiValue: false
