@@ -35,11 +35,11 @@ relationships:
       - OpenTelemetry
     conditions:
         - attribute: eventType
-          value: Metric
+          anyOf: [ "Metric" ]
         - attribute: metricName
-          prefix: system.
+          startsWith: system.
         - attribute: newrelic.source
-          value: 'api.metrics.otlp'
+          anyOf: [ "api.metrics.otlp" ]
         # if service.name is present, it's a service, not a host
         - attribute: service.name
           present: false
@@ -64,9 +64,6 @@ relationships:
               - attribute: k8s.cluster.name            
             hashAlgorithm: FARM_HASH
       target:
-        buildGuid:
-          account:
-            attribute: accountId    
         extractGuid:
           attribute: entity.guid
           entityType:
