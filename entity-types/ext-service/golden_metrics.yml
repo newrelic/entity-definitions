@@ -3,9 +3,9 @@ throughput:
   unit: REQUESTS_PER_MINUTE
   queries:
     opentelemetry:
-      select: rate(count(*), 1 minute)
-      from: Span
-      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+      select: rate(count(%.server%duration), 1 minute)
+      from: Metric
+      where: http.server.duration IS NOT NULL OR http.server.request.duration IS NOT NULL OR rpc.server.duration IS NOT NULL
     newrelic-opentelemetry:
       select: rate(count(apm.service.transaction.duration), 1 minute)
       from: Metric
@@ -23,9 +23,9 @@ errorRate:
   unit: PERCENTAGE
   queries:
     opentelemetry:
-      select: (filter(count(*), WHERE otel.status_code = 'ERROR') * 100) / count(*)
-      from: Span
-      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+      select: filter(count(%.server%duration), WHERE numeric(http.status_code) >= 500 OR numeric(http.response.status_code) >= 500) * 100 / count(%.server%duration)
+      from: Metric
+      where: http.server.duration IS NOT NULL OR http.server.request.duration IS NOT NULL
     newrelic-opentelemetry:
       select: sum(apm.service.error.count) * 100 / count(apm.service.transaction.duration)
       from: Metric
@@ -43,9 +43,9 @@ responseTimeMs:
   unit: MS
   queries:
     opentelemetry:
-      select: average(duration.ms)
-      from: Span
-      where: span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer'
+      select: average(convert(%.server%duration, unit OR 's', 'ms'))
+      from: Metric
+      where: http.server.duration IS NOT NULL OR http.server.request.duration IS NOT NULL OR rpc.server.duration IS NOT NULL
     newrelic-opentelemetry:
       select: average(convert(apm.service.transaction.duration, unit, 'ms'))
       from: Metric

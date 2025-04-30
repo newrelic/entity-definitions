@@ -18,3 +18,20 @@ lookups:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
         type: KAFKATOPIC
+
+  - entityTypes:
+    - domain: INFRA
+      type: CONFLUENTCLOUDKAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["confluent.clusterBootstrapServers", "bootstrap.servers"]
+          field: bootstrapServers
+        - tagKeys: ["confluent.kafka.server.metric.topic", "topic"]
+          field: topic
+    onMatch:
+     onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC

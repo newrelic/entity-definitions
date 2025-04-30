@@ -1,0 +1,33 @@
+relationships:
+  - name: hostHostsFluentbit
+    version: "1"
+    origins: 
+      - Prometheus
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: "fluentbit_"
+      - attribute: source
+        anyOf: [ "host" ]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: FLUENTBIT_HOST

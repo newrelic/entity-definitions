@@ -14,6 +14,44 @@ synthesis:
         separator: ":"
         attributes:
           - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.statefulset.name
+      encodeIdentifierInGUID: true
+      name: k8s.statefulset.name
+      conditions:
+        # kube-state-metrics statefulset prefix
+        - attribute: metricName
+          prefix: kube_statefulset_
+        # identifier attributes
+        - attribute: k8s.statefulset.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+      tags:
+        k8s.statefulset.name:
+          entityTagNames: [k8s.statefulsetName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+    # kube-state-metrics data via opentelemetry prometheusReceiver preview 
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
           - namespace
           - statefulset
       encodeIdentifierInGUID: true
@@ -50,7 +88,7 @@ synthesis:
         separator: ":"
         attributes:
           - k8s.cluster.name
-          - k8.namespace.name
+          - k8s.namespace.name
           - k8s.object.name
       encodeIdentifierInGUID: true
       name: k8s.object.name
@@ -62,7 +100,7 @@ synthesis:
         # identifier attributes
         - attribute: k8s.object.name
           present: true
-        - attribute: k8.namespace.name
+        - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
           present: true
