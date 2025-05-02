@@ -34,41 +34,6 @@ relationships:
             - field: port
               attribute: net.peer.port
 
-  - name: extServiceCallsRedis1_20_Default_Port
-    version: "1"
-    origins:
-      - Distributed Tracing
-      - OpenTelemetry
-    conditions:
-      - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: db.system
-        anyOf: [ "redis" ]
-      - attribute: newrelic.source 
-        anyOf: [ "api.traces.otlp" ] 
-      - attribute: entity.type 
-        anyOf: [ "SERVICE" ] 
-      - attribute: net.peer.name
-        regex: "^.*\\.cache\\.amazonaws\\.com$"
-      - attribute: net.peer.port
-        present: false
-      - attribute: newrelic.aws_metric_streams.arn
-        present: false
-    relationship:
-      expires: P75M
-      relationshipType: CALLS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: REDIS
-          fields:
-            - field: endpoint
-              attribute: net.peer.name
-            - field: port
-              attribute: 6379 # Default port for redis
-
   - name: extServiceCallsRedis1_23
     version: "1"
     origins:
@@ -103,41 +68,6 @@ relationships:
               attribute: server.address
             - field: port
               attribute: server.port
-
-  - name: extServiceCallsRedis1_23_Default_Port
-    version: "1"
-    origins:
-      - Distributed Tracing
-      - OpenTelemetry
-    conditions:
-      - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: db.system
-        anyOf: [ "redis" ]
-      - attribute: newrelic.source 
-        anyOf: [ "api.traces.otlp" ] 
-      - attribute: entity.type 
-        anyOf: [ "SERVICE" ] 
-      - attribute: server.address
-        regex: "^.*\\.cache\\.amazonaws\\.com$"
-      - attribute: server.port
-        present: false
-      - attribute: newrelic.aws_metric_streams.arn
-        present: false
-    relationship:
-      expires: P75M
-      relationshipType: CALLS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: REDIS
-          fields:
-            - field: endpoint
-              attribute: server.address
-            - field: port
-              attribute: 6379 # Default port for redis
 
   - name: extServiceCallsRedis_Explicit
     version: "1"
