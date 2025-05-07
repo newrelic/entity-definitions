@@ -1,0 +1,33 @@
+relationships:
+  - name: awsFirehoseLogForwarderIsInfraKinesisDeliveryStream
+    version: "1"
+    origins: 
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: awsLogForwarderArn
+        present: true
+      - attribute: instrumentation.name
+        anyOf: [ "firehose" ]
+    relationship:
+      expires: P75M
+      relationshipType: IS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWS_FIREHOSE_LOG_FORWARDER
+      target:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: AWS_KINESIS_DELIVERY_STREAM
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: aws.Arn
+            hashAlgorithm: FARM_HASH
