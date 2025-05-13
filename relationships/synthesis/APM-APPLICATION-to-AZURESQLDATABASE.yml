@@ -1,0 +1,30 @@
+relationships:
+  - name: apmApplicationCallsAzureSqlDatabase
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system 
+        anyOf: [ "mssql" ]
+      - attribute: db.instance
+        present: true
+      - attribute: server.address
+        present: true
+      - attribute: db.instance 
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURESQLDATABASE
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: dbname 
+              attribute: db.instance
