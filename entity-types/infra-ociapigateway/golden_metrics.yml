@@ -1,0 +1,58 @@
+requests:
+  title: Requests
+  unit: COUNT
+  queries:
+    oci:
+      select: sum(oci.apigateway.http.requests)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+latency:
+  title: Latency
+  unit: SECONDS
+  queries:
+    oci:
+      select: average(oci.apigateway.latency)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+successfulResponses:
+  title: Successful Responses
+  unit: COUNT
+  queries:
+    oci:
+      select: sum(oci.apigateway.http.responses)
+      from: Metric
+      where: oci.http.status.category = '2xx'
+      eventId: entity.guid
+      eventName: entity.name
+failedResponses:
+  title: Failed Responses
+  unit: COUNT
+  queries:
+    oci:
+      select: sum(oci.apigateway.http.responses)
+      from: Metric
+      where: oci.http.status.category = '4xx' or oci.http.status.category = '5xx'
+      eventId: entity.guid
+      eventName: entity.name
+successfulBackendResponses:
+  title: Successful Backend Responses
+  unit: COUNT
+  queries:
+    oci:
+      select: sum(oci.apigateway.backend.http.responses)
+      from: Metric
+      where: oci.backend.http.status.category = '2xx'
+      eventId: entity.guid
+      eventName: entity.name
+failedBackendResponses:
+  title: Failed Backend Responses
+  unit: COUNT
+  queries:
+    oci:
+      select: sum(oci.apigateway.backend.http.responses)
+      from: Metric
+      where: oci.backend.http.status.category = '4xx' or oci.backend.http.status.category = '5xx'
+      eventId: entity.guid
+      eventName: entity.name
