@@ -27,4 +27,44 @@ relationships:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: HOST
+            value: HOST           
+  - name: oTelK8sClusterContainsHost
+    # use kube-state-metrics host metrics
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+        - attribute: eventType
+          anyOf: [ "Metric" ]
+        - attribute: metricName
+          startsWith: system.
+        - attribute: newrelic.source
+          anyOf: [ "api.metrics.otlp" ]
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        - attribute: k8s.cluster.name
+          present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETESCLUSTER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name            
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: HOST 
