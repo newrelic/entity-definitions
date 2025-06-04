@@ -1,10 +1,14 @@
 domain: INFRA
-type: OCIFUNCTION
+type: OCIKUBERNETES
 goldenTags:
 - oci.compartmentId
 - oci.region
 - oci.availabilityDomain
+- oci.kubernetesVersion
+- oci.lifecycleState
 - oci.shape
+- oci.name
+- oci.vcnId
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -14,12 +18,12 @@ synthesis:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
   rules:
   - identifier: oci.resourceId
-    name: oci.resourceName
+    name: oci.resourceDisplayName
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
     - attribute: oci.resourceId
-      prefix: "ocid1.fnapp"
+      prefix: "ocid1.cluster"
     - attribute: oci.namespace
-      value: "oci_faas"
+      value: "oci_oke"

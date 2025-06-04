@@ -1,10 +1,12 @@
 domain: INFRA
-type: OCIFUNCTION
+type: OCIOBJECTSTORAGE
 goldenTags:
 - oci.compartmentId
 - oci.region
 - oci.availabilityDomain
-- oci.shape
+- oci.createdBy
+- oci.name
+- oci.timeCreated
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -14,12 +16,12 @@ synthesis:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
   rules:
   - identifier: oci.resourceId
-    name: oci.resourceName
+    name: oci.resourceDisplayName
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
     - attribute: oci.resourceId
-      prefix: "ocid1.fnapp"
+      prefix: "ocid1.bucket"
     - attribute: oci.namespace
-      value: "oci_faas"
+      value: "oci_objectstorage"
