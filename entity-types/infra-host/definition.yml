@@ -245,35 +245,6 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         service.name:
-    # Infrastructure event data via opentelemetry 
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - k8s.node.name
-          - k8s.event.name
-      encodeIdentifierInGUID: true
-      name: k8s.event.name
-      conditions:
-        - attribute: newrelic.event.type
-          value: OtlpInfrastructureEvent
-        - attribute: k8s.object.kind
-          value: Node
-        # identifier attributes
-        - attribute: k8s.event.name
-          present: true
-        - attribute: k8s.node.name
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        - attribute: newrelic.source
-          value: 'api.events.otlp'         
-        # if service.name is present, handle as one
-        - attribute: service.name
-          present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
     # opentelemetry host data from New Relic sap solutions 
     - identifier: host.id
       name: host.id
@@ -343,6 +314,35 @@ synthesis:
         aws.Arn:
         # Used in AWSEC2.yml for entity relationship candidates
         aws.ec2.InstanceId:
+    # Infrastructure event via opentelemetry 
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.node.name
+          - k8s.event.name
+      encodeIdentifierInGUID: true
+      name: k8s.event.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Node
+        # identifier attributes
+        - attribute: k8s.event.name
+          present: true
+        - attribute: k8s.node.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        - attribute: newrelic.source
+          value: 'api.events.otlp'         
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"        
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
