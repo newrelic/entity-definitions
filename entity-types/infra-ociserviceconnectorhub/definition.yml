@@ -1,10 +1,14 @@
 domain: INFRA
-type: OCIFUNCTION
+type: OCISERVICECONNECTORHUB
 goldenTags:
 - oci.compartmentId
 - oci.region
 - oci.availabilityDomain
-- oci.shape
+- oci.displayName
+- oci.source
+- oci.timeCreated
+- oci.target
+- oci.lifecycleState
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -14,12 +18,12 @@ synthesis:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
   rules:
   - identifier: oci.resourceId
-    name: oci.resourceName
+    name: oci.connectorName
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
     - attribute: oci.resourceId
-      prefix: "ocid1.fnapp"
+      prefix: "ocid1.serviceconnector"
     - attribute: oci.namespace
-      value: "oci_faas"
+      value: "oci_service_connector_hub"

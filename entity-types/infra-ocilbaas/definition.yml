@@ -1,10 +1,13 @@
 domain: INFRA
-type: OCIFUNCTION
+type: OCILBAAS
 goldenTags:
 - oci.compartmentId
 - oci.region
 - oci.availabilityDomain
-- oci.shape
+- oci.displayName
+- oci.lifecycleState
+- oci.timeCreated
+- oci.shapeName
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -14,12 +17,12 @@ synthesis:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
   rules:
   - identifier: oci.resourceId
-    name: oci.resourceName
+    name: oci.lbName
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
     - attribute: oci.resourceId
-      prefix: "ocid1.fnapp"
+      prefix: "ocid1.loadbalancer"
     - attribute: oci.namespace
-      value: "oci_faas"
+      value: "oci_lbaas"
