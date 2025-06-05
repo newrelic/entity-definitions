@@ -1,0 +1,30 @@
+relationships:
+  - name: apmApplicationCallsAzureSqlDatabase
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system 
+        anyOf: [ "mssql" ]
+      - attribute: db.instance
+        present: true
+      - attribute: server.address
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURESQLDATABASE
+          fields:
+            - field: endpoint
+              capture: 
+                attribute: server.address
+                regex: '^(?:tcp:)?([a-zA-Z0-9\-]+\.database\.windows\.net)$'
+            - field: dbname 
+              attribute: db.instance
