@@ -1,0 +1,23 @@
+relationships:
+  - name: apmApplicationHostsOnAzureFunctionApp 
+    version: "1"
+    origins:
+      - Distributed Tracing 
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: azure.resourceId
+        present: true
+        regex: '^/subscriptions/[^/]+/resourceGroups/[^/]+/providers/Microsoft.Web/sites/[^/]+$'
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS 
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZUREFUNCTIONSAPP
+          fields:
+            - field: resourceId
+              attribute: azure.resourceId
