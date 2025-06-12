@@ -1,0 +1,58 @@
+relationships:
+  - name: ebpfClientApplicationCallsEbpfServerApplicationFromServerSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: trace_role
+        anyOf: ["server"]
+      - attribute: instrumentation.name
+        anyOf: ["nr_ebpf"]
+      - attribute: ebpf_entity
+        present: true 
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: EXTEBPFCLIENT
+          fields:
+            - field: ip
+              attribute: remote_addr
+            - field: hostname
+              attribute: remote.host.name
+      target:
+        extractGuid:
+          attribute: entity.guid
+
+  - name: ebpfClientApplicationCallsEbpfServerApplicationFromClientSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: trace_role
+        anyOf: ["client"]
+      - attribute: instrumentation.name
+        anyOf: ["nr_ebpf"]
+      - attribute: ebpf_entity
+        present: true 
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: EXTEBPFSERVER
+          fields:
+            - field: ip
+              attribute: remote_addr
+            - field: port
+              attribute: remote_port
+            - field: hostname
+              attribute: remote.host.name
