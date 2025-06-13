@@ -1,0 +1,24 @@
+relationships:
+  - name: storeContainsKiosk
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        anyOf: ["XMLRPC"]
+      - attribute: store.number
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: STORE
+      target:
+        lookupGuid:
+          candidateCategory: KIOSK
+          fields:
+            - field: store.number
+              attribute: store.number
