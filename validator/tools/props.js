@@ -5,5 +5,6 @@ module.exports = {
   DEFINITION_FILE_NAME: 'definition.yml',
   DEFINITION_FILE_NAME_STG: 'definition.stg.yml',
   DASHBOARD_FILE_NAME_SUFFIX: 'dashboard.json',
+  DASHBOARD_FILE_NAME_SUFFIX_STG: 'dashboard.stg.json',
   FILE_ENCODING: 'UTF-8'
 };
