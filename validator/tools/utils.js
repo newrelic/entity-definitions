@@ -5,7 +5,7 @@ const githubHelper = require('./ghHelper');
 const { readdir } = fs.promises;
 const { DEFINITIONS_DIR } = require('./props');
 const { RELATIONSHIPS_SYNTHESIS_DIR } = require('./props');
-const allowedFileNamesRegex = /^[A-Z0-9_]+(?:-[A-Z0-9_]+)?-to-[A-Z0-9_]+(?:-[A-Z0-9_]+)?\.yml$/;
+const allowedFileNamesRegex = /^[A-Z0-9_]+(?:-[A-Z0-9_]+)?-to-[A-Z0-9_]+(?:-[A-Z0-9_]+)?(\.stg)?\.yml$/;
 const regex = new RegExp(allowedFileNamesRegex);
 
 async function getFiles (dir) {
