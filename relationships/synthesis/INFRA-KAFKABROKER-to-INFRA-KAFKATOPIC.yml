@@ -1,5 +1,5 @@
 relationships:
-  - name: kafkaClusterContainsKafkaBroker
+  - name: kafkaBrokerServesKafkaTopic
     version: "1"
     origins:
       - Infrastructure
@@ -8,23 +8,27 @@ relationships:
         anyOf: [ "KafkaBrokerSample" ]
       - attribute: nr.entityType
         anyOf: [ "KafkaBroker" ]
+      - attribute: topic
+        present: true
     relationship:
       expires: P1D
-      relationshipType: CONTAINS
+      relationshipType: SERVES
       source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            attribute: nr.entityType
+      target:
         buildGuid:
           account:
             attribute: accountId
           domain:
             value: INFRA
           type:
-            value: KAFKACLUSTER
+            value: KAFKATOPIC
           identifier:
             fragments:
+              - attribute: topic
+              - value: ":clustername="
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            attribute: nr.entityType
