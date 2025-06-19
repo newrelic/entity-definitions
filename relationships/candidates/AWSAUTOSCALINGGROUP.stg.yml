@@ -1,0 +1,28 @@
+category: AWSAUTOSCALINGGROUP
+lookups:
+  - entityTypes:
+      - domain: INFRA
+        type: AWSAUTOSCALINGGROUP
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.instanceId"]
+          field: instanceId
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+  - entityTypes:
+      - domain: INFRA
+        type: AWSAUTOSCALINGGROUP
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: [ "AutoScalingGroupName" ]
+          field: autoScalingGroupName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: AWSAUTOSCALINGGROUP
