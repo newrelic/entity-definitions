@@ -1,0 +1,30 @@
+relationships:
+  - name: kafkaClusterContainsKafkaBroker
+    version: "1"
+    origins:
+      - Infrastructure
+    conditions:
+      - attribute: event_type
+        value: KafkaBrokerSample
+      - attribute: nr.entityType
+        value: KafkaBroker
+    relationship:
+      expires: P1D
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKACLUSTER
+          identifier:
+            fragments:
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            attribute: nr.entityType
