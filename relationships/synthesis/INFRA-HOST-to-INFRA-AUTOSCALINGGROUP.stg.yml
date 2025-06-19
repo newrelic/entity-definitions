@@ -1,0 +1,24 @@
+relationships:
+  - name: awsAutoScalingGroupManagesHost
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "HOST" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: HOST
+      target:
+        lookupGuid:
+          candidateCategory: AWSAUTOSCALINGGROUP
+          fields:
+            - field: autoScalingGroupName
+              attribute: aws:autoscaling:groupName
