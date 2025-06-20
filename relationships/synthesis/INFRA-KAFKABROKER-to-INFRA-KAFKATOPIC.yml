@@ -1,34 +1,30 @@
 relationships:
-  - name: kafkaBrokerServesKafkaTopic
+  - name: kafkaBrokerManagesKafkaTopic
     version: "1"
     origins:
-      - Infrastructure Agent
+      - NRI-Kafka Integration
     conditions:
       - attribute: event_type
         anyOf: [ "KafkaBrokerSample" ]
       - attribute: nr.entityType
         anyOf: [ "KafkaBroker" ]
+      - attribute: integrationName
+        anyOf: [ "com.newrelic.kafka" ]
       - attribute: topic
-        present: true
+        exists: true
     relationship:
       expires: P1D
-      relationshipType: SERVES
+      relationshipType: MANAGES
       source:
         extractGuid:
           attribute: entityGuid
           entityType:
             attribute: nr.entityType
       target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: KAFKATOPIC
-          identifier:
-            fragments:
-              - attribute: topic
-              - value: ":clustername="
-              - attribute: clusterName
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              attribute: clusterName
+            - field: topic
+              attribute: displayName
