@@ -1,0 +1,26 @@
+domain: INFRA
+type: OCIDATABASE
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.displayName
+- oci.lifecycleState
+- oci.shape
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.database"
+    - attribute: oci.namespace
+      value: "oracle_oci_database"
