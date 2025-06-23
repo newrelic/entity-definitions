@@ -1,0 +1,55 @@
+relationships:
+  - name: azureFunctionAppHostedOnAppServicePlanSTG
+    version: "1"
+    origins:
+      - Azure Integration 
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: azure.resourceId
+        present: true
+      - attribute: entity.type
+        anyOf: [ "AZUREFUNCTIONSAPP" ]
+      - attribute: serverFarmId
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AZUREFUNCTIONSAPP 
+      target:
+        lookupGuid:
+          candidateCategory: AZUREAPPSERVICEPLAN
+          fields:
+            - field: resourceId
+              attribute: serverFarmId
+  - name: azureWebAppHostedOnAppServicePlan
+    version: "1"
+    origins:
+      - Azure Integration 
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: azure.resourceId
+        present: true
+      - attribute: entity.type
+        anyOf: [ "AZUREWEBAPP" ]
+      - attribute: serverFarmId
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AZUREWEBAPP
+      target:
+        lookupGuid:
+          candidateCategory: AZUREAPPSERVICEPLAN
+          fields:
+            - field: resourceId
+              attribute: serverFarmId
