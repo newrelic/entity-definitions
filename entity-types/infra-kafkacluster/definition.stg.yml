@@ -1,0 +1,25 @@
+domain: INFRA
+type: KAFKACLUSTER
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+    - identifier: clusterName
+      name: displayName
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: event_type
+          anyOf: [ "KafkaClusterSample" ]
+      tags:
+        # Cluster information
+        clusterName:
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.stg.json
+
+goldenTags:
+  - clusterName
