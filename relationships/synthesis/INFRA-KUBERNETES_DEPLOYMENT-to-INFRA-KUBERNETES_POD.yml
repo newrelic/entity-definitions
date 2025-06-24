@@ -76,15 +76,21 @@ relationships:
       expires: P75M
       relationshipType: CONTAINS
       source:
-        lookupGuid:
-          candidateCategory: KUBERNETES_DEPLOYMENT
-          fields:
-            - field: replicaset # replicaset owned by deployment
-              attribute: owner_name # replicaset which owns pod
-            - field: namespace # namespace of deployment
-              attribute: namespace # namespace of pod
-            - field: cluster # cluster of deployment
-              attribute: k8s.cluster.name # cluster of pod
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_JOB
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.deployment.name
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
