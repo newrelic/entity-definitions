@@ -1,0 +1,120 @@
+
+domain: INFRA
+type: KUBERNETES_DEPLOYMENT
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+goldenTags:
+- k8s.deploymentName
+- k8s.clusterName
+- k8s.namespaceName
+synthesis:
+  rules:
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.deployment.name
+      encodeIdentifierInGUID: true
+      name: k8s.deployment.name
+      conditions:
+        # kube-state-metrics deployment prefix
+        - attribute: metricName
+          prefix: kube_deployment_
+        # identifier attributes
+        - attribute: k8s.deployment.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+      tags:
+        k8s.deployment.name:
+          entityTagNames: [k8s.deploymentName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+    # Infrastructure event data via opentelemetry 
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Deployment
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+
+    - identifier: entityId
+      name: deploymentName
+      legacyFeatures:
+        overrideGuidType: true
+        useNonStandardAttributes: true
+      conditions:
+        - attribute: eventType
+          value: K8sDeploymentSample
+        - attribute: deploymentName
+          present: true
+        - attribute: podsAvailable
+          present: true
+      tags:
+        deploymentName:
+          entityTagName: k8s.deploymentName
+        clusterName:
+          entityTagName: k8s.clusterName
+        namespaceName:
+          entityTagName: k8s.namespaceName
+        namespace:
+          entityTagName: k8s.namespaceName
+        conditionAvailable:
+          entityTagName: k8s.deployment.conditionAvailable
+        conditionProgressing:
+          entityTagName: k8s.deployment.conditionProgressing
+        conditionReplicaFailure:
+          entityTagName: k8s.deployment.conditionReplicaFailure
+        instanceType:
+          entityTagName: host.instanceType
+        integrationName:
+          entityTagName: newrelic.integrationName
+        integrationVersion:
+          entityTagName: newrelic.integrationVersion
+        agentVersion:
+          entityTagName: newrelic.agentVersion
+        awsRegion:
+          entityTagName: aws.region
+        provider.awsRegion:
+          entityTagName: aws.region
+      prefixedTags:
+        label.:
