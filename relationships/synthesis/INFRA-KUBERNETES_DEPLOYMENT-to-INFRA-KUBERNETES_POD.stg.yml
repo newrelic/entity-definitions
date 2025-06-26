@@ -46,21 +46,15 @@ relationships:
       expires: P75M
       relationshipType: MANAGES
       source:
-        buildGuid:
-          account:
-            lookup: true  
-          domain:
-            value: INFRA
-          type:
-            value: KUBERNETES_DEPLOYMENT
-          identifier:
-            fragments:
-              - attribute: k8s.cluster.name
-              - value: ":"
-              - attribute: k8s.namespace.name
-              - value: ":"
-              - attribute: k8s.deployment.name
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: KUBERNETES_DEPLOYMENT
+          fields:
+            - field: k8s.deployment.name # deployment name of deployment
+              attribute: k8s.deployment.name # deployment of pod
+            - field: k8s.namespace.name # namespace of deployment
+              attribute: k8s.namespace.name # namespace of pod
+            - field: k8s.cluster.name # cluster of deployment
+              attribute: k8s.cluster.name # cluster of pod
       target:
         extractGuid:
           attribute: entity.guid
