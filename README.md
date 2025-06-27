@@ -17,6 +17,7 @@ All notable changes are defined in the [releases page](https://github.com/newrel
 
 ## Getting started
 
+
 For newcomers, we recommend checking the [creating an entity type example](docs/entities/README.md).
 This document will walk through creating an entity type from scratch.
 
