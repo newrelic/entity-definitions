@@ -39,12 +39,31 @@ synthesis:
     prefixedTags:
       tags.:
         ttl: PT4H
+  # Default SD-WAN 
+  - name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: newrelic-flex-sd-wan
+    - attribute: integration_name
+      value: com.newrelic.nri-flex
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip
 - container_service
 
 dashboardTemplates:
+  default:
+    template: default-dashboard.json
   # Cloudgenix (default)
   kentik/cloudgenix:
     template: cloudgenix-dashboard.json
