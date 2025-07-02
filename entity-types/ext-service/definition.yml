@@ -54,6 +54,10 @@ synthesis:
       present: false
     - attribute: newrelic.entity.type
       present: false
+
+      # Filters out opentelemetry scrape Jobs
+    - attribute: job_label
+      present: false
     tags:
       k8s.cluster.name:
         ttl: P1D
@@ -78,6 +82,9 @@ synthesis:
     - attribute: newrelic.entity.type
       present: false
     - attribute: trace_role
+      present: false
+      # Filters out opentelemetry scrape Jobs
+    - attribute: job_label
       present: false
     tags:
       k8s.cluster.name:
@@ -150,7 +157,7 @@ synthesis:
       k8s.deployment.name:
         entityTagName: k8s.deploymentName
         ttl: P1D
-    
+
     # telemetry from NR eBPF agent client
   - identifier: service.name
     name: service.name
@@ -219,6 +226,11 @@ synthesis:
       present: false
     - attribute: ebpf_entity
       present: false
+
+    # Filters out Otel Jobs
+    - attribute: instrumentation.provider
+      value: opentelemetry
+
     tags:
       k8s.cluster.name:
         ttl: P1D
