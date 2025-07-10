@@ -1,0 +1,29 @@
+domain: INFRA
+type: OCIBLOCKSTORE
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.displayName
+- oci.availabilityDomain
+- oci.lifecycleState
+- oci.sizeInGBs
+- oci.timeCreated
+- oci.blockVolumeReplicas
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - identifier: oci.resourceId
+    name: oci.resourceId
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.volume"
+    - attribute: oci.namespace
+      value: "oci_blockstore"

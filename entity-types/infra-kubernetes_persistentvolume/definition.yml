@@ -35,9 +35,6 @@ synthesis:
         # if service.name is present, it's a service
         - attribute: service.name
           present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
       tags:
         k8s.volume.name:
           entityTagNames: [k8s.volumeName]
@@ -54,6 +51,7 @@ synthesis:
           entityTagNames: [k8s.persistentvolume.storageClass]
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
     # kube-state-metrics data via opentelemetry prometheusReceiver preview
     - compositeIdentifier:
         separator: ":"
@@ -103,8 +101,8 @@ synthesis:
     #   encodeIdentifierInGUID: true
     #   name: k8s.object.name
     #   conditions:
-    #     - attribute: event.name
-    #       value: InfrastructureEvent
+    #     - attribute: newrelic.event.type
+    #       value: OtlpInfrastructureEvent
     #     - attribute: k8s.object.kind
     #       value: PersistentVolume
     #     # identifier attributes
@@ -112,15 +110,9 @@ synthesis:
     #       present: true
     #     - attribute: k8s.cluster.name
     #       present: true
-    #     # open telemetry
-    #     - attribute: newrelic.source
-    #       value: api.events.otlp
     #     # if service.name is present, handle as one
     #     - attribute: service.name
     #       present: false
-    #     # value added for test entities only
-    #     - attribute: newrelicOnly
-    #       value: "true"
     - identifier: entityId
       name: volumeName
       legacyFeatures:
