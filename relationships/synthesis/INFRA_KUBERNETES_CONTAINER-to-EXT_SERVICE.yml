@@ -71,3 +71,36 @@ relationships:
       target:
         extractGuid:
           attribute: entity.guid
+  # APM application hosted on a Kubernetes container
+  - name: apmApplicationHostedOnK8sContainer
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":"
+              - attribute: podName
+              - value: ":"
+              - attribute: containerName
+            hashAlgorithm: FARM_HASH
