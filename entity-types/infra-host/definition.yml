@@ -21,7 +21,7 @@ goldenTags:
 - cloud.platform
 synthesis:
   rules:
-    # opentelemetry host data from k8s-otel-collector preview 
+    # opentelemetry host data from k8s-otel-collector preview
     - identifier: k8s.node.name
       name: k8s.node.name
       legacyFeatures:
@@ -58,6 +58,47 @@ synthesis:
         host.image.id:
         host.image.version:
         instrumentation.provider:
+
+    # opentelemetry host data from k8s-otel-collector preview
+    - identifier: k8s.node.name
+      name: k8s.node.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: k8s.node.name
+          present: true
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        k8s.cluster.name:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+
     # opentelemetry host data from opentelemetry-collector
     - identifier: host.id
       name: host.name
@@ -92,6 +133,44 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         k8s.cluster.name:
+
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        k8s.cluster.name:
+
     # opentelemetry host data from opentelemetry-collector
     - identifier: host.id
       name: host.name
@@ -126,6 +205,44 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         k8s.cluster.name:
+
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        k8s.cluster.name:
+
     # opentelemetry host data from opentelemetry-collector
     - identifier: host.id
       name: host.name
@@ -157,6 +274,41 @@ synthesis:
         host.image.id:
         host.image.version:
         instrumentation.provider:
+
+    # opentelemetry host data from opentelemetry-collector
+    - identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+
     # opentelemetry host data from opentelemetry-collector (explicit type)
     - identifier: host.id
       name: host.name
@@ -187,6 +339,7 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         service.name:
+
     # opentelemetry host data from opentelemetry-collector (explicit type)
     - identifier: host.id
       name: host.name
@@ -217,6 +370,7 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         service.name:
+
     # opentelemetry host data from opentelemetry-collector (explicit type)
     - identifier: host.id
       name: host.name
@@ -245,7 +399,8 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         service.name:
-    # opentelemetry host data from New Relic sap solutions 
+
+    # opentelemetry host data from New Relic sap solutions
     - identifier: host.id
       name: host.id
       encodeIdentifierInGUID: true
@@ -256,7 +411,8 @@ synthesis:
         host.id:
         host.name:
         instrumentation.provider:
-    # Infrastructure event data via opentelemetry 
+
+    # Infrastructure event data via opentelemetry
     - compositeIdentifier:
         separator: ":"
         attributes:
@@ -276,10 +432,37 @@ synthesis:
         - attribute: k8s.node.name
           present: true
         - attribute: k8s.cluster.name
-          present: true    
+          present: true
         # if service.name is present, handle as one
         - attribute: service.name
-          present: false      
+          present: false
+
+    # Infrastructure event data via opentelemetry
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.node.name
+          - k8s.event.name
+      encodeIdentifierInGUID: true
+      name: k8s.event.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Node
+        # identifier attributes
+        - attribute: k8s.event.name
+          present: true
+        - attribute: k8s.node.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
 
     # Prometheus node exporter entities
     # AWS by taskArn

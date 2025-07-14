@@ -46,6 +46,45 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.deployment.name
+      encodeIdentifierInGUID: true
+      name: k8s.deployment.name
+      conditions:
+        # kube-state-metrics deployment prefix
+        - attribute: metricName
+          prefix: kube_deployment_
+        # identifier attributes
+        - attribute: k8s.deployment.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        k8s.deployment.name:
+          entityTagNames: [k8s.deploymentName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+
     # kube-state-metrics data via opentelemetry prometheusReceiver preview
     - compositeIdentifier:
         separator: ":"
@@ -79,7 +118,43 @@ synthesis:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
-    # Infrastructure event data via opentelemetry 
+    # kube-state-metrics data via opentelemetry prometheusReceiver preview
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - namespace
+          - deployment
+      encodeIdentifierInGUID: true
+      name: deployment
+      conditions:
+        # kube-state-metrics deployment prefix
+        - attribute: metricName
+          prefix: kube_deployment_
+        # identifier attributes
+        - attribute: deployment
+          present: true
+        - attribute: namespace
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        deployment:
+          entityTagNames: [k8s.deploymentName]
+        namespace:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+
+    # Infrastructure event data via opentelemetry
     - compositeIdentifier:
         separator: ":"
         attributes:
@@ -103,7 +178,36 @@ synthesis:
         # if service.name is present, handle as one
         - attribute: service.name
           present: false
-    # newrelic integration data via nri-bundle 
+
+
+    # Infrastructure event data via opentelemetry
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Deployment
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+
+    # newrelic integration data via nri-bundle
     - identifier: entityId
       name: deploymentName
       legacyFeatures:

@@ -26,7 +26,32 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
-    # Infrastructure event data via opentelemetry 
+
+    - identifier: k8s.cluster.name
+      encodeIdentifierInGUID: true
+      name: k8s.cluster.name
+      conditions:
+        - attribute: metricName
+          value: k8s.cluster.info
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+          ttl: P1D
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+
+    # Infrastructure event data via opentelemetry
     - identifier: k8s.cluster.name
       encodeIdentifierInGUID: true
       name: k8s.cluster.name
@@ -41,6 +66,29 @@ synthesis:
         # if service.name is present, handle as one
         - attribute: service.name
           present: false
+      tags:
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+          ttl: P1D
+
+
+    # Infrastructure event data via opentelemetry
+    - identifier: k8s.cluster.name
+      encodeIdentifierInGUID: true
+      name: k8s.cluster.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Cluster
+        # identifier attributes
+        - attribute: k8s.cluster.name
+          present: true
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
       tags:
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
