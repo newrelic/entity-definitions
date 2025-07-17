@@ -1,0 +1,27 @@
+relationships:
+  - name: apmApplicationCallsAzurePostgresFlexibleServer
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system 
+        anyOf: [ "postgres" ]
+      - attribute: db.instance 
+        present: true
+      - attribute: server.address 
+        regex: '^[a-z0-9\-]+\.postgres\.database\.azure\.com$'
+        present: true
+    relationship:
+      expires: P75M 
+      relationshipType: CALLS 
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: DATABASE
+          fields:
+            - field: endpoint
+              attribute: server.address
