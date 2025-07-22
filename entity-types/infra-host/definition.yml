@@ -13,6 +13,9 @@ goldenTags:
 - azure.resourceGroup
 - gcp.zone
 - gcp.projectId
+- oci.compartmentId
+- oci.region
+- oci.availabilityDomain
 # opentelemetry semantic conventions for cloud instances
 - cloud.provider
 - cloud.account.id
@@ -521,6 +524,17 @@ synthesis:
         aws.Arn:
         # Used in AWSEC2.yml for entity relationship candidates
         aws.ec2.InstanceId:
+
+    - identifier: oci.resourceId
+      name: oci.resourceDisplayName
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: oci.resourceId
+        prefix: "ocid1.instance"
+      - attribute: eventType
+        value: Metric
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
