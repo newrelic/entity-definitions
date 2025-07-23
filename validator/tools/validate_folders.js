@@ -1,4 +1,4 @@
-const { DEFINITIONS_DIR, DEFINITION_FILE_NAME } = require('./props');
+const { DEFINITIONS_DIR, DEFINITION_FILE_NAME, DEFINITION_FILE_NAME_STG } = require('./props');
 const { readdir } = require('fs').promises;
 const fs = require('fs');
 const path = require('path');
@@ -8,7 +8,12 @@ const { FILE_ENCODING } = require('./props');
 (async () => {
   const folderDefinitions = await readdir(DEFINITIONS_DIR, { withFileTypes: true });
   for (const folderDefinition of folderDefinitions) {
-    const definitionPath = path.resolve(DEFINITIONS_DIR, folderDefinition.name, DEFINITION_FILE_NAME);
+    let definitionPath = path.resolve(DEFINITIONS_DIR, folderDefinition.name, DEFINITION_FILE_NAME);
+
+    if (!fs.existsSync(definitionPath)) {
+      definitionPath = path.resolve(DEFINITIONS_DIR, folderDefinition.name, DEFINITION_FILE_NAME_STG);
+    }
+
     if (!fs.existsSync(definitionPath)) {
       console.error(`expected ${DEFINITION_FILE_NAME} in the definitions folder ${folderDefinition.name}`);
       process.exit(1);
