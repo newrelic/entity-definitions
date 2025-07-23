@@ -1,0 +1,34 @@
+relationships:
+  - name: kafkaBrokerServesKafkaTopic
+    version: "1"
+    origins:
+      - Infrastructure Agent
+    conditions:
+      - attribute: event_type
+        anyOf: [ "KafkaBrokerSample" ]
+      - attribute: nr.entityType
+        anyOf: [ "KafkaBroker" ]
+      - attribute: topic
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: SERVES
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            attribute: nr.entityType
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: ":clustername="
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
