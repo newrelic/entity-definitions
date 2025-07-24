@@ -1,0 +1,25 @@
+# Network monitoring entity
+domain: EXT
+type: SCANNER
+synthesis:
+  rules:
+  # SCANNER devices data from NRI Flex
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: newrelic-scanner
+    - attribute: integration_name
+      value: com.newrelic.nri-flex
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+
+goldenTags:
+- device_ip

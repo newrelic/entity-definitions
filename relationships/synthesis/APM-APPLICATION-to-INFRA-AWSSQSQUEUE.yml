@@ -1,0 +1,26 @@
+relationships:
+  - name: apmServiceCallsInfraAwsSqsQueue
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: messaging.system
+        anyOf: [ "aws_sqs" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSSQSQUEUE
+          fields:
+            - field: region
+              attribute: cloud.region
+            - field: accountId
+              attribute: cloud.account.id
+            - field: queueName
+              attribute: messaging.destination.name

@@ -1,0 +1,109 @@
+{
+  "name": "Open Telemetry Apache Server",
+  "pages": [
+    {
+      "name": "Open Telemetry Apache Server",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Requests per second",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(apache.requests) AS `Requests` FROM Metric WHERE otel.library.name='otelcol/apachereceiver' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Total HTTP server traffic (Bytes)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(apache.traffic) WHERE otel.library.name = 'otelcol/apachereceiver' TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+             "units": {
+                "unit": "BYTES"
+              }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Worker Status",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(apache.scoreboard) FACET upper(state) WHERE otel.library.name = 'otelcol/apachereceiver'",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Busy worker status",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(apache.scoreboard) FACET upper(state) WHERE otel.library.name = 'otelcol/apachereceiver' and state not in('waiting','open') TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Idle vs Busy workers",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(apache.workers) WHERE otel.library.name = 'otelcol/apachereceiver' FACET upper(state) TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

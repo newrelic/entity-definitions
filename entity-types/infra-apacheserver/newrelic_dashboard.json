@@ -1,110 +1,87 @@
 {
-  "name": "ApacheSample",
-  "pages": [
-    {
-      "name": "ApacheSample",
-      "widgets": [
-        {
-          "layout": {
-            "column": 1,
-            "row": 1,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Requests per second",
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(`apache.server.net.requestsPerSecond`) as 'Requests' FROM Metric  TIMESERIES auto"
-              }
-            ]
-          }
-        },
-        {
-          "layout": {
-            "column": 7,
-            "row": 1,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Bytes sent per request",
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT (average(`apache.server.net.bytesPerSecond`)/average(`apache.server.net.requestsPerSecond`)) as 'Bytes sent per request' FROM Metric  TIMESERIES auto"
-              }
-            ]
-          }
-        },
-        {
-          "layout": {
-            "column": 1,
-            "row": 4,
-            "width": 12,
-            "height": 3
-          },
-          "title": "Status",
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT latest(`apache.server.idleWorkers` * 1) as 'Idle workers', latest(`apache.server.busyWorkers`) as 'Busy workers', latest(`apache.server.scoreboard.totalWorkers`) as 'Total workers', latest(`apache.server.scoreboard.readingWorkers`) as 'Reading request', latest(`apache.server.scoreboard.writingWorkers`) as 'Writing', latest(`apache.server.scoreboard.loggingWorkers`) as 'Logging', latest(`apache.server.scoreboard.finishingWorkers`) as 'Finishing', latest(`apache.server.scoreboard.closingWorkers`) as 'Closing connection', latest(`apache.server.scoreboard.keepAliveWorkers`) as 'Keep alive', latest(`apache.server.scoreboard.dnsLookupWorkers`) as 'DNS lookup', latest(`apache.server.scoreboard.idleCleanupWorkers`) as 'Idle cleanup', latest(`apache.server.scoreboard.startingWorkers`) as 'Starting' FROM Metric "
-              }
-            ]
-          }
-        },
-        {
-          "layout": {
-            "column": 1,
-            "row": 7,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Busy worker status",
-          "visualization": {
-            "id": "viz.area"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(`apache.server.scoreboard.readingWorkers`) as 'Reading request', average(`apache.server.scoreboard.writingWorkers`) as 'Writing', average(`apache.server.scoreboard.loggingWorkers`) as 'Logging', average(`apache.server.scoreboard.finishingWorkers`) as 'Finishing', average(`apache.server.scoreboard.closingWorkers`) as 'Closing connection', average(`apache.server.scoreboard.keepAliveWorkers`) as 'Keep alive', average(`apache.server.scoreboard.dnsLookupWorkers`) as 'DNS lookup', average(`apache.server.scoreboard.idleCleanupWorkers`) as 'Idle cleanup', average(`apache.server.scoreboard.startingWorkers`) as 'Starting' FROM Metric  TIMESERIES auto"
-              }
-            ]
-          }
-        },
-        {
-          "layout": {
-            "column": 7,
-            "row": 7,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Total vs idle vs busy workers",
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(`apache.server.idleWorkers`) as 'Idle workers', average(`apache.server.busyWorkers`) as 'Busy workers', average(`apache.server.scoreboard.totalWorkers`) as 'Total workers' FROM Metric  TIMESERIES auto"
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
+  "name" : "ApacheSample",
+  "pages" : [ {
+    "name" : "ApacheSample",
+    "widgets" : [ {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 1,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Requests per second",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(net.requestsPerSecond) AS `Requests` FROM ApacheSample TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 7,
+        "row" : 1,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Bytes sent per request",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT (average(net.bytesPerSecond) / average(net.requestsPerSecond)) AS `Bytes sent per request` FROM ApacheSample TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.billboard"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 4,
+        "height" : 3,
+        "width" : 12
+      },
+      "title" : "Status",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT latest((server.idleWorkers * 1)) AS `Idle workers`, latest(server.busyWorkers) AS `Busy workers`, latest(server.scoreboard.totalWorkers) AS `Total workers`, latest(server.scoreboard.readingWorkers) AS `Reading request`, latest(server.scoreboard.writingWorkers) AS `Writing`, latest(server.scoreboard.loggingWorkers) AS `Logging`, latest(server.scoreboard.finishingWorkers) AS `Finishing`, latest(server.scoreboard.closingWorkers) AS `Closing connection`, latest(server.scoreboard.keepAliveWorkers) AS `Keep alive`, latest(server.scoreboard.dnsLookupWorkers) AS `DNS lookup`, latest(server.scoreboard.idleCleanupWorkers) AS `Idle cleanup`, latest(server.scoreboard.startingWorkers) AS `Starting` FROM ApacheSample",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 7,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Busy worker status",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(server.scoreboard.readingWorkers) AS `Reading request`, average(server.scoreboard.writingWorkers) AS `Writing`, average(server.scoreboard.loggingWorkers) AS `Logging`, average(server.scoreboard.finishingWorkers) AS `Finishing`, average(server.scoreboard.closingWorkers) AS `Closing connection`, average(server.scoreboard.keepAliveWorkers) AS `Keep alive`, average(server.scoreboard.dnsLookupWorkers) AS `DNS lookup`, average(server.scoreboard.idleCleanupWorkers) AS `Idle cleanup`, average(server.scoreboard.startingWorkers) AS `Starting` FROM ApacheSample TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 7,
+        "row" : 7,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Total vs idle vs busy workers",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(server.idleWorkers) AS `Idle workers`, average(server.busyWorkers) AS `Busy workers`, average(server.scoreboard.totalWorkers) AS `Total workers` FROM ApacheSample TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    } ]
+  } ]
 }

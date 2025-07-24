@@ -55,6 +55,45 @@ docker-compose build validate-definitions
 
 Read more about the [current validations](/validator/README.md).
 
+## Deploying to Staging
+
+It is possible to perform staging-only changes via file overrides. If you need some changes only to be applied in staging
+temporarily, follow these steps:
+1. Duplicate file to override (e.g. `definition.yml`) and add `.stg` to extension (e.g. `definition.stg.yml`)
+2. Perform changes to `.stg` file
+3. When deploying, `.stg` file will replace original in STG while original will be used for PRODUCTION
+
+Overrides can be applied to all files within `entity-types` and `relationships` directories. Override files live next to originals.
+
+Note that it is still required original file remains untouched so that PRODUCTION deployment is not impacted. Once
+testing in STG is ended, original file can be deleted and `.stg` suffix can be removed to promote it to PRODUCTION.
+
+When testing file deletions, it is needed to duplicate file with `.stg` and leave it empty. Example:
+
+`APM-APPLICATION-to-INFRA-HOST.stg.yml`
+
+```
+relationships: []
+```
+
+It is also possible to test new definitions by adding `.stg` suffix to its files so that they are only deployed in Staging.
+
+> [!CAUTION]
+> Please note while `.stg` files can reference regular files, it cannot happen vice versa. For example, `defintion.stg.yml`
+> can reference `dashboard.json` but `definition.yml` **should not** reference any `.stg` file.
+
+Required validation steps:
+1. Ensure no file references are broken by override
+2. Verify override rule identifiers are different from originals (e.g. mySuperRule -> mySuperRuleStgOverride)
+3. If override changes file enough, you might need to consider adding a new definition / rule
+
+> [!NOTE]  
+> Testing in STG requests will be approved along with an ETA to be released to PRODUCTION. Support to persistent
+> staging-only changes will not be provided or considered
+
+#### How to keep track of override changes
+At any point of time, diff between `.stg` and original file can be done to find what is being overwritten.
+
 ## Testing
 
 You can test that the synthesis rules from your entity definition match the expected telemetry, thus generating the expected entities. In order to do this, we offer the possibility of adding test data that would simulate telemetry events. Whenever there's a contribution via pull request, the test data is checked against the synthesis rules, ensuring your changes match.
@@ -86,7 +125,7 @@ You can test that the synthesis rules from your entity definition match the expe
 
 3. Create your pull request normally and the test would be executed in the background. If the synthesis rules from the definition don't match the test data, a bot will let you know with an explanatory comment in the pull request.
 
-See [ext-pihole definition](https://github.com/newrelic/entity-definitions/tree/main/definitions/ext-pihole/tests/) for an example of test data.
+See [ext-pihole definition](https://github.com/newrelic/entity-definitions/tree/main/entity-types/ext-pihole/tests/) for an example of test data.
 
 
 ## Support
@@ -104,7 +143,7 @@ Is the information provided in the repository not enough to solve your doubts? G
 ## Contributing
 We encourage you to add new entity types! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project.
 
-If you have any questions, or to execute our corporate CLA, required if your contribution is on behalf of a company,  please drop us an email at opensource@newrelic.com.
+If you have any questions, or to execute our corporate CLA, required if your contribution is on behalf of a company, please drop us an email at opensource@newrelic.com.
 
 **A note about vulnerabilities**
 
@@ -114,4 +153,3 @@ If you believe you have found a security vulnerability in this project or any of
 
 ## License
 Entity Synthesis Definitions is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.
-

@@ -1,36 +1,44 @@
+# Network monitoring entity
 domain: EXT
 type: FIREWALL
 synthesis:
   rules:
-    # Standard firewall devices from Kentik
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: provider
-          value: kentik-firewall
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-
-    # Cisco Firepower devices from Kentik
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: provider
-          value: kentik-firepower
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
+  # Standard firewall devices from Kentik
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-firewall
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # Cisco Firepower devices from Kentik
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-firepower
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip

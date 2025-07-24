@@ -1,40 +1,44 @@
+# Network monitoring entity
 domain: EXT
 type: ROUTER
 synthesis:
   rules:
-    # Network Router devices from Kentik using Metric API
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: provider
-          value: kentik-router
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-
-    # Mikrotik routers using Metric API
-    # https://github.com/OscarDCorbalan/mikrotik-newrelic/
-    - identifier: mikrotik.serialnumber
-      name: mikrotik.name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: instrumentation.provider
-          value: mikrotik-router
-      tags:
-        instrumentation.provider:
-        instrumentation.version:
-          entityTagName: agentVersion
-        mikrotik.model:
-          entityTagName: model
-        mikrotik.boardname:
-          entityTagName: boardname
-        mikrotik.currentfirmware:
-          entityTagName: firmware
+  # Network Router devices from Kentik using Metric API
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-router
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # Mikrotik routers using Metric API
+  # https://github.com/OscarDCorbalan/mikrotik-newrelic/
+  - identifier: mikrotik.serialnumber
+    name: mikrotik.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.provider
+      value: mikrotik-router
+    tags:
+      instrumentation.provider:
+      instrumentation.version:
+        entityTagName: agentVersion
+      mikrotik.model:
+        entityTagName: model
+      mikrotik.boardname:
+        entityTagName: boardname
+      mikrotik.currentfirmware:
+        entityTagName: firmware
 
 goldenTags:
 - device_ip

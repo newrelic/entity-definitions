@@ -1,0 +1,27 @@
+relationships:
+  - name: extServiceCallsAwsLambdaFunction_Explicit
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Log", "Span"]
+      - attribute: newrelic.source 
+        anyOf: [ "api.traces.otlp", "api.logs.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ] 
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAFUNCTION
+          fields:
+            - field: awsLambdaArn
+              attribute: newrelic.aws_metric_streams.arn

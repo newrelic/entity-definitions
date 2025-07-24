@@ -1,0 +1,27 @@
+domain: INFRA
+type: OCIOBJECTSTORAGE
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.availabilityDomain
+- oci.createdBy
+- oci.name
+- oci.timeCreated
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - identifier: oci.resourceID
+    name: oci.resourceDisplayName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceID
+      prefix: "ocid1.bucket"
+    - attribute: oci.namespace
+      value: "oci_objectstorage"

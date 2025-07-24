@@ -14,7 +14,7 @@ relationships:
       source:
         buildGuid:
           account:
-            lookup: yes  
+            lookup: true  
           domain:
             value: INFRA
           type:
@@ -32,3 +32,37 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_PERSISTENTVOLUMECLAIM
+  - name: otelKsmK8sPersistentVolumeContainsPersistentVolumeClaim
+    # use kube-state-metrics kube_job_owner metric
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_persistentvolume_claim_ref" ]
+      - attribute: newrelicOnly
+        anyOf: [ "true" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_PERSISTENTVOLUME
+      target:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_PERSISTENTVOLUMECLAIM
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: claim_namespace
+              - value: ":"
+              - attribute: name
+            hashAlgorithm: FARM_HASH

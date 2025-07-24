@@ -1,22 +1,27 @@
+# Network monitoring entity
 domain: EXT
 # Network Synthetic tests from Kentik using Metric API
 type: NETWORK_SYNTH
 synthesis:
-  name: test_name
-  identifier: test_id
-  encodeIdentifierInGUID: true
+  rules:
+  - name: test_name
+    identifier: test_id
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-network-synthetic
+    tags:
+      agent_name:
+        multiValue: false
+      src_addr:
+        multiValue: false
+      dst_addr:
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
-  conditions:
-  - attribute: provider
-    value: kentik-network-synthetic
-
-  tags:
-    agent_name:
-      multiValue: false
-    src_addr:
-      multiValue: false
-    dst_addr:
-      multiValue: false
 goldenTags:
 - agent_name
 - src_addr

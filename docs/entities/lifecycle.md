@@ -4,9 +4,9 @@
 Entities in New Relic have a different lifecycle based on their entity types. 
 
 The key configuration that determines how long an entity lives is the `entityExpirationTime` setting in the `definition.yml` file, under the `configuration` section. 
-This setting controls how long the record of an entity will persist in New Relic after it stops reporting data.
+This setting controls what's the minimum guaranteed time that the record of an entity will persist in New Relic after it stops reporting data.
 
-For example, let's consider an entity type called `PIHOLE` in the `EXT` domain. By default, this entity is stored for `eight days` after it stops reporting. 
+For example, let's consider an entity type called `PIHOLE` in the `EXT` domain. By default, this entity is stored for **at least** `eight days` after it stops reporting. 
 You can modify this value to suit your specific needs.
 
 ```

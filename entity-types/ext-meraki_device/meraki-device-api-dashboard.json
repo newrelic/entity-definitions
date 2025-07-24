@@ -1,0 +1,276 @@
+{
+    "name": "Meraki Device",
+    "description": null,
+    "pages": [
+      {
+        "name": "Meraki Device",
+        "description": null,
+        "widgets": [
+          {
+            "title": "Summary",
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "width": 3,
+              "height": 6
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "format": "%b %d, %Y, %X",
+                  "name": "Last Update",
+                  "type": "custom"
+                }
+              ],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(device_name) AS 'Device Name',\n  latest(mac) AS 'MAC Address',\n  latest(model) AS 'Model',\n  latest(serial) AS 'serial',\n  if(latest(provider) = 'kentik.meraki', 'SNMP', 'Meraki API') AS 'Collection Method',\n  latest(org_name) AS 'Parent Organization',\n  latest(org_id) AS 'Parent Organization ID',\n  latest(network) AS 'Parent Network',\n  latest(network_id) AS 'Parent Network ID',\n  if(latest(kentik.meraki.uplinks.Sent) > 0, 'Status and Utilization', 'Status Only') AS 'API Device Options',\n  if(latest(kentik.meraki.vpn_status.Status) >= 0 , 'Enabled', 'Disabled') AS 'VPN Monitoring',\n  if(latest(kentik.meraki.vpn_status.PeerStatus) >= 0, 'Enabled', 'Disabled') AS 'VPN Peers',\n  latest(tags.container_service) AS 'Network Agent',\n  latest(timestamp) AS 'Last Update'\nWHERE (\n  metricName LIKE 'kentik.meraki.uplink%'OR\n  metricName LIKE 'kentik.meraki.device%' OR\n  metricName LIKE 'kentik.meraki.vpn%'\n)"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "Device Status",
+            "layout": {
+              "column": 4,
+              "row": 1,
+              "width": 3,
+              "height": 2
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(kentik.meraki.device_status.Status)\nFACET cases(WHERE kentik.meraki.device_status.Status[latest] = 1 AS 'Online', WHERE kentik.meraki.device_status.Status[latest] != 1 AS 'Other')\nWHERE metricName = 'kentik.meraki.device_status.Status'"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 0.5
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 0
+                }
+              ]
+            }
+          },
+          {
+            "title": "Total Bytes",
+            "layout": {
+              "column": 7,
+              "row": 1,
+              "width": 6,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.area"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  max(kentik.meraki.uplinks.Sent) AS 'Transmit',\n  max(kentik.meraki.uplinks.Recv) AS 'Receive'\nFACET interface\nTIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "units": {
+                "unit": "BYTES"
+              }
+            }
+          },
+          {
+            "title": "Uplink Status",
+            "layout": {
+              "column": 4,
+              "row": 3,
+              "width": 3,
+              "height": 4
+            },
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(kentik.meraki.uplink_status.Status)\nFACET interface, status"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "thresholds": [
+                {
+                  "alertSeverity": "WARNING",
+                  "value": 1.1
+                },
+                {
+                  "alertSeverity": "CRITICAL",
+                  "value": 2
+                }
+              ]
+            }
+          },
+          {
+            "title": "Loss Percent",
+            "layout": {
+              "column": 7,
+              "row": 4,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  max(kentik.meraki.uplinks.LossPct) AS 'Loss Percent'\nFACET interface\nTIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "yAxisLeft": {
+                "max": 100,
+                "min": 0,
+                "zero": false
+              },
+              "yAxisRight": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "Latency MS",
+            "layout": {
+              "column": 10,
+              "row": 4,
+              "width": 3,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.line"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "legend": {
+                "enabled": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  max(kentik.meraki.uplinks.LatencyMS) AS 'Latency'\nFACET interface\nTIMESERIES 5 MINUTES"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              },
+              "units": {
+                "unit": "MS"
+              },
+              "yAxisLeft": {
+                "zero": true
+              },
+              "yAxisRight": {
+                "zero": true
+              }
+            }
+          },
+          {
+            "title": "VPN Inventory (Top 1000)",
+            "layout": {
+              "column": 1,
+              "row": 7,
+              "width": 6,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(kentik.meraki.vpn_status.Status) AS 'Status Code'\nFACET\n  vpn_mode AS 'VPN Mode',\n  status AS 'Status',\n  wan1,\n  wan2\nLIMIT 1000"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          },
+          {
+            "title": "VPN Peer Inventory (Top 1000)",
+            "layout": {
+              "column": 7,
+              "row": 7,
+              "width": 6,
+              "height": 3
+            },
+            "visualization": {
+              "id": "viz.table"
+            },
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 0,
+                  "query": "FROM Metric SELECT\n  latest(kentik.meraki.vpn_status.PeerStatus) AS 'Status Code'\nFACET\n  vpn_mode AS 'VPN Mode',\n  peer_name AS 'Peer Name',\n  peer_type AS 'Peer Type',\n  peer_reachability AS 'Reachability',\n  status AS 'Status',\n  wan1,\n  wan2\nLIMIT 1000"
+                }
+              ],
+              "platformOptions": {
+                "ignoreTimeRange": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

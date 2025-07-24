@@ -3,26 +3,28 @@ createdAt:
   unit: TIMESTAMP
   queries:
     newRelic:
-      select: latest(k8s.persistentvolumeclaim.createdAt) * 1000
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(createdAt) * 1000
       from: K8sPersistentVolumeClaimSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_persistentvolumeclaim_created) * 1000
+      where: metricName = 'kube_persistentvolumeclaim_created'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 requestedStorageBytes:
   title: Capacity
   unit: BYTES
   queries:
     newRelic:
-      select: latest(k8s.persistentvolumeclaim.requestedStorageBytes)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: latest(requestedStorageBytes)
       from: K8sPersistentVolumeClaimSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kube_persistentvolumeclaim_resource_requests_storage_bytes)
+      where: metricName = 'kube_persistentvolumeclaim_resource_requests_storage_bytes'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name

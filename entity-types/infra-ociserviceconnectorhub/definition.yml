@@ -1,0 +1,29 @@
+domain: INFRA
+type: OCISERVICECONNECTORHUB
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.availabilityDomain
+- oci.displayName
+- oci.source
+- oci.timeCreated
+- oci.target
+- oci.lifecycleState
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - identifier: oci.connectorId
+    name: oci.connectorName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.connectorId
+      prefix: "ocid1.serviceconnector"
+    - attribute: oci.namespace
+      value: "oci_service_connector_hub"

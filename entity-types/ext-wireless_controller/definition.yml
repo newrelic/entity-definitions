@@ -1,39 +1,47 @@
+# Network monitoring entity
 domain: EXT
 type: WIRELESS_CONTROLLER
 synthesis:
   rules:
-    # Cisco Meraki devices
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-      - attribute: provider
-        value: kentik-cloud-controller
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
-
-    # Traditional wireless controllers
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-      - attribute: provider
-        value: kentik-wireless-controller
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        kentik.model:
-          entityTagName: device_model
-          multiValue: false
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
+  # Cisco Meraki devices
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cloud-controller
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # Traditional wireless controllers
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-wireless-controller
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      kentik.model:
+        entityTagName: device_model
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip

@@ -1,3 +1,4 @@
+# Network monitoring entity
 domain: EXT
 # Devices from Kentik's ktranslate agent that do not match a known entity type
 # Current list is defined in the 'Provider' type definition in ktranslate, found here:
@@ -6,21 +7,25 @@ type: KENTIK_DEFAULT
 
 synthesis:
   rules:
-    # no snmp-profile matched
-    - identifier: device_name
-      name: device_name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: provider
-          value: kentik-default
-      tags:
-        src_addr:
-          entityTagName: device_ip
-          multiValue: false
-        profile_message:
-        tags.container_service:
-          entityTagName: container_service
-          multiValue: false
+  # no snmp-profile matched
+  - identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-default
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      profile_message:
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip

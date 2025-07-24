@@ -1,0 +1,258 @@
+{
+    "name": "ICMP Devices - Availabilty",
+    "description": null,
+    "pages": [
+        {
+            "name": "ICMP Devices - Availabilty",
+            "description": null,
+            "widgets": [
+                {
+                    "title": "",
+                    "layout": {
+                        "column": 1,
+                        "row": 1,
+                        "width": 3,
+                        "height": 2
+                    },
+                    "visualization": {
+                        "id": "viz.billboard"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT latest(jnpr_deviceType) AS 'Device-Type' from ping_checks"
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        }
+                    }
+                },
+                {
+                    "title": "",
+                    "layout": {
+                        "column": 4,
+                        "row": 1,
+                        "width": 3,
+                        "height": 2
+                    },
+                    "visualization": {
+                        "id": "viz.billboard"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT latest(jnpr_location) AS 'Device-Location' from ping_checks"
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        }
+                    }
+                },
+                {
+                    "title": "",
+                    "layout": {
+                        "column": 7,
+                        "row": 1,
+                        "width": 3,
+                        "height": 2
+                    },
+                    "visualization": {
+                        "id": "viz.billboard"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT count(*) AS 'Successful-Counts' from ping_checks  WHERE error IS NOT NULL"
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        }
+                    }
+                },
+                {
+                    "title": "",
+                    "layout": {
+                        "column": 10,
+                        "row": 1,
+                        "width": 3,
+                        "height": 2
+                    },
+                    "visualization": {
+                        "id": "viz.billboard"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT count(error) AS 'Error-Count' from ping_checks "
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        }
+                    }
+                },
+                {
+                    "title": "Average-Packet-Loss-Trend",
+                    "layout": {
+                        "column": 1,
+                        "row": 3,
+                        "width": 6,
+                        "height": 3
+                    },
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "legend": {
+                            "enabled": true
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT average(packetLoss) AS 'Average Packets Lost' from ping_checks FACET jnpr_location SINCE 1 day ago TIMESERIES 1 hour LIMIT max"
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        },
+                        "yAxisLeft": {
+                            "zero": true
+                        },
+                        "yAxisRight": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "title": "Average-Packets-Received-Trend",
+                    "layout": {
+                        "column": 7,
+                        "row": 3,
+                        "width": 6,
+                        "height": 3
+                    },
+                    "visualization": {
+                        "id": "viz.area"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "legend": {
+                            "enabled": true
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT average(packetsReceived) AS 'Average Packets Received' from ping_checks FACET jnpr_location SINCE 1 day ago TIMESERIES 1 hour LIMIT max"
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        }
+                    }
+                },
+                {
+                    "title": "Error-Rate",
+                    "layout": {
+                        "column": 1,
+                        "row": 6,
+                        "width": 4,
+                        "height": 3
+                    },
+                    "visualization": {
+                        "id": "viz.billboard"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT rate(count(error), 5 minutes) AS 'Error-Rate' from ping_checks COMPARE WITH 1 day ago"
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        }
+                    }
+                },
+                {
+                    "title": "Error-Details",
+                    "layout": {
+                        "column": 5,
+                        "row": 6,
+                        "width": 4,
+                        "height": 3
+                    },
+                    "visualization": {
+                        "id": "viz.table"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT count(error) from ping_checks FACET  error, error_msg "
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        }
+                    }
+                },
+                {
+                    "title": "Std-dev",
+                    "layout": {
+                        "column": 9,
+                        "row": 6,
+                        "width": 4,
+                        "height": 3
+                    },
+                    "visualization": {
+                        "id": "viz.billboard"
+                    },
+                    "rawConfiguration": {
+                        "facet": {
+                            "showOtherSeries": false
+                        },
+                        "nrqlQueries": [
+                            {
+                                "accountId": 0,
+                                "query": "SELECT rate(count(stddev), 5 minutes) AS 'Std-dev' from ping_checks COMPARE WITH 1 day ago"
+                            }
+                        ],
+                        "platformOptions": {
+                            "ignoreTimeRange": false
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+  }

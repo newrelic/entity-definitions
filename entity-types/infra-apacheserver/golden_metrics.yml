@@ -3,41 +3,37 @@ requestsPerSecond:
   unit: REQUESTS_PER_SECOND
   queries:
     newRelic:
-      select: average(apache.server.net.requestsPerSecond)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: average(net.requestsPerSecond)
       from: ApacheSample
       eventId: entityGuid
       eventName: entityName
+    # currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
 totalBytesSentPerSecond:
   title: Total bytes sent per second
   unit: BYTES_PER_SECOND
   queries:
     newRelic:
-      select: average(apache.server.net.bytesPerSecond)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: average(net.bytesPerSecond)
       from: ApacheSample
       eventId: entityGuid
       eventName: entityName
+    # currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
+
 busyWorkers:
   title: Current number of busy workers
   unit: COUNT
   queries:
     newRelic:
-      select: average(apache.server.busyWorkers)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: average(server.busyWorkers)
       from: ApacheSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(apache.workers)
+      from: Metric
+      where: state = 'busy'
       eventId: entityGuid
       eventName: entityName
 idleWorkers:
@@ -45,12 +41,13 @@ idleWorkers:
   unit: COUNT
   queries:
     newRelic:
-      select: average(apache.server.idleWorkers)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-    newRelicSample:
       select: average(server.idleWorkers)
       from: ApacheSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(apache.workers)
+      from: Metric
+      where: state = 'idle'
       eventId: entityGuid
       eventName: entityName

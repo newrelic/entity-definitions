@@ -1,0 +1,58 @@
+relationships:
+  - name: apmApplicationProducesToAzureServiceBusNamespace
+    version: "1"
+    origins:
+      - Distributed Tracing 
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: server.address
+        regex: '^[a-z0-9\-]+\.servicebus\.windows\.net$'
+        present: true
+      - attribute: span.kind
+        anyOf: [ "producer" ] 
+      - attribute: name 
+        regex: "MessageBroker/[^/]*/[^/]*/Produce/Named/[^/]*"
+      - attribute: messaging.destination.name 
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURESERVICEBUSNAMESPACE 
+          fields:
+            - field: endpoint 
+              attribute: server.address
+
+  - name: apmApplicationConsumesFromAzureServiceBusNamespace
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: server.address
+        regex: '^[a-z0-9\-]+\.servicebus\.windows\.net$'
+        present: true
+      - attribute: span.kind
+        anyOf: [ "consumer" ] 
+      - attribute: name 
+        regex: "MessageBroker/[^/]*/[^/]*/Consume/Named/[^/]*"
+      - attribute: messaging.destination.name 
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES 
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURESERVICEBUSNAMESPACE 
+          fields:
+            - field: endpoint
+              attribute: server.address

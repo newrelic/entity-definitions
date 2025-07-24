@@ -4,6 +4,10 @@ goldenTags:
 - apache.hostname
 - apache.port
 - apache.version
+# Open Telemetry
+- apache.server.name
+- apache.server.port
+
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -12,3 +16,41 @@ dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - apache.server.name
+        - apache.server.port
+    name: apache.server.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: apache.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics coming from apache receiver, given that metrics
+      # could deffer between different runtime receivers. 
+      - attribute: otel.library.name
+        value: otelcol/apachereceiver
+    tags:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      apache.server.name:
+      apache.server.port:
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider

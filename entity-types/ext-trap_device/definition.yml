@@ -1,3 +1,4 @@
+# Network monitoring entity
 domain: EXT
 type: TRAP_DEVICE
 
@@ -5,22 +6,25 @@ configuration:
   entityExpirationTime: QUARTERLY
 
 synthesis:
-  name: device_name
-  identifier: device_name
-  encodeIdentifierInGUID: true
+  rules:
+  - name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-trap-device
+    tags:
+      src_addr:
+        entityTagName: src_addr
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
-  conditions:
-  - attribute: provider
-    value: kentik-trap-device
-
-  tags:
-    src_addr:
-      entityTagName: src_addr
-      multiValue: false
-    tags.container_service:
-      entityTagName: container_service
-      multiValue: false
-    
 goldenTags:
 - src_addr
 - container_service
