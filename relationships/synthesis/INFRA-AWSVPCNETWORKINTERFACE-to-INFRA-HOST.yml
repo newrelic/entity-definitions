@@ -1,0 +1,52 @@
+relationships:
+  - name: awsVpcNetworkInterfaceConnectsToHost
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "HOST" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONNECTS_TO
+      source:
+        lookupGuid:
+          candidateCategory: AWSVPCNETWORKINTERFACE
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: HOST
+
+  - name: awsVpcNetworkInterfaceConnectsToSubnet
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSEC2SUBNET", "AWS_EC2_SUBNET" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONNECTS_TO
+      source:
+        lookupGuid:
+          candidateCategory: AWSVPCNETWORKINTERFACE
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSEC2SUBNET

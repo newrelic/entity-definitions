@@ -1,28 +1,26 @@
 relationships:
-  - name: awsRdsClusterContainsRdsInstance
+  - name: awsTransitGatewayConnectsToVpnConnection
     version: "1"
     origins:
       - AWS Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "MetricRaw" ]
+        anyOf: [ "Metric" ]
       - attribute: entity.type
-        anyOf: [ "AWSRDSDBINSTANCE", "AWS_RDS_DB_INSTANCE" ]
+        anyOf: [ "AWSVPNCONNECTION", "AWS_VPN_CONNECTION" ]
     relationship:
       expires: P75M
-      relationshipType: HOSTS
+      relationshipType: CONNECTS_TO
       source:
         lookupGuid:
-          candidateCategory: AWSRDSDBCLUSTER
+          candidateCategory: AWSTRANSITGATEWAYTRANSITGATEWAY
           fields:
             - field: awsAccountId
               attribute: aws.accountId
             - field: awsRegion
               attribute: aws.region
-            - field: awsRdsClusterIdentifier
-              attribute: aws.rds.dbClusterIdentifier
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: AWSRDSDBINSTANCE
+            value: AWSVPNCONNECTION

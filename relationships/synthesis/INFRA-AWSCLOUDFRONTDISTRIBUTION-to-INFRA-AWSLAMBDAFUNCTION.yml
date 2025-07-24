@@ -1,5 +1,5 @@
 relationships:
-  - name: awsEcsClusterHostsEcsService
+  - name: awsCloudfrontHostsLambdaFunction
     version: "1"
     origins:
       - AWS Integration
@@ -7,18 +7,20 @@ relationships:
       - attribute: eventType
         anyOf: [ "Metric" ]
       - attribute: entity.type
-        anyOf: [ "AWSECSSERVICE", "AWS_ECS_SERVICE" ]
+        anyOf: [ "AWSLAMBDAFUNCTION", "AWS_LAMBDA_FUNCTION" ]
     relationship:
       expires: P75M
       relationshipType: HOSTS
       source:
         lookupGuid:
-          candidateCategory: AWSECSCLUSTER
+          candidateCategory: AWSCLOUDFRONTDISTRIBUTION
           fields:
-            - field: awsEcsClusterArn
-              attribute: aws.ecs.ClusterName
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: AWSECSSERVICE
+            value: AWSLAMBDAFUNCTION

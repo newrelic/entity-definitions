@@ -1,0 +1,104 @@
+relationships:
+  - name: awsDynamoDbTableConnectsToDynamoDbTable
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSDYNAMODBTABLE", "AWS_DYNAMO_DB_TABLE" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONNECTS_TO
+      source:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSDYNAMODBTABLE
+
+  - name: awsDynamoDbTableConnectsToS3Bucket
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSS3BUCKET", "AWS_S3_BUCKET" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONNECTS_TO
+      source:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSS3BUCKET
+
+  - name: awsDynamoDbTableTriggersLambdaFunction
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSLAMBDAFUNCTION", "AWS_LAMBDA_FUNCTION" ]
+    relationship:
+      expires: P75M
+      relationshipType: TRIGGERS
+      source:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSLAMBDAFUNCTION
+
+  - name: awsDynamoDbTableTriggersKinesisStream
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSKINESISSTREAM", "AWS_KINESIS_STREAM" ]
+    relationship:
+      expires: P75M
+      relationshipType: TRIGGERS
+      source:
+        lookupGuid:
+          candidateCategory: AWSDYNAMODBTABLE
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSKINESISSTREAM

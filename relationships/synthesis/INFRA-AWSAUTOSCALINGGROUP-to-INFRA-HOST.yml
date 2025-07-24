@@ -1,0 +1,52 @@
+relationships:
+  - name: awsAutoscalingGroupContainsHost
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "HOST" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSAUTOSCALINGGROUP
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: HOST
+
+  - name: awsAutoscalingGroupCallsEcsCluster
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSECSCLUSTER", "AWS_ECS_CLUSTER" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: AWSAUTOSCALINGGROUP
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSECSCLUSTER

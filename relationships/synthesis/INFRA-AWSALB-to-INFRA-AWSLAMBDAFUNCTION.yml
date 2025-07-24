@@ -1,0 +1,78 @@
+relationships:
+  - name: awsAlbCallsLambdaFunction
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSLAMBDAFUNCTION", "AWS_LAMBDA_FUNCTION" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: AWSALB
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSLAMBDAFUNCTION
+
+  - name: awsAlbCallsAwsAlb
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSALB", "AWS_ALB" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: AWSALB
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSALB
+
+  - name: awsAlbCallsEcsService
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSECSSERVICE", "AWS_ECS_SERVICE" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: AWSALB
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSECSSERVICE

@@ -1,0 +1,130 @@
+relationships:
+  - name: awsS3BucketConnectsToS3Bucket
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSS3BUCKET", "AWS_S3_BUCKET" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONNECTS_TO
+      source:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSS3BUCKET
+
+  - name: awsS3BucketTriggersLambdaFunction
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSLAMBDAFUNCTION", "AWS_LAMBDA_FUNCTION" ]
+    relationship:
+      expires: P75M
+      relationshipType: TRIGGERS
+      source:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSLAMBDAFUNCTION
+
+  - name: awsS3BucketTriggersSnsTopicTriggers
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSSNSTOPIC", "AWS_SNS_TOPIC" ]
+    relationship:
+      expires: P75M
+      relationshipType: TRIGGERS
+      source:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSSNSTOPIC
+
+  - name: awsS3BucketTriggersSqsQueueTriggers
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSSQSQUEUE", "AWS_SQS_QUEUE" ]
+    relationship:
+      expires: P75M
+      relationshipType: TRIGGERS
+      source:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSSQSQUEUE
+
+  - name: awsS3BucketCallsApiGatewayStage
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSAPIGATEWAYSTAGE", "AWS_API_GATEWAY_STAGE" ]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSAPIGATEWAYSTAGE

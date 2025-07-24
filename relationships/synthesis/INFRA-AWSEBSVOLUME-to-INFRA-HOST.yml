@@ -1,5 +1,5 @@
 relationships:
-  - name: awsEcsClusterHostsEcsService
+  - name: awsEbsVolumeConnectsToHost
     version: "1"
     origins:
       - AWS Integration
@@ -7,18 +7,20 @@ relationships:
       - attribute: eventType
         anyOf: [ "Metric" ]
       - attribute: entity.type
-        anyOf: [ "AWSECSSERVICE", "AWS_ECS_SERVICE" ]
+        anyOf: [ "HOST" ]
     relationship:
       expires: P75M
-      relationshipType: HOSTS
+      relationshipType: CONNECTS_TO
       source:
         lookupGuid:
-          candidateCategory: AWSECSCLUSTER
+          candidateCategory: AWSEBSVOLUME
           fields:
-            - field: awsEcsClusterArn
-              attribute: aws.ecs.ClusterName
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: AWSECSSERVICE
+            value: HOST

@@ -1,5 +1,5 @@
 relationships:
-  - name: awsEcsClusterHostsEcsService
+  - name: awsAlbConnectsToAlbTargetGroup
     version: "1"
     origins:
       - AWS Integration
@@ -7,18 +7,20 @@ relationships:
       - attribute: eventType
         anyOf: [ "Metric" ]
       - attribute: entity.type
-        anyOf: [ "AWSECSSERVICE", "AWS_ECS_SERVICE" ]
+        anyOf: [ "AWSALBTARGETGROUP", "AWS_ALB_TARGET_GROUP" ]
     relationship:
       expires: P75M
-      relationshipType: HOSTS
+      relationshipType: CONNECTS_TO
       source:
         lookupGuid:
-          candidateCategory: AWSECSCLUSTER
+          candidateCategory: AWSALB
           fields:
-            - field: awsEcsClusterArn
-              attribute: aws.ecs.ClusterName
+            - field: awsAccountId
+              attribute: aws.accountId
+            - field: awsRegion
+              attribute: aws.region
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: AWSECSSERVICE
+            value: AWSALBTARGETGROUP
