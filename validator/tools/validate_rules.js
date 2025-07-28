@@ -140,6 +140,21 @@ const RULES = [
         throw new Error(`We don't allow custom golden metrics & tags for ${domainType}. Please open an issue if you want to change this type.`);
       }
     }
+  },
+  {
+    name: 'UNINSTRUMENTED entities must not use synthesis',
+    apply: def => {
+      synthesisBlock = def.synthesis || {}
+
+      if (def.domain === 'UNINSTRUMENTED' &&
+        (synthesisBlock.disabled !== true ||
+        synthesisBlock.name !== undefined ||
+        synthesisBlock.rules !== undefined)
+      ) {
+        throw new Error(`Synthesis rules is not allowed for UNINSTRUMENTED types.`)
+      }
+
+    }
   }
 ];
 
