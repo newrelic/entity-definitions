@@ -44,13 +44,13 @@ Whenever there's a contribution via pull request, some validations are automatic
 You can execute the validations locally using our dockerized validator:
 
 ```
-docker-compose run validate-definitions
+docker compose run validate-definitions
 ```
 
 Remember that you may need to rebuild the images to pick up validation changes if you have run this in the past.
 
 ```
-docker-compose build validate-definitions
+docker compose build validate-definitions
 ```
 
 Read more about the [current validations](/validator/README.md).

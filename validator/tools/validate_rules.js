@@ -69,6 +69,10 @@ const RULES = [
     name: 'Entities with the same identifier and conditions must have the same domain and type',
     apply: def => {
       if ('synthesis' in def) {
+        if (def.synthesis.disabled === true) {
+          return;
+        }
+
         if (def.synthesis.rules !== undefined) {
           def.synthesis.rules.forEach((rule) => {
             const identifier = rule.identifier;
