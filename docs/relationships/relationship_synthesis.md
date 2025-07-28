@@ -81,6 +81,8 @@ relationships:
     version: "1"
     origins:
       - OpenTelemetry
+    entitlements:
+      - testEntitlement
     conditions:
       - attribute: entity.type
         anyOf: [ "PIXIE_DNS" ]
@@ -172,6 +174,25 @@ The full list of supported origins (as of July 2023) is the following:
 One rule can be applied to multiple sources, as shown in the example. These origins are used by our internal services 
 to filter which rules to evaluate and which ones to ignore. 
 The mapping of origins to sources allows for performance improvements when evaluating rules via the matching system.
+
+### Entitlements
+
+**This is an experimental feature and not ready to use**
+**PR's using this feature will be rejected**
+
+```yaml
+entitlements:
+  - testEntitlement
+```
+
+The account must have at least one of the specificed entitlements in order to generate a relationship.
+
+The entitlements to use is a closed list defined below:
+
+| **Entitlement** | **Description** |
+|-----------------|-----------------|
+| testEntitlement | Only for testing purposes. A rule with this entitlement will **NEVER** match. |
+
 
 ### Conditions
 
