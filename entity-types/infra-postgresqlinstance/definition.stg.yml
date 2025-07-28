@@ -1,0 +1,55 @@
+domain: INFRA
+type: POSTGRESQLINSTANCE
+
+synthesis:
+  rules:
+    - identifier: postgres.instance.endpoint # server.address:server.port
+      name: postgres.instance.endpoint 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: postgresql.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This filters only metrics coming from postgresqlreceiver , given that metrics
+        # could differ between different runtime receivers.
+      tags:
+        # Environment resource attributes
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+
+    - identifier: entityId
+      name: entityName
+      legacyFeatures:
+        useNonStandardAttributes: true
+        overrideGuidType: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      conditions:
+        - attribute: event_type
+          value: 'PostgresqlInstanceSample'
+      tags:
+        integrationName:
+          ttl: P1D
+        integrationVersion:
+          ttl: P1D
+        reportingAgent:
+          ttl: P1D
+
+goldenTags:
+- postgres.host
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
