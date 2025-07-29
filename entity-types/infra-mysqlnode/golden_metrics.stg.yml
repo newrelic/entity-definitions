@@ -3,13 +3,12 @@ queriesPerSecond:
   unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
-      select: rate(sum(query.queriesPerSecond), 1 second)
+      select: average(query.queriesPerSecond)
       from: MysqlSample
       eventId: entityGuid
       eventName: entityName
-    opentelemetry:
-      select: rate(sum(mysql.query.count), 1 second)
-      from: Metric
+    # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
 
 slowQueriesPerMinute:
   title: Slow queries per minute
@@ -29,13 +28,12 @@ connectionsPerSecond:
   unit: COUNT
   queries:
     newRelic:
-      select: rate(sum(net.connectionsPerSecond), 1 second)
+      select: average(net.connectionsPerSecond)
       from: MysqlSample
       eventId: entityGuid
       eventName: entityName
-    opentelemetry:
-      select: rate(sum(mysql.connection.count), 1 second)
-      from: Metric
+    # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
 
 queriesQuestions:
   title: Query questions
