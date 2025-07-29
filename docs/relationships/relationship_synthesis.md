@@ -182,7 +182,7 @@ The mapping of origins to sources allows for performance improvements when evalu
 
 ```yaml
 entitlements:
-  - testEntitlement
+  - advanced_ccu
 ```
 
 The account must have at least one of the specificed entitlements in order to generate a relationship.
@@ -191,7 +191,14 @@ The entitlements to use is a closed list defined below:
 
 | **Entitlement** | **Description** |
 |-----------------|-----------------|
-| testEntitlement | Only for testing purposes. A rule with this entitlement will **NEVER** match. |
+|catalog_ccu||
+|advanced_maps_ccu||
+|auto_discovery_entities_ccu||
+|ngep_nrql_access_layer_ccu||
+|catalogs_discount_usage||
+|advanced_maps_discount_usage||
+|advanced_ccu||
+|auto_discovery_entities_ccu_discount_usage||
 
 
 ### Conditions
