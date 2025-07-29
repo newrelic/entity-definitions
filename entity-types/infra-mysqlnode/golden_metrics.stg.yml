@@ -1,0 +1,69 @@
+queriesPerSecond:
+  title: Queries per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(query.queriesPerSecond)
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+    # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    opentelemetry:
+      select: rate(sum(mysql.query.count), 1 second)
+      from: Metric
+
+slowQueriesPerMinute:
+  title: Slow queries per minute
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    newRelic:
+      select: average(query.slowQueriesPerSecond) * 60
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+    # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    opentelemetry:
+      select: rate(sum(mysql.query.slow.count), 1 minute)
+      from: Metric
+
+  
+connectionsPerSecond:
+  title: Connections per second
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(net.connectionsPerSecond)
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+    # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    opentelemetry:
+      select: rate(sum(mysql.connection.count), 1 second)
+      from: Metric
+
+queriesQuestions:
+  queries:
+    newRelic:
+      eventId: entityGuid
+      select: average(`query.questionsPerSecond`)
+      from: MysqlSample
+      eventName: entityName
+    # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
+    # opentelemetry:
+
+  unit: OPERATIONS_PER_SECOND
+  title: Query questions
+threads:
+  queries:
+    newRelic:
+      eventId: entityGuid
+      eventName: entityName
+      select: latest(`net.threadsConnected`)
+      from: MysqlSample
+    opentelemetry:
+      select: average(mysql.threads)
+      from: Metric
+      where: kind = 'connected'
+  unit: COUNT
+  title: Threads connected
+
