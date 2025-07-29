@@ -177,15 +177,26 @@ The mapping of origins to sources allows for performance improvements when evalu
 
 ### Entitlements
 
-**This is an experimental feature and not ready to use**
-**PR's using this feature will be rejected**
+Optionally, you can create a rule that will only match if the account of the telemetry has the required entitlements.
+
 
 ```yaml
 entitlements:
-  - advanced_ccu
+  matching: anyOf
+  values:
+    - advanced_ccu
 ```
 
-The account must have at least one of the specificed entitlements in order to generate a relationship.
+#### Matching
+
+Defines how the entitlements will be matched.
+Only `anyOf` is allowed.
+
+#### Values
+
+Defines the names of the entitlements to match.
+The account producing the telemetry must contain the entitlements in order for the rule to match.
+
 
 The entitlements to use is a closed list defined below:
 
@@ -199,6 +210,8 @@ The entitlements to use is a closed list defined below:
 |advanced_maps_discount_usage||
 |advanced_ccu||
 |auto_discovery_entities_ccu_discount_usage||
+
+If you need an entitlement not in the list reach us.
 
 
 ### Conditions
