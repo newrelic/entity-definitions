@@ -82,7 +82,9 @@ relationships:
     origins:
       - OpenTelemetry
     entitlements:
-      - testEntitlement
+      matching: anyOf
+      values:
+        - advanced_ccu
     conditions:
       - attribute: entity.type
         anyOf: [ "PIXIE_DNS" ]
