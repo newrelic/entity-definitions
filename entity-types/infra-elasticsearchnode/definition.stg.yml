@@ -1,0 +1,55 @@
+domain: INFRA
+type: ELASTICSEARCHNODE
+
+goldenTags:
+- elasticsearch.node.name
+- elasticsearch.cluster.name
+- host.name
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  # Apart from this rule ELASTICSEARCHNODE entities are also created from infra pipeline.
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - elasticsearch.node.name
+        - elasticsearch.cluster.name
+        - host.id
+    name: elasticsearch.node.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    # All metrics from the receiver starts with the 'elasticsearch.' prefix.
+    - attribute: metricName
+      prefix: elasticsearch.
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    # This filters only metrics coming from elasticsearch receiver, given that metrics
+    # could differ between different runtime receivers.
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/elasticsearchreceiver"
+    - attribute: elasticsearch.node.name
+      present: true
+    - attribute: elasticsearch.cluster.name
+      present: true
+    tags:
+      elasticsearch.node.name:
+      elasticsearch.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json

@@ -16,6 +16,13 @@ synthesis:
     name: hostname
 ```
 
+It can also be explicitly defined that synthesis is not allowed for a specific type.
+
+```yaml
+synthesis:
+  disabled: true
+```
+
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
 | name    | String | Yes | The attribute to use for the entity name. |
@@ -24,6 +31,7 @@ synthesis:
 | encodeIdentifierInGUID | Boolean | No | If true, the identifier value will be hashed to respect the [GUID limits][guid_spec]. Defaults to `false`. |
 | conditions | List | No | The list of conditions to apply in the data point to match the rule. Defaults to an empty list. |
 | tags     | List   | No | The list of attributes to copy as entity tags if the rule matches. Defaults to an empty list. |
+
 
 ### Identifier
 

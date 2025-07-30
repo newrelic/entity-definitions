@@ -36,9 +36,6 @@ synthesis:
         # if service.name is present, it's a service
         - attribute: service.name
           present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
       tags:
         k8s.deployment.name:
           entityTagNames: [k8s.deploymentName]
@@ -50,26 +47,21 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    # Adds replicaset tag to deployments which enables candidate
-    # relationship with pods
     - compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - k8s.namespace.name
-          # owner_name is that of the deployment
-          - owner_name
+          - k8s.deployment.name
       encodeIdentifierInGUID: true
-      name: owner_name
+      name: k8s.deployment.name
       conditions:
-        # kube-state-metrics replicaset owned by deployment
+        # kube-state-metrics deployment prefix
         - attribute: metricName
-          prefix: kube_replicaset_owner
-        - attribute: owner_kind
-          value: Deployment
-        # identifier attributes  
-        - attribute: owner_name
-          present: true      
+          prefix: kube_deployment_
+        # identifier attributes
+        - attribute: k8s.deployment.name
+          present: true
         - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
@@ -77,19 +69,22 @@ synthesis:
         # open telemetry
         - attribute: newrelic.source
           value: 'api.metrics.otlp'
-        # if service.name is present, it's a service
+        # if newrelic.entity.type is present, it's not a service
         - attribute: service.name
-          present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
       tags:
-        k8s.replicaset.name:
-          # only most recent replicaset will have pods
-          multiValue: false
-          entityTagNames: [k8s.replicasetName]
+        k8s.deployment.name:
+          entityTagNames: [k8s.deploymentName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+
     # kube-state-metrics data via opentelemetry prometheusReceiver preview
     - compositeIdentifier:
         separator: ":"
@@ -116,9 +111,6 @@ synthesis:
         # if service.name is present, it's a service
         - attribute: service.name
           present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
       tags:
         deployment:
           entityTagNames: [k8s.deploymentName]
@@ -127,26 +119,21 @@ synthesis:
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
     # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    # Adds replicaset tag to deployments which enables candidate
-    # relationship with pods
     - compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - namespace
-          # owner_name is that of the deployment
-          - owner_name
+          - deployment
       encodeIdentifierInGUID: true
-      name: owner_name
+      name: deployment
       conditions:
-        # kube-state-metrics replicaset owned by deployment
+        # kube-state-metrics deployment prefix
         - attribute: metricName
-          prefix: kube_replicaset_owner
-        - attribute: owner_kind
-          value: Deployment
-        # identifier attributes  
-        - attribute: owner_name
-          present: true      
+          prefix: kube_deployment_
+        # identifier attributes
+        - attribute: deployment
+          present: true
         - attribute: namespace
           present: true
         - attribute: k8s.cluster.name
@@ -154,18 +141,20 @@ synthesis:
         # open telemetry
         - attribute: newrelic.source
           value: 'api.metrics.otlp'
-        # if service.name is present, it's a service
+        # if newrelic.entity.type is present, it's not a service
         - attribute: service.name
-          present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
       tags:
-        replicaset:
-          # only most recent replicaset will have pods
-          multiValue: false
-          entityTagNames: [k8s.replicasetName]
-    # Infrastructure event data via opentelemetry 
+        deployment:
+          entityTagNames: [k8s.deploymentName]
+        namespace:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+
+    # Infrastructure event data via opentelemetry
     - compositeIdentifier:
         separator: ":"
         attributes:
@@ -189,10 +178,36 @@ synthesis:
         # if service.name is present, handle as one
         - attribute: service.name
           present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
 
+
+    # Infrastructure event data via opentelemetry
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Deployment
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+
+    # newrelic integration data via nri-bundle
     - identifier: entityId
       name: deploymentName
       legacyFeatures:

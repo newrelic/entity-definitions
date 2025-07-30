@@ -45,6 +45,11 @@ cpuUsage:
       from: GcpVirtualMachineSample
       eventId: entityGuid
       eventName: entityName          
+    oci:
+      select: average(`oci.computeagent.cpu.utilization`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name 
 memoryUsage:
   title: Memory usage (%)
   unit: PERCENTAGE
@@ -62,6 +67,11 @@ memoryUsage:
       eventName: entity.name
     prometheus:
       select: (sum(node_memory_MemTotal_bytes) - sum(node_memory_MemAvailable_bytes)) * 100 / sum(node_memory_MemTotal_bytes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    oci:
+      select: average(`oci.computeagent.memory.utilization`)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -135,6 +145,11 @@ networkTrafficTx:
       from: GcpVirtualMachineSample
       eventId: entityGuid
       eventName: entityName        
+    oci:
+      select: average(`oci.computeagent.network.bytes.out`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name   
 networkTrafficRx:
   title: Network receive traffic (bytes/s)
   unit: BYTES_PER_SECOND
@@ -183,3 +198,8 @@ networkTrafficRx:
       from: GcpVirtualMachineSample
       eventId: entityGuid
       eventName: entityName      
+    oci:
+      select: average(`oci.computeagent.network.bytes.in`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
