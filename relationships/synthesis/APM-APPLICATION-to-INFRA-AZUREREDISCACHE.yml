@@ -1,0 +1,22 @@
+relationships:
+  - name: apmApplicationCallAzureRedisCache
+    version: "1"
+    origins:
+      - APM Metrics 
+    conditions:
+      - attribute: metricName
+        regex: "^Datastore/instance/Redis/[a-z0-9\\-]+\\.redis\\.cache\\.windows\\.net/[0-9]+$"
+    relationship:
+      expires: P75M 
+      relationshipType: CALLS 
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZUREREDISCACHE
+          fields:
+            - field: endpoint
+              attribute: metricName__4 
+            - field: port 
+              attribute: metricName__5 
