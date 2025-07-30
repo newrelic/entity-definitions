@@ -1,0 +1,199 @@
+{
+  "name" : "Elasticsearch Node Metrics (OpenTelemetry)",
+  "pages" : [ {
+    "name" : "Elasticsearch Node Metrics",
+    "widgets" : [ {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 1,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Running GET requests and Missing requests",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT filter(average(`elasticsearch.node.operations.current`), where operation='get'  and metricName = 'elasticsearch.node.operations.current' ) AS `Running`, filter(average(getField(elasticsearch.node.operations.get.completed, cumulative)), where result='miss'  and metricName = 'elasticsearch.node.operations.get.completed' ) AS 'Missing' FROM Metric TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 7,
+        "row" : 1,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Total Disk Read and Writes",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(`elasticsearch.node.disk.io.read`) AS 'Disk Read (Bytes)', average(`elasticsearch.node.disk.io.write`) AS 'Disk Write (Bytes)' FROM Metric  WHERE metricName IN ('elasticsearch.node.disk.io.read', 'elasticsearch.node.disk.io.write') TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 4,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Documents currently being Ingested",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(`elasticsearch.node.ingest.documents.current`) AS 'Documents currently being Ingested' FROM Metric WHERE metricName = 'elasticsearch.node.ingest.documents.current' TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 5,
+        "row" : 4,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Total documents active and deleted",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(elasticsearch.node.documents) FROM Metric WHERE metricName = 'elasticsearch.node.documents' facet state in ('active', 'deleted') TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 9,
+        "row" : 4,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Time spent indexing and deleting documents (secs)",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(getField(elasticsearch.node.operations.time, cumulative))/1000  FROM Metric WHERE metricName = 'elasticsearch.node.operations.time' facet operation in ('index', 'delete') TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 7,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Query cache evictions, hits and misses",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT filter(rate(sum(`elasticsearch.node.cache.evictions`), 1 second), WHERE cache_name = 'query') AS 'Query Cache Evictions Rate', filter(average(`elasticsearch.node.cache.count`), WHERE type = 'hit') AS 'Query Cache Hits', filter(average(`elasticsearch.node.cache.count`), WHERE type = 'miss') AS 'Query Cache Misses' FROM Metric WHERE metricName IN ('elasticsearch.node.cache.evictions', 'elasticsearch.node.cache.count') TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 7,
+        "row" : 7,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Shard Recovery Prediction",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(elasticsearch.node.shards.reserved.size) AS 'Reserved Size for Recoveries (Bytes)' FROM Metric WHERE metricName = 'elasticsearch.node.shards.reserved.size' AND elasticsearch.node.shards.reserved.size >= 0 TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 10,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Active Merge Operations",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT max(elasticsearch.node.operations.current) AS 'Peak Active Segment Merges' FROM Metric WHERE metricName = 'elasticsearch.node.operations.current' and operation='merge' TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 7,
+        "row" : 10,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "CPU Load Average",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(`elasticsearch.os.cpu.load_avg.1m`) AS '1 minute', average(`elasticsearch.os.cpu.load_avg.5m`) AS '5 minutes', average(`elasticsearch.os.cpu.load_avg.15m`) AS '15 minutes' FROM Metric WHERE metricName IN ('elasticsearch.os.cpu.load_avg.1m', 'elasticsearch.os.cpu.load_avg.5m', 'elasticsearch.os.cpu.load_avg.15m') TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 13,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "JVM garbage collections count",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT sum(`jvm.gc.collections.count`) AS 'Garbage Collections Count' FROM Metric WHERE metricName = 'jvm.gc.collections.count' TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 5,
+        "row" : 13,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "JVM heap memory usage",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(`jvm.memory.heap.used`) AS `Heap Used in Bytes`, average(`jvm.memory.heap.max`) AS `Heap Max in Bytes` FROM Metric WHERE metricName IN ('jvm.memory.heap.used', 'jvm.memory.heap.max') TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 9,
+        "row" : 13,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "JVM threads count",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(`jvm.threads.count`) AS `Thread Count` FROM Metric WHERE metricName = 'jvm.threads.count' TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    } ]
+  } ]
+}
