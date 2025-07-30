@@ -81,6 +81,10 @@ relationships:
     version: "1"
     origins:
       - OpenTelemetry
+    entitlements:
+      matching: anyOf
+      values:
+        - advanced_ccu
     conditions:
       - attribute: entity.type
         anyOf: [ "PIXIE_DNS" ]
@@ -172,6 +176,45 @@ The full list of supported origins (as of July 2023) is the following:
 One rule can be applied to multiple sources, as shown in the example. These origins are used by our internal services 
 to filter which rules to evaluate and which ones to ignore. 
 The mapping of origins to sources allows for performance improvements when evaluating rules via the matching system.
+
+### Entitlements
+
+Optionally, you can create a rule that will only match if the account of the telemetry has the required entitlements.
+
+
+```yaml
+entitlements:
+  matching: anyOf
+  values:
+    - advanced_ccu
+```
+
+#### Matching
+
+Defines how the entitlements will be matched.
+Only `anyOf` is allowed.
+
+#### Values
+
+Defines the names of the entitlements to match.
+The account producing the telemetry must contain the entitlements in order for the rule to match.
+
+
+The entitlements to use is a closed list defined below:
+
+| **Entitlement** | **Description** |
+|-----------------|-----------------|
+| advanced_ccu    | Controls whether certain advanced capabilities are accessible in the product |
+| catalog_ccu     | Controls whether customers can use Catalogs in the product |
+| catalogs_discount_usage | Trial version of the above |
+| auto_discovery_entities_ccu | Controls whether customers can enable and use Auto Discovery |
+| auto_discovery_entities_ccu_discount_usage | Trial version of the previous one |
+| advanced_maps_ccu | Controls whether customers can use advanced maps (infrastructure maps and Dynamic Flow Maps) |
+| advanced_maps_discount_usage | Trial version of the previous one |
+| ngep_nrql_access_layer_ccu | No definition provided |
+
+If you need an entitlement not in the list reach us.
+
 
 ### Conditions
 
