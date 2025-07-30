@@ -1,0 +1,70 @@
+activeSearches:
+  title: Active searches
+  unit: COUNT
+  queries:
+    newRelic:
+      select: sum(activeSearches)
+      from: ElasticsearchNodeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(elasticsearch.node.operations.completed)
+      from: Metric
+      where: operation='get' AND metricName = 'elasticsearch.node.operations.completed'
+      eventId: entity.guid
+      eventName: elasticsearch.node.name
+missingDocumentRequests:
+  title: Missing document requests
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(get.requestsDocumentMissing)
+      from: ElasticsearchNodeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(getField(elasticsearch.node.operations.get.completed, cumulative))
+      from: Metric
+      where: result='miss' AND metricName = 'elasticsearch.node.operations.get.completed'
+      eventId: entity.guid
+      eventName: elasticsearch.node.name
+fileStoreIOOperations:
+  title: File store I/O operations
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(fs.iOOperations)
+      from: ElasticsearchNodeSample
+      eventId: entityGuid
+      eventName: entityName
+    # This metric is not available in the current OTEL Elasticsearch receiver
+activeMerges:
+  queries:
+    newRelic:
+      eventId: entityGuid
+      eventName: entityName
+      from: ElasticsearchNodeSample
+      select: max(`merges.currentActive`)
+    opentelemetry:
+      select: max(`elasticsearch.node.operations.current`)
+      from: Metric
+      where: metricName = 'elasticsearch.node.operations.current' and operation = 'merge'
+      eventId: entity.guid
+      eventName: elasticsearch.node.name
+  unit: COUNT
+  title: Current active merges
+totalQueries:
+  title: Total queries
+  unit: COUNT
+  queries:
+    newRelic:
+      eventId: entityGuid
+      eventName: entityName
+      select: average(`queriesTotal`)
+      from: ElasticsearchNodeSample
+    opentelemetry:
+      select: average(getField(`elasticsearch.node.operations.completed`, cumulative))
+      from: Metric
+      where: operation='query' AND metricName = 'elasticsearch.node.operations.completed'
+      eventId: entity.guid
+      eventName: elasticsearch.node.name
