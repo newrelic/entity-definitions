@@ -204,14 +204,14 @@ The entitlements to use is a closed list defined below:
 
 | **Entitlement** | **Description** |
 |-----------------|-----------------|
-|catalog_ccu||
-|advanced_maps_ccu||
-|auto_discovery_entities_ccu||
-|ngep_nrql_access_layer_ccu||
-|catalogs_discount_usage||
-|advanced_maps_discount_usage||
-|advanced_ccu||
-|auto_discovery_entities_ccu_discount_usage||
+| advanced_ccu    | Controls whether certain advanced capabilities are accessible in the product |
+| catalog_ccu     | Controls whether customers can use Catalogs in the product |
+| catalogs_discount_usage | Trial version of the above |
+| auto_discovery_entities_ccu | Controls whether customers can enable and use Auto Discovery |
+| auto_discovery_entities_ccu_discount_usage | Trial version of the previous one |
+| advanced_maps_ccu | Controls whether customers can use advanced maps (infrastructure maps and Dynamic Flow Maps) |
+| advanced_maps_discount_usage | Trial version of the previous one |
+| ngep_nrql_access_layer_ccu | No definition provided |
 
 If you need an entitlement not in the list reach us.
 
