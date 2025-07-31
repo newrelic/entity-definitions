@@ -1,0 +1,94 @@
+domain: INFRA
+type: MYSQLNODE
+
+synthesis:
+  rules:
+    - identifier: mysql.instance.endpoint # server.address:server.port
+      name: mysql.instance.endpoint 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mysql.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This filters only metrics coming from mysqlreceiver , given that metrics
+        # could differ between different runtime receivers.
+        - attribute: otel.library.name
+          value: otelcol/mysqlreceiver
+      tags:
+        # Environment resource attributes
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+
+    # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/0c50ef5a58683a214a509ee15c75279a6334d9b9/receiver/mysqlreceiver/metadata.yaml#L12C9-L12C17
+    - identifier: mysql.instance.endpoint # server.address:server.port
+      name: mysql.instance.endpoint 
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mysql.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This filters only metrics coming from mysqlreceiver , given that metrics
+        # could differ between different runtime receivers.
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver
+      tags:
+        # Environment resource attributes
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+
+    - identifier: entityId
+      name: entityName
+      legacyFeatures:
+        useNonStandardAttributes: true
+        overrideGuidType: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      conditions:
+        - attribute: event_type
+          value: 'MysqlSample'
+      tags:
+        integrationName:
+          ttl: P1D
+        integrationVersion:
+          ttl: P1D
+        reportingAgent:
+          ttl: P1D
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+goldenTags:
+- mysql.port
+- mysql.version
+- mysql.edition
+- mysql.hostname
+- mysql.clusterNodeType
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
