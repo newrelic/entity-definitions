@@ -20,13 +20,13 @@ If you want to validate definition files manually, for example before opening a 
 2. Execute the following command:
 
 ```
-docker-compose run validate-definitions
+docker compose run validate-definitions
 ```
 
 If you added or modified a dashboard and its validation is failing you can try to fix it by running the following:
 
 ```
-docker-compose run sanitize-dashboards
+docker compose run sanitize-dashboards
 ```
 
 ### Local setup
