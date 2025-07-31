@@ -1,0 +1,67 @@
+{
+    "name": "PostgresqlInstanceSampleOpenTelemetry",
+    "pages": [
+        {
+            "name": "PostgresqlInstanceSampleOpenTelemetry",
+            "widgets": [
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 1,
+                        "row": 1,
+                        "height": 3,
+                        "width": 3
+                    },
+                    "title": "Database statistics",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "SELECT latest(postgresql.backends) as 'Connections', sum(postgresql.commits) as 'Commits', sum(postgresql.rollbacks) as 'Rollbacks', sum(postgresql.deadlocks) AS 'Deadlocks'  FROM Metric SINCE 6 months ago UNTIL now ",
+                                "accountId": 0}
+                        ]
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 1,
+                        "row": 1,
+                        "height": 3,
+                        "width": 3
+                    },
+                    "title": "index usage",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "SELECT latest(postgresql.index.scans) as 'Scans', latest(postgresql.index.size) as 'Size' FROM Metric WHERE metricName LIKE 'postgresql.index%' FACET postgresql.index.name, postgresql.table.name LIMIT 50 SINCE 6 months ago UNTIL now",
+                                "accountId": 0}
+                        ]
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 1,
+                        "row": 1,
+                        "height": 3,
+                        "width": 3
+                    },
+                    "title": "databse size",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "SELECT latest(postgresql.db_size) / 1024 / 1024 as 'Size (MB)' FROM Metric WHERE metricName = 'postgresql.db_size' FACET postgresql.database.name TIMESERIES AUTO SINCE 6 months ago UNTIL now ",
+                                "accountId": 0}
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
