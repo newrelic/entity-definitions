@@ -1,0 +1,52 @@
+domain: INFRA
+type: MSSQLINSTANCE
+
+synthesis:
+  rules:
+    - identifier: entityId
+      name: entityName
+      legacyFeatures:
+        useNonStandardAttributes: true
+        overrideGuidType: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      conditions:
+        - attribute: event_type
+          value: 'MssqlInstanceSample'
+      tags:
+        integrationName:
+          ttl: P1D
+        integrationVersion:
+          ttl: P1D
+        reportingAgent:
+          ttl: P1D
+        entityKey:
+          ttl: P1D
+    - identifier: sqlserver.instance.endpoint
+      name: sqlserver.instance.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: sqlserver.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlserverreceiver"
+
+
+goldenTags:
+- mssql.host
+- mssql.instance
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
