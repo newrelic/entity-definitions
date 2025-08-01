@@ -1,28 +1,34 @@
 domain: INFRA
-type: POSTGRESQLINSTANCE
+type: MYSQLNODE
 
 synthesis:
   rules:
-    - identifier: postgresql.endpoint # server.address:server.port
-      name: postgresql.endpoint 
+    - identifier: mysql.instance.endpoint # server.address:server.port
+      name: mysql.instance.endpoint 
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: postgresql.
+          prefix: mysql.
         - attribute: instrumentation.provider
           value: opentelemetry
+        # This handles both library name formats for backward compatibility
         - attribute: otel.library.name
-          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
-        # This filters only metrics coming from postgresqlreceiver , given that metrics
-        # could differ between different runtime receivers.
+          anyOf: 
+            - otelcol/mysqlreceiver
+            - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver
       tags:
+        # Environment resource attributes
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
         otel.library.name:
           entityTagName: instrumentation.name
 
     - identifier: entityId
-      name: entityKey
+      name: entityName
       legacyFeatures:
         useNonStandardAttributes: true
         overrideGuidType: true
@@ -31,7 +37,7 @@ synthesis:
           ttl: PT4H
       conditions:
         - attribute: event_type
-          value: 'PostgresqlInstanceSample'
+          value: 'MysqlSample'
       tags:
         integrationName:
           ttl: P1D
@@ -39,13 +45,19 @@ synthesis:
           ttl: P1D
         reportingAgent:
           ttl: P1D
-    
+
   tags:
+    # For OpenTelemetry
     telemetry.sdk.name:
       entityTagName: instrumentation.provider
 
 goldenTags:
-- postgres.host
+- mysql.port
+- mysql.version
+- mysql.edition
+- mysql.hostname
+- mysql.clusterNodeType
+
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -54,6 +66,6 @@ dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+  # otel receiver
   opentelemetry:
     template: opentelemetry_dashboard.stg.json
-
