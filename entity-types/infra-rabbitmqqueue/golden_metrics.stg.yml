@@ -1,0 +1,89 @@
+consumers:
+  title: Consumers
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(queue.consumers)
+      from: RabbitmqQueueSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(rabbitmq.consumer.count)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+messagesDelivered:
+  title: Messages delivered
+  unit: COUNT
+  queries:
+    newRelic:
+      select: sum(queue.sumMessagesDelivered)
+      from: RabbitmqQueueSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(rabbitmq.message.current)
+      from: Metric
+      where: state = 'ready' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+messagesDeliveredPerSecond:
+  title: Messages delivered per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: latest(queue.sumMessagesDeliveredPerSecond)
+      from: RabbitmqQueueSample
+      eventId: entityGuid
+      eventName: entityName
+
+messagesUnacknowledged:
+  title: Messages Unacknowledged
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(rabbitmq.message.current)
+      from: Metric
+      where: state = 'unacknowledged' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+messagesPublished:
+  title: Messages Published
+  unit: COUNT
+  queries:
+    newRelic:
+      select: sum(queue.messagesPublished)
+      from: RabbitmqQueueSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(rabbitmq.message.published)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+messagesPublishedPerSecond:
+  title: Messages published per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(queue.messagesPublishedPerSecond)
+      from: RabbitmqQueueSample
+      eventId: entityGuid
+      eventName: entityName
+
+totalCurrentMessages:
+  title: Total Current Messages
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(rabbitmq.message.current)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
