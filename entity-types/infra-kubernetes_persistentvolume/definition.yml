@@ -52,6 +52,47 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.volume.name
+      encodeIdentifierInGUID: true
+      name: k8s.volume.name
+      conditions:
+        # kube-state-metrics persistentvolume prefix
+        - attribute: metricName
+          prefix: kube_persistentvolume_
+        # identifier attributes
+        - attribute: k8s.volume.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: "api.metrics.otlp"
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        k8s.volume.name:
+          entityTagNames: [k8s.volumeName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        phase:
+          multiValue: false
+          entityTagNames: [k8s.persistentvolume.statusPhase]
+        claim_namespace:
+          entityTagNames: [k8s.pvcNamespace]
+        name:
+          entityTagNames: [k8s.pvcName]
+        storageclass:
+          entityTagNames: [k8s.persistentvolume.storageClass]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
     # kube-state-metrics data via opentelemetry prometheusReceiver preview
     - compositeIdentifier:
         separator: ":"
@@ -75,6 +116,48 @@ synthesis:
         # if service.name is present, it's a service
         - attribute: service.name
           present: false
+        # value added for test entities only
+        - attribute: newrelicOnly
+          value: "true"
+      tags:
+        persistentvolume:
+          entityTagNames: [k8s.volumeName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        phase:
+          multiValue: false
+          entityTagNames: [k8s.persistentvolume.statusPhase]
+        claim_namespace:
+          entityTagNames: [k8s.pvcNamespace]
+        name:
+          entityTagNames: [k8s.pvcName]
+        storageclass:
+          entityTagNames: [k8s.persistentvolume.storageClass]
+    # kube-state-metrics data via opentelemetry prometheusReceiver preview
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - persistentvolume
+      encodeIdentifierInGUID: true
+      name: persistentvolume
+      conditions:
+        # kube-state-metrics persistentvolume prefix
+        - attribute: metricName
+          prefix: kube_persistentvolume_
+        # identifier attributes
+        - attribute: persistentvolume
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: "api.metrics.otlp"
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
         # value added for test entities only
         - attribute: newrelicOnly
           value: "true"
