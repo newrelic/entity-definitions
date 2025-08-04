@@ -23,7 +23,7 @@ relationships:
             - field: awsLambdaArn
               attribute: cloud.resource_id
 
-  - name: awsLambdaFunctionHOST
+  - name: awsLambdaFunctionHOSTS
     version: "1"
     origins:
       - Distributed Tracing
@@ -34,13 +34,13 @@ relationships:
         regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
     relationship:
       expires: P75M
-      relationshipType: HOST
+      relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: entity.guid
-      target:
         lookupGuid:
           candidateCategory: AWSLAMBDAFUNCTION
           fields:
             - field: awsLambdaArn
               attribute: aws.lambda.arn
+      target:
+        extractGuid:
+          attribute: entity.guid
