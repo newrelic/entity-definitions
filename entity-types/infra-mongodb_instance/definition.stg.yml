@@ -1,0 +1,66 @@
+domain: INFRA
+type: MONGODB_INSTANCE
+
+synthesis:
+  rules:
+    - identifier: mongodb.instance.unique_id
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          anyOf: ["github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mongodbreceiver"]
+      # This filters only metrics coming from mongodbreceiver, given that metrics
+      # could differ between different runtime receivers.
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+
+    - identifier: entityId
+      name: entityKey
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          value: MongodSample
+      tags:
+        mongodb_cluster_name:
+          entityTagName: mongodb_cluster_name
+        mongodb_role:
+          entityTagName: mongodb_role
+        clusterName:
+          entityTagName: clusterName
+        env:
+          entityTagName: environment
+        node:
+          entityTagName: nodeKey
+        host:
+          entityTagName: host
+        version:
+          ttl: P1D
+        uptime:
+          ttl: P1D
+        reportingAgent:
+          ttl: P1D
+
+  tags:
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+goldenTags:
+  - mongodb.instance.unique_id
+  - server.address
+  - server.port
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json

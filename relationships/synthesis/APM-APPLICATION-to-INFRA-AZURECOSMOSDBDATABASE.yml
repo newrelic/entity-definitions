@@ -1,0 +1,31 @@
+relationships:
+  - name: apmApplicationCallsAzureCosmosDbDatabase
+    version: "1"
+    origins:
+      - Distributed Tracing 
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system 
+        anyOf: [ "cosmosdb" ]
+      - attribute: db.instance 
+        present: true
+      - attribute: server.address 
+        present: true
+        regex: '^[a-z0-9\-]+\.documents\.azure\.com$'
+    relationship:
+      expires: P75M 
+      relationshipType: CALLS 
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURECOSMOSDBDATABASE
+          fields:
+            - field: accountName
+              capture:
+                attribute: server.address
+                regex: '^([a-z0-9\-]+)\.documents\.azure\.com$'
+            - field: databaseName
+              attribute: db.instance
