@@ -213,7 +213,6 @@ The entitlements to use is a closed list defined below:
 | auto_discovery_entities_ccu_discount_usage | Trial version of the previous one |
 | advanced_maps_ccu | Controls whether customers can use advanced maps (infrastructure maps and Dynamic Flow Maps) |
 | advanced_maps_discount_usage | Trial version of the previous one |
-| ngep_nrql_access_layer_ccu | No definition provided |
 
 If you need an entitlement not in the list reach us.
 
