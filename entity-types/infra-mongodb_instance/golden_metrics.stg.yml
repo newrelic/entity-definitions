@@ -1,70 +1,33 @@
 database_count:
   title: Databases
   unit: COUNT
-  queries:
-    newRelic:
-      select: uniqueCount(database) AS 'Databases'
-      from: MongodSample
-      eventId: entityGuid
-      eventName: entityName
-    # Currently, we don't have a matching function in OTEL having the same name, we can use latest() but the current implementation fails a different function name for the same attribute
-    # opentelemetry:
-    #   select: latest(`mongodb.database.count`)
-    #   from: Metric
-    #   where: "metricName = 'mongodb.database.count'
+  query:
+    select: uniqueCount(database) AS 'Databases'
 
 connections_count:
   title: Connections
   unit: COUNT
-  queries:
-    newRelic:
-      select: average(mongodb_ss_connections) AS 'Connections'
-      from: MongodSample
-      where: conn_type='active'
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(`mongodb.connection.count`)
-      from: Metric
-      where: type='current'
+  query:
+    select: average(mongodb_ss_connections) AS 'Connections'
+    where: conn_type='active'
 
 query_operations_count:
   title: Query operations
   unit: COUNT
-  queries:
-    newRelic:
-      select: average(mongodb_ss_opcounters) AS 'Query operations'
-      from: MongodSample
-      where: legacy_op_type='query'
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(`mongodb.operation.count`)
-      from: Metric
-      where: operation='query'
+  query:
+    select: average(mongodb_ss_opcounters) AS 'Query operations'
+    where: legacy_op_type='query'
 
 document_operations_count:
   title: Document operations
   unit: COUNT
-  queries:
-    newRelic:
-      select: latest(mongodb_ss_metrics_document) AS 'Document operations'
-      from: MongodSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: latest(`mongodb.document.operation.count`)
-      from: Metric
+  query:
+    select: latest(mongodb_ss_metrics_document) AS 'Document operations'
 
 memory_usage:
   title: Memory usage
   unit: BYTES
   queries:
-    newRelic:
-      select: average(mongodb_memory_usage)
-      from: MongodSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
       select: average(`mongodb.memory.usage`)
       from: Metric
@@ -74,63 +37,6 @@ network_io_receive:
   title: Network I/O Received
   unit: BYTES
   queries:
-    newRelic:
-      select: latest(mongodb_network_io_receive)
-      from: MongodSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
       select: latest(`mongodb.network.io.receive`)
-      from: Metric
-
-network_io_transmit:
-  title: Network I/O Transmitted  
-  unit: BYTES
-  queries:
-    newRelic:
-      select: latest(mongodb_network_io_transmit)
-      from: MongodSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: latest(`mongodb.network.io.transmit`)
-      from: Metric
-
-collection_count:
-  title: Collections
-  unit: COUNT
-  queries:
-    newRelic:
-      select: latest(mongodb_collection_count)
-      from: MongodSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: latest(`mongodb.collection.count`)
-      from: Metric
-
-storage_size:
-  title: Storage Size
-  unit: BYTES
-  queries:
-    newRelic:
-      select: latest(mongodb_storage_size)
-      from: MongodSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: latest(`mongodb.storage.size`)
-      from: Metric
-
-data_size:
-  title: Data Size
-  unit: BYTES
-  queries:
-    newRelic:
-      select: latest(mongodb_data_size)
-      from: MongodSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: latest(`mongodb.data.size`)
       from: Metric
