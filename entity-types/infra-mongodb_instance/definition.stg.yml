@@ -3,8 +3,8 @@ type: MONGODB_INSTANCE
 
 synthesis:
   rules:
-    - identifier: mongodb.instance.unique_id
-      name: host.name
+    - identifier: mongodb.endpoint
+      name: mongodb.endpoint
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -14,7 +14,8 @@ synthesis:
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          anyOf: ["github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mongodbreceiver"]
+          anyOf: 
+            - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mongodbreceiver
       # This filters only metrics coming from mongodbreceiver, given that metrics
       # could differ between different runtime receivers.
       tags:
@@ -22,45 +23,136 @@ synthesis:
           entityTagName: instrumentation.name
         telemetry.sdk.name:
           entityTagName: instrumentation.provider
-
-    - identifier: entityId
-      name: entityKey
-      legacyFeatures:
-        overrideGuidType: true
+          
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
       conditions:
         - attribute: eventType
-          value: MongodSample
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_oplog_
       tags:
         mongodb_cluster_name:
-          entityTagName: mongodb_cluster_name
-        mongodb_role:
-          entityTagName: mongodb_role
-        clusterName:
-          entityTagName: clusterName
-        env:
-          entityTagName: environment
-        node:
-          entityTagName: nodeKey
-        host:
-          entityTagName: host
-        version:
-          ttl: P1D
-        uptime:
-          ttl: P1D
-        reportingAgent:
-          ttl: P1D
 
-  tags:
-    telemetry.sdk.name:
-      entityTagName: instrumentation.provider
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_rs_
+      tags:
+        mongodb_cluster_name:
 
-goldenTags:
-  - mongodb.instance.unique_id
-  - server.address
-  - server.port
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_ss_
+      tags:
+        mongodb_cluster_name:
+
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_sys_
+      tags:
+        mongodb_cluster_name:
+
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_clusterTime_
+      tags:
+        mongodb_cluster_name:
+
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_electionParticipantMetrics_
+      tags:
+        mongodb_cluster_name:
+
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_electionCandidateMetrics_
+      tags:
+        mongodb_cluster_name:
+
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_heartbeatIntervalMillis
+      tags:
+        mongodb_cluster_name:
+
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_members_
+      tags:
+        mongodb_cluster_name:
+
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_optimes_
+      tags:
+        mongodb_cluster_name:
+
+    - identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_writeMajorityCount
+      tags:
+        mongodb_cluster_name:
 
 dashboardTemplates:
   newRelic:
     template: dashboard.json
+    # otel receiver
   opentelemetry:
     template: opentelemetry_dashboard.stg.json
+
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
