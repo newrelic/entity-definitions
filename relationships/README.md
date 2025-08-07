@@ -7,4 +7,4 @@ This document will walk you through creating relationships using the synthesis p
 
 If you have experience with the repo and are looking for a specific section documentation:
 - [Relationship Synthesis](../docs/relationships/relationship_synthesis.md)
-- [Candidate Relationships](../docs/relationships/candidate_relationships.md)
+- [Candidate Relationships](../docs/relationships/candidate_relationships.md) 
