@@ -12,8 +12,8 @@ cpuUtilization:
     newRelic:
       select: max(docker.container.cpuPercent) or max(k8s.container.cpuCoresUtilization) AS 'CPU Utilization (%)'
     opentelemetry:
-      # via dockerstatsreceiver & kubeletstatsreceiver – which send equivalent value named container.cpu.utilization
-      select: max(container.cpu.utilization) AS 'CPU Utilization (%)'
+      # via dockerstatsreceiver & kubeletstatsreceiver – which send equivalent value named container.cpu.usage, container.cpu.utilization (deprecated)
+      select: max(container.cpu.usage or container.cpu.utilization) AS 'CPU Utilization (%)'
 memoryUsage:
   title: Memory usage (bytes)
   unit: BYTES
