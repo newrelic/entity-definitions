@@ -3,12 +3,77 @@
   "pages": [
     {
       "name": "Overview",
-      "description": null,
       "widgets": [
+        {
+          "title": "Health Status\t",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT IF (latest(mongodb.health) = 1, 'Up' , 'Down') as 'DB status' FROM Metric"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholdsWithSeriesOverrides": {
+              "thresholds": [
+                {
+                  "from": 0.1,
+                  "severity": "success",
+                  "to": 1
+                },
+                {
+                  "from": -1,
+                  "severity": "critical",
+                  "to": 0
+                }
+              ]
+            }
+          }
+        },
         {
           "title": "Database Count",
           "layout": {
-            "column": 1,
+            "column": 3,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(`mongodb.database.count`) AS 'Databases' WHERE metricName='mongodb.database.count' "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Uptime",
+          "layout": {
+            "column": 5,
             "row": 1,
             "width": 4,
             "height": 3
@@ -23,7 +88,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(`mongodb.database.count`) AS 'Databases' WHERE metricName='mongodb.database.count'"
+                "query": "SELECT latest(mongodb.uptime) / 3600 as 'hours' FROM Metric "
               }
             ],
             "platformOptions": {
@@ -34,9 +99,9 @@
         {
           "title": "Connection Count",
           "layout": {
-            "column": 5,
+            "column": 9,
             "row": 1,
-            "width": 8,
+            "width": 4,
             "height": 3
           },
           "visualization": {
@@ -49,56 +114,38 @@
             "legend": {
               "enabled": true
             },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(`mongodb.connection.count`) WHERE metricName='mongodb.connection.count' FACET type TIMESERIES"
+                "query": "FROM Metric SELECT latest(`mongodb.connection.count`) WHERE metricName='mongodb.connection.count' FACET type TIMESERIES "
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
             },
-            "units": {
-              "unit": "COUNT"
-            },
+            "thresholds": [],
             "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
               "zero": true
             }
           }
         },
         {
-          "title": "Operations Count",
+          "title": "Operation Latency",
           "layout": {
             "column": 1,
             "row": 4,
             "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT sum(`mongodb.operation.count`) AS 'Total Operations' WHERE metricName='mongodb.operation.count' FACET operation"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "title": "Operations Over Time",
-          "layout": {
-            "column": 5,
-            "row": 4,
-            "width": 8,
             "height": 3
           },
           "visualization": {
@@ -111,60 +158,42 @@
             "legend": {
               "enabled": true
             },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(`mongodb.operation.count`), 1 minute) WHERE metricName='mongodb.operation.count' FACET operation TIMESERIES"
+                "query": "SELECT average(mongodb.operation.latency.time) FROM Metric TIMESERIES FACET entity.name"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
             },
-            "units": {
-              "unit": "COUNT"
-            },
+            "thresholds": [],
             "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
               "zero": true
             }
           }
         },
         {
-          "title": "Document Operations",
+          "title": "Operations per Second",
           "layout": {
-            "column": 1,
-            "row": 7,
+            "column": 5,
+            "row": 4,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
-          },
-          "rawConfiguration": {
-            "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT sum(`mongodb.document.operation.count`) WHERE metricName='mongodb.document.operation.count' FACET operation"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "title": "Document Operations Over Time",
-          "layout": {
-            "column": 5,
-            "row": 7,
-            "width": 8,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
@@ -173,82 +202,55 @@
             "legend": {
               "enabled": true
             },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(`mongodb.document.operation.count`), 1 minute) WHERE metricName='mongodb.document.operation.count' FACET operation TIMESERIES"
+                "query": "SELECT average(mongodb.queries.rate) as 'Queries', average(mongodb.inserts.rate) as 'Inserts', average(mongodb.updates.rate) as 'Updates', average(mongodb.deletes.rate) as 'Deletes' FROM Metric TIMESERIES "
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         },
         {
           "title": "Memory Usage",
           "layout": {
-            "column": 1,
-            "row": 10,
+            "column": 9,
+            "row": 4,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.bar"
           },
           "rawConfiguration": {
-            "dataFormatters": [
-              {
-                "name": "Memory",
-                "precision": 2,
-                "type": "humanized"
-              }
-            ],
             "facet": {
               "showOtherSeries": false
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(`mongodb.memory.usage`) / 1024 / 1024 AS 'Memory (MB)' WHERE metricName='mongodb.memory.usage' FACET type"
+                "query": "FROM Metric SELECT latest(`mongodb.memory.usage`) / 1024 / 1024 AS 'Memory (MB)' WHERE metricName='mongodb.memory.usage' FACET type "
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "title": "Memory Usage Over Time",
-          "layout": {
-            "column": 5,
-            "row": 10,
-            "width": 8,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT latest(`mongodb.memory.usage`) / 1024 / 1024 AS 'Memory (MB)' WHERE metricName='mongodb.memory.usage' FACET type TIMESERIES"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "units": {
-              "unit": "BYTES"
-            },
-            "yAxisLeft": {
-              "zero": true
             }
           }
         },
@@ -256,44 +258,12 @@
           "title": "Network I/O",
           "layout": {
             "column": 1,
-            "row": 13,
+            "row": 7,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
-          },
-          "rawConfiguration": {
-            "dataFormatters": [
-              {
-                "name": "Network",
-                "type": "humanized"
-              }
-            ],
-            "facet": {
-              "showOtherSeries": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT latest(`mongodb.network.io.receive`) / 1024 / 1024 AS 'Received (MB)', latest(`mongodb.network.io.transmit`) / 1024 / 1024 AS 'Transmitted (MB)' WHERE metricName LIKE 'mongodb.network.io%'"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "title": "Network I/O Over Time",
-          "layout": {
-            "column": 5,
-            "row": 13,
-            "width": 8,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
@@ -302,14 +272,117 @@
             "legend": {
               "enabled": true
             },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(latest(`mongodb.network.io.receive`), 1 minute) AS 'Received', rate(latest(`mongodb.network.io.transmit`), 1 minute) AS 'Transmitted' WHERE metricName LIKE 'mongodb.network.io%' TIMESERIES"
+                "query": "SELECT rate(sum(mongodb.network.io.transmit), 1 second) as 'Transmit', rate(sum(mongodb.network.io.receive), 1 second) as 'Receive' FROM Metric TIMESERIES "
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Storage Size",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(mongodb.storage.size) as 'Total', average(mongodb.data.size) as 'Data', average(mongodb.index.size) as 'Index' FROM Metric TIMESERIES "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Lock Acquires per Second",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(mongodb.lock.acquire.count), 1 second) FROM Metric TIMESERIES FACET lock_type "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         }
