@@ -1,0 +1,26 @@
+relationships:
+  - name: awsCloudfrontConnectsToAwsS3Bucket
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AWSCLOUDFRONT" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONNECTS_TO
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSCLOUDFRONT
+      target:
+        lookupGuid:
+          candidateCategory: AWSS3BUCKET
+          fields:
+            - field: bucketName
+              capture:
+                attribute: domainName
+                regex: "^([^\\.]+)\\.s3\\.[^\\.]+\\.amazonaws\\.com:9[0-9]+"
