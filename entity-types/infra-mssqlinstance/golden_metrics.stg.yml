@@ -1,0 +1,85 @@
+connections:
+  title: Connections
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(stats.connections) As activeConnections
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(`sqlserver.user.connection.count`) As activeConnections
+      from: Metric
+      eventId: entityGuid
+      eventName: entityName
+blockedProcesses:
+  title: Blocked processes
+  unit: COUNT
+  queries:
+    newRelic:
+      select: max(instance.blockedProcessesCount) As blockedProcesses
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: max(`sqlserver.processes.blocked`) As blockedProcesses
+      from: Metric
+      eventId: entityGuid
+      eventName: entityName
+waitTimeMs:
+  title: Wait time (ms)
+  unit: MS
+  queries:
+    newRelic:
+      select: average(system.waitTimeInMillisecondsPerSecond) As waitTimeMs
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: rate(sum(`sqlserver.os.wait.duration`), 1 minute) As waitTimeMs
+      from: Metric
+      eventId: entityGuid
+      eventName: entityName
+availability:
+  queries:
+    newRelic:
+      select: average(activeConnections) 
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(`sqlserver.user.connection.count`)
+      from: Metric
+      eventId: entityGuid
+      eventName: entityName
+  unit: COUNT
+  title: Connections
+monitorStatus:
+  queries:
+    newRelic:
+      select: average(`instance.transactionsPerSecond`) As transactionsPerSecond
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: rate(sum(`sqlserver.transactions.rate`), 1 minute) As transactionsPerSecond
+      from: Metric
+      eventId: entityGuid
+      eventName: entityName
+  unit: OPERATIONS_PER_SECOND
+  title: Transactions
+sessionStatus:
+  queries:
+    newRelic:
+      select: average(`stats.sqlCompilations`) As sqlCompilations
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: rate(sum(`sqlserver.batch.sql_compilation.rate`), 1 minute) As sqlCompilations
+      from: Metric
+      eventId: entityGuid
+      eventName: entityName
+  unit: COUNT
+  title: SQL (re-)compilations
+
