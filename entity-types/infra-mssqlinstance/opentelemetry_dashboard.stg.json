@@ -6,7 +6,7 @@
       "widgets": [
         {
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.area"
           },
           "layout": {
             "column": 1,
@@ -14,11 +14,68 @@
             "height": 3,
             "width": 4
           },
-          "title": "Database Performance Overview",
+          "title": "Connections",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.user.connection.count) as 'Active Connections', rate(sum(sqlserver.batch.request.rate), 1 minute) as 'Batch Requests/sec', average(sqlserver.page.buffer_cache.hit_ratio) as 'Buffer Cache Hit %' FROM Metric WHERE metricName IN ('sqlserver.user.connection.count', 'sqlserver.batch.request.rate', 'sqlserver.page.buffer_cache.hit_ratio') SINCE 1 hour ago TIMESERIES AUTO",
+                "query": "SELECT average(sqlserver.user.connection.count) AS 'Connections' FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "SQL compilations and re-compilations",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(sqlserver.batch.sql_compilation.rate), 1 minute) AS 'Compilations', rate(sum(sqlserver.batch.sql_recompilation.rate), 1 minute) AS 'Re-compilations' FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffer cache hit percentage",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(sqlserver.page.buffer_cache.hit_ratio) AS 'Cache hit' FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Average batch requests",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(sqlserver.batch.request.rate), 1 minute) AS 'Batch requests' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -29,72 +86,34 @@
           },
           "layout": {
             "column": 5,
-            "row": 1,
+            "row": 4,
             "height": 3,
             "width": 4
           },
-          "title": "Memory and Buffer Pool",
+          "title": "Page life expectancy",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT average(sqlserver.page.life_expectancy) as 'Page Life Expectancy (sec)', latest(sqlserver.bufferpool.sizeInBytes) / 1024 / 1024 / 1024 as 'Buffer Pool Size (GB)' FROM Metric WHERE metricName IN ('sqlserver.page.life_expectancy', 'sqlserver.bufferpool.sizeInBytes') SINCE 1 hour ago TIMESERIES AUTO",
+                "query": "SELECT average(sqlserver.page.life_expectancy) * 1000 AS 'Page life expentancy' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
         },
         {
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.area"
           },
           "layout": {
             "column": 9,
-            "row": 1,
+            "row": 4,
             "height": 3,
             "width": 4
           },
-          "title": "Transaction Log Activity",
+          "title": "Number of blocked processes",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT rate(sum(sqlserver.transaction_log.flush.rate), 1 minute) as 'Log Flushes/sec', rate(sum(sqlserver.transaction_log.flush.data.rate), 1 minute) as 'Log Flush Data Rate', sum(sqlserver.transaction_log.growth.count) as 'Log Growth Events' FROM Metric WHERE metricName LIKE 'sqlserver.transaction_log%' SINCE 1 hour ago TIMESERIES AUTO",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.bar"
-          },
-          "layout": {
-            "column": 1,
-            "row": 4,
-            "height": 3,
-            "width": 6
-          },
-          "title": "Database Sizes by Database",
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "query": "SELECT latest(sqlserver.database.size.data) / 1024 / 1024 as 'Data Size (MB)', latest(sqlserver.database.size.log) / 1024 / 1024 as 'Log Size (MB)' FROM Metric WHERE metricName IN ('sqlserver.database.size.data', 'sqlserver.database.size.log') FACET database_name SINCE 10 minutes ago",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.pie"
-          },
-          "layout": {
-            "column": 7,
-            "row": 4,
-            "height": 3,
-            "width": 6
-          },
-          "title": "Active Connections by Database",
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "query": "SELECT latest(sqlserver.activeConnections) as 'Active Connections' FROM Metric WHERE metricName = 'sqlserver.activeConnections' FACET database_name SINCE 10 minutes ago",
+                "query": "SELECT average(sqlserver.processes.blocked) AS 'Blocked processes' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -109,11 +128,11 @@
             "height": 3,
             "width": 4
           },
-          "title": "Lock and Compilation Activity",
+          "title": "Lock waits",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT rate(sum(sqlserver.lock.wait.rate), 1 minute) as 'Lock Waits/sec', rate(sum(sqlserver.batch.sql_compilation.rate), 1 minute) as 'SQL Compilations/sec', rate(sum(sqlserver.batch.sql_recompilation.rate), 1 minute) as 'SQL Recompilations/sec' FROM Metric WHERE metricName IN ('sqlserver.lock.wait.rate', 'sqlserver.batch.sql_compilation.rate', 'sqlserver.batch.sql_recompilation.rate') SINCE 1 hour ago TIMESERIES AUTO",
+                "query": "SELECT rate(sum(sqlserver.lock.wait.rate), 1 minute) AS 'Times' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -128,18 +147,18 @@
             "height": 3,
             "width": 4
           },
-          "title": "Page Activity and I/O",
+          "title": "Total wait time",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT rate(sum(sqlserver.page.lazy_write.rate), 1 minute) as 'Lazy Writes/sec', rate(sum(sqlserver.access.pageSplitsPerSecond), 1 minute) as 'Page Splits/sec', latest(sqlserver.database.io) as 'Database I/O' FROM Metric WHERE metricName IN ('sqlserver.page.lazy_write.rate', 'sqlserver.access.pageSplitsPerSecond', 'sqlserver.database.io') SINCE 1 hour ago TIMESERIES AUTO",
+                "query": "SELECT rate(sum(sqlserver.os.wait.duration), 1 minute) AS 'Wait time (ms)' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
         },
         {
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.line"
           },
           "layout": {
             "column": 9,
@@ -147,49 +166,11 @@
             "height": 3,
             "width": 4
           },
-          "title": "Critical Alerts",
+          "title": "Page splits",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT max(sqlserver.processes.blocked) as 'Blocked Processes', rate(sum(sqlserver.stats.deadlocksPerSecond), 1 minute) as 'Deadlocks/sec', latest(sqlserver.database.count) as 'Total Databases' FROM Metric WHERE metricName IN ('sqlserver.processes.blocked', 'sqlserver.stats.deadlocksPerSecond', 'sqlserver.database.count') SINCE 10 minutes ago",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.table"
-          },
-          "layout": {
-            "column": 1,
-            "row": 10,
-            "height": 3,
-            "width": 6
-          },
-          "title": "Top Wait Types",
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "query": "SELECT average(sqlserver.system.waitTimeInMillisecondsPerSecond) as 'Wait Time (ms/sec)', sum(sqlserver.system.waitTimeCount) as 'Wait Count' FROM Metric WHERE metricName IN ('sqlserver.system.waitTimeInMillisecondsPerSecond', 'sqlserver.system.waitTimeCount') FACET wait_type SINCE 30 minutes ago LIMIT 10",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.bar"
-          },
-          "layout": {
-            "column": 7,
-            "row": 10,
-            "height": 3,
-            "width": 6
-          },
-          "title": "Process States Distribution",
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "query": "SELECT latest(sqlserver.instance.processes.by_state) as 'Process Count' FROM Metric WHERE metricName = 'sqlserver.instance.processes.by_state' FACET status SINCE 10 minutes ago",
+                "query": "SELECT rate(sum(sqlserver.page.split.rate), 1 minute) AS 'Page splits' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -200,15 +181,15 @@
           },
           "layout": {
             "column": 1,
-            "row": 13,
+            "row": 10,
             "height": 3,
-            "width": 6
+            "width": 4
           },
-          "title": "Transaction Rate",
+          "title": "Checkpoint pages",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT rate(sum(sqlserver.instance.transactionsPerSecond), 1 minute) as 'Transactions/sec' FROM Metric WHERE metricName = 'sqlserver.instance.transactionsPerSecond' SINCE 2 hours ago TIMESERIES AUTO",
+                "query": "SELECT rate(sum(sqlserver.page.checkpoint.flush.rate), 1 minute) AS 'Checkpoint pages' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -218,16 +199,54 @@
             "id": "viz.line"
           },
           "layout": {
-            "column": 7,
-            "row": 13,
+            "column": 5,
+            "row": 10,
             "height": 3,
-            "width": 6
+            "width": 4
           },
-          "title": "Buffer Cache Hit Ratio by Database",
+          "title": "Memory Usage",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT average(sqlserver.system.bufferPoolHitPercent) as 'Buffer Cache Hit %' FROM Metric WHERE metricName = 'sqlserver.system.bufferPoolHitPercent' FACET database_name SINCE 1 hour ago TIMESERIES AUTO",
+                "query": "SELECT average(sqlserver.memory.usage) AS 'Memory Used' FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Deadlock Rate",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(sqlserver.deadlock.rate), 1 minute) AS 'Deadlocks per Minute' FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Transaction Log Usage",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(sqlserver.transaction_log.usage) AS 'Transaction Log Usage (%)' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
