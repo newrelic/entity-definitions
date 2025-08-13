@@ -2,16 +2,18 @@ domain: EXT
 type: NGINX_INGRESS_CONTROLLER
 synthesis:
   rules:
-    - compositeIdentifier:
-        separator: "/"
-        attributes:
-          - k8s.namespace.name
-          - k8s.deployment.name
+    - identifier: "app.kubernetes.io/name"
       encodeIdentifierInGUID: true
-      name: k8s.namespace.name
+      name: "app.kubernetes.io/name"
       conditions:
         - attribute: metricName
           prefix: "nginx_ingress_controller_"
+  tags:
+    cluster_name: k8s.clusterName
+    namespace:
+      entityTagName: k8s.namespaceName
+    pod:
+      entityTagName: k8s.podName
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
