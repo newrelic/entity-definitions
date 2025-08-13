@@ -2,12 +2,28 @@ domain: EXT
 type: CALICO
 synthesis:
   rules:
-    - identifier: app.kubernetes.io/name
-      name: app.kubernetes.io/name
+    # nri-prometheus
+    - identifier: label.app.kubernetes.io/name
+      name: label.app.kubernetes.io/name
       encodeIdentifierInGUID: true
       conditions:
         - attribute: metricName
           prefix: "felix_cluster_"
+    # prometheus
+    - identifier: app_kubernetes_io_name
+      name: app_kubernetes_io_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: metricName
+          prefix: felix_cluster_
+    # open telemetry rules
+    - identifier: "app.kubernetes.io/name"
+      encodeIdentifierInGUID: true
+      name: "app.kubernetes.io/name"
+      conditions:
+        - attribute: metricName
+          prefix: felix_cluster_
+
   tags:
     # open telemetry attributes
     k8s.pod.name:
