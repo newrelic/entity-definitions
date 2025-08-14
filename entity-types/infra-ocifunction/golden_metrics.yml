@@ -1,18 +1,38 @@
-functionExecutionDuration:
-  title: Function Execution Duration
-  unit: MS
+errorRate:
+  title: Error Rate
+  unit: COUNT
   queries:
     oci:
-      select: sum(oci.faas.function.execution.duration)
+      select: rate(sum(oci.faas.function.response.count), 1 minute)
       from: Metric
+      where: responseType = 'Error'
       eventId: entity.guid
       eventName: entity.name
-functionInvocationCount:
-  title: Function Invocation Count
-  unit: COUNT
+totalInvocations:
+  title: Total Invocations
+  unit: REQUESTS_PER_MINUTE
   queries:
     oci:
       select: sum(oci.faas.function.invocation.count)
       from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+duration99PercentileS:
+  title: Duration (99 percentile) (s)
+  unit: SECONDS
+  queries:
+    oci:
+      select: percentile(oci.faas.function.execution.duration, 99)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+throttles:
+  title: Throttled invocations
+  unit: COUNT
+  queries:
+    oci:
+      select: sum(oci.faas.function.response.count)
+      from: Metric
+      where: responseType = 'Throttled'
       eventId: entity.guid
       eventName: entity.name
