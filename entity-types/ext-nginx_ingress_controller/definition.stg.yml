@@ -9,20 +9,24 @@ synthesis:
       conditions:
         - attribute: metricName
           prefix: "nginx_ingress_controller_"
-    # open telemetry
-    - identifier: "app.kubernetes.io/name"
-      encodeIdentifierInGUID: true
-      name: "app.kubernetes.io/name"
-      conditions:
-        - attribute: metricName
-          prefix: "nginx_ingress_controller_"
+
   tags:
+    # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
     namespace:
       entityTagName: k8s.namespaceName
     pod:
       entityTagName: k8s.podName
+
+    # otel
+    k8s.cluster.name:
+      entityTagName: k8s.clusterName
+    k8s.namespace.name:
+      entityTagName: k8s.namespaceName
+    k8s.pod.name:
+      entityTagName: k8s.podName
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true

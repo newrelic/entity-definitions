@@ -2,48 +2,12 @@ domain: EXT
 type: ISTIO_SERVICE
 synthesis:
   rules:
+    # prometheus
     - compositeIdentifier:
         separator: ":"
         attributes:
-          - clusterName
-          - namespaceName
-          - label.service.istio.io/canonical-name
-      encodeIdentifierInGUID: true
-      name: label.service.istio.io/canonical-name
-      conditions:
-        - attribute: metricName
-          prefix: istio_request
-
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - clusterName
-          - namespaceName
-          - label.service.istio.io/canonical-name
-      encodeIdentifierInGUID: true
-      name: label.service.istio.io/canonical-name
-      conditions:
-        - attribute: metricName
-          prefix: istio_response
-
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - clusterName
-          - namespaceName
-          - label.service.istio.io/canonical-name
-      encodeIdentifierInGUID: true
-      name: label.service.istio.io/canonical-name
-      conditions:
-        - attribute: metricName
-          prefix: istio_tcp
-
-    # Support for prometheus instrumentation provider
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - clusterName
-          - namespaceName
+          - cluster_name
+          - namespace
           - service_istio_io_canonical_name
       encodeIdentifierInGUID: true
       name: service_istio_io_canonical_name
@@ -52,28 +16,17 @@ synthesis:
           prefix: istio_request
       tags:
         service_istio_io_canonical_revision:
-          entityTagNames:
-            [
-              label.service.istio.io/canonical-revision,
-              service_istio_io_canonical_revision,
-            ]
         app:
-          entityTagNames: [label.app, app]
         version:
-          entityTagNames: [label.version, version]
         label.istio:
-          entityTagNames: [label.istio, istio]
         istio_io_rev:
-          entityTagNames: [label.istio.io/rev, istio_io_rev]
         operator_istio_io_component:
-          entityTagNames:
-            [label.operator.istio.io/component, operator_istio_io_component]
 
     - compositeIdentifier:
         separator: ":"
         attributes:
-          - clusterName
-          - namespaceName
+          - cluster_name
+          - namespace
           - service_istio_io_canonical_name
       encodeIdentifierInGUID: true
       name: service_istio_io_canonical_name
@@ -82,28 +35,17 @@ synthesis:
           prefix: istio_response
       tags:
         service_istio_io_canonical_revision:
-          entityTagNames:
-            [
-              label.service.istio.io/canonical-revision,
-              service_istio_io_canonical_revision,
-            ]
         app:
-          entityTagNames: [label.app, app]
         version:
-          entityTagNames: [label.version, version]
         label.istio:
-          entityTagNames: [label.istio, istio]
         istio_io_rev:
-          entityTagNames: [label.istio.io/rev, istio_io_rev]
         operator_istio_io_component:
-          entityTagNames:
-            [label.operator.istio.io/component, operator_istio_io_component]
 
     - compositeIdentifier:
         separator: ":"
         attributes:
-          - clusterName
-          - namespaceName
+          - cluster_name
+          - namespace
           - service_istio_io_canonical_name
       encodeIdentifierInGUID: true
       name: service_istio_io_canonical_name
@@ -112,59 +54,37 @@ synthesis:
           prefix: istio_tcp
       tags:
         service_istio_io_canonical_revision:
-          entityTagNames:
-            [
-              label.service.istio.io/canonical-revision,
-              service_istio_io_canonical_revision,
-            ]
         app:
-          entityTagNames: [label.app, app]
         version:
-          entityTagNames: [label.version, version]
         label.istio:
-          entityTagNames: [label.istio, istio]
         istio_io_rev:
-          entityTagNames: [label.istio.io/rev, istio_io_rev]
         operator_istio_io_component:
-          entityTagNames:
-            [label.operator.istio.io/component, operator_istio_io_component]
 
   tags:
-    label.service.istio.io/canonical-revision:
-    label.app:
-    label.version:
-    label.istio:
-    label.istio.io/rev:
-    label.operator.istio.io/component:
-    k8s.cluster.name:
-      entityTagName: k8s.clusterName
-    clusterName:
-      entityTagName: k8s.clusterName
+    # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
-    k8s.namespace.name:
-      entityTagName: k8s.namespaceName
-    namespaceName:
-      entityTagName: k8s.namespaceName
-    namespace:
-      entityTagName: k8s.namespaceName
-    k8s.deployment.name:
-      entityTagName: k8s.deploymentName
-    deploymentName:
-      entityTagName: k8s.deploymentName
     deployment:
       entityTagName: k8s.deploymentName
-    k8s.pod.name:
-      entityTagName: k8s.podName
-    podName:
-      entityTagName: k8s.podName
+    namespace:
+      entityTagName: k8s.namespaceName
     pod:
       entityTagName: k8s.podName
 
+    # otel
+    k8s.cluster.name:
+      entityTagName: k8s.clusterName
+    k8s.deployment.name:
+      entityTagName: k8s.deploymentName
+    k8s.namespace.name:
+      entityTagName: k8s.namespaceName
+    k8s.pod.name:
+      entityTagName: k8s.podName
+
 goldenTags:
-  - clusterName
-  - namespaceName
-  - label.app
+  - cluster_name
+  - namespace
+  - app
 
 dashboardTemplates:
   newRelic:
