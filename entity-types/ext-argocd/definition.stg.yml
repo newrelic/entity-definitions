@@ -1,22 +1,29 @@
 domain: EXT
-type: COREDNS
-
+type: ARGOCD
 synthesis:
   rules:
-    - identifier: instance
-      name: instance
+    # prometheus
+    - identifier: "app_kubernetes_io_name"
       encodeIdentifierInGUID: true
+      name: "app_kubernetes_io_name"
       conditions:
         - attribute: metricName
-          value: coredns_build_info
+          prefix: "argocd_"
+
+    # otel
+    - identifier: "app.kubernetes.io/name"
+      encodeIdentifierInGUID: true
+      name: "app.kubernetes.io/name"
+      conditions:
+        - attribute: metricName
+          prefix: argocd_
+
   tags:
     # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
     namespace:
       entityTagName: k8s.namespaceName
-    node:
-      entityTagName: k8s.nodeName
     pod:
       entityTagName: k8s.podName
 
@@ -28,10 +35,14 @@ synthesis:
     k8s.pod.name:
       entityTagName: k8s.podName
 
+goldenTags:
+  - clusterName
+  - namespaceName
+
 dashboardTemplates:
   newRelic:
     template: dashboard.json
 
 configuration:
-  entityExpirationTime: EIGHT_DAYS
+  entityExpirationTime: FOUR_HOURS
   alertable: true

@@ -1,14 +1,23 @@
 domain: EXT
-type: COREDNS
-
+type: ENVOY
 synthesis:
   rules:
-    - identifier: instance
-      name: instance
+    - identifier: host.hostname
+      name: host.hostname
       encodeIdentifierInGUID: true
       conditions:
+        - attribute: eventType
+          value: Metric
         - attribute: metricName
-          value: coredns_build_info
+          value: "envoy_http_downstream_cx_total"
+    - identifier: node
+      name: node
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          value: "envoy_http_downstream_cx_total"
   tags:
     # prometheus
     cluster_name:
@@ -25,13 +34,14 @@ synthesis:
       entityTagName: k8s.clusterName
     k8s.namespace.name:
       entityTagName: k8s.namespaceName
+    k8s.node.name:
+      entityTagName: k8s.nodeName
     k8s.pod.name:
       entityTagName: k8s.podName
 
 dashboardTemplates:
-  newRelic:
+  newrelic:
     template: dashboard.json
-
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
