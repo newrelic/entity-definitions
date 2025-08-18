@@ -1,67 +1,135 @@
 {
-    "name": "OracleDb",
-    "pages": [
-        {
-            "name": "OracleDbSampleOpenTelemetry",
-            "widgets": [
-                {
-                    "visualization": {
-                        "id": "viz.line"
-                    },
-                    "layout": {
-                        "column": 1,
-                        "row": 1,
-                        "height": 3,
-                        "width": 3
-                    },
-                    "title": "CPU Time",
-                    "rawConfiguration": {
-                        "nrqlQueries": [
-                            {
-                                "query": "SELECT latest(oracledb.cpu_time) FROM Metric TIMESERIES AUTO ",
-                                "accountId": 0}
-                        ]
-                    }
-                },
-                {
-                    "visualization": {
-                        "id": "viz.line"
-                    },
-                    "layout": {
-                        "column": 1,
-                        "row": 1,
-                        "height": 3,
-                        "width": 3
-                    },
-                    "title": "Sessions Usage",
-                    "rawConfiguration": {
-                        "nrqlQueries": [
-                            {
-                                "query": "SELECT latest(oracledb.sessions.usage) FROM Metric TIMESERIES AUTO ",
-                                "accountId": 0}
-                        ]
-                    }
-                },
-                {
-                    "visualization": {
-                        "id": "viz.line"
-                    },
-                    "layout": {
-                        "column": 1,
-                        "row": 1,
-                        "height": 3,
-                        "width": 3
-                    },
-                    "title": "Total Executions",
-                    "rawConfiguration": {
-                        "nrqlQueries": [
-                            {
-                                "query": "SELECT latest(oracledb.executions) FROM Metric TIMESERIES AUTO",
-                                "accountId": 0}
-                        ]
-                    }
-                }
-            ]
-        }
-    ]
+  "name" : "OracleOtel",
+  "pages" : [ {
+    "name" : "OracleOtel",
+    "widgets" : [ {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 1,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Executions",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(oracledb.executions) AS `Executions` FROM Metric TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 5,
+        "row" : 1,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Session count",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT latest(oracledb.sessions.usage) AS `Sessions` FROM Metric WHERE session_status ='ACTIVE' TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 9,
+        "row" : 1,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Transactions",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT latest(oracledb.user_commits) AS `Transactions` FROM Metric TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 4,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Total physical reads",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(oracledb.physical_reads) AS `Physical reads` FROM Metric TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 5,
+        "row" : 4,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Total physical writes",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(oracledb.physical_writes) AS `Physical writes` FROM Metric TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 9,
+        "row" : 4,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "IO metrics",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(oracledb.disk_io) AS `IO metrics` FROM Metric TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 7,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "DB CPU utilization",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(oracledb.cpu_time) AS `CPU utilization` FROM Metric TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.area"
+      },
+      "layout" : {
+        "column" : 7,
+        "row" : 7,
+        "height" : 3,
+        "width" : 6
+      },
+      "title" : "Global bound memory",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(oracledb.pga_memory) AS `Max size` FROM Metric TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    } ]
+  } ]
 }
