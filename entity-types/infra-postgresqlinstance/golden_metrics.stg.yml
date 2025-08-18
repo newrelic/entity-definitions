@@ -3,12 +3,12 @@ scheduledCheckpoints:
   unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
-      select: average(bgwriter.checkpointsScheduledPerSecond) as scheduled_checkpoints
+      select: average(bgwriter.checkpointsScheduledPerSecond) 
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: rate(sum(postgresql.bgwriter.checkpoint.count), 1 second) as scheduled_checkpoints
+      select: average(postgresql.bgwriter.checkpoint.count)
       from: Metric
       where: type = 'scheduled'
       
@@ -18,12 +18,12 @@ requestedCheckpoints:
   unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
-      select: average(bgwriter.checkpointsRequestedPerSecond) as requested_checkpoints
+      select: bgwriter.checkpointsRequestedPerSecond
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: rate(sum(postgresql.bgwriter.checkpoint.count), 1 second) as requested_checkpoints
+      select: postgresql.bgwriter.checkpoint.count
       from: Metric
       where: type = 'requested'
 
@@ -32,19 +32,19 @@ buffersAllocated:
   unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
-      select: average(bgwriter.buffersAllocatedPerSecond) as buffers_allocated
+      select: average(bgwriter.buffersAllocatedPerSecond) 
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: rate(sum(postgresql.bgwriter.buffers.allocated), 1 second) as buffers_allocated
+      select: average(postgresql.bgwriter.buffers.allocated)
       from: Metric
 
-connectionActive:
-  title: Active connections
-  unit: COUNT
-  queries:
-    opentelemetry:
-      select: latest(postgresql.backends) as active_connections
-      from: Metric
+# connectionActive:
+#   title: Active connections
+#   unit: COUNT
+#   queries:
+#     opentelemetry:
+#       select: latest(postgresql.backends) as active_connections
+#       from: Metric
 
