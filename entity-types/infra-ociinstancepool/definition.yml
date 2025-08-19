@@ -1,10 +1,11 @@
 domain: INFRA
-type: OCIOBJECTSTORAGE
+type: OCIINSTANCEPOOL
 goldenTags:
 - oci.compartmentId
 - oci.region
 - oci.availabilityDomain
-- oci.name
+- oci.displayName
+- oci.lifecycleState
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -13,13 +14,17 @@ synthesis:
     newrelic.cloudIntegrations.providerAccountName:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
   rules:
-  - identifier: oci.resourceID
-    name: oci.resourceDisplayName
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - oci.resourceId
+        - oci.namespace
+    name: oci.resourceName
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
-    - attribute: oci.resourceID
-      prefix: "ocid1.bucket"
+    - attribute: oci.resourceId
+      prefix: "ocid1.instance"
     - attribute: oci.namespace
-      value: "oci_objectstorage"
+      value: "oci_instancepools"
