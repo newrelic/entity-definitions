@@ -4,9 +4,10 @@ const githubHelper = require('./ghHelper');
 /**
  * Allowed conditions per origin
  * If origin is empty or null, it will skip validation
+ * NOTE: regexes can be used
  */
 const VALID_CONDITIONS = new Map([
-  ['APM Metrics', ['metricName', 'metricName__*']],
+  ['APM Metrics', ['metricName', /metricName__.*/]],
   ['Infrastructure Agent', []],
   ['Kubernetes Integration', []],
   ['AWS Integration', []],
@@ -54,7 +55,7 @@ function exactlyOneResolver (rule) {
 
 function conditionsMatchOrigins (rule) {
   const validConditions = [];
-  const validConditionsPrefixes = [];
+  const validConditionsRegexes = [];
 
   for (const origin of rule.origins) {
     const originValidConditions = VALID_CONDITIONS.get(origin);
@@ -64,8 +65,8 @@ function conditionsMatchOrigins (rule) {
     }
 
     originValidConditions.forEach((condition) => {
-      if (condition.includes('*')) {
-        validConditionsPrefixes.push(condition.replace('*', ''));
+      if (condition instanceof RegExp) {
+        validConditionsRegexes.push(condition);
       } else {
         validConditions.push(condition);
       }
@@ -73,7 +74,7 @@ function conditionsMatchOrigins (rule) {
   }
 
   rule.conditions.forEach((condition) => {
-    if (!validConditions.includes(condition.attribute) && !validConditionsPrefixes.some(prefix => condition.attribute.startsWith(prefix))) {
+    if (!validConditions.includes(condition.attribute) && !validConditionsRegexes.some(regex => regex.test(condition.attribute))) {
       throw new Error(rule.name + ' conditions must be valid for given origins, but found ' + condition.attribute);
     }
   });
