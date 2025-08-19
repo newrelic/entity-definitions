@@ -1,12 +1,10 @@
 domain: INFRA
-type: OCIHEALTHCHECK
+type: OCIQUEUE
 goldenTags:
-- oci.availabilityDomain
 - oci.compartmentId
-- oci.region
-- oci.lifecycleState
-- oci.homeRegion
 - oci.displayName
+- oci.lifecycleState
+- oci.region
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -16,22 +14,12 @@ synthesis:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
   rules:
   - identifier: oci.resourceId
-    name: oci.resourceDisplayName
+    name: oci.queueName
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
     - attribute: oci.resourceId
-      prefix: "ocid1.httpmonitor"
+      prefix: "ocid1.queue"
     - attribute: oci.namespace
-      value: "oci_healthchecks"
-  - identifier: oci.resourceId
-    name: oci.resourceDisplayName
-    legacyFeatures:
-      overrideGuidType: true
-    encodeIdentifierInGUID: true
-    conditions:
-    - attribute: oci.resourceId
-      prefix: "ocid1.pingmonitor"
-    - attribute: oci.namespace
-      value: "oci_healthchecks"
+      value: "oci_queue"
