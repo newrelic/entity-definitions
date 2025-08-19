@@ -1,63 +1,38 @@
-activeConnections:
-  title: Active Connections
-  unit: COUNT
+requestsPerMin:
+  title: Requests per Minute
+  unit: REQUESTS_PER_MINUTE
   queries:
     oci:
-      select: sum(oci.lbaas.active.connections)
+      select: rate(sum(oci.lbaas.http.requests), 1 minute)
+      from: Metric
+      facet: oci.lbComponent
+      eventId: entity.guid
+      eventName: entity.name
+latency:
+  title: Average Response Time
+  unit: MS
+  queries:
+    oci:
+      select: average(oci.lbaas.response.time.http.header)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
-backendServers:
-  title: Backend Servers
-  unit: COUNT
+errorRate:
+  title: Error Rate
+  unit: PERCENTAGE
   queries:
     oci:
-      select: sum(oci.lbaas.backend.servers)
+      select: (sum(`oci.lbaas.http.responses.4xx`) + sum(`oci.lbaas.http.responses.5xx`)) / sum(`oci.lbaas.http.responses`) * 100
       from: Metric
+      facet: oci.lbComponent
       eventId: entity.guid
       eventName: entity.name
-bytesReceived:
-  title: Bytes Received
-  unit: BYTES_PER_SECOND
-  queries:
-    oci:
-      select: sum(oci.lbaas.bytes.received)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-bytesSent:
-  title: Bytes Sent
-  unit: BYTES_PER_SECOND
-  queries:
-    oci:
-      select: sum(oci.lbaas.bytes.sent)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-closedConnections:
-  title: Closed Connections
-  unit: COUNT
-  queries:
-    oci:
-      select: sum(oci.lbaas.closed.connections)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-unhealthyBackendServers:
-  title: Unhealthy Backend Servers
+unhealthyHosts:
+  title: Unhealthy Hosts
   unit: COUNT
   queries:
     oci:
       select: sum(oci.lbaas.unhealthy.backend.servers)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-acceptedConnections:
-  title: Accepted Connections
-  unit: COUNT
-  queries:
-    oci:
-      select: sum(oci.lbaas.accepted.connections)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
