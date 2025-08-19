@@ -1,0 +1,40 @@
+relationships:
+  - name: mobileAppContainsMediaStreamingApp
+    version: "1"
+    origins:
+      - Mobile Monitoring
+    conditions:
+      - attribute: parentAppId
+        present: true
+      - attribute: eventType
+        startsWith: Video
+        caseSensitive: true
+      - attribute: src
+        anyOf: ["Android", "IOS"]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: mediaAccountId
+          domain:
+            value: MOBILE
+          type:
+            value: APPLICATION
+          identifier:
+            fragments:
+              - attribute: parentAppId
+            hashAlgorithm: IDENTITY
+      target:
+        buildGuid:
+          account:
+            attribute: mediaAccountId
+          domain:
+            value: MEDIA_STREAMING
+          type:
+            value: VIDEO
+          identifier:
+            fragments:
+              - attribute: appName
+            hashAlgorithm: IDENTITY
