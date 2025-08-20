@@ -2,12 +2,35 @@ domain: EXT
 type: KEDA
 synthesis:
   rules:
-    - identifier: k8s.cluster.name
-      name: k8s.cluster.name
+    # prometheus and otel
+    - identifier: "app_kubernetes_io_name"
       encodeIdentifierInGUID: true
+      name: "app_kubernetes_io_name"
       conditions:
         - attribute: metricName
           value: "keda_build_info"
+
+  tags:
+    # prometheus
+    cluster_name:
+      entityTagName: k8s.clusterName
+    namespace:
+      entityTagName: k8s.namespaceName
+    node:
+      entityTagName: k8s.nodeName
+    pod:
+      entityTagName: k8s.podName
+
+    # otel
+    k8s.cluster.name:
+      entityTagName: k8s.clusterName
+    k8s.namespace.name:
+      entityTagName: k8s.namespaceName
+    k8s.node.name:
+      entityTagName: k8s.nodeName
+    k8s.pod.name:
+      entityTagName: k8s.podName
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
