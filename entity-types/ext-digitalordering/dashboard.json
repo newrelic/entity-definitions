@@ -7,7 +7,7 @@
       "description": null,
       "widgets": [
         {
-          "title": "",
+          "title": "Front Counter Online",
           "layout": {
             "column": 1,
             "row": 1,
@@ -21,7 +21,47 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM XMLRPC SELECT latest(numeric(online)) TIMESERIES auto  SINCE 1 day ago LIMIT MAX"
+                "query": "SELECT count(*) as availability FROM XMLRPC where WayState = 'OPEN' and device.type = 'FC' and WayBusinessDay = WaySystemDate and online = '1' since 30 minutes ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Drive Thru Online",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) as availability FROM XMLRPC where WayState = 'OPEN' and device.type = 'DT' and WayBusinessDay = WaySystemDate and online = '1' since 30 minutes ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Delivery Online",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) as availability FROM XMLRPC where WayState = 'OPEN' and device.type = 'DLV' and WayBusinessDay = WaySystemDate and online = '1' since 30 minutes ago"
               }
             ]
           }
