@@ -71,3 +71,29 @@ relationships:
       target:
         extractGuid:
           attribute: entity.guid
+# APM application hosted on a Kubernetes container
+  - name: apmApplicationHostedOnEXTK8sContainer
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: CONTAINER
+          fields:
+            - field: k8sClusterName
+              attribute: clusterName
+            - field: k8sNamespaceName
+              attribute: namespaceName
+            - field: k8sPodName
+              attribute: podName
+            - field: k8sContainerName
+              attribute: containerName
+      target:
+        extractGuid:
+          attribute: entity.guid
