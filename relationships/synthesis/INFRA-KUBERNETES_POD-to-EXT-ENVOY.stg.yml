@@ -1,0 +1,43 @@
+relationships:
+  - name: k8sPodContains
+    version: "1"
+    origins: 
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "ENVOY" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":pod:"
+              - attribute: podName
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            attribute: accountId   
+          domain:
+            value: EXT
+          type:
+            value: ENVOY
+          identifier:
+            fragments:
+              - attribute: app_kubernetes_io_name
+            hashAlgorithm: FARM_HASH
