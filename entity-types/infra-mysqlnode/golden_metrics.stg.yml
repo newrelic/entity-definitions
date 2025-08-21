@@ -36,8 +36,8 @@ connectionsPerSecond:
     # opentelemetry:
 
 queriesQuestions:
-  unit: OPERATIONS_PER_SECOND
   title: Query questions
+  unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
       select: average(`query.questionsPerSecond`)
@@ -47,12 +47,12 @@ queriesQuestions:
     # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
     # opentelemetry:
 
-threads:
-  unit: COUNT
+threadsConnected:
   title: Threads connected
+  unit: COUNT
   queries:
     newRelic:
-      select: latest(`net.threadsConnected`)
+      select: latest(net.threadsConnected)
       from: MysqlSample
       eventId: entityGuid
       eventName: entityName
@@ -60,4 +60,45 @@ threads:
       select: latest(mysql.threads)
       from: Metric
       where: kind = 'connected'
+
+threadsRunning:
+  title: Threads running
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(net.threadsRunning)
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(mysql.threads)
+      from: Metric
+      where: kind = 'running'
+
+maxUsedConnections:
+  title: Max used connections
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(net.maxUsedConnections)
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(mysql.max_used_connections)
+      from: Metric
+
+bufferPoolDataPages:
+  title: Buffer pool data pages
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(db.innodb.bufferPoolPagesData)
+      from: MysqlSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(mysql.buffer_pool.pages)
+      from: Metric
+      where: state = 'data'
 
