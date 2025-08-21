@@ -1,67 +1,333 @@
 {
-    "name": "PostgresqlInstanceSampleOpenTelemetry",
-    "pages": [
+  "name": "PostgreSQLOtel",
+  "pages": [
+    {
+      "name": "PostgreSQL Queries",
+      "widgets": [
         {
-            "name": "PostgresqlInstanceSampleOpenTelemetry",
-            "widgets": [
-                {
-                    "visualization": {
-                        "id": "viz.line"
-                    },
-                    "layout": {
-                        "column": 1,
-                        "row": 1,
-                        "height": 3,
-                        "width": 3
-                    },
-                    "title": "Database statistics",
-                    "rawConfiguration": {
-                        "nrqlQueries": [
-                            {
-                                "query": "SELECT latest(postgresql.backends) as 'Connections', sum(postgresql.commits) as 'Commits', sum(postgresql.rollbacks) as 'Rollbacks', sum(postgresql.deadlocks) AS 'Deadlocks'  FROM Metric SINCE 6 months ago UNTIL now ",
-                                "accountId": 0}
-                        ]
-                    }
-                },
-                {
-                    "visualization": {
-                        "id": "viz.line"
-                    },
-                    "layout": {
-                        "column": 1,
-                        "row": 1,
-                        "height": 3,
-                        "width": 3
-                    },
-                    "title": "index usage",
-                    "rawConfiguration": {
-                        "nrqlQueries": [
-                            {
-                                "query": "SELECT latest(postgresql.index.scans) as 'Scans', latest(postgresql.index.size) as 'Size' FROM Metric WHERE metricName LIKE 'postgresql.index%' FACET postgresql.index.name, postgresql.table.name LIMIT 50 SINCE 6 months ago UNTIL now",
-                                "accountId": 0}
-                        ]
-                    }
-                },
-                {
-                    "visualization": {
-                        "id": "viz.line"
-                    },
-                    "layout": {
-                        "column": 1,
-                        "row": 1,
-                        "height": 3,
-                        "width": 3
-                    },
-                    "title": "databse size",
-                    "rawConfiguration": {
-                        "nrqlQueries": [
-                            {
-                                "query": "SELECT latest(postgresql.db_size) / 1024 / 1024 as 'Size (MB)' FROM Metric WHERE metricName = 'postgresql.db_size' FACET postgresql.database.name TIMESERIES AUTO SINCE 6 months ago UNTIL now ",
-                                "accountId": 0}
-                        ]
-                    }
-                }
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Databases (unique query count)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT uniqueCount(db.query.text) FROM Log WHERE db.instance IS NOT NULL FACET db.namespace",
+                "accountId": 0}
             ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Average execution time (ms)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.total_exec_time) / latest(postgresql.calls) AS averageExecutionTimems FROM Log WHERE postgresql.total_exec_time IS NOT NULL FACET db.query.text",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Execution count trends",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT uniqueCount(exec_count) FROM (SELECT latest(postgresql.calls) AS exec_count FROM Log WHERE event.name='db.server.top_query' AND postgresql.calls IS NOT NULL FACET postgresql.queryid LIMIT MAX) TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Average disk reads",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.shared_blks_read)/latest(postgresql.calls) FROM Log FACET db.namespace TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Average disk writes",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.shared_blks_written)/latest(postgresql.calls) FROM Log FACET db.namespace TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Wait Events trend",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT count(postgresql.wait_event) FROM Log WHERE postgresql.wait_event IS NOT NULL AND postgresql.wait_event_type NOT IN ('Client','') FACET postgresql.wait_event TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 4,
+            "width": 8
+          },
+          "title": "Top Slow Queries",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(db.namespace) AS `Database`, latest(db.query.text) AS `Query Text`, latest(postgresql.rolname) AS `Role`, latest(postgresql.calls) AS `Execution Count`, latest(postgresql.total_exec_time) AS `Avg Exec Time (ms)`, latest(postgresql.shared_blks_read) AS `Avg Disk Reads`, latest(postgresql.shared_blks_written) AS `Avg Disk Writes` FROM Log FACET postgresql.queryid LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Scheduled checkpoints",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(postgresql.bgwriter.checkpoint.count) FROM Metric WHERE type = 'scheduled' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Requested checkpoints",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(postgresql.bgwriter.checkpoint.count) FROM Metric WHERE type = 'requested' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffers written for checkpoint",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.writes) FROM Metric WHERE source = 'checkpoints' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffers written by background writer",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.writes) FROM Metric WHERE source = 'bgwriter' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Background writer stops",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.maxwritten) FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffers written per backend",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.writes) FROM Metric WHERE source='backend' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffers allocated",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.allocated) FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Backend fsync Calls",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.writes) FROM Metric WHERE source='backend_fsync' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Checkpoint write Time",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.bgwriter.duration), 1 second) AS `Checkpoint Write Time (ms/sec)` FROM Metric WHERE metricName = 'postgresql.bgwriter.duration' AND type = 'write' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Checkpoint sync Time",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.bgwriter.duration), 1 second) AS `Checkpoint Sync Time (ms/sec)` FROM Metric WHERE metricName = 'postgresql.bgwriter.duration' AND type = 'sync' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
         }
-    ]
+      ]
+    }
+  ]
 }
