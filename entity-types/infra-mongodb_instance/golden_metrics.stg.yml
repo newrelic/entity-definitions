@@ -7,22 +7,36 @@ database_count:
 connections_count:
   title: Connections
   unit: COUNT
-  query:
-    select: average(mongodb_ss_connections) AS 'Connections'
-    where: conn_type='active'
+  queries:
+    onhost:
+      select: average(mongodb_ss_connections) AS 'Connections'
+      where: conn_type='active'
+    opentelemetry:
+      select: average(mongodb.connection.count) AS 'Connections'
+      where: type='active'
+      from: Metric
 
 query_operations_count:
   title: Query operations
   unit: COUNT
-  query:
-    select: average(mongodb_ss_opcounters) AS 'Query operations'
-    where: legacy_op_type='query'
+  queries:
+    onhost:
+      select: average(mongodb_ss_opcounters) AS 'Query operations'
+      where: legacy_op_type='query'
+    opentelemetry:
+      select: average(mongodb.document.operation.count) AS 'Query operations'
+      from: Metric
+      where: operation='query'
 
 document_operations_count:
   title: Document operations
   unit: COUNT
-  query:
-    select: latest(mongodb_ss_metrics_document) AS 'Document operations'
+  queries:
+    onhost:
+      select: average(mongodb_ss_metrics_document) AS 'Document operations'
+    opentelemetry:
+      select: average(mongodb.document.operation.count) AS 'Document operations'
+      from: Metric
 
 memory_usage:
   title: Memory usage
