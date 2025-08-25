@@ -1,0 +1,61 @@
+domain: INFRA
+type: NGINXSERVER
+
+goldenTags:
+  - nginx.port
+  - nginx.version
+  - nginx.edition
+  - nginx.hostname
+
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes: 
+        - host.id
+        - nginx.server.address
+        - nginx.server.port
+    name: nginx.server.address
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: nginx.server.address
+        present: true
+      - attribute: nginx.server.port
+        present: true
+      # All metrics from the receiver starts with the 'nginx.' prefix.
+      - attribute: metricName
+        prefix: nginx.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics coming from nginx receiver, given that metrics
+      # could differ between different runtime receivers.
+      - attribute: otel.library.name
+        value: "otelcol/nginxreceiver"
+    tags:
+      # Default resource attributes
+      nginx.server.address:
+      nginx.server.port:
+      # OTel attributes
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.stg.json
+  # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
