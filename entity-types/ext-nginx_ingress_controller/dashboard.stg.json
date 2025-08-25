@@ -119,167 +119,10 @@
                   "platformOptions": { "ignoreTimeRange": false },
                   "yAxisLeft": { "zero": true }
                 }
-            }
-          ]
-      },
-      {
-        "name": "Payload Metrics",
-        "description": null,
-        "widgets":
-          [
-            {
-              "title": "",
-              "layout": { "column": 1, "row": 1, "width": 12, "height": 1 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.markdown" },
-              "rawConfiguration":
-                {
-                  "text": "## This page displays payload metrics for your NGINX Ingress controller. Use the `dimensions` dashboard template variable to change the facet value for the widgets here."
-                }
             },
-            {
-              "title": "Ingress classes",
-              "layout": { "column": 1, "row": 2, "width": 6, "height": 3 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.pie" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": true },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT count(nginx_ingress_controller_requests) WHERE  instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} ) AND ingress IN ( {{ingress}} ) FACET ({{dimensions}})"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false }
-                }
-            },
-            {
-              "title": "Upstream service latency by ingress definition",
-              "layout": { "column": 7, "row": 2, "width": 6, "height": 3 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "SELECT rate(sum(nginx_ingress_controller_ingress_upstream_latency_seconds_sum), 1 SECONDS) FROM Metric WHERE  instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} ) AND ingress IN ( {{ingress}} )  TIMESERIES 60000 SLIDE BY 10000 facet {{dimensions}}"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "",
-              "layout": { "column": 1, "row": 5, "width": 12, "height": 1 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.markdown" },
-              "rawConfiguration": { "text": "# Requests Stats" }
-            },
-            {
-              "title": "Request Size Buckets",
-              "layout": { "column": 1, "row": 6, "width": 6, "height": 3 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "SELECT bucketPercentile(nginx_ingress_controller_request_size_bucket, 50, 75, 90) As 'Request size' FROM Metric WHERE  instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} ) AND ingress IN ( {{ingress}} ) TIMESERIES facet {{dimensions}} "
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Request duration seconds ",
-              "layout": { "column": 7, "row": 6, "width": 6, "height": 3 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "SELECT bucketPercentile(nginx_ingress_controller_request_duration_seconds_bucket, 50, 75, 90) As 'Request duration' FROM Metric WHERE  instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} ) AND ingress IN ( {{ingress}} ) TIMESERIES facet ({{dimensions}}) "
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "",
-              "layout": { "column": 1, "row": 9, "width": 12, "height": 1 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.markdown" },
-              "rawConfiguration": { "text": "# Response Stats" }
-            },
-            {
-              "title": "Response Size Buckets",
-              "layout": { "column": 1, "row": 10, "width": 6, "height": 3 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "SELECT bucketPercentile(nginx_ingress_controller_response_size_bucket, 50, 75, 90) As 'Response size' FROM Metric WHERE  instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} ) AND ingress IN ( {{ingress}} ) TIMESERIES facet {{dimensions}}"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Response duration seconds",
-              "layout": { "column": 7, "row": 10, "width": 6, "height": 3 },
-              "linkedEntityGuids": null,
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "SELECT bucketPercentile(nginx_ingress_controller_response_duration_seconds_bucket, 50, 75, 90) As 'Response duration' FROM Metric WHERE  instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} ) AND ingress IN ( {{ingress}} ) TIMESERIES facet {{dimensions}}"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
-                }
-            }
-          ]
-      },
-      {
-        "name": "CPU/Memory",
-        "description": null,
-        "widgets":
-          [
             {
               "title": "CPU Second Rate by Pod",
-              "layout": { "column": 1, "row": 1, "width": 6, "height": 3 },
+              "layout": { "column": 1, "row": 7, "width": 6, "height": 3 },
               "linkedEntityGuids": null,
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -299,7 +142,7 @@
             },
             {
               "title": "Process Memory Bytes by Pod",
-              "layout": { "column": 7, "row": 1, "width": 6, "height": 3 },
+              "layout": { "column": 7, "row": 7, "width": 6, "height": 3 },
               "linkedEntityGuids": null,
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
