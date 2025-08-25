@@ -24,3 +24,18 @@ synthesis:
       prefix: "ocid1.loadbalancer"
     - attribute: oci.namespace
       value: "oci_lbaas"
+  # Synthesis out of logs. Ref: https://docs.oracle.com/en-us/iaas/Content/Logging/Reference/details_for_load_balancer_logs.htm
+  - identifier: oracle.resourceid
+    name: source
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        prefix: Log
+      - attribute: oracle.resourceId
+        prefix: ocid1.loadbalancer.
+      - attribute: type
+        prefix: com.oraclecloud.loadbalancer.
+      - attribute: logging.testing.synthesize.oci.entities
+        value: "true"
