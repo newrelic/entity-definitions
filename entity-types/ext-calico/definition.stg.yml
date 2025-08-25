@@ -2,12 +2,35 @@ domain: EXT
 type: CALICO
 synthesis:
   rules:
-    - identifier: k8s.cluster.name
-      name: k8s.cluster.name
+    # prometheus and otel
+    - identifier: app_kubernetes_io_name
+      name: app_kubernetes_io_name
       encodeIdentifierInGUID: true
       conditions:
         - attribute: metricName
-          prefix: "felix_cluster_"
+          prefix: felix_cluster_
+
+  tags:
+    # prometheus
+    cluster_name:
+      entityTagName: k8s.clusterName
+    namespace:
+      entityTagName: k8s.namespaceName
+    node:
+      entityTagName: k8s.nodeName
+    pod:
+      entityTagName: k8s.podName
+
+    # otel
+    k8s.cluster.name:
+      entityTagName: k8s.clusterName
+    k8s.namespace.name:
+      entityTagName: k8s.namespaceName
+    k8s.node.name:
+      entityTagName: k8s.nodeName
+    k8s.pod.name:
+      entityTagName: k8s.podName
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
