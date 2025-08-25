@@ -30,7 +30,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT\nif(latest(nginx_ingress_controller_config_last_reload_successful) < 1, 'Errors', 'No Errors') AS 'Last config reload errors'\nFACET prometheus_server\nWHERE instrumentation.name = 'remote-write'\nAND prometheus_server IN ( {{prometheus_server}} )"
+                        "query": "FROM Metric SELECT if(latest(nginx_ingress_controller_config_last_reload_successful) < 1, 'Errors', 'No Errors') AS 'Last config reload errors' FACET prometheus_server WHERE instrumentation.name = 'remote-write' AND prometheus_server IN ({{prometheus_server}}) AND entity.guid = '{{entity.id}}'"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false }
@@ -55,7 +55,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT latest(nginx_ingress_controller_config_last_reload_successful_timestamp_seconds) * 1000 as 'Last successful config reload' FACET prometheus_server where instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} )"
+                        "query": "FROM Metric SELECT latest(nginx_ingress_controller_config_last_reload_successful_timestamp_seconds) * 1000 as 'Last successful config reload' FACET prometheus_server WHERE instrumentation.name = 'remote-write' AND prometheus_server IN ({{prometheus_server}}) AND entity.guid = '{{entity.id}}'"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false }
@@ -74,7 +74,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT sum(nginx_ingress_controller_requests)  WHERE instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} ) facet status"
+                        "query": "FROM Metric SELECT sum(nginx_ingress_controller_requests) WHERE instrumentation.name = 'remote-write' AND prometheus_server IN ({{prometheus_server}}) AND instance IN ({{instance}}) AND entity.guid = '{{entity.id}}' FACET status"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false }
@@ -93,7 +93,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "SELECT (average(`__result_0`) * cardinality(`__result_0`)) AS 'Average process connections' FROM (\n  FROM Metric SELECT\n    average(nginx_ingress_controller_nginx_process_connections_total) AS `__result_0`\n  FACET prometheus_server, instance\n  WHERE instrumentation.name = 'remote-write'\n  AND prometheus_server IN ( {{prometheus_server}} )\n  AND instance IN ( {{instance}} )\n  TIMESERIES 60000 SLIDE BY 30000\n)\nFACET concat(prometheus_server, ' - ', instance)\nTIMESERIES 30000 "
+                        "query": "FROM Metric SELECT average(nginx_ingress_controller_nginx_process_connections_total) AS 'Average process connections' WHERE instrumentation.name = 'remote-write' AND prometheus_server IN ({{prometheus_server}}) AND instance IN ({{instance}}) AND entity.guid = '{{entity.id}}' FACET concat(prometheus_server, ' - ', instance) TIMESERIES"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false },
@@ -113,14 +113,14 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT\n  rate(sum(nginx_ingress_controller_request_size_count), 1 SECONDS)\nFACET concat(prometheus_server, ' - ', instance, ' : ', status)\nWHERE instrumentation.name = 'remote-write'\nAND prometheus_server IN ( {{prometheus_server}} )\nAND instance IN ( {{instance}} )\nTIMESERIES 60000 SLIDE BY 10000"
+                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_request_size_count), 1 SECONDS) FACET concat(prometheus_server, ' - ', instance, ' : ', status) WHERE instrumentation.name = 'remote-write' AND prometheus_server IN ({{prometheus_server}}) AND instance IN ({{instance}}) AND entity.guid = '{{entity.id}}' TIMESERIES"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false },
                   "yAxisLeft": { "zero": true }
                 }
             },
-                        {
+            {
               "title": "",
               "layout": { "column": 1, "row": 1, "width": 12, "height": 1 },
               "linkedEntityGuids": null,
@@ -265,7 +265,7 @@
             },
             {
               "title": "CPU Second Rate by Pod",
-              "layout": { "column": 1, "row": 1, "width": 6, "height": 3 },
+              "layout": { "column": 1, "row": 7, "width": 6, "height": 3 },
               "linkedEntityGuids": null,
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -276,7 +276,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "SELECT rate(sum(nginx_ingress_controller_nginx_process_cpu_seconds_total), 1 SECONDS) FROM Metric WHERE  instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} )  TIMESERIES 60000 SLIDE BY 30000 facet concat(prometheus_server, ' - ', controller_pod)"
+                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_nginx_process_cpu_seconds_total), 1 SECONDS) WHERE instrumentation.name = 'remote-write' AND prometheus_server IN ({{prometheus_server}}) AND instance IN ({{instance}}) AND entity.guid = '{{entity.id}}' FACET concat(prometheus_server, ' - ', controller_pod) TIMESERIES"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false },
@@ -285,7 +285,7 @@
             },
             {
               "title": "Process Memory Bytes by Pod",
-              "layout": { "column": 7, "row": 1, "width": 6, "height": 3 },
+              "layout": { "column": 7, "row": 7, "width": 6, "height": 3 },
               "linkedEntityGuids": null,
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -296,7 +296,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "SELECT rate(sum(nginx_ingress_controller_nginx_process_resident_memory_bytes), 1 SECONDS) FROM Metric WHERE  instrumentation.name = 'remote-write' AND prometheus_server IN ( {{prometheus_server}} ) AND instance IN ( {{instance}} )  TIMESERIES 60000 SLIDE BY 30000 facet concat(prometheus_server, ' - ', controller_pod) "
+                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_nginx_process_resident_memory_bytes), 1 SECONDS) WHERE instrumentation.name = 'remote-write' AND prometheus_server IN ({{prometheus_server}}) AND instance IN ({{instance}}) AND entity.guid = '{{entity.id}}' FACET concat(prometheus_server, ' - ', controller_pod) TIMESERIES"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false },
