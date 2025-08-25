@@ -1,0 +1,30 @@
+domain: INFRA
+type: OCIINSTANCEPOOL
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.availabilityDomain
+- oci.displayName
+- oci.lifecycleState
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - compositeIdentifier:
+      separator: "/"
+      attributes:
+        - oci.resourceId
+        - oci.namespace
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.instance"
+    - attribute: oci.namespace
+      value: "oci_instancepools"

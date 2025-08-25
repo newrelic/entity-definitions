@@ -1,6 +1,29 @@
 const utils = require('./utils');
 const githubHelper = require('./ghHelper');
 
+/**
+ * Allowed conditions per origin
+ * If origin is empty or null, it will skip validation
+ * NOTE: regexes can be used
+ */
+const VALID_CONDITIONS = new Map([
+  ['APM Metrics', ['metricName', /metricName__.*/]],
+  ['Infrastructure Agent', []],
+  ['Kubernetes Integration', []],
+  ['AWS Integration', []],
+  ['GCP Integration', []],
+  ['Azure Integration', []],
+  ['OnHost Integration', []],
+  ['OpenTelemetry', []],
+  ['Pixie', []],
+  ['Prometheus', []],
+  ['Distributed Tracing', []],
+  ['Metric API', []],
+  ['AIOPS', []],
+  ['Browser Monitoring', []],
+  ['Mobile Monitoring', []]
+]);
+
 let ALL_RELATIONSHIP_SYNTHESIS;
 function validateAndRecord (rule) {
   if (ALL_RELATIONSHIP_SYNTHESIS.has(rule.name)) {
@@ -30,6 +53,33 @@ function exactlyOneResolver (rule) {
   if (rule.relationship.target == null) { throw new Error(rule.name + ' should have one resolver in the relationship target'); } else { checkTwoResolvers(rule.relationship.target, rule.name, 'target'); }
 }
 
+function conditionsMatchOrigins (rule) {
+  const validConditions = [];
+  const validConditionsRegexes = [];
+
+  for (const origin of rule.origins) {
+    const originValidConditions = VALID_CONDITIONS.get(origin);
+
+    if (!originValidConditions || originValidConditions.length === 0) {
+      return;
+    }
+
+    originValidConditions.forEach((condition) => {
+      if (condition instanceof RegExp) {
+        validConditionsRegexes.push(condition);
+      } else {
+        validConditions.push(condition);
+      }
+    });
+  }
+
+  rule.conditions.forEach((condition) => {
+    if (!validConditions.includes(condition.attribute) && !validConditionsRegexes.some(regex => regex.test(condition.attribute))) {
+      throw new Error(rule.name + ' conditions must be valid for given origins, but found ' + condition.attribute);
+    }
+  });
+}
+
 const RULES = [
   {
     name: 'Relationship Synthesis rules should have a unique name',
@@ -42,6 +92,10 @@ const RULES = [
   {
     name: 'Relationship Synthesis should have exactly one resolver per source/target',
     apply: rule => exactlyOneResolver(rule)
+  },
+  {
+    name: 'Relationship Synthesis conditions must ve valid for given origins',
+    apply: rule => conditionsMatchOrigins(rule)
   }
 ];
 
