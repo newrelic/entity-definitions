@@ -17,12 +17,17 @@
           "visualization": {
             "id": "viz.line"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "SELECT rate(count(*), 1 minute) FROM istio_requests_total WHERE source_app = 'istio-ingressgateway' SINCE 1 hour ago TIMESERIES"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(*), 1 minute) FROM istio_requests_total WHERE source_app = 'istio-ingressgateway' SINCE 1 hour ago TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         },
         {
           "title": "Ingress Error Rate",
@@ -35,12 +40,17 @@
           "visualization": {
             "id": "viz.line"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "SELECT rate(count(*), 1 minute) FROM istio_requests_total WHERE source_app = 'istio-ingressgateway' AND response_code LIKE '5%' SINCE 1 hour ago TIMESERIES"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(*), 1 minute) FROM istio_requests_total WHERE source_app = 'istio-ingressgateway' AND response_code LIKE '5%' SINCE 1 hour ago TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         },
         {
           "title": "Average Request Latency (P95)",
@@ -53,12 +63,17 @@
           "visualization": {
             "id": "viz.line"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "SELECT percentile(istio_request_duration_seconds, 95) FROM istio_requests_total WHERE source_app = 'istio-ingressgateway' SINCE 1 hour ago TIMESERIES"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT percentile(istio_request_duration_seconds, 95) FROM istio_requests_total WHERE source_app = 'istio-ingressgateway' SINCE 1 hour ago TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         },
         {
           "title": "Total Requests by Destination Service",
@@ -71,12 +86,17 @@
           "visualization": {
             "id": "viz.bar"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "SELECT count(*) FROM istio_requests_total WHERE source_app = 'istio-ingressgateway' FACET destination_service SINCE 1 hour ago"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM istio_requests_total WHERE source_app = 'istio-ingressgateway' FACET destination_service SINCE 1 hour ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         },
         {
           "title": "Total Connection Bytes by Cluster and Namespace",
@@ -89,12 +109,17 @@
           "visualization": {
             "id": "viz.line"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "FROM Metric SELECT average(envoy_cluster_upstream_cx_rx_bytes_total) WHERE source_app='istio-ingressgateway' FACET clusterName, namespaceName TIMESERIES AUTO"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(envoy_cluster_upstream_cx_rx_bytes_total) WHERE source_app='istio-ingressgateway' FACET clusterName, namespaceName TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         },
         {
           "title": "Inbound Request Latency Histogram",
@@ -107,12 +132,17 @@
           "visualization": {
             "id": "viz.histogram"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds_bucket, 1000) WHERE reporter = 'destination' FACET source_canonical_service"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds_bucket, 1000) WHERE reporter = 'destination' FACET source_canonical_service"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         },
         {
           "title": "Inbound Errors by Source Workload",
@@ -125,12 +155,17 @@
           "visualization": {
             "id": "viz.line"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "FROM Metric SELECT (filter(rate(sum(istio_requests_total), 1 minute), WHERE response_code LIKE '5%')) AS 'Errors' WHERE reporter = 'destination' FACET source_workload TIMESERIES"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT (filter(rate(sum(istio_requests_total), 1 minute), WHERE response_code LIKE '5%')) AS 'Errors' WHERE reporter = 'destination' FACET source_workload TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         },
         {
           "title": "Outbound Requests by Destination Service",
@@ -143,12 +178,17 @@
           "visualization": {
             "id": "viz.line"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' where reporter = 'source' FACET destination_canonical_service, response_code TIMESERIES"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' where reporter = 'source' FACET destination_canonical_service, response_code TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         },
         {
           "title": "Outbound Request Latency Histogram",
@@ -161,12 +201,17 @@
           "visualization": {
             "id": "viz.histogram"
           },
-          "nrqlQueries": [
-            {
-              "accountId": 0,
-              "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds_bucket, 1000) AS 'Requests' WHERE reporter = 'source'"
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds_bucket, 1000) AS 'Requests' WHERE reporter = 'source'"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
-          ]
+          }
         }
       ]
     }
