@@ -12,6 +12,10 @@ jobs:
     name: Validation
     runs-on: ubuntu-latest
     env:
+      # Path to use for definitions location
+      DEFINITIONS_PATH: '../prcode'
+
+      # Used on scripts to validate specific definitions
       RELATIONSHIPS_SYNTHESIS_DIR: ../prcode/relationships/synthesis/
       DEFINITIONS_DIR: ../prcode/entity-types/
     steps:
@@ -35,11 +39,11 @@ jobs:
         if: ${{ github.event.pull_request.mergeable != true }} # If the PR is not mergeable, or it's mergeability it's yet not calculated
       - uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "22"
       - name: Install dependencies
         run: npm --prefix validator install
       - name: Validate definition
-        run: npm --prefix validator run check-pr
+        run: npm --prefix validator run check
         env:
           PR_NUMBER: ${{ github.event.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
