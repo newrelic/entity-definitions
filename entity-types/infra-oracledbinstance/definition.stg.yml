@@ -1,0 +1,31 @@
+domain: INFRA
+type: ORACLEDBINSTANCE
+synthesis:
+  rules:
+    - identifier: oracledb.endpoint # server.address:server.port
+      name: oracledb.endpoint
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: oracledb.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This handles both library name formats for backward compatibility
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/oracledbreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+goldenTags: []
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json

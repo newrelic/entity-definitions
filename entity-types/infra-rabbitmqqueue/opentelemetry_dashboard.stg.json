@@ -14,11 +14,11 @@
             "height": 3,
             "width": 4
           },
-          "title": "Total messages",
+          "title": "Current Messages Ready",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT average(rabbitmq.queue.messages) FROM Metric WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE state = 'ready' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -33,11 +33,11 @@
             "height": 3,
             "width": 4
           },
-          "title": "Published messages",
+          "title": "Current Messages Unacknowledged",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT average(rabbitmq.queue.messages.published) FROM Metric WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE AND state = 'unacknowledged' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -52,11 +52,11 @@
             "height": 3,
             "width": 4
           },
-          "title": "Published messages throughput",
+          "title": "Published Messages",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT rate(average(rabbitmq.queue.messages.published), 1 second) FROM Metric WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "query": "FROM Metric SELECT latest(rabbitmq.message.published) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -71,11 +71,11 @@
             "height": 3,
             "width": 4
           },
-          "title": "Total messages throughput",
+          "title": "Total Current Messages",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT rate(average(rabbitmq.queue.messages), 1 second) FROM Metric WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE instrumentation.provider = 'opentelemetry' FACET state TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -90,18 +90,18 @@
             "height": 3,
             "width": 4
           },
-          "title": "Consumer messages",
+          "title": "Consumer Count",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT rate(average(rabbitmq.queue.messages.consumed), 1 second) FROM Metric WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "query": "FROM Metric SELECT latest(rabbitmq.consumer.count) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
         },
         {
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.billboard"
           },
           "layout": {
             "column": 9,
@@ -109,32 +109,14 @@
             "height": 3,
             "width": 4
           },
-          "title": "Bytes consumed",
+          "title": "Queue Health Summary",
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT average(rabbitmq.queue.bytes.consumed) FROM Metric WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "query": "FROM Metric SELECT latest(rabbitmq.consumer.count) AS 'Consumers', sum(rabbitmq.message.current) AS 'Total Messages' WHERE instrumentation.provider = 'opentelemetry' AND metricName IN ('rabbitmq.consumer.count', 'rabbitmq.message.current')",
                 "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 1,
-            "row": 7,
-            "height": 3,
-            "width": 4
-          },
-          "title": "Consumers",
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "query": "SELECT average(rabbitmq.queue.consumers) FROM Metric WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
-                "accountId": 0}
-            ]
+            ],
+            "thresholds": []
           }
         }
       ]
