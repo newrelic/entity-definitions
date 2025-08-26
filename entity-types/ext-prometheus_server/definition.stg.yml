@@ -2,12 +2,24 @@ domain: EXT
 type: PROMETHEUS_SERVER
 synthesis:
   rules:
-    - identifier: host.hostname
-      name: host.hostname
+    - identifier: prometheus_server
+      name: prometheus_server
       encodeIdentifierInGUID: true
       conditions:
         - attribute: metricName
-          value: "node_uname_info"
+          prefix: "prometheus_"
+  tags:
+    cluster_name:
+      entityTagName: k8s.clusterName
+    namespace:
+      entityTagName: k8s.namespaceName
+    node:
+      entityTagName: k8s.nodeName
+    pod:
+      entityTagName: k8s.podName
+dashboardTemplates:
+  prometheus:
+    template: dashboard.stg.json
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
