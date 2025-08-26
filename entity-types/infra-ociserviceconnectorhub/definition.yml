@@ -24,3 +24,18 @@ synthesis:
       prefix: "ocid1.serviceconnector"
     - attribute: oci.namespace
       value: "oci_service_connector_hub"
+  # Synthesis out of logs. Ref: https://docs.oracle.com/en-us/iaas/Content/Logging/Reference/details-for-service-connector-hub.htm
+  - identifier: oracle.resourceid
+    name: source
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        prefix: Log
+      - attribute: oracle.resourceid
+        prefix: ocid1.serviceconnector.
+      - attribute: type
+        value: com.oraclecloud.sch.serviceconnector.runlog
+      - attribute: logging.testing.synthesize.oci.entities
+        value: "true"
