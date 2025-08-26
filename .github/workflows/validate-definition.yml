@@ -12,12 +12,18 @@ jobs:
     name: Validation
     runs-on: ubuntu-latest
     env:
+      # Path to use for definitions location
+      DEFINITIONS_PATH: '../prcode'
+
+      # Used on scripts to validate specific definitions
       RELATIONSHIPS_SYNTHESIS_DIR: ../prcode/relationships/synthesis/
       DEFINITIONS_DIR: ../prcode/entity-types/
     steps:
       - name: Checkout code from base branch
         uses: actions/checkout@v4
         with:
+          # Temporary to check flow validations
+          ref: "${{ github.event.pull_request.merge_commit_sha }}"
           persist-credentials: false
       - name: Checkout PR code (merged version with base branch)
         uses: actions/checkout@v4
@@ -39,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: npm --prefix validator install
       - name: Validate definition
-        run: npm --prefix validator run check-pr
+        run: npm --prefix validator run check
         env:
           PR_NUMBER: ${{ github.event.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
