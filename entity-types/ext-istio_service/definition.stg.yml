@@ -1,0 +1,70 @@
+domain: EXT
+type: ISTIO_SERVICE
+synthesis:
+  rules:
+    # prometheus
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - namespace
+          - service_istio_io_canonical_name
+      encodeIdentifierInGUID: true
+      name: service_istio_io_canonical_name
+      conditions:
+        - attribute: metricName
+          prefix: istio_requests
+
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - namespace
+          - service_istio_io_canonical_name
+      encodeIdentifierInGUID: true
+      name: service_istio_io_canonical_name
+      conditions:
+        - attribute: metricName
+          prefix: istio_tcp
+
+  tags:
+    # prometheus
+    cluster_name:
+      entityTagName: k8s.clusterName
+    deployment:
+      entityTagName: k8s.deploymentName
+    namespace:
+      entityTagName: k8s.namespaceName
+    pod:
+      entityTagName: k8s.podName
+
+    # otel
+    k8s.cluster.name:
+      entityTagName: k8s.clusterName
+    k8s.deployment.name:
+      entityTagName: k8s.deploymentName
+    k8s.namespace.name:
+      entityTagName: k8s.namespaceName
+    k8s.pod.name:
+      entityTagName: k8s.podName
+
+    service_istio_io_canonical_revision:
+    app:
+    version:
+    label.istio:
+    istio_io_rev:
+    operator_istio_io_component:
+
+goldenTags:
+  - k8s.clusterName
+  - k8s.namespaceName
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+  prometheus:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: FOUR_HOURS
+  alertable: true
