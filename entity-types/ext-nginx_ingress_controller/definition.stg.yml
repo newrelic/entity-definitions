@@ -2,16 +2,35 @@ domain: EXT
 type: NGINX_INGRESS_CONTROLLER
 synthesis:
   rules:
-    - compositeIdentifier:
-        separator: "/"
-        attributes:
-          - k8s.namespace.name
-          - k8s.deployment.name
+    # prometheus and otel
+    - identifier: "app_kubernetes_io_name"
       encodeIdentifierInGUID: true
-      name: k8s.namespace.name
+      name: "app_kubernetes_io_name"
       conditions:
         - attribute: metricName
           prefix: "nginx_ingress_controller_"
+
+  tags:
+    # prometheus
+    cluster_name:
+      entityTagName: k8s.clusterName
+    namespace:
+      entityTagName: k8s.namespaceName
+    node:
+      entityTagName: k8s.nodeName
+    pod:
+      entityTagName: k8s.podName
+
+    # otel
+    k8s.cluster.name:
+      entityTagName: k8s.clusterName
+    k8s.namespace.name:
+      entityTagName: k8s.namespaceName
+    k8s.node.name:
+      entityTagName: k8s.nodeName
+    k8s.pod.name:
+      entityTagName: k8s.podName
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true

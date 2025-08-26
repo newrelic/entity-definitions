@@ -23,3 +23,18 @@ synthesis:
       prefix: "ocid1.bucket"
     - attribute: oci.namespace
       value: "oci_objectstorage"
+  # Synthesis out of logs. Ref: https://docs.oracle.com/en-us/iaas/Content/Logging/Reference/details_for_object_storage.htm
+  - identifier: data.bucketId
+    name: data.bucketName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        prefix: Log
+      - attribute: data.bucketId
+        prefix: ocid1.bucket.
+      - attribute: type
+        prefix: com.oraclecloud.objectstorage.
+      - attribute: logging.testing.synthesize.oci.entities
+        value: "true"

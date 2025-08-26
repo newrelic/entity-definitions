@@ -1,14 +1,14 @@
 domain: EXT
-type: CALICO
+type: ARGOCD
 synthesis:
   rules:
     # prometheus and otel
-    - identifier: app_kubernetes_io_name
-      name: app_kubernetes_io_name
+    - identifier: "app_kubernetes_io_name"
       encodeIdentifierInGUID: true
+      name: "app_kubernetes_io_name"
       conditions:
         - attribute: metricName
-          prefix: felix_cluster_
+          prefix: "argocd_"
 
   tags:
     # prometheus
@@ -31,6 +31,14 @@ synthesis:
     k8s.pod.name:
       entityTagName: k8s.podName
 
+goldenTags:
+  - k8s.clusterName
+  - k8s.namespaceName
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
 configuration:
-  entityExpirationTime: EIGHT_DAYS
+  entityExpirationTime: FOUR_HOURS
   alertable: true
