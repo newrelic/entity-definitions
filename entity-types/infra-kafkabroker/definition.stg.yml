@@ -1,8 +1,5 @@
 domain: INFRA
-type: KAFKATOPIC
-configuration:
-  entityExpirationTime: DAILY
-  alertable: true
+type: KAFKABROKER
 
 synthesis:
   rules:
@@ -10,19 +7,19 @@ synthesis:
   - identifier:
       separator: ":"
       attributes:
-        - topic
+        - kafka.broker.name
         - host.id
     name: kafka.broker.name
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
         value: Metric
-      - attribute: topic
+      - attribute: kafka.broker.name
         present: true
       - attribute: instrumentation.provider
         value: opentelemetry
-      - attribute: metricName
-        prefix: kafka.
+      - attribute: otel.library.name
+        value: "io.opentelemetry.contrib.jmxmetrics"
     tags:
       # Environment resource attributes
       host.name:
@@ -44,3 +41,7 @@ dashboardTemplates:
 goldenTags:
 - clusterName
 - hostName
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
