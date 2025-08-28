@@ -7,6 +7,12 @@ scheduledCheckpoints:
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(postgresql.bgwriter.checkpoint.count)
+      from: Metric
+      where: type = 'scheduled'
+      
+
 requestedCheckpoints:
   title: Requested checkpoints
   unit: OPERATIONS_PER_SECOND
@@ -16,6 +22,11 @@ requestedCheckpoints:
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(postgresql.bgwriter.checkpoint.count)
+      from: Metric
+      where: type = 'requested'
+
 buffersAllocated:
   title: Buffers allocated
   unit: OPERATIONS_PER_SECOND
@@ -25,12 +36,6 @@ buffersAllocated:
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
-
-  threads:
-    queries:
-      opentelemetry:
-        select: latest(`postgresql.connection.max`)
-        from: Metric
-      unit: COUNT
-      title: Max connections
-
+    opentelemetry:
+      select: average(postgresql.bgwriter.buffers.allocated)
+      from: Metric

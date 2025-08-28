@@ -1,5 +1,5 @@
 domain: EXT
-type: KEDA
+type: ARGOCD
 synthesis:
   rules:
     # prometheus and otel
@@ -8,13 +8,12 @@ synthesis:
       name: "app_kubernetes_io_name"
       conditions:
         - attribute: metricName
-          value: "keda_build_info"
+          prefix: "argocd_"
 
   tags:
     # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
-    job:
     namespace:
       entityTagName: k8s.namespaceName
     node:
@@ -32,10 +31,14 @@ synthesis:
     k8s.pod.name:
       entityTagName: k8s.podName
 
+goldenTags:
+  - k8s.clusterName
+  - k8s.namespaceName
+
 dashboardTemplates:
-  prometheus:
-    template: dashboard.stg.json
+  newRelic:
+    template: dashboard.json
 
 configuration:
-  entityExpirationTime: EIGHT_DAYS
+  entityExpirationTime: FOUR_HOURS
   alertable: true
