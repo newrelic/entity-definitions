@@ -654,6 +654,103 @@ synthesis:
         entityTagName: aws.region
     prefixedTags:
       label.:
+    # K8s container logs shipped via newrelic-logging Helm chart
+  - identifier: logging.k8s.container.identifier
+    name: container_name
+    encodeIdentifierInGUID: true
+    legacyFeatures:
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        prefix: Log
+      - attribute: logging.k8s.container.identifier
+        present: true
+      - attribute: logging.k8s.container.legacyIdentifier
+        present: false
+      - attribute: logging.testing.synthesize.k8s.container
+        value: "true"
+        # We don't want to materialize as an Infra Container if the log contains attributes that would result in an
+        # EXT|SERVICE entity
+      - attribute: service.name
+        present: false
+      - attribute: serviceName
+        present: false
+      - attribute: service_name
+        present: false
+    # Disabled tags as a prevention: we currently want to prevent materialization/tagging to happen for these entities out of logs
+    # Nevertheless, the tags block below is based on real attribute names present in these logs, so to enable it simply
+    # uncomment the lines below
+    # tags:
+    #   cluster_name:
+    #     entityTagName: k8s.clusterName
+    #   container_image:
+    #     entityTagName: k8s.containerImage
+    #   container_name:
+    #     entityTagName: k8s.containerName
+    #   # The newrelic-logging Helm chart uses Fluent Bit internally with the K8s plugin (https://docs.fluentbit.io/manual/pipeline/filters/kubernetes),
+    #   # which reports the container ID as the "docker_id" attribute (independently of the underlying container runtime)
+    #   # due to this regex: https://github.com/fluent/fluent-bit/blob/master/conf/parsers.conf#L130
+    #   docker_id:
+    #     entityTagName: k8s.containerId
+    #     multiValue: false
+    #   host:
+    #     entityTagName: k8s.nodeName
+    #   namespace_name:
+    #     entityTagName: k8s.namespaceName
+    #   pod_name:
+    #     entityTagName: k8s.podName
+    # prefixedTags:
+    #   label.:
+
+    # K8s container logs shipped via newrelic-logging Helm chart. These are logs from legacy K8s containers that use
+    # a different format in their ID.
+  - identifier: logging.k8s.container.legacyIdentifier
+    name: container_name
+    # The legacyIdentifier is already hashed, no need to hash it again
+    encodeIdentifierInGUID: false
+    legacyFeatures:
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        prefix: Log
+      - attribute: logging.k8s.container.identifier
+        present: false
+      - attribute: logging.k8s.container.legacyIdentifier
+        present: true
+      - attribute: logging.testing.synthesize.k8s.container
+        value: "true"
+        # We don't want to materialize as an Infra Container if the log contains attributes that would result in an
+        # EXT|SERVICE entity
+      - attribute: service.name
+        present: false
+      - attribute: serviceName
+        present: false
+      - attribute: service_name
+        present: false
+    # Disabled tags as a prevention: we currently want to prevent materialization/tagging to happen for these entities out of logs
+    # Nevertheless, the tags block below is based on real attribute names present in these logs, so to enable it simply
+    # uncomment the lines below
+    # tags:
+    #   cluster_name:
+    #     entityTagName: k8s.clusterName
+    #   container_image:
+    #     entityTagName: k8s.containerImage
+    #   container_name:
+    #     entityTagName: k8s.containerName
+    #   # The newrelic-logging Helm chart uses Fluent Bit internally with the K8s plugin (https://docs.fluentbit.io/manual/pipeline/filters/kubernetes),
+    #   # which reports the container ID as the "docker_id" attribute (independently of the underlying container runtime)
+    #   # due to this regex: https://github.com/fluent/fluent-bit/blob/master/conf/parsers.conf#L130
+    #   docker_id:
+    #     entityTagName: k8s.containerId
+    #     multiValue: false
+    #   host:
+    #     entityTagName: k8s.nodeName
+    #   namespace_name:
+    #     entityTagName: k8s.namespaceName
+    #   pod_name:
+    #     entityTagName: k8s.podName
+    # prefixedTags:
+    #   label.:
 
   tags:
     newrelic.integrationName:
