@@ -1,0 +1,68 @@
+requests:
+  title: Requests per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(net.requestsPerSecond)
+      from: NginxSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(requestsPerSecond)
+      from: (SELECT rate(sum(nginx.requests), 1 second) AS requestsPerSecond FROM Metric)
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+activeConnections:
+  title: Active Connections
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(net.connectionsActive)
+      from: NginxSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(nginx.connections_current)
+      from: Metric
+      where: state = 'active' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+connectionsAccepted:
+  title: Connections Accepted per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(net.connectionsAcceptedPerSecond)
+      from: NginxSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(connectionsAcceptedPerSecond)
+      from: (SELECT rate(sum(nginx.connections_accepted), 1 second) AS connectionsAcceptedPerSecond FROM Metric)
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+connectionsDropped:
+  title: Connections Dropped per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(net.connectionsDroppedPerSecond)
+      from: NginxSample
+      eventId: entityGuid
+      eventName: entityName
+
+connectionsHandled:
+  title: Connections Handled
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: average(nginx.connections_handled)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
