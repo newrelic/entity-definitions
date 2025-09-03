@@ -9,7 +9,7 @@ requests:
       eventName: entityName
     opentelemetry:
       select: average(requestsPerSecond)
-      from: (SELECT rate(sum(nginx.requests), 1 second) AS requestsPerSecond FROM Metric)
+      from: (SELECT rate(sum(nginx.requests), 1 second) AS requestsPerSecond FROM Metric FACET entity.guid TIMESERIES AUTO)
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
       eventName: entity.name
@@ -41,7 +41,7 @@ connectionsAccepted:
       eventName: entityName
     opentelemetry:
       select: average(connectionsAcceptedPerSecond)
-      from: (SELECT rate(sum(nginx.connections_accepted), 1 second) AS connectionsAcceptedPerSecond FROM Metric)
+      from: (SELECT rate(sum(nginx.connections_accepted), 1 second) AS connectionsAcceptedPerSecond FROM Metric FACET entity.guid TIMESERIES AUTO)
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
       eventName: entity.name
