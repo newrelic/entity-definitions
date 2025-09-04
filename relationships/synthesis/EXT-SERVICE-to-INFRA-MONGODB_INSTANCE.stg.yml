@@ -1,0 +1,141 @@
+relationships:
+  # Pattern 1: Connect to existing MongoDB entity using extractGuid from Java APM metrics
+  - name: extServiceCallsInfraMongodbInstanceExisting
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        value: "apm.service.datastore.operation.duration"
+      - attribute: db.system
+        value: mongodb
+      - attribute: service.name
+        present: true
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: host
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MONGODB_INSTANCE
+          identifier:
+            fragments:
+              # Connect to the existing MongoDB entity with endpoint "localhost:27017"
+              - value: "localhost:27017"
+            hashAlgorithm: FARM_HASH
+
+  # Pattern 2: Using host.name for alternative connection
+  - name: extServiceCallsInfraMongodbInstanceHostName
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        value: "apm.service.datastore.operation.duration"
+      - attribute: db.system
+        value: mongodb
+      - attribute: service.name
+        present: true
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: host.name
+        present: true
+      - attribute: host
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MONGODB_INSTANCE
+          identifier:
+            fragments:
+              # Connect to the existing MongoDB entity
+              - value: "localhost:27017"
+            hashAlgorithm: FARM_HASH
+
+  # Pattern 3: Also match transaction overview metrics for broader coverage
+  - name: extServiceCallsInfraMongodbInstanceTransaction
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        value: "apm.service.transaction.overview"
+      - attribute: db.system
+        value: mongodb
+      - attribute: service.name
+        present: true
+      - attribute: instrumentation.provider
+        value: opentelemetry
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MONGODB_INSTANCE
+          identifier:
+            fragments:
+              # Connect to the existing MongoDB entity
+              - value: "localhost:27017"
+            hashAlgorithm: FARM_HASH
