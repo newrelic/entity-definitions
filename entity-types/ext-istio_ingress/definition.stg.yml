@@ -1,0 +1,44 @@
+domain: EXT
+type: ISTIO_INGRESS
+synthesis:
+  rules:
+    # prometheus and otel
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - source_canonical_service
+      encodeIdentifierInGUID: true
+      name: source_canonical_service
+      conditions:
+        - attribute: metricName
+          value: istio_requests_total
+
+  tags:
+    # prometheus
+    cluster_name:
+      entityTagName: k8s.clusterName
+    namespace:
+      entityTagName: k8s.namespaceName
+    node:
+      entityTagName: k8s.nodeName
+    pod:
+      entityTagName: k8s.podName
+
+    # otel
+    k8s.cluster.name:
+      entityTagName: k8s.clusterName
+    k8s.namespace.name:
+      entityTagName: k8s.namespaceName
+    k8s.node.name:
+      entityTagName: k8s.nodeName
+    k8s.pod.name:
+      entityTagName: k8s.podName
+
+dashboardTemplates:
+  prometheus:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true

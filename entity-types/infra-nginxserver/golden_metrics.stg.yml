@@ -9,8 +9,7 @@ requests:
       eventName: entityName
     opentelemetry:
       select: average(requestsPerSecond)
-      from: (SELECT rate(sum(nginx.requests), 1 second) AS requestsPerSecond FROM Metric FACET entity.guid TIMESERIES AUTO)
-      where: instrumentation.provider = 'opentelemetry'
+      from: (SELECT rate(sum(nginx.requests), 1 second) AS requestsPerSecond FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid, entity.name TIMESERIES AUTO)
       eventId: entity.guid
       eventName: entity.name
 
@@ -41,8 +40,7 @@ connectionsAccepted:
       eventName: entityName
     opentelemetry:
       select: average(connectionsAcceptedPerSecond)
-      from: (SELECT rate(sum(nginx.connections_accepted), 1 second) AS connectionsAcceptedPerSecond FROM Metric FACET entity.guid TIMESERIES AUTO)
-      where: instrumentation.provider = 'opentelemetry'
+      from: (SELECT rate(sum(nginx.connections_accepted), 1 second) AS connectionsAcceptedPerSecond FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid, entity.name TIMESERIES AUTO)
       eventId: entity.guid
       eventName: entity.name
 
@@ -55,14 +53,8 @@ connectionsDropped:
       from: NginxSample
       eventId: entityGuid
       eventName: entityName
-
-connectionsHandled:
-  title: Connections Handled
-  unit: COUNT
-  queries:
     opentelemetry:
-      select: average(nginx.connections_handled)
-      from: Metric
-      where: instrumentation.provider = 'opentelemetry'
+      select: average(connectionsDroppedPerSecond)
+      from: (SELECT abs(rate(sum(nginx.connections_accepted), 1 second) - rate(sum(nginx.connections_handled), 1 second)) AS connectionsDroppedPerSecond FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid, entity.name TIMESERIES AUTO)
       eventId: entity.guid
       eventName: entity.name
