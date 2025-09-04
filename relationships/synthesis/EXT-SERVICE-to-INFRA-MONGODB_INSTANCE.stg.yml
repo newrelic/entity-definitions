@@ -1,0 +1,147 @@
+relationships:
+  # Pattern 1: Connect to existing MongoDB entity using extractGuid from Java APM metrics
+  - name: extServiceCallsInfraMongodbInstanceExisting
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: metricName
+        anyOf: ["apm.service.datastore.operation.duration"]
+      - attribute: db.system
+        anyOf: ["mongodb"]
+      - attribute: service.name
+        present: true
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: host
+        present: true
+      - attribute: mongodb.endpoint
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MONGODB_INSTANCE
+          identifier:
+            fragments:
+              # Use dynamic mongodb.endpoint from telemetry data
+              - attribute: mongodb.endpoint
+            hashAlgorithm: FARM_HASH
+
+  # Pattern 2: Using host.name for alternative connection
+  - name: extServiceCallsInfraMongodbInstanceHostName
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: metricName
+        anyOf: ["apm.service.datastore.operation.duration"]
+      - attribute: db.system
+        anyOf: ["mongodb"]
+      - attribute: service.name
+        present: true
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: host.name
+        present: true
+      - attribute: host
+        present: false
+      - attribute: mongodb.endpoint
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MONGODB_INSTANCE
+          identifier:
+            fragments:
+              # Use dynamic mongodb.endpoint from telemetry data
+              - attribute: mongodb.endpoint
+            hashAlgorithm: FARM_HASH
+
+  # Pattern 3: Also match transaction overview metrics for broader coverage
+  - name: extServiceCallsInfraMongodbInstanceTransaction
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: metricName
+        anyOf: ["apm.service.transaction.overview"]
+      - attribute: db.system
+        anyOf: ["mongodb"]
+      - attribute: service.name
+        present: true
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: mongodb.endpoint
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MONGODB_INSTANCE
+          identifier:
+            fragments:
+              # Use dynamic mongodb.endpoint from telemetry data
+              - attribute: mongodb.endpoint
+            hashAlgorithm: FARM_HASH
