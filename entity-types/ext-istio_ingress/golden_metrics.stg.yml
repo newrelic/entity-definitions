@@ -4,26 +4,23 @@ requestRate:
   query:
     select: rate(sum(istio_requests_total), 1 MINUTE)
     from: Metric
-    where: source_app = 'istio-proxy' AND destination_service_name != 'unknown' AND reporter = 'destination'
-    facet: destination_service_name, destination_service_namespace
+    where: destination_workload="istio-ingressgateway" AND reporter = 'destination'
 
 responseTime:
   title: Response time
   unit: MS
   query:
     select: percentile(istio_request_duration_milliseconds, 95)
-    where: source_app = 'istio-proxy' AND destination_service_name != 'unknown' AND reporter = 'destination'
+    where: destination_workload="istio-ingressgateway" AND reporter = 'destination'
     from: Metric
-    facet: destination_service_name, destination_service_namespace
 
 upstreamResponseTime:
-  title: Upstream response time
+  title: Upstream service response time
   unit: MS
   query:
-    select: percentile(istio_request_duration_milliseconds, 95)
-    where: source_app != 'unknown' AND destination_service_name != 'unknown' AND reporter = 'source'
+    select: istio_upstream_service_time_seconds
+    where: destination_workload="istio-ingressgateway" AND reporter = 'source'
     from: Metric
-    facet: destination_service_name, source_app
 
 errorRate:
   title: Error rate
@@ -31,5 +28,4 @@ errorRate:
   query:
     select: filter(count(istio_requests_total), WHERE response_code LIKE '5%') / count(istio_requests_total) * 100
     from: Metric
-    where: source_app = 'istio-proxy' AND destination_service_name != 'unknown' AND reporter = 'destination'
-    facet: destination_service_name, destination_service_namespace
+    where: destination_workload="istio-ingressgateway" AND reporter = 'destination'
