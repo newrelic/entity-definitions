@@ -8,7 +8,7 @@ incomingMessagesPerSecond:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: rate(sum(kafka.message.count), 1 second)
+      select: sum(kafka.message.count) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
       where: metricName = 'kafka.message.count'
       eventId: entity.guid
@@ -24,7 +24,7 @@ bytesInPerSecond:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: rate(sum(kafka.network.io), 1 second)
+      select: sum(kafka.network.io) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
       where: metricName = 'kafka.network.io' AND state = 'in'
       eventId: entity.guid
@@ -40,7 +40,7 @@ produceRequestLatency99p:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(kafka.request.time.99p)
+      select: average(`kafka.request.time.99p`)
       from: Metric
       where: metricName = 'kafka.request.time.99p' AND type = 'produce'
       eventId: entity.guid
@@ -56,7 +56,7 @@ failedRequestsPerSecond:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: rate(sum(kafka.request.failed), 1 second)
+      select: sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
       where: metricName = 'kafka.request.failed'
       eventId: entity.guid

@@ -20,7 +20,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(kafka.message.count), 1 second) AS `Messages In per Second` FROM Metric WHERE metricName = 'kafka.message.count' TIMESERIES AUTO"
+                "query": "SELECT sum(kafka.message.count) / sum((endTimestamp - timestamp) / 1000) AS `Messages In per Second` FROM Metric WHERE metricName = 'kafka.message.count' TIMESERIES AUTO"
               }
             ]
           }
@@ -40,7 +40,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(filter(sum(kafka.network.io), WHERE state = 'in'), 1 second) AS `Bytes In`, rate(filter(sum(kafka.network.io), WHERE state = 'out'), 1 second) AS `Bytes Out` FROM Metric WHERE metricName = 'kafka.network.io' TIMESERIES AUTO"
+                "query": "SELECT  filter(sum(kafka.network.io) /sum((endTimestamp - timestamp) / 1000), WHERE state = 'in') AS `Bytes In`, filter(sum(kafka.network.io) / sum((endTimestamp - timestamp) / 1000), WHERE state = 'out') AS `Bytes Out` FROM Metric WHERE metricName = 'kafka.network.io' TIMESERIES AUTO"
               }
             ]
           }
@@ -180,7 +180,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(kafka.request.failed), 1 second) AS `Failed Requests` FROM Metric WHERE metricName = 'kafka.request.failed' TIMESERIES AUTO FACET type"
+                "query": "SELECT sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000) AS `Failed Requests` FROM Metric WHERE metricName = 'kafka.request.failed' TIMESERIES AUTO FACET type"
               }
             ]
           }
