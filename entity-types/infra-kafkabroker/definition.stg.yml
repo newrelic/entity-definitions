@@ -4,11 +4,7 @@ type: KAFKABROKER
 synthesis:
   rules:
   # This rule is for OTEL kafka receivers metrics
-  - compositeIdentifier:
-      separator: ":"
-      attributes:
-        - kafka.broker.name
-        - host.id
+  - identifier: kafka.broker.name
     name: kafka.broker.name
     encodeIdentifierInGUID: true
     conditions:
@@ -20,6 +16,8 @@ synthesis:
         value: opentelemetry
       - attribute: otel.library.name
         value: "io.opentelemetry.contrib.jmxmetrics"
+      - attribute: metricName
+        prefix: kafka.
     tags:
       # Environment resource attributes
       host.name:
@@ -29,6 +27,8 @@ synthesis:
         entityTagName: clusterName
       otel.library.name:
         entityTagName: instrumentation.name
+      kafka.broker.id:
+        entityTagName: brokerId
 
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline

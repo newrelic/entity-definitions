@@ -46,52 +46,12 @@
           }
         },
         {
-          "title": "Leader Elections Rates",
-          "layout": {
-            "column": 1,
-            "row": 4,
-            "height": 3,
-            "width": 6
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT rate(sum(kafka.leader.election.rate), 1 second) AS `Leader Elections`, rate(sum(kafka.unclean.election.rate), 1 second) AS `Unclean Elections` FROM Metric WHERE metricName IN ('kafka.leader.election.rate', 'kafka.unclean.election.rate') TIMESERIES AUTO"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Partition Health",
-          "layout": {
-            "column": 7,
-            "row": 4,
-            "height": 3,
-            "width": 6
-          },
-          "visualization": {
-            "id": "viz.bar"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(kafka.partition.count) AS `Total Partitions`, average(kafka.partition.under_replicated) AS `Under Replicated Partitions`, average(kafka.partition.offline) AS `Offline Partitions` FROM Metric WHERE metricName IN ('kafka.partition.count', 'kafka.partition.under_replicated', 'kafka.partition.offline')"
-              }
-            ]
-          }
-        },
-        {
           "title": "Requests In Per Second",
           "layout": {
             "column": 1,
-            "row": 7,
-            "height": 3,
-            "width": 6
+            "row": 4,
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.line"
@@ -107,11 +67,11 @@
         },
         {
           "title": "Request Latency (99th Percentile) (ms)",
-          "layout": {
-            "column": 7,
-            "row": 7,
-            "height": 3,
-            "width": 6
+           "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.line"
@@ -126,32 +86,12 @@
           }
         },
         {
-          "title": "ISR Operations Per Second",
-          "layout": {
-            "column": 1,
-            "row": 10,
-            "height": 3,
-            "width": 6
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT rate(sum(kafka.isr.operation.count), 1 second) AS `ISR Operations` FROM Metric WHERE metricName = 'kafka.isr.operation.count' TIMESERIES AUTO FACET operation"
-              }
-            ]
-          }
-        },
-        {
           "title": "Max Replica Lag",
           "layout": {
-            "column": 7,
-            "row": 10,
-            "height": 3,
-            "width": 6
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.area"
@@ -167,11 +107,11 @@
         },
         {
           "title": "Request Failures Per Second",
-          "layout": {
-            "column": 1,
-            "row": 13,
-            "height": 3,
-            "width": 4
+           "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.line"
@@ -189,9 +129,9 @@
           "title": "Request Queue Size",
           "layout": {
             "column": 5,
-            "row": 13,
-            "height": 3,
-            "width": 4
+            "row": 7,
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.area"
@@ -207,11 +147,11 @@
         },
         {
           "title": "Requests Waiting in Purgatory",
-          "layout": {
+           "layout": {
             "column": 9,
-            "row": 13,
-            "height": 3,
-            "width": 4
+            "row": 7,
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.line"
@@ -221,6 +161,66 @@
               {
                 "accountId": 0,
                 "query": "SELECT average(kafka.purgatory.size) AS `Requests Waiting in Purgatory` FROM Metric WHERE metricName = 'kafka.purgatory.size' facet type TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM garbage collections count",
+           "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`jvm.gc.collections.count`) AS 'Garbage Collections Count' FROM Metric WHERE metricName = 'jvm.gc.collections.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM heap memory usage",
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`jvm.memory.heap.used`) AS `Heap Used in Bytes`, average(`jvm.memory.heap.max`) AS `Heap Max in Bytes` FROM Metric WHERE metricName IN ('jvm.memory.heap.used', 'jvm.memory.heap.max') TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM threads count",
+           "layout": {
+            "column": 9,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`jvm.threads.count`) AS `Thread Count` FROM Metric WHERE metricName = 'jvm.threads.count' TIMESERIES AUTO"
               }
             ]
           }
