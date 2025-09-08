@@ -2,16 +2,16 @@ requestRate:
   title: Request rate
   unit: REQUESTS_PER_SECOND
   query:
-    select: rate(sum(istio_requests_total), 1 MINUTE)
+    select: rate(sum(istio_requests_total), 1 SECOND)
     from: Metric
-    where: destination_workload="istio-ingressgateway" AND reporter = 'destination'
+    where: reporter = 'destination'
 
 responseTime:
   title: Response time
   unit: MS
   query:
     select: percentile(istio_request_duration_milliseconds, 95)
-    where: destination_workload="istio-ingressgateway" AND reporter = 'destination'
+    where: reporter = 'destination'
     from: Metric
 
 upstreamResponseTime:
@@ -19,7 +19,7 @@ upstreamResponseTime:
   unit: MS
   query:
     select: istio_upstream_service_time_seconds
-    where: destination_workload="istio-ingressgateway" AND reporter = 'source'
+    where: reporter = 'source'
     from: Metric
 
 errorRate:
@@ -28,4 +28,4 @@ errorRate:
   query:
     select: filter(count(istio_requests_total), WHERE response_code LIKE '5%') / count(istio_requests_total) * 100
     from: Metric
-    where: destination_workload="istio-ingressgateway" AND reporter = 'destination'
+    where: reporter = 'destination'

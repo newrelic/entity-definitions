@@ -2,18 +2,19 @@ requestCount:
   title: Request Count
   unit: COUNT
   query:
-    select: nginx_ingress_controller_requests
+    select: count(nginx_ingress_controller_requests)
     from: Metric
 
 requestLatency:
   title: Request Latency
-  unit: SECONDS
+  unit: PERCENTAGE
   query:
-    select: nginx_ingress_controller_request_duration_seconds
+    select: SELECT bucketPercentile(nginx_ingress_controller_request_duration_seconds_bucket, 50, 75, 90)
     from: Metric
 
 responseLatency:
   title: Response Latency
+  unit: PERCENTAGE
   query:
-    select: nginx_ingress_controller_response_duration
+    select: bucketPercentile(nginx_ingress_controller_response_duration_seconds_bucket, 50, 75, 90)
     from: Metric
