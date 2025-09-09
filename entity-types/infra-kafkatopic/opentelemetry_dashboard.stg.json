@@ -1,0 +1,235 @@
+{
+  "name": "OTEL Kafka Topic",
+  "description": "Health and performance metrics for Kafka Topics",
+  "pages": [
+    {
+      "name": "Topic Overview",
+      "widgets": [
+        {
+          "title": "Topic Partitions",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 2,
+            "width": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.topic.partitions) AS `Topic Partitions` FROM Metric WHERE metricName = 'kafka.topic.partitions'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Replication Factor",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "height": 2,
+            "width": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.topic.replication_factor) AS `Replication Factor` FROM Metric WHERE metricName = 'kafka.topic.replication_factor'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Replication Health",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "select sum(Total_Replicas) as 'Total Replicas' from (SELECT average(kafka.partition.replicas) AS 'Total_Replicas' FROM Metric WHERE metricName = 'kafka.partition.replicas' FACET partition TIMESERIES AUTO) TIMESERIES AUTO"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT sum(In_Sync_Replicas) as 'In-Sync Replicas' FROM (SELECT average(kafka.partition.replicas_in_sync) AS 'In_Sync_Replicas' FROM Metric WHERE metricName = 'kafka.partition.replicas_in_sync' FACET partition TIMESERIES AUTO) TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Min In-Sync Replicas",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "height": 1,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.topic.min_insync_replicas) AS 'Min In-Sync Replicas' FROM Metric WHERE metricName = 'kafka.topic.min_insync_replicas'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Messages In/Out Rate (msgs/sec)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(messages_produced) AS 'In' FROM ( SELECT filter(average(`kafka.producer.record-send-rate`), where metricName='kafka.producer.record-send-rate') AS  'messages_produced' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT sum(messages_consumed) AS 'Out' FROM ( SELECT filter(average(`kafka.consumer.records-consumed-rate`), where metricName='kafka.consumer.records-consumed-rate') AS  'messages_consumed' FROM Metric FACET `client-id` TIMESERIES AUTO ) TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Data Throughput (Bytes/sec)",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(bytes_in) AS 'In' FROM (SELECT filter(average(`kafka.producer.byte-rate`), where metricName='kafka.producer.byte-rate') AS  'bytes_in' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT sum(bytes_out) AS 'Out' FROM (SELECT filter(average(`kafka.consumer.bytes-consumed-rate`), where metricName='kafka.consumer.bytes-consumed-rate') AS  'bytes_out' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Consumer Group Lag (Total Messages)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.consumer_group.lag_sum) AS `Consumer Lag` FROM Metric WHERE metricName = 'kafka.consumer_group.lag_sum' TIMESERIES AUTO FACET group"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Producer Errors & Retries",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+                           {
+                "accountId": 0,
+                "query": "SELECT sum(error_rate) AS 'Error Rate' FROM (SELECT filter(average(`kafka.producer.record-error-rate`), where metricName='kafka.producer.record-error-rate') AS 'error_rate' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT sum(retry_rate) AS 'Retry Rate' FROM (SELECT filter(average(`kafka.producer.record-retry-rate`), where metricName='kafka.producer.record-retry-rate') AS 'retry_rate' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Partition Lag (messages)",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "initialSorting": {
+              "direction": "desc",
+              "name": "Max Lag"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.consumer_group.lag) AS `Max Lag` FROM Metric WHERE metricName = 'kafka.consumer_group.lag' FACET group, partition"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Consumer Group Members",
+          "layout": {
+            "column": 7,
+            "row": 13,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "initialSorting": {
+              "direction": "desc",
+              "name": "Count"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.consumer_group.members) AS 'Count' FROM Metric WHERE metricName = 'kafka.consumer_group.members' FACET group"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
