@@ -8,8 +8,9 @@ requests:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(requestsPerSecond)
-      from: (SELECT rate(sum(nginx.requests), 1 second) AS requestsPerSecond FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid, entity.name TIMESERIES AUTO)
+      select: sum(`nginx.requests`) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND metricName = 'nginx.requests'
       eventId: entity.guid
       eventName: entity.name
 
@@ -25,7 +26,7 @@ activeConnections:
     opentelemetry:
       select: average(nginx.connections_current)
       from: Metric
-      where: state = 'active' AND instrumentation.provider = 'opentelemetry'
+      where: state = 'active' AND instrumentation.provider = 'opentelemetry' AND metricName = 'nginx.connections_current'
       eventId: entity.guid
       eventName: entity.name
 
@@ -39,8 +40,9 @@ connectionsAccepted:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(connectionsAcceptedPerSecond)
-      from: (SELECT rate(sum(nginx.connections_accepted), 1 second) AS connectionsAcceptedPerSecond FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid, entity.name TIMESERIES AUTO)
+      select: sum(`nginx.connections_accepted`) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND metricName = 'nginx.connections_accepted'
       eventId: entity.guid
       eventName: entity.name
 
@@ -54,7 +56,7 @@ connectionsDropped:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(connectionsDroppedPerSecond)
-      from: (SELECT abs(rate(sum(nginx.connections_accepted), 1 second) - rate(sum(nginx.connections_handled), 1 second)) AS connectionsDroppedPerSecond FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid, entity.name TIMESERIES AUTO)
-      eventId: entity.guid
+      select: (sum(connections_accepted) - sum(connections_handled)) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND (metricName = 'nginx.connections_accepted' OR metricName = 'nginx.connections_handled')
       eventName: entity.name
