@@ -1,0 +1,80 @@
+incomingMessagesPerSecond:
+  title: Incoming messages per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(broker.messagesInPerSecond)
+      from: KafkaBrokerSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(kafka.message.count) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: metricName = 'kafka.message.count'
+      eventId: entity.guid
+      eventName: kafka.broker.name
+
+bytesInPerSecond:
+  title: Bytes in per second
+  unit: BYTES_PER_SECOND
+  queries:
+    newRelic:
+      select: average(broker.IOInPerSecond)
+      from: KafkaBrokerSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(kafka.network.io) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: metricName = 'kafka.network.io' AND state = 'in'
+      eventId: entity.guid
+      eventName: kafka.broker.name
+
+produceRequestLatency99p:
+  title: Produce request latency (99th percentile)
+  unit: MS
+  queries:
+    newRelic:
+      select: average(request.produceTime99Percentile)
+      from: KafkaBrokerSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(`kafka.request.time.99p`)
+      from: Metric
+      where: metricName = 'kafka.request.time.99p' AND type = 'produce'
+      eventId: entity.guid
+      eventName: kafka.broker.name
+
+failedRequestsPerSecond:
+  title: Failed requests per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(request.produceRequestsFailedPerSecond)
+      from: KafkaBrokerSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: metricName = 'kafka.request.failed'
+      eventId: entity.guid
+      eventName: kafka.broker.name
+
+underReplicatedPartitions:
+  title: Under replicated partitions
+  unit: COUNT
+  displayAsValue: true
+  queries:
+    newRelic:
+      select: average(replication.unreplicatedPartitions)
+      from: KafkaBrokerSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(kafka.partition.under_replicated)
+      from: Metric
+      where: metricName = 'kafka.partition.under_replicated'
+      eventId: entity.guid
+      eventName: kafka.broker.name
