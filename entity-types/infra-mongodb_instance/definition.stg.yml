@@ -3,6 +3,7 @@ type: MONGODB_INSTANCE
 
 synthesis:
   rules:
+    # Rule 1: MongoDB instances from direct MongoDB receiver metrics
     - identifier: mongodb.endpoint
       name: mongodb.endpoint
       encodeIdentifierInGUID: true
@@ -22,6 +23,29 @@ synthesis:
           entityTagName: instrumentation.name
         telemetry.sdk.name:
           entityTagName: instrumentation.provider
+
+    # Rule 2: MongoDB instances from APM datastore metrics (Java apps)
+    - identifier: host.name
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          value: apm.service.datastore.operation.duration
+        - attribute: db.system
+          value: mongodb
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: host.name
+          present: true
+      tags:
+        host.name:
+          entityTagName: mongodb.host
+        db.system:
+          entityTagName: database.system
+        service.name:
+          entityTagName: calling.service
           
     - identifier: mongodb_cluster_name
       encodeIdentifierInGUID: true

@@ -1,0 +1,42 @@
+domain: INFRA
+type: KAFKATOPIC
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+  # This rule is for OTEL kafka receivers metrics
+  - identifier: kafka.topic.name
+    name: kafka.topic.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: topic
+        present: true
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: metricName
+        prefix: kafka.
+    tags:
+      # Environment resource attributes
+      host.name:
+        entityTagName: hostName
+      instrumentation.provider:
+      kafka.cluster.name:
+        entityTagName: clusterName
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+goldenTags:
+- clusterName
+- hostName

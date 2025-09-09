@@ -15,7 +15,7 @@
       "title" : "Requests per second",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
-          "query" : "FROM (FROM Metric SELECT rate(sum(nginx.requests), 1 second) AS requestsPerSecond WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid TIMESERIES AUTO) SELECT average(requestsPerSecond) TIMESERIES AUTO",
+          "query" : "FROM Metric SELECT sum(`nginx.requests`) / sum((endTimestamp - timestamp) / 1000) AS 'Requests per second' WHERE instrumentation.provider = 'opentelemetry' AND metricName = 'nginx.requests' TIMESERIES AUTO",
           "accountId": 0} ]
       }
     }, {
@@ -31,7 +31,7 @@
       "title" : "Active Connections",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
-          "query" : "FROM Metric SELECT average(nginx.connections_current) WHERE state = 'active' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+          "query" : "FROM Metric SELECT average(nginx.connections_current) AS 'Active Connections' WHERE state = 'active' AND instrumentation.provider = 'opentelemetry' AND metricName = 'nginx.connections_current' TIMESERIES AUTO",
           "accountId": 0} ]
       }
     }, {
@@ -47,7 +47,7 @@
       "title" : "Connections Accepted per second",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
-          "query" : "FROM (FROM Metric SELECT rate(sum(nginx.connections_accepted), 1 second) AS connectionsAcceptedPerSecond WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid TIMESERIES AUTO) SELECT average(connectionsAcceptedPerSecond) TIMESERIES AUTO",
+          "query" : "FROM Metric SELECT sum(`nginx.connections_accepted`) / sum((endTimestamp - timestamp) / 1000) AS 'Connections Accepted per second' WHERE instrumentation.provider = 'opentelemetry' AND metricName = 'nginx.connections_accepted' TIMESERIES AUTO",
           "accountId": 0} ]
       }
     }, {
@@ -63,7 +63,7 @@
       "title" : "Connections Dropped per second",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
-          "query" : "FROM (FROM Metric SELECT abs(rate(sum(nginx.connections_accepted), 1 second) - rate(sum(nginx.connections_handled), 1 second)) AS connectionsDroppedPerSecond WHERE instrumentation.provider = 'opentelemetry' FACET entity.guid TIMESERIES AUTO) SELECT average(connectionsDroppedPerSecond) TIMESERIES AUTO",
+          "query" : "FROM Metric SELECT (sum(connections_accepted) - sum(connections_handled)) / sum((endTimestamp - timestamp) / 1000) AS 'Connections Dropped per second from OTEL' WHERE instrumentation.provider = 'opentelemetry' AND (metricName = 'nginx.connections_accepted' OR metricName = 'nginx.connections_handled') TIMESERIES AUTO",
           "accountId": 0} ]
       }
     } ]
