@@ -1,0 +1,231 @@
+{
+  "name": "OTEL Kafka Broker",
+  "description": "Performance and health metrics for a single Kafka Broker",
+  "pages": [
+    {
+      "name": "Broker Overview",
+      "widgets": [
+        {
+          "title": "Messages In Per Second",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(kafka.message.count) / sum((endTimestamp - timestamp) / 1000) AS `Messages In per Second` FROM Metric WHERE metricName = 'kafka.message.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Bytes In and Out",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT  filter(sum(kafka.network.io) /sum((endTimestamp - timestamp) / 1000), WHERE state = 'in') AS `Bytes In`, filter(sum(kafka.network.io) / sum((endTimestamp - timestamp) / 1000), WHERE state = 'out') AS `Bytes Out` FROM Metric WHERE metricName = 'kafka.network.io' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Requests In Per Second",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.request.count), 1 second) AS `Requests Per Second` FROM Metric WHERE metricName = 'kafka.request.count' AND type IN ('fetch', 'produce') TIMESERIES AUTO FACET type"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Request Latency (99th Percentile) (ms)",
+           "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(average(`kafka.request.time.99p`), WHERE type='produce') AS `Produce`, filter(average(`kafka.request.time.99p`), WHERE type = 'fetchconsumer') AS `Consumer Fetch`, filter(average(`kafka.request.time.99p`), WHERE type = 'fetchfollower') AS `Follower Fetch` FROM Metric WHERE metricName = 'kafka.request.time.99p' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Max Replica Lag",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.max.lag) AS `Max Lag (messages)` FROM Metric WHERE metricName = 'kafka.max.lag' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Request Failures Per Second",
+           "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000) AS `Failed Requests` FROM Metric WHERE metricName = 'kafka.request.failed' TIMESERIES AUTO FACET type"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Request Queue Size",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(kafka.request.queue) as `Request Queue Size` FROM Metric WHERE metricName = 'kafka.request.queue' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Requests Waiting in Purgatory",
+           "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(kafka.purgatory.size) AS `Requests Waiting in Purgatory` FROM Metric WHERE metricName = 'kafka.purgatory.size' facet type TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM garbage collections count",
+           "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`jvm.gc.collections.count`) AS 'Garbage Collections Count' FROM Metric WHERE metricName = 'jvm.gc.collections.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM heap memory usage",
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`jvm.memory.heap.used`) AS `Heap Used in Bytes`, average(`jvm.memory.heap.max`) AS `Heap Max in Bytes` FROM Metric WHERE metricName IN ('jvm.memory.heap.used', 'jvm.memory.heap.max') TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM threads count",
+           "layout": {
+            "column": 9,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`jvm.threads.count`) AS `Thread Count` FROM Metric WHERE metricName = 'jvm.threads.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
