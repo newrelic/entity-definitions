@@ -15,9 +15,7 @@ relationships:
         present: true
       - attribute: instrumentation.provider
         anyOf: ["opentelemetry"]
-      - attribute: host
-        present: true
-      - attribute: mongodb.endpoint
+      - attribute: host.name
         present: true
     relationship:
       expires: P75M
@@ -44,8 +42,8 @@ relationships:
             value: MONGODB_INSTANCE
           identifier:
             fragments:
-              # Use dynamic mongodb.endpoint from telemetry data
-              - attribute: mongodb.endpoint
+              # Use the same identifier format as the entity synthesis rule
+              - attribute: host.name
             hashAlgorithm: FARM_HASH
 
   # Pattern 2: Using host.name for alternative connection
@@ -68,8 +66,6 @@ relationships:
         present: true
       - attribute: host
         present: false
-      - attribute: mongodb.endpoint
-        present: true
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -95,8 +91,8 @@ relationships:
             value: MONGODB_INSTANCE
           identifier:
             fragments:
-              # Use dynamic mongodb.endpoint from telemetry data
-              - attribute: mongodb.endpoint
+              # Use the same identifier format as the entity synthesis rule
+              - attribute: host.name
             hashAlgorithm: FARM_HASH
 
   # Pattern 3: Also match transaction overview metrics for broader coverage
@@ -115,7 +111,7 @@ relationships:
         present: true
       - attribute: instrumentation.provider
         anyOf: ["opentelemetry"]
-      - attribute: mongodb.endpoint
+      - attribute: host.name
         present: true
     relationship:
       expires: P75M
@@ -142,6 +138,6 @@ relationships:
             value: MONGODB_INSTANCE
           identifier:
             fragments:
-              # Use dynamic mongodb.endpoint from telemetry data
-              - attribute: mongodb.endpoint
+              # Use the same identifier format as the entity synthesis rule
+              - attribute: host.name
             hashAlgorithm: FARM_HASH
