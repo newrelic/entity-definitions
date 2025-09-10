@@ -60,11 +60,11 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select sum(Total_Replicas) as 'Total Replicas' from (SELECT average(kafka.partition.replicas) AS 'Total_Replicas' FROM Metric WHERE metricName = 'kafka.partition.replicas' FACET partition TIMESERIES AUTO) TIMESERIES AUTO"
+                "query": "select sum(Total_Replicas) as 'Total Replicas' from (SELECT average(kafka.partition.replicas) AS 'Total_Replicas' FROM Metric WHERE metricName = 'kafka.partition.replicas' FACET partition,entity.guid TIMESERIES AUTO) TIMESERIES AUTO"
               },
               {
                 "accountId": 0,
-                "query": "SELECT sum(In_Sync_Replicas) as 'In-Sync Replicas' FROM (SELECT average(kafka.partition.replicas_in_sync) AS 'In_Sync_Replicas' FROM Metric WHERE metricName = 'kafka.partition.replicas_in_sync' FACET partition TIMESERIES AUTO) TIMESERIES AUTO"
+                "query": "SELECT sum(In_Sync_Replicas) as 'In-Sync Replicas' FROM (SELECT average(kafka.partition.replicas_in_sync) AS 'In_Sync_Replicas' FROM Metric WHERE metricName = 'kafka.partition.replicas_in_sync' FACET partition,entity.guid TIMESERIES AUTO) TIMESERIES AUTO"
               }
             ]
           }
@@ -128,11 +128,11 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(bytes_in) AS 'In' FROM (SELECT filter(average(`kafka.producer.byte-rate`), where metricName='kafka.producer.byte-rate') AS  'bytes_in' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+                "query": "SELECT sum(bytes_in) AS 'In' FROM (SELECT filter(average(`kafka.producer.byte-rate`), where metricName='kafka.producer.byte-rate') AS  'bytes_in' FROM Metric FACET `client-id`,entity.guid TIMESERIES AUTO) TIMESERIES AUTO"
               },
               {
                 "accountId": 0,
-                "query": "SELECT sum(bytes_out) AS 'Out' FROM (SELECT filter(average(`kafka.consumer.bytes-consumed-rate`), where metricName='kafka.consumer.bytes-consumed-rate') AS  'bytes_out' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+                "query": "SELECT sum(bytes_out) AS 'Out' FROM (SELECT filter(average(`kafka.consumer.bytes-consumed-rate`), where metricName='kafka.consumer.bytes-consumed-rate') AS  'bytes_out' FROM Metric FACET `client-id`,entity.guid TIMESERIES AUTO) TIMESERIES AUTO"
               }
             ]
           }
@@ -172,11 +172,11 @@
             "nrqlQueries": [
                            {
                 "accountId": 0,
-                "query": "SELECT sum(error_rate) AS 'Error Rate' FROM (SELECT filter(average(`kafka.producer.record-error-rate`), where metricName='kafka.producer.record-error-rate') AS 'error_rate' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+                "query": "SELECT sum(error_rate) AS 'Error Rate' FROM (SELECT filter(average(`kafka.producer.record-error-rate`), where metricName='kafka.producer.record-error-rate') AS 'error_rate' FROM Metric FACET `client-id`,entity.guid TIMESERIES AUTO) TIMESERIES AUTO"
               },
               {
                 "accountId": 0,
-                "query": "SELECT sum(retry_rate) AS 'Retry Rate' FROM (SELECT filter(average(`kafka.producer.record-retry-rate`), where metricName='kafka.producer.record-retry-rate') AS 'retry_rate' FROM Metric FACET `client-id` TIMESERIES AUTO) TIMESERIES AUTO"
+                "query": "SELECT sum(retry_rate) AS 'Retry Rate' FROM (SELECT filter(average(`kafka.producer.record-retry-rate`), where metricName='kafka.producer.record-retry-rate') AS 'retry_rate' FROM Metric FACET `client-id`,entity.guid TIMESERIES AUTO) TIMESERIES AUTO"
               }
             ]
           }
@@ -206,7 +206,7 @@
           }
         },
         {
-          "title": "Consumer Group Members",
+          "title": "Consumer Group Offset Sum",
           "layout": {
             "column": 7,
             "row": 13,
@@ -224,7 +224,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.consumer_group.members) AS 'Count' FROM Metric WHERE metricName = 'kafka.consumer_group.members' FACET group"
+                "query": "SELECT latest(kafka.consumer_group.offset_sum) AS 'Offset Sum' FROM Metric WHERE metricName = 'kafka.consumer_group.offset_sum' FACET group, topic"
               }
             ]
           }
