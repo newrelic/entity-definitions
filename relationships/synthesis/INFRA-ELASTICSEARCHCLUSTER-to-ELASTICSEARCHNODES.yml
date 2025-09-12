@@ -1,29 +1,44 @@
-domain: INFRA
-sourceType: ELASTICSEARCHCLUSTER
-targetType: ELASTICSEARCHNODE
-relationship: CONTAINS
-
-synthesis:
-  rules:
-    - sourceIdentifier:
-        separator: ":"
-        attributes:
-          - elasticsearch.cluster.name
-          - host.id
-      targetIdentifier:
-        separator: ":"
-        attributes:
-          - elasticsearch.node.name
-          - elasticsearch.cluster.name
-          - host.id
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: elasticsearch.cluster.name
-          present: true
-        - attribute: elasticsearch.node.name
-          present: true
-
-validation:
-  targetCardinality: MANY
-  sourceCardinality: ONE
+relationships:
+  - name: elasticsearchClusterContainsNode
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: "elasticsearch.node."
+      - attribute: elasticsearch.cluster.name
+        present: true
+      - attribute: elasticsearch.node.name
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          # If you use accountId, add it here, or remove if not needed
+          domain:
+            value: INFRA
+          type:
+            value: ELASTICSEARCHCLUSTER
+          identifier:
+            fragments:
+              - attribute: elasticsearch.cluster.name
+              - value: ":"
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          domain:
+            value: INFRA
+          type:
+            value: ELASTICSEARCHNODE
+          identifier:
+            fragments:
+              - attribute: elasticsearch.node.name
+              - value: ":"
+              - attribute: elasticsearch.cluster.name
+              - value: ":"
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
