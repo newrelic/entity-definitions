@@ -1,44 +1,52 @@
-activeControllerCount:
-  title: Active Controllers
+brokerCount:
+  title: Brokers
   unit: COUNT
+  displayAsValue: true
   queries:
     newRelic:
-      select: latest(cluster.activeControllerCount)
+      select: latest(cluster.activeBrokerCount)
       from: KafkaClusterSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kafka.brokers)
+      from: Metric
+      where: metricName='kafka.brokers'
+      eventId: entity.guid
 
-globalTopicCount:
+topicCount:
   title: Topics
   unit: COUNT
+  displayAsValue: true
   queries:
     newRelic:
       select: latest(cluster.globalTopicCount)
       from: KafkaClusterSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kafka.topic.count)
+      from: Metric
+      where: metricName='kafka.topic.count'
+      eventId: entity.guid
 
-globalPartitionCount:
+partitionCount:
   title: Partitions
   unit: COUNT
+  displayAsValue: true
   queries:
     newRelic:
       select: latest(cluster.globalPartitionCount)
       from: KafkaClusterSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kafka.partition.count)
+      from: Metric
+      where: metricName='kafka.partition.count'
+      eventId: entity.guid
 
-numGroups:
-  title: Consumer Groups
-  unit: COUNT
-  queries:
-    newRelic:
-      select: latest(cluster.numGroups)
-      from: KafkaClusterSample
-      eventId: entityGuid
-      eventName: entityName
-
-offlinePartitionsCount:
+offlinePartitions:
   title: Offline Partitions
   unit: COUNT
   queries:
@@ -47,13 +55,19 @@ offlinePartitionsCount:
       from: KafkaClusterSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(kafka.partition.offline)
+      from: Metric
+      where: metricName='kafka.partition.offline'
+      eventId: entity.guid
 
-preferredReplicaImbalanceCount:
-  title: Preferred Replica Imbalance
+consumerGroups:
+  title: Consumer Groups
   unit: COUNT
+  displayAsValue: true
   queries:
     newRelic:
-      select: latest(cluster.preferredReplicaImbalanceCount)
+      select: latest(cluster.numGroups)
       from: KafkaClusterSample
       eventId: entityGuid
       eventName: entityName
