@@ -1,0 +1,26 @@
+relationships:
+  - name: k8sPodContainsExtNginxIngress
+    version: "1"
+    origins:
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: entity.type
+        anyOf: ["KUBERNETES_POD"]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NGINXINGRESS
+          fields:
+            - field: k8s.clusterName # cluster of ext-nginx_ingress
+              attribute: cluster_name # cluster of pod
+            - field: k8s.namespaceName # namespace of ext-nginx_ingress
+              attribute: namespace # namespace of pod
+            - field: k8s.podName # podName of ext-nginx_ingress
+              attribute: pod # podName of pod
