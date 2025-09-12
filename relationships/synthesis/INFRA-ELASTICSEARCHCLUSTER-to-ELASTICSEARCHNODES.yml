@@ -1,0 +1,29 @@
+domain: INFRA
+sourceType: ELASTICSEARCHCLUSTER
+targetType: ELASTICSEARCHNODE
+relationship: CONTAINS
+
+synthesis:
+  rules:
+    - sourceIdentifier:
+        separator: ":"
+        attributes:
+          - elasticsearch.cluster.name
+          - host.id
+      targetIdentifier:
+        separator: ":"
+        attributes:
+          - elasticsearch.node.name
+          - elasticsearch.cluster.name
+          - host.id
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: elasticsearch.cluster.name
+          present: true
+        - attribute: elasticsearch.node.name
+          present: true
+
+validation:
+  targetCardinality: MANY
+  sourceCardinality: ONE
