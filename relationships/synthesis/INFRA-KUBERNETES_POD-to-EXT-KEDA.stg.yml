@@ -1,0 +1,27 @@
+relationships:
+  - name: k8sPodContainsExtKeda
+    version: "1"
+    origins:
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: entity.type
+        anyOf: ["KUBERNETES_POD"]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KEDA
+          fields:
+            - field: k8s.clusterName # cluster of ext-keda
+              attribute: cluster_name # cluster of pod
+            - field: k8s.namespaceName # namespace of ext-keda
+              attribute: namespace # namespace of pod
+            - field: k8s.podName # podName of ext-keda
+              attribute: pod # podName of pod
+
