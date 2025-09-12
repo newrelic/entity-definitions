@@ -1,0 +1,23 @@
+requestRate:
+  title: Request rate
+  unit: REQUESTS_PER_SECOND
+  query:
+    select: rate(sum(istio_requests_total), 1 SECOND)
+    from: Metric
+    where: reporter = 'destination'
+
+responseTime:
+  title: Response time
+  unit: MS
+  query:
+    select: percentile(istio_request_duration_milliseconds, 95)
+    where: reporter = 'destination'
+    from: Metric
+
+errorRate:
+  title: Error rate
+  unit: PERCENTAGE
+  query:
+    select: filter(count(istio_requests_total), WHERE response_code LIKE '5%') / count(istio_requests_total) * 100
+    from: Metric
+    where: reporter = 'destination'
