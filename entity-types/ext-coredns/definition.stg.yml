@@ -1,21 +1,18 @@
 domain: EXT
-type: KEDA
+type: COREDNS
+
 synthesis:
   rules:
-    # prometheus and otel
-    - identifier: "app_kubernetes_io_name"
+    - identifier: instance
+      name: instance
       encodeIdentifierInGUID: true
-      name: "app_kubernetes_io_name"
       conditions:
         - attribute: metricName
-          value: "keda_build_info"
-
+          value: coredns_build_info
   tags:
     # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
-      ttl: P1D
-    job:
       ttl: P1D
     namespace:
       entityTagName: k8s.namespaceName
@@ -42,8 +39,8 @@ synthesis:
       ttl: P1D
 
 dashboardTemplates:
-  prometheus:
-    template: dashboard.stg.json
+  newRelic:
+    template: dashboard.json
 
 configuration:
   entityExpirationTime: EIGHT_DAYS

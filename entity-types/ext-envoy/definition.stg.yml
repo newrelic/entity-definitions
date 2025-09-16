@@ -1,21 +1,27 @@
 domain: EXT
-type: KEDA
+type: ENVOY
 synthesis:
   rules:
-    # prometheus and otel
-    - identifier: "app_kubernetes_io_name"
+    - identifier: host.hostname
+      name: host.hostname
       encodeIdentifierInGUID: true
-      name: "app_kubernetes_io_name"
       conditions:
+        - attribute: eventType
+          value: Metric
         - attribute: metricName
-          value: "keda_build_info"
-
+          value: "envoy_http_downstream_cx_total"
+    - identifier: app_kubernetes_io_name
+      name: app_kubernetes_io_name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          value: "envoy_http_downstream_cx_total"
   tags:
     # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
-      ttl: P1D
-    job:
       ttl: P1D
     namespace:
       entityTagName: k8s.namespaceName
@@ -42,9 +48,8 @@ synthesis:
       ttl: P1D
 
 dashboardTemplates:
-  prometheus:
-    template: dashboard.stg.json
-
+  newrelic:
+    template: dashboard.json
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
