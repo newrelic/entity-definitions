@@ -475,6 +475,10 @@ lookupGuid:
 ```
 
 The `lookupGuid` points to the candidate category to be used and maps the fields required for the lookup to the attributes in the telemetry.
+- `attribute` specifies the name of the attribute in the data point. 
+- `field` specifies the name of the field or variable that candidates will use for matching.
+
+For the given example, during the candidate evaluation, the field `endpoint` will have the value retrieved from the attribute `aws.db.host` in the data point.
 
 ##### Dealing with unknown infrastructure types
 
