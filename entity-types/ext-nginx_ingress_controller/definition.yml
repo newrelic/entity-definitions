@@ -1,27 +1,21 @@
 domain: EXT
-type: ENVOY
+type: NGINX_INGRESS_CONTROLLER
 synthesis:
   rules:
-    - identifier: host.hostname
-      name: host.hostname
+    # prometheus and otel
+    - identifier: "app_kubernetes_io_name"
       encodeIdentifierInGUID: true
+      name: "app_kubernetes_io_name"
       conditions:
-        - attribute: eventType
-          value: Metric
         - attribute: metricName
-          value: "envoy_http_downstream_cx_total"
-    - identifier: app_kubernetes_io_name
-      name: app_kubernetes_io_name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          value: "envoy_http_downstream_cx_total"
+          prefix: "nginx_ingress_controller_"
+
   tags:
     # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
+      ttl: P1D
+    instance:
       ttl: P1D
     namespace:
       entityTagName: k8s.namespaceName
@@ -48,8 +42,9 @@ synthesis:
       ttl: P1D
 
 dashboardTemplates:
-  newrelic:
+  prometheus:
     template: dashboard.json
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
