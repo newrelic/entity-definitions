@@ -1,69 +1,19 @@
 {
-  "name": "ElasticSearchClusterDefination",
-  "description": null,
-  "permissions": "PUBLIC_READ_WRITE",
+  "name": "OTEL ElasticSearch Cluster",
+  "description": "ElasticSearch cluster Metrics",
   "pages": [
     {
-      "name": "ElasticSearchClusterDefination",
+      "name": "Cluster Overview",
       "description": null,
       "widgets": [
         {
-          "title": "Cluster Health",
+          "title": "Cluster Status",
           "layout": {
             "column": 1,
             "row": 1,
             "width": 4,
-            "height": 1
+            "height": 3
           },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "🟢 Green cluster status All primary and replica shards are allocated. Your cluster is 100% healthy and fully operational.\n\n🟡 Yellow cluster status At least one replica shard is unallocated or missing. Search results are still complete. You may lose data if more shards disappear.\n\n🔴 Red cluster status At least one primary shard is missing. You are missing data and searches will return partial results. You are unable to index into that shard."
-          }
-        },
-        {
-          "title": "Cluster Size",
-          "layout": {
-            "column": 5,
-            "row": 1,
-            "width": 4,
-            "height": 1
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "Shows the size and scale of your cluster. A sudden drop can indicate that multiple nodes have failed"
-          }
-        },
-        {
-          "title": "Pending Tasks",
-          "layout": {
-            "column": 9,
-            "row": 1,
-            "width": 4,
-            "height": 1
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "A high or continuously growing number of pending tasks indicates the master node is overloaded and can't process cluster changes (like creating indices or updating mappings) quickly enough. This is a key indicator of a performance bottleneck."
-          }
-        },
-        {
-          "title": "Cluster Health",
-          "layout": {
-            "column": 1,
-            "row": 2,
-            "width": 4,
-            "height": 2
-          },
-          "linkedEntityGuids": null,
           "visualization": {
             "id": "viz.billboard"
           },
@@ -83,15 +33,13 @@
           }
         },
         {
-        
-          "title": "Cluster Size",
+          "title": "Node Count",
           "layout": {
             "column": 5,
-            "row": 2,
+            "row": 1,
             "width": 4,
-            "height": 2
+            "height": 3
           },
-          "linkedEntityGuids": null,
           "visualization": {
             "id": "viz.table"
           },
@@ -111,14 +59,13 @@
           }
         },
         {
-          "title": "Pending Tasks",
+          "title": "Pending Task",
           "layout": {
             "column": 9,
-            "row": 2,
+            "row": 1,
             "width": 4,
-            "height": 2
+            "height": 3
           },
-          "linkedEntityGuids": null,
           "visualization": {
             "id": "viz.line"
           },
@@ -140,7 +87,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(elasticsearch.cluster.pending_tasks) \nFROM Metric \nTIMESERIES"
+                "query": "SELECT latest(elasticsearch.cluster.pending_tasks) \nFROM Metric\nTIMESERIES"
               }
             ],
             "platformOptions": {
@@ -158,73 +105,28 @@
           }
         },
         {
-          "title": "Cluster Shards",
+          "title": "Shards",
           "layout": {
             "column": 1,
             "row": 4,
             "width": 4,
-            "height": 1
+            "height": 3
           },
-          "linkedEntityGuids": null,
+          "linkedEntityGuids": [],
           "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "This is the reason behind a Yellow or Red cluster status. If you see any unassigned shards, you know exactly why the cluster is unhealthy. A high number of relocating or initializing shards indicates the cluster is rebalancing data."
-          }
-        },
-        {
-          "title": "Cluster Size",
-          "layout": {
-            "column": 5,
-            "row": 4,
-            "width": 4,
-            "height": 1
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "Monitor your data growth against capacity plans. A sudden, unexpected drop can alert you to an ingestion problem or an accidental data deletion that needs immediate investigation."
-          }
-        },
-        {
-          "title": "Cluster Shards",
-          "layout": {
-            "column": 9,
-            "row": 4,
-            "width": 4,
-            "height": 1
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "Track this trend to accurately forecast when to add more disk space, preventing storage-related outages and managing costs. A sudden increase can also help you spot and address unexpected data growth from a new application or misconfigured log source."
-          }
-        },
-        {
-          "title": "Cluster Health",
-          "layout": {
-            "column": 1,
-            "row": 5,
-            "width": 4,
-            "height": 2
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.table"
+            "id": "viz.pie"
           },
           "rawConfiguration": {
             "facet": {
-              "showOtherSeries": false
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(elasticsearch.cluster.shards) \nFROM Metric \nFACET state"
+                "query": "SELECT latest(elasticsearch.cluster.shards) \nFROM Metric\nFACET state"
               }
             ],
             "platformOptions": {
@@ -233,16 +135,15 @@
           }
         },
         {
-          "title": "Pending Tasks",
+          "title": "Document count",
           "layout": {
             "column": 5,
-            "row": 5,
+            "row": 4,
             "width": 4,
-            "height": 2
+            "height": 3
           },
-          "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.stacked-bar"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
@@ -267,18 +168,72 @@
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         },
         {
-          "title": "Cluster Size",
+          "title": "Indexing & Search Rate(op/sec)",
           "layout": {
             "column": 9,
-            "row": 5,
+            "row": 4,
             "width": 4,
-            "height": 2
+            "height": 3
           },
-          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(elasticsearch.node.operations.completed), 1 second) FROM Metric WHERE operation IN ('index', 'query') FACET operation  TIMESERIES 1 minute SLIDE BY 5 minute"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total Size on Disk (GB)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
           "visualization": {
             "id": "viz.billboard"
           },
@@ -289,7 +244,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(elasticsearch.node.shards.size) / 1073741824 as 'Total Size on Disk (GB)' FROM Metric"
+                "query": "SELECT sum(elasticsearch.node.shards.size) / 1073741824 as 'Disk Used(GB)' FROM Metric"
               }
             ],
             "platformOptions": {
@@ -298,77 +253,55 @@
           }
         },
         {
-          "title": "Pending Tasks",
-          "layout": {
-            "column": 1,
-            "row": 7,
-            "width": 4,
-            "height": 1
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "This widget shows the workload of your cluster in terms of its two primary functions: writing (indexing) and reading (searching) data.\nMonitor the rate of operations to understand your cluster's traffic patterns. A sudden drop in indexing rate could signal an issue with your data pipeline, while a spike in search rate could explain an increase in CPU or JVM load."
-          }
-        },
-        {
-          "title": "Cluster Memory",
+          "title": "Avg OS CPU Used (%)",
           "layout": {
             "column": 5,
             "row": 7,
             "width": 4,
-            "height": 1
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "This shows the overall memory pressure on your cluster.If the average is consistently creeping up, it's an early warning to check individual nodes for memory hotspots or to plan for a memory upgrade across the cluster."
-          }
-        },
-        {
-          "title": "Cluster Throughput",
-          "layout": {
-            "column": 1,
-            "row": 8,
-            "width": 4,
             "height": 3
           },
-          "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.billboard"
           },
           "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(elasticsearch.node.operations.completed), 1 second) FROM Metric FACET operation  TIMESERIES "
+                "query": "SELECT average(elasticsearch.os.cpu.usage) as 'Avg OS CPU Used (%)' FROM Metric"
               }
-            ]
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
           }
         },
         {
-          "title": "Cluster CPU Usage",
+          "title": "Total JVM Heap Used (GB)",
           "layout": {
-            "column": 5,
-            "row": 8,
+            "column": 9,
+            "row": 7,
             "width": 4,
             "height": 3
           },
-          "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.billboard"
           },
           "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average((jvm.memory.heap.used / jvm.memory.heap.max) * 100) AS 'Avg Heap Used %' FROM Metric"
+                "query": "SELECT sum(jvm.memory.heap.used) / 1073741824 as 'Total JVM Heap Used (GB)' FROM Metric"
               }
-            ]
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
           }
         }
       ]
