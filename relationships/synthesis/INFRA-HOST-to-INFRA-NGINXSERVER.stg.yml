@@ -1,0 +1,35 @@
+relationships:
+  - name: hostHostsNginxServer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: nginx.
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: NGINXSERVER
