@@ -1,0 +1,32 @@
+relationships:
+  - name: otelelasticsearchClusterContainsNode
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: elasticsearch.node.name
+        present: true
+      - attribute: entity.type
+        anyOf: ["ELASTICSEARCHNODE"]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: ELASTICSEARCHCLUSTER
+          identifier:
+            fragments:
+              - attribute: elasticsearch.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
