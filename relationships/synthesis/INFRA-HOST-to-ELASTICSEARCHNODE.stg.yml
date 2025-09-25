@@ -1,0 +1,47 @@
+relationships:
+  - name: hostRunsElasticsearchNode
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: elasticsearch.node.name
+        present: true
+      - attribute: elasticsearch.cluster.name
+        present: true
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: ELASTICSEARCHNODE
+          identifier:
+            fragments:
+              - attribute: elasticsearch.node.name
+              - value: ":"
+              - attribute: elasticsearch.cluster.name
+              - value: ":"
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
