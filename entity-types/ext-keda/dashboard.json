@@ -14,7 +14,7 @@
               "visualization": { "id": "viz.markdown" },
               "rawConfiguration":
                 {
-                  "text": "![KEDA Logo](https://raw.githubusercontent.com/kedacore/keda/refs/heads/main/images/logos/keda-icon-colour.svg)\n\n# KEDA Dashboard\n\nMetrics for the KEDA (Kubernetes-based Event Driven Autoscaling) operator.\n\nFilter dashboard by `job = '{{tags.job}}'` or `exported_namespace`."
+                  "text": "![KEDA Logo](https://raw.githubusercontent.com/kedacore/keda/refs/heads/main/images/logos/keda-icon-colour.svg)\n\n# KEDA Dashboard\n\nMetrics for the KEDA (Kubernetes-based Event Driven Autoscaling) operator."
                 }
             },
             {
@@ -27,7 +27,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT sum(keda_resource_registered_total) WHERE job = '{{tags.job}}' FACET type, exported_namespace TIMESERIES"
+                        "query": "FROM Metric SELECT sum(keda_resource_registered_total) FACET type, exported_namespace TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
@@ -43,7 +43,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT sum(keda_trigger_registered_total) WHERE job = '{{tags.job}}' FACET type TIMESERIES"
+                        "query": "FROM Metric SELECT sum(keda_trigger_registered_total) FACET type TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
@@ -59,7 +59,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(keda_scaled_object_errors_total), 2 minute) WHERE job = '{{tags.job}}' FACET scaledObject, exported_namespace TIMESERIES"
+                        "query": "FROM Metric SELECT rate(sum(keda_scaled_object_errors_total), 2 minute) FACET scaledObject, exported_namespace TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
@@ -75,7 +75,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(keda_scaler_detail_errors_total), 2 minute) WHERE job = '{{tags.job}}' FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
+                        "query": "FROM Metric SELECT rate(sum(keda_scaler_detail_errors_total), 2 minute) FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
@@ -91,7 +91,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT latest(keda_scaler_metrics_value) WHERE job = '{{tags.job}}' FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
+                        "query": "FROM Metric SELECT latest(keda_scaler_metrics_value) FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
@@ -107,7 +107,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT latest(keda_scaler_metrics_latency_seconds) WHERE job = '{{tags.job}}' FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
+                        "query": "FROM Metric SELECT latest(keda_scaler_metrics_latency_seconds) FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
@@ -130,7 +130,7 @@
                 }
             },
             {
-              "title": "Reconcile Duration (p50/p95/p99)",
+              "title": "gRPC Server Handled Rate",
               "layout": { "column": 7, "row": 12, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -139,14 +139,14 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT percentile(controller_runtime_reconcile_time_seconds, 99, 95, 50) WHERE job = '{{tags.job}}' FACET controller TIMESERIES"
+                        "query": "FROM Metric SELECT rate(sum(keda_internal_metricsservice_grpc_server_handled_total), 2 minute) FACET grpc_code TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
                 }
             },
             {
-              "title": "Controller Active Workers",
+              "title": "gRPC Server Handling Duration (p50/p95/p99)",
               "layout": { "column": 1, "row": 16, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -155,14 +155,14 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT sum(controller_runtime_active_workers) WHERE job = '{{tags.job}}' FACET controller TIMESERIES"
+                        "query": "FROM Metric SELECT percentile(keda_internal_metricsservice_grpc_server_handling_seconds, 99, 95, 50) FACET grpc_service, grpc_method TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
                 }
             },
             {
-              "title": "Controller Reconcile Errors Rate",
+              "title": "Scale Loop Latency",
               "layout": { "column": 7, "row": 16, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -171,151 +171,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(controller_runtime_reconcile_errors_total), 2 minute) WHERE job = '{{tags.job}}' FACET controller TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Work Queue Adds Rate",
-              "layout": { "column": 1, "row": 20, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(workqueue_adds_total), 2 minute) WHERE job = '{{tags.job}}' FACET name TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Work Queue Size",
-              "layout": { "column": 7, "row": 20, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT latest(workqueue_depth) WHERE job = '{{tags.job}}' FACET name TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Work Queue Duration (p50/p95/p99)",
-              "layout": { "column": 1, "row": 24, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT percentile(workqueue_queue_duration_seconds, 99, 95, 50) WHERE job = '{{tags.job}}' FACET name TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Work Queue Retry Rate",
-              "layout": { "column": 7, "row": 24, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(workqueue_retries_total), 2 minute) WHERE job = '{{tags.job}}' FACET name TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Work Queue Unfinished Duration",
-              "layout": { "column": 1, "row": 28, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT sum(workqueue_unfinished_work_seconds) WHERE job = '{{tags.job}}' FACET name TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Work Queue Task Duration (p50/p95/p99)",
-              "layout": { "column": 7, "row": 28, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT percentile(workqueue_work_duration_seconds, 99, 95, 50) WHERE job = '{{tags.job}}' FACET name TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "gRPC Server Handled Rate",
-              "layout": { "column": 1, "row": 32, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(keda_internal_metricsservice_grpc_server_handled_total), 2 minute) WHERE job = '{{tags.job}}' FACET grpc_code TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "gRPC Server Handling Duration (p50/p95/p99)",
-              "layout": { "column": 7, "row": 32, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT percentile(keda_internal_metricsservice_grpc_server_handling_seconds, 99, 95, 50) WHERE job = '{{tags.job}}' FACET grpc_service, grpc_method TIMESERIES"
-                      }
-                    ],
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Scale Loop Latency",
-              "layout": { "column": 1, "row": 36, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(keda_internal_scale_loop_latency_seconds), 2 minute) WHERE job = '{{tags.job}}' FACET resource, exported_namespace, type TIMESERIES"
+                        "query": "FROM Metric SELECT rate(sum(keda_internal_scale_loop_latency_seconds), 2 minute) FACET resource, exported_namespace, type TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }

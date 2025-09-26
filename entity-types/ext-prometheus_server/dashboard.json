@@ -42,7 +42,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(prometheus_remote_storage_samples_in_total), 1 second) AS 'Samples Appended / Sec' WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
+                "query": "FROM Metric SELECT rate(sum(prometheus_remote_storage_samples_in_total), 1 second) AS 'Samples Appended / Sec' FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -74,7 +74,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(prometheus_remote_storage_samples_in_total), 1 second) AS 'Samples Appended / Sec' WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
+                "query": "FROM Metric SELECT rate(sum(prometheus_remote_storage_samples_in_total), 1 second) AS 'Samples Appended / Sec' FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -100,7 +100,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT uniqueCount(metricName) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server LIMIT MAX"
+                "query": "FROM Metric SELECT uniqueCount(metricName) FACET prometheus_server LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -126,7 +126,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT cardinality() AS 'Time Series' WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server LIMIT MAX"
+                "query": "FROM Metric SELECT cardinality() AS 'Time Series' FACET prometheus_server LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -162,7 +162,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT cardinality(metricName) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET metricName LIMIT MAX"
+                "query": "FROM Metric SELECT cardinality(metricName) FACET metricName LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -175,7 +175,7 @@
           "layout": {
             "column": 1,
             "row": 7,
-            "width": 3,
+            "width": 4,
             "height": 3
           },
           "visualization": {
@@ -191,7 +191,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(prometheus_agent_active_series) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES"
+                "query": "FROM Metric SELECT latest(prometheus_agent_active_series) FACET prometheus_server TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -205,9 +205,9 @@
         {
           "title": "Pending Samples by Source",
           "layout": {
-            "column": 4,
+            "column": 5,
             "row": 7,
-            "width": 3,
+            "width": 4,
             "height": 3
           },
           "visualization": {
@@ -223,7 +223,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(prometheus_remote_storage_samples_pending) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
+                "query": "FROM Metric SELECT latest(prometheus_remote_storage_samples_pending) FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -237,9 +237,9 @@
         {
           "title": "Samples Retried by Source",
           "layout": {
-            "column": 7,
+            "column": 9,
             "row": 7,
-            "width": 3,
+            "width": 4,
             "height": 3
           },
           "visualization": {
@@ -255,7 +255,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(prometheus_remote_storage_samples_retried_total) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
+                "query": "FROM Metric SELECT sum(prometheus_remote_storage_samples_retried_total) FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -269,38 +269,6 @@
         {
           "title": "Failed Samples by Source",
           "layout": {
-            "column": 10,
-            "row": 7,
-            "width": 3,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(prometheus_remote_storage_samples_failed_total), 1 second) AS 'Samples Failed/Sec' WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Memory by Source+Job",
-          "layout": {
             "column": 1,
             "row": 10,
             "width": 4,
@@ -319,71 +287,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(process_resident_memory_bytes), latest(process_virtual_memory_bytes) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' TIMESERIES AUTO FACET prometheus_server,job LIMIT MAX"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "CPU by Source+Job",
-          "layout": {
-            "column": 5,
-            "row": 10,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT rate(latest(process_cpu_seconds_total),1 second)*100 WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' TIMESERIES AUTO FACET prometheus_server,job LIMIT MAX"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Targets Failed to Scrape by Source",
-          "layout": {
-            "column": 9,
-            "row": 10,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT filter(latest(up), WHERE up[latest]=0) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES auto"
+                "query": "FROM Metric SELECT rate(sum(prometheus_remote_storage_samples_failed_total), 1 second) AS 'Samples Failed/Sec' FACET prometheus_server TIMESERIES AUTO LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -397,8 +301,8 @@
         {
           "title": "Total Prometheus Server Instances (Shards) by Cluster",
           "layout": {
-            "column": 1,
-            "row": 13,
+            "column": 5,
+            "row": 10,
             "width": 4,
             "height": 3
           },
@@ -412,7 +316,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT UniqueCount(prometheus_server) as 'Prometheus Shards Count' WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET cluster_name"
+                "query": "FROM Metric SELECT UniqueCount(prometheus_server) as 'Prometheus Shards Count' FACET cluster_name"
               }
             ],
             "platformOptions": {
@@ -423,40 +327,8 @@
         {
           "title": "Target Interval Length by Source+Quantile",
           "layout": {
-            "column": 5,
-            "row": 13,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT max(prometheus_target_interval_length_seconds) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server,quantile as quantile TIMESERIES LIMIT MAX"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Max Scrape Duration by Source+Job",
-          "layout": {
             "column": 9,
-            "row": 13,
+            "row": 10,
             "width": 4,
             "height": 3
           },
@@ -473,7 +345,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT max(scrape_duration_seconds) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' TIMESERIES AUTO FACET prometheus_server,job LIMIT MAX"
+                "query": "FROM Metric SELECT max(prometheus_target_interval_length_seconds) FACET prometheus_server,quantile as quantile TIMESERIES LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -488,7 +360,7 @@
           "title": "Remote Write Threads by Source",
           "layout": {
             "column": 1,
-            "row": 16,
+            "row": 13,
             "width": 4,
             "height": 3
           },
@@ -502,7 +374,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(prometheus_remote_storage_shards) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server LIMIT MAX"
+                "query": "FROM Metric SELECT latest(prometheus_remote_storage_shards) FACET prometheus_server LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -514,7 +386,7 @@
           "title": "Total WAL Corruptions by Source",
           "layout": {
             "column": 5,
-            "row": 16,
+            "row": 13,
             "width": 4,
             "height": 3
           },
@@ -531,7 +403,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(prometheus_agent_corruptions_total) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES auto LIMIT MAX"
+                "query": "FROM Metric SELECT sum(prometheus_agent_corruptions_total) FACET prometheus_server TIMESERIES auto LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -546,7 +418,7 @@
           "title": "Checkpoint Creation/Deletion Failed by Source",
           "layout": {
             "column": 9,
-            "row": 16,
+            "row": 13,
             "width": 4,
             "height": 3
           },
@@ -563,7 +435,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(prometheus_agent_checkpoint_creations_failed_total), sum(prometheus_agent_checkpoint_deletions_failed_total) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server TIMESERIES auto LIMIT MAX"
+                "query": "FROM Metric SELECT sum(prometheus_agent_checkpoint_creations_failed_total), sum(prometheus_agent_checkpoint_deletions_failed_total) FACET prometheus_server TIMESERIES auto LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -578,7 +450,7 @@
           "title": "Service Discovery K8s Https Requests by Source+Status",
           "layout": {
             "column": 1,
-            "row": 19,
+            "row": 16,
             "width": 6,
             "height": 3
           },
@@ -595,7 +467,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(prometheus_sd_kubernetes_http_request_total) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server, status_code TIMESERIES AUTO LIMIT MAX"
+                "query": "FROM Metric SELECT sum(prometheus_sd_kubernetes_http_request_total) FACET prometheus_server, status_code TIMESERIES AUTO LIMIT MAX"
               }
             ],
             "platformOptions": {
@@ -610,7 +482,7 @@
           "title": "Service Discovery K8s Events by Source+Role",
           "layout": {
             "column": 7,
-            "row": 19,
+            "row": 16,
             "width": 6,
             "height": 3
           },
@@ -627,7 +499,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(prometheus_sd_kubernetes_events_total) WHERE collector.name = 'prometheus-agent' AND cluster_name = '{{tags.k8s.clusterName}}' FACET prometheus_server,role TIMESERIES AUTO LIMIT MAX"
+                "query": "FROM Metric SELECT sum(prometheus_sd_kubernetes_events_total) FACET prometheus_server,role TIMESERIES AUTO LIMIT MAX"
               }
             ],
             "platformOptions": {

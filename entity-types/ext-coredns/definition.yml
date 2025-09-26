@@ -3,12 +3,29 @@ type: COREDNS
 
 synthesis:
   rules:
-    - identifier: instance
-      name: instance
+    # prometheus
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - pod
       encodeIdentifierInGUID: true
+      name: pod
       conditions:
         - attribute: metricName
-          value: coredns_build_info
+          prefix: coredns_
+    # otel
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.pod.name
+      encodeIdentifierInGUID: true
+      name: k8s.pod.name
+      conditions:
+        - attribute: metricName
+          prefix: coredns_
+
   tags:
     # prometheus
     cluster_name:

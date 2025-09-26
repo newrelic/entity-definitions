@@ -2,12 +2,29 @@ domain: EXT
 type: PROMETHEUS_SERVER
 synthesis:
   rules:
-    - identifier: prometheus_server
-      name: prometheus_server
+    # prometheus
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - pod
       encodeIdentifierInGUID: true
+      name: prometheus_server
       conditions:
         - attribute: metricName
-          prefix: "prometheus_"
+          prefix: prometheus_
+    # otel
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.pod.name
+      encodeIdentifierInGUID: true
+      name: prometheus_server
+      conditions:
+        - attribute: metricName
+          prefix: prometheus_
+
   tags:
     cluster_name:
       entityTagName: k8s.clusterName
