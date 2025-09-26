@@ -2,13 +2,28 @@ domain: EXT
 type: ARGOCD
 synthesis:
   rules:
-    # prometheus and otel
-    - identifier: "app_kubernetes_io_name"
+    # prometheus
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - pod
       encodeIdentifierInGUID: true
-      name: "app_kubernetes_io_name"
+      name: pod
       conditions:
         - attribute: metricName
-          prefix: "argocd_"
+          prefix: argocd_
+    # otel
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.pod.name
+      encodeIdentifierInGUID: true
+      name: k8s.pod.name
+      conditions:
+        - attribute: metricName
+          prefix: argocd_
 
   tags:
     # prometheus
