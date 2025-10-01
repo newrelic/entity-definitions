@@ -1,0 +1,35 @@
+relationships:
+  - name: extMyStoreContainsPos
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MyStore_FileSize_SQL" ]
+      - attribute: FileName
+        anyOf: [ "SDM" ]
+      - attribute: hostname
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: MYSTORE
+          identifier:
+            fragments:
+              - attribute: store.number
+            hashAlgorithm: IDENTITY
+      target:
+        lookupGuid:
+          candidateCategory: POS
+          fields:
+            - field: countryName
+              attribute: country
+            - field: storeNumber
+              attribute: store.number
