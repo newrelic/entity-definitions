@@ -141,7 +141,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(coredns_forward_requests_total), 1 second)  TIMESERIES "
+                "query": "FROM Metric SELECT rate(sum(coredns_proxy_request_duration_seconds_count), 1 second) FACET to WHERE proxy_name='forward' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -243,7 +243,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT histogrampercentile(coredns_forward_request_duration_seconds_bucket, (100 * 0.99), (100 * 0.5)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET to LIMIT 100 TIMESERIES 300000 SLIDE BY 10000"
+                "query": "SELECT histogrampercentile(coredns_proxy_request_duration_seconds_bucket, (100 * 0.99), (100 * 0.5)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET to, rcode LIMIT 100 WHERE proxy_name='forward' TIMESERIES 300000 SLIDE BY 10000"
               }
             ],
             "yAxisLeft": {
