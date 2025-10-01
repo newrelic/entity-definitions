@@ -1,18 +1,29 @@
 domain: EXT
-type: ISTIO_INGRESS
+type: ARGOCD
 synthesis:
   rules:
-    # prometheus and otel
+    # prometheus
     - compositeIdentifier:
         separator: ":"
         attributes:
           - cluster_name
-          - source_canonical_service
+          - app_kubernetes_io_instance
       encodeIdentifierInGUID: true
-      name: source_canonical_service
+      name: app_kubernetes_io_instance
       conditions:
         - attribute: metricName
-          value: istio_requests_total
+          prefix: argocd_
+    # otel
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.pod.label.app.kubernetes.io/instance
+      encodeIdentifierInGUID: true
+      name: k8s.pod.label.app.kubernetes.io/instance
+      conditions:
+        - attribute: metricName
+          prefix: argocd_
 
   tags:
     # prometheus
@@ -43,10 +54,16 @@ synthesis:
       entityTagName: k8s.podName
       ttl: P1D
 
+goldenTags:
+  - k8s.clusterName
+  - k8s.namespaceName
+
 dashboardTemplates:
+  newRelic:
+    template: dashboard.json
   prometheus:
     template: dashboard.json
 
 configuration:
-  entityExpirationTime: EIGHT_DAYS
+  entityExpirationTime: FOUR_HOURS
   alertable: true

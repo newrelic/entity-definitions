@@ -1,5 +1,5 @@
 domain: EXT
-type: NGINX_INGRESS_CONTROLLER
+type: ENVOY
 synthesis:
   rules:
     # prometheus
@@ -12,7 +12,9 @@ synthesis:
       name: pod
       conditions:
         - attribute: metricName
-          prefix: nginx_
+          prefix: envoy_
+        - attribute: instrumentation.provider
+          value: "prometheus"
     # otel
     - compositeIdentifier:
         separator: ":"
@@ -23,13 +25,14 @@ synthesis:
       name: k8s.pod.name
       conditions:
         - attribute: metricName
-          prefix: nginx_
+          prefix: envoy_
+        - attribute: instrumentation.provider
+          value: "opentelemetry"
+
   tags:
     # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
-      ttl: P1D
-    instance:
       ttl: P1D
     namespace:
       entityTagName: k8s.namespaceName
@@ -56,10 +59,10 @@ synthesis:
       ttl: P1D
 
 dashboardTemplates:
+  newRelic:
+    template: dashboard.json
   prometheus:
     template: dashboard.json
-  opentelemetry:
-    template: opentelemetry_dashboard.json
 
 configuration:
   entityExpirationTime: EIGHT_DAYS

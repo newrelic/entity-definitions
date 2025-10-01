@@ -1,0 +1,34 @@
+relationships:
+  - name: hostHostsOtelElasticSearchNode
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: elasticsearch.node.name
+        present: true
+      - attribute: entity.type
+        anyOf: ["ELASTICSEARCHNODE"]
+      - attribute: host.id
+        present: true  
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type

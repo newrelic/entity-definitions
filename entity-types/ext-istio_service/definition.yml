@@ -7,25 +7,43 @@ synthesis:
         separator: ":"
         attributes:
           - cluster_name
-          - namespace
-          - service_istio_io_canonical_name
+          - pod
       encodeIdentifierInGUID: true
-      name: service_istio_io_canonical_name
+      name: pod
       conditions:
         - attribute: metricName
-          prefix: istio_requests
-
+          prefix: istio_request
     - compositeIdentifier:
         separator: ":"
         attributes:
           - cluster_name
-          - namespace
-          - service_istio_io_canonical_name
+          - pod
       encodeIdentifierInGUID: true
-      name: service_istio_io_canonical_name
+      name: pod
       conditions:
         - attribute: metricName
-          prefix: istio_tcp
+          prefix: istio_response
+    # otel
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.pod.name
+      encodeIdentifierInGUID: true
+      name: k8s.pod.name
+      conditions:
+        - attribute: metricName
+          prefix: istio_request
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.pod.name
+      encodeIdentifierInGUID: true
+      name: k8s.pod.name
+      conditions:
+        - attribute: metricName
+          prefix: istio_response
 
   tags:
     # prometheus
@@ -72,6 +90,8 @@ dashboardTemplates:
     template: dashboard.json
   prometheus:
     template: dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
 
 configuration:
   entityExpirationTime: FOUR_HOURS

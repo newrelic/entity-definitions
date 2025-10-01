@@ -1,9 +1,9 @@
 {
-  "name": "CoreDNS",
+  "name": "ArgoCD",
   "description": null,
   "pages": [
     {
-      "name": "Health and requests",
+      "name": "Overview",
       "description": null,
       "widgets": [
         {
@@ -18,15 +18,15 @@
             "id": "viz.markdown"
           },
           "rawConfiguration": {
-            "text": "![CoreDNS Logo](https://raw.githubusercontent.com/coredns/logo/master/Icon/CoreDNS_Colour_Icon.svg)"
+            "text": "![ArgoCD Logo](https://avatars1.githubusercontent.com/u/30269780?s=110&v=4)\n\n# ArgoCD\n\n\n"
           }
         },
         {
-          "title": "Sum of DNS panics",
+          "title": "Applications",
           "layout": {
             "column": 3,
             "row": 1,
-            "width": 3,
+            "width": 2,
             "height": 3
           },
           "visualization": {
@@ -37,383 +37,48 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(coredns_panics_total) as 'CoreDNS Panics'"
+                "query": "FROM Metric SELECT uniqueCount(name) AS 'Apps' WHERE metricName='argocd_app_info'"
               }
             ],
-            "thresholds": [
-              {
-                "alertSeverity": "WARNING",
-                "value": 1
-              },
-              {
-                "alertSeverity": "CRITICAL",
-                "value": 10
-              }
-            ]
+            "thresholds": []
           }
         },
         {
-          "title": "Server request ratio",
+          "title": "Repositories",
           "layout": {
-            "column": 6,
+            "column": 5,
             "row": 1,
-            "width": 7,
+            "width": 2,
             "height": 3
           },
           "visualization": {
-            "id": "viz.table"
+            "id": "viz.billboard"
           },
           "rawConfiguration": {
             "dataFormatters": [],
-            "facet": {
-              "showOtherSeries": true
-            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(coredns_dns_responses_total) as `Requests`"
-              }
-            ]
-          }
-        },
-        {
-          "title": "",
-          "layout": {
-            "column": 1,
-            "row": 4,
-            "width": 2,
-            "height": 6
-          },
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "# Request Rate & Size"
-          }
-        },
-        {
-          "title": "Total request rate by type",
-          "layout": {
-            "column": 3,
-            "row": 4,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(coredns_dns_requests_total), 1 second) facet type TIMESERIES "
+                "query": "SELECT count('repos') as 'Repos' FROM (SELECT latest(argocd_app_info) AS 'repos' FROM Metric FACET repo, clusterName LIMIT MAX) "
               }
             ],
-            "yAxisLeft": {
-              "zero": true
-            }
+            "thresholds": []
           }
         },
         {
-          "title": "Total forward rate",
+          "title": "Applications top 10",
           "layout": {
-            "column": 8,
-            "row": 4,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(coredns_proxy_request_duration_seconds_count), 1 second) FACET to WHERE proxy_name='forward' TIMESERIES"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Request size bytes",
-          "layout": {
-            "column": 3,
-            "row": 7,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT histogrampercentile(coredns_dns_request_size_bytes_bucket, (100 * 0.99), (100 * 0.50)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(server, zone, proto) LIMIT 100 TIMESERIES 300000 SLIDE BY 10000"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": false
-            }
-          }
-        },
-        {
-          "title": "Response size bytes percentile",
-          "layout": {
-            "column": 8,
-            "row": 7,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT histogrampercentile(coredns_dns_response_size_bytes_bucket, (100 * 0.99), (100*0.5)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(server, zone, proto) LIMIT 100 TIMESERIES 300000 SLIDE BY 10000"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": false
-            }
-          }
-        },
-        {
-          "title": "",
-          "layout": {
-            "column": 1,
-            "row": 10,
-            "width": 2,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "# Request & Response Duration"
-          }
-        },
-        {
-          "title": "Request forward duration seconds",
-          "layout": {
-            "column": 3,
-            "row": 10,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT histogrampercentile(coredns_proxy_request_duration_seconds_bucket, (100 * 0.99), (100 * 0.5)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET to, rcode LIMIT 100 WHERE proxy_name='forward' TIMESERIES 300000 SLIDE BY 10000"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": false
-            }
-          }
-        },
-        {
-          "title": "Request response time",
-          "layout": {
-            "column": 8,
-            "row": 10,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT histogrampercentile(coredns_dns_request_duration_seconds_bucket, (100 * 0.99), (100 * 0.5)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(server, zone) LIMIT 100 TIMESERIES 300000 SLIDE BY 10000"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "",
-          "layout": {
-            "column": 1,
-            "row": 13,
-            "width": 2,
-            "height": 6
-          },
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "# Cache Stats"
-          }
-        },
-        {
-          "title": "CoreDNS ratio of cache hits / misses",
-          "layout": {
-            "column": 3,
-            "row": 13,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.bullet"
-          },
-          "rawConfiguration": {
-            "limit": 1,
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT count(coredns_cache_hits_total)/(count(coredns_cache_misses_total) + count(coredns_cache_hits_total))"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Total cache entries",
-          "layout": {
-            "column": 8,
-            "row": 13,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT (average(coredns_cache_entries) * cardinality(coredns_cache_entries)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET type LIMIT 100 TIMESERIES 30000"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Cache hit rate by type",
-          "layout": {
-            "column": 3,
-            "row": 16,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT rate(sum(coredns_cache_hits_total), 1 SECONDS) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET type LIMIT 100 TIMESERIES 300000 SLIDE BY 10000"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Cache miss rate by type",
-          "layout": {
-            "column": 8,
-            "row": 16,
-            "width": 5,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT rate(sum(coredns_cache_misses_total), 1 SECONDS) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW LIMIT 100 TIMESERIES 300000 SLIDE BY 10000"
-              }
-            ],
-            "yAxisLeft": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Response codes",
-          "layout": {
-            "column": 1,
-            "row": 19,
+            "column": 7,
+            "row": 1,
             "width": 6,
             "height": 3
           },
           "visualization": {
-            "id": "viz.stacked-bar"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
-              "showOtherSeries": true
+              "showOtherSeries": false
             },
             "legend": {
               "enabled": true
@@ -421,9 +86,353 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(coredns_dns_responses_total) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET rcode LIMIT 100 TIMESERIES "
+                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric  SINCE 60 MINUTES AGO UNTIL NOW FACET name LIMIT 10 TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Operations",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (latest(argocd_app_info)) FROM Metric Facet operation Where operation != '' LIMIT MAX TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Pending kubectl run",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (average(argocd_kubectl_exec_pending) * cardinality(argocd_kubectl_exec_pending)) FROM Metric FACET command LIMIT MAX TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "### Health Status"
+          }
+        },
+        {
+          "title": "Health status",
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric WHERE NOT (health_status = '') FACET health_status LIMIT MAX TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Sync status",
+          "layout": {
+            "column": 8,
+            "row": 7,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric WHERE NOT (health_status = '') SINCE 60 MINUTES AGO UNTIL NOW FACET sync_status LIMIT MAX TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "### Sync Status"
+          }
+        },
+        {
+          "title": "Sync activity",
+          "layout": {
+            "column": 3,
+            "row": 10,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (sum(round(`Sync Total`)) * cardinality(round(`Sync Total`))) FROM (SELECT sum(argocd_app_sync_total) AS `Sync Total` FROM Metric FACET dimensions() LIMIT 100 TIMESERIES ) TIMESERIES SINCE 30 minutes ago UNTIL now"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Sync failures",
+          "layout": {
+            "column": 8,
+            "row": 10,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (average(round(`__result_1`)) * cardinality(round(`__result_1`))) FROM (SELECT sum(argocd_app_sync_total) AS `__result_0`, sum(argocd_app_sync_total) AS `__result_1` FROM Metric FACET dimensions() LIMIT 100 TIMESERIES where (phase = 'Error' OR phase = 'Failed' ))  FACET name LIMIT 100 TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## Reconciliation"
+          }
+        },
+        {
+          "title": "Reconciliation activity",
+          "layout": {
+            "column": 3,
+            "row": 13,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (count(argocd_app_reconcile) * cardinality(argocd_app_reconcile)) FROM Metric WHERE (namespace = 'argocd') FACET namespace LIMIT 100 TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": false
+            }
+          }
+        },
+        {
+          "title": "Reconciliation performance",
+          "layout": {
+            "column": 8,
+            "row": 13,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.histogram"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT histogram(argocd_app_reconcile) FROM Metric"
               }
             ]
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## Git Requests"
+          }
+        },
+        {
+          "title": "Git requests (ls-remote)",
+          "layout": {
+            "column": 3,
+            "row": 16,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'ls-remote') FACET request_type LIMIT 100 TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Git requests (checkout)",
+          "layout": {
+            "column": 8,
+            "row": 16,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'fetch') FACET request_type LIMIT 100 TIMESERIES "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
           }
         }
       ]
