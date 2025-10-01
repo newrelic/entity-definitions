@@ -1,5 +1,5 @@
 domain: EXT
-type: ISTIO_SERVICE
+type: ENVOY
 synthesis:
   rules:
     # prometheus
@@ -12,17 +12,9 @@ synthesis:
       name: pod
       conditions:
         - attribute: metricName
-          prefix: istio_request
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - cluster_name
-          - pod
-      encodeIdentifierInGUID: true
-      name: pod
-      conditions:
-        - attribute: metricName
-          prefix: istio_response
+          prefix: envoy_
+        - attribute: instrumentation.provider
+          value: "prometheus"
     # otel
     - compositeIdentifier:
         separator: ":"
@@ -33,28 +25,20 @@ synthesis:
       name: k8s.pod.name
       conditions:
         - attribute: metricName
-          prefix: istio_request
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - k8s.pod.name
-      encodeIdentifierInGUID: true
-      name: k8s.pod.name
-      conditions:
-        - attribute: metricName
-          prefix: istio_response
+          prefix: envoy_
+        - attribute: instrumentation.provider
+          value: "opentelemetry"
 
   tags:
     # prometheus
     cluster_name:
       entityTagName: k8s.clusterName
       ttl: P1D
-    deployment:
-      entityTagName: k8s.deploymentName
-      ttl: P1D
     namespace:
       entityTagName: k8s.namespaceName
+      ttl: P1D
+    node:
+      entityTagName: k8s.nodeName
       ttl: P1D
     pod:
       entityTagName: k8s.podName
@@ -64,35 +48,22 @@ synthesis:
     k8s.cluster.name:
       entityTagName: k8s.clusterName
       ttl: P1D
-    k8s.deployment.name:
-      entityTagName: k8s.deploymentName
-      ttl: P1D
     k8s.namespace.name:
       entityTagName: k8s.namespaceName
+      ttl: P1D
+    k8s.node.name:
+      entityTagName: k8s.nodeName
       ttl: P1D
     k8s.pod.name:
       entityTagName: k8s.podName
       ttl: P1D
-
-    service_istio_io_canonical_revision:
-    app:
-    version:
-    label.istio:
-    istio_io_rev:
-    operator_istio_io_component:
-
-goldenTags:
-  - k8s.clusterName
-  - k8s.namespaceName
 
 dashboardTemplates:
   newRelic:
     template: dashboard.json
   prometheus:
     template: dashboard.json
-  opentelemetry:
-    template: opentelemetry_dashboard.json
 
 configuration:
-  entityExpirationTime: FOUR_HOURS
+  entityExpirationTime: EIGHT_DAYS
   alertable: true
