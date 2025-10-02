@@ -1,17 +1,21 @@
 triggerOperations:
-  title: Triggers per trigger type
+  title: Triggers per type
   unit: COUNT
   query:
-    select: sum(keda_trigger_registered_total)
+    select: max(keda_trigger_registered_total)
     from: Metric
+    facet: type
 latency:
   title: Latency
+  unit: SECONDS
   query:
     select: latest(keda_scaler_metrics_latency_seconds)
     from: Metric
+    facet: scaledObject, exported_namespace, type, scaler
 errors:
   title: Errors encountered for each scaler
   unit: COUNT
   query:
     select: sum(keda_scaler_detail_errors_total)
     from: Metric
+    facet: scaledObject, exported_namespace, type, scaler
