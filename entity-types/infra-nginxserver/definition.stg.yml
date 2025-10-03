@@ -12,16 +12,18 @@ synthesis:
   - compositeIdentifier:
       separator: ":"
       attributes:
-        - host.id
-        - nginx.server.port
-    name: nginx.displayName
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
         value: Metric
-      - attribute: nginx.server.port
+      - attribute: nginx.deployment.name
         present: true
-      - attribute: nginx.displayName
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
         present: true
       # All metrics from the receiver starts with the 'nginx.' prefix.
       - attribute: metricName
@@ -34,7 +36,40 @@ synthesis:
         value: "otelcol/nginxreceiver"
     tags:
       # Default resource attributes
-      nginx.server.port:
+      nginx.server.endpoint:
+      # OTel attributes
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      # All metrics from the receiver starts with the 'nginx.' prefix.
+      - attribute: metricName
+        prefix: nginx.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics coming from nginx receiver, given that metrics
+      # could differ between different runtime receivers.
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/nginxreceiver"
+    tags:
+      # Default resource attributes
+      nginx.server.endpoint:
       # OTel attributes
       # The library name contains the name of the receiver that is used to identify the source
       # and select the dashboard.
