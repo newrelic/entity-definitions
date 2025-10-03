@@ -86,7 +86,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(argocd_app_info) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET name LIMIT 10 TIMESERIES "
+                "query": "SELECT max(argocd_app_info) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET name LIMIT 10 TIMESERIES "
               }
             ],
             "yAxisLeft": {
@@ -115,7 +115,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (latest(argocd_app_info)) FROM Metric FACET operation WHERE operation != '' LIMIT MAX TIMESERIES "
+                "query": "SELECT (max(argocd_app_info)) FROM Metric FACET operation WHERE operation != '' LIMIT MAX TIMESERIES "
               }
             ],
             "yAxisLeft": {
@@ -144,7 +144,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(argocd_kubectl_exec_pending) FROM Metric FACET command LIMIT MAX TIMESERIES"
+                "query": "SELECT max(argocd_kubectl_exec_pending) FROM Metric FACET command LIMIT MAX TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -290,7 +290,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": " SELECT max(argocd_app_sync_total) FROM Metric WHERE (phase = 'Error' OR phase = 'Failed') FACET name LIMIT 100 TIMESERIES"
+                "query": " SELECT uniqueCount(name) as 'Failures' FROM Metric WHERE metricName='argocd_app_sync_total' AND (phase = 'Error' OR phase = 'Failed') LIMIT 100 TIMESERIES"
               }
             ],
             "yAxisLeft": {
