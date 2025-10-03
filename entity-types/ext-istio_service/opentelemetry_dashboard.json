@@ -16,7 +16,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Throughput per Second",
+            "title": "Throughput per second",
             "rawConfiguration": {
               "dataFormatters": [],
               "nrqlQueries": [
@@ -38,7 +38,7 @@
               "height": 3,
               "width": 4
             },
-            "title": " Response Codes",
+            "title": "Response codes",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": true
@@ -67,7 +67,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT (rate(sum(istio_request_duration_milliseconds_sum), 1 minute) / rate(sum(istio_request_duration_milliseconds_count), 1 minute)) AS 'Milliseconds' WHERE reporter = 'destination'"
+                  "query": "FROM Metric SELECT (rate(sum(istio_request_duration_milliseconds), 1 minute) / rate(count(istio_request_duration_milliseconds), 1 minute)) AS 'Milliseconds' WHERE reporter = 'destination'"
                 }
               ],
               "thresholds": []
@@ -98,7 +98,7 @@
               "height": 3,
               "width": 3
             },
-            "title": "Server Throughput",
+            "title": "Server throughput",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -106,7 +106,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' where reporter = 'destination' TIMESERIES"
+                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec'  WHERE reporter = 'destination' TIMESERIES"
                 }
               ],
               "yAxisLeft": {
@@ -124,7 +124,7 @@
               "height": 3,
               "width": 3
             },
-            "title": "Server Error Rate (5xx responses)",
+            "title": "Server error rate (5xx responses)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -150,7 +150,7 @@
               "height": 3,
               "width": 3
             },
-            "title": "Server Request Duration (Average)",
+            "title": "Server request duration (average)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -158,7 +158,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT sum(istio_request_duration_milliseconds_sum) / sum(istio_request_duration_milliseconds_count) WHERE reporter = 'destination' TIMESERIES "
+                  "query": "FROM Metric SELECT sum(istio_request_duration_milliseconds) / count(istio_request_duration_milliseconds) WHERE reporter = 'destination' TIMESERIES "
                 }
               ],
               "yAxisLeft": {
@@ -176,7 +176,7 @@
               "height": 3,
               "width": 3
             },
-            "title": "Server Request Duration Ms (Histogram)",
+            "title": "Server request duration ms (histogram)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -184,7 +184,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT percentile(istio_request_duration_milliseconds, 1000) AS 'Requests' WHERE reporter = 'destination'"
+                  "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds, 1000) AS 'Requests' WHERE reporter = 'destination'"
                 }
               ]
             }
@@ -199,7 +199,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Inbound Requests by Source and Response Code",
+            "title": "Inbound requests by source and response code",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -210,7 +210,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' where reporter = 'destination' FACET source_canonical_service, response_code TIMESERIES "
+                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' WHERE reporter = 'destination' FACET source_canonical_service, response_code TIMESERIES "
                 }
               ]
             }
@@ -225,7 +225,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Inbound Errors by Service",
+            "title": "Inbound errors by service",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -254,12 +254,12 @@
               "height": 3,
               "width": 4
             },
-            "title": "Inbound Request Duration by Source",
+            "title": "Inbound request duration by source",
             "rawConfiguration": {
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT percentile(istio_request_duration_milliseconds, 1000) WHERE reporter = 'destination' FACET source_canonical_service"
+                  "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds, 1000) WHERE reporter = 'destination' FACET source_canonical_service"
                 }
               ]
             }
@@ -289,7 +289,7 @@
               "height": 3,
               "width": 3
             },
-            "title": "Client Throughput",
+            "title": "Client throughput",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -297,7 +297,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' where reporter = 'source' TIMESERIES"
+                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' WHERE reporter = 'source' TIMESERIES"
                 }
               ],
               "yAxisLeft": {
@@ -315,7 +315,7 @@
               "height": 3,
               "width": 3
             },
-            "title": "Client Error Rate (5xx responses)",
+            "title": "Client error rate (5xx responses)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -341,7 +341,7 @@
               "height": 3,
               "width": 3
             },
-            "title": "Client Request Duration (Average)",
+            "title": "Client request duration (average)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -349,7 +349,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT sum(istio_request_duration_milliseconds_sum) / sum(istio_request_duration_milliseconds_count) WHERE reporter = 'source' TIMESERIES "
+                  "query": "FROM Metric SELECT sum(istio_request_duration_milliseconds) / count(istio_request_duration_milliseconds) WHERE reporter = 'source' TIMESERIES "
                 }
               ],
               "yAxisLeft": {
@@ -367,7 +367,7 @@
               "height": 3,
               "width": 3
             },
-            "title": "Client Request Duration Ms (Histogram)",
+            "title": "Client request duration ms (histogram)",
             "rawConfiguration": {
               "legend": {
                 "enabled": true
@@ -375,7 +375,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT percentile(istio_request_duration_milliseconds, 1000) AS 'Requests' WHERE reporter = 'source'"
+                  "query": "FROM Metric SELECT histogram(istio_request_duration_milliseconds, 1000) AS 'Requests' WHERE reporter = 'source'"
                 }
               ]
             }
@@ -390,7 +390,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Outbound Requests by Source and Response Code",
+            "title": "Outbound requests by source and response code",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -401,7 +401,7 @@
               "nrqlQueries": [
                 {
                   "accountId": 0,
-                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' where reporter = 'source' FACET destination_canonical_service, response_code TIMESERIES "
+                  "query": "FROM Metric SELECT rate(sum(istio_requests_total), 1 SECOND) AS 'Req/Sec' WHERE reporter = 'source' FACET destination_canonical_service, response_code TIMESERIES "
                 }
               ]
             }
@@ -416,7 +416,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Outbound Errors by Service",
+            "title": "Outbound errors by service",
             "rawConfiguration": {
               "facet": {
                 "showOtherSeries": false
@@ -445,7 +445,7 @@
               "height": 3,
               "width": 4
             },
-            "title": "Outbound Request Duration by Source",
+            "title": "Outbound request duration by source",
             "rawConfiguration": {
               "nrqlQueries": [
                 {
