@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const githubHelper = require('./ghHelper');
 const { readdir } = fs.promises;
-const { DEFINITIONS_DIR } = require('./props');
+const { DEFINITIONS_DIR, DEFINITION_FILE_NAME, DEFINITION_FILE_NAME_STG} = require('./props');
 const { RELATIONSHIPS_SYNTHESIS_DIR } = require('./props');
 const allowedFileNamesRegex = /^[A-Z0-9_]+(?:-[A-Z0-9_]+)?-to-[A-Z0-9_]+(?:-[A-Z0-9_]+)?(\.stg)?\.yml$/;
 const regex = new RegExp(allowedFileNamesRegex);
@@ -32,11 +32,8 @@ module.exports = {
   },
   async getAllDefinitions () {
     const files = await getFiles(DEFINITIONS_DIR);
-    const definitionFiles = files.filter(file => file.includes('definition.yml'));
-    return definitionFiles.map((filename) => {
-      return yaml.load(fs.readFileSync(filename, 'utf8'));
-    }
-    );
+    const definitionFiles = files.filter(file => file.includes(DEFINITION_FILE_NAME) || file.includes(DEFINITION_FILE_NAME_STG));
+    return new Map(definitionFiles.map((filename) => [filename, yaml.load(fs.readFileSync(filename, 'utf8'))]));
   },
   sanitizeDashboard (fileContent) {
     return fileContent
