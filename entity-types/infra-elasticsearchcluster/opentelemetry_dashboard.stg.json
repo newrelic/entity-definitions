@@ -1,0 +1,192 @@
+{
+  "name": "OTEL ElasticSearch Cluster",
+  "description": "ElasticSearch cluster Metrics",
+  "pages": [
+    {
+      "name": "Cluster Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Cluster Status",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(status)"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Node Count",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT \n  latest(elasticsearch.cluster.nodes) AS 'Total Nodes', \n  latest(elasticsearch.cluster.data_nodes) AS 'Data Nodes' \nFROM Metric"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Pending Task",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(elasticsearch.cluster.pending_tasks) \nFROM Metric\nTIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Shards",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(elasticsearch.cluster.shards) \nFROM Metric\nFACET state"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Document count",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(elasticsearch.index.documents) AS 'Total Documents in cluster'\nFROM Metric \nWHERE elasticsearch.index.name = '_all' AND aggregation = 'primary_shards' TIMESERIES "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Indexing & Search Rate(op/sec)",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(elasticsearch.node.operations.completed), 1 second) FROM Metric WHERE operation IN ('index', 'query') FACET operation  TIMESERIES 1 minute SLIDE BY 5 minute"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Total Size on Disk (GB)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(elasticsearch.node.shards.size) / 1073741824 as 'Disk Used(GB)' FROM Metric"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Avg OS CPU Used (%)",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(elasticsearch.os.cpu.usage) as 'Avg OS CPU Used (%)' FROM Metric"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Total JVM Heap Used (GB)",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(jvm.memory.heap.used) / 1073741824 as 'Total JVM Heap Used (GB)' FROM Metric"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

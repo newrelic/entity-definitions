@@ -1,14 +1,16 @@
 operations:
   title: Operations
-  unit: 'OPERATIONS_PER_SECOND'
+  unit: OPERATIONS_PER_SECOND
   query:
     select: latest(argocd_app_info)
     where: operation != ''
     from: Metric
+    facet: operation
 syncFailures:
   title: Sync failures
-  unit: 'REQUESTS_PER_SECOND'
+  unit: COUNT
   query:
-    select: sum(argocd_app_sync_total)
+    select: max(argocd_app_sync_total)
     where: (phase = 'Error' OR phase = 'Failed')
     from: Metric
+    facet: name
