@@ -5,17 +5,22 @@ triggerOperations:
     select: max(keda_trigger_registered_total)
     from: Metric
     facet: type
+scalersActive:
+  title: Active scalers
+  unit: COUNT
+  query:
+    select: latest(keda_scaler_active)
+    where: keda_scaler_active = 1.0
+    from: Metric
 latency:
   title: Latency
   unit: SECONDS
   query:
     select: latest(keda_scaler_metrics_latency_seconds)
     from: Metric
-    facet: scaledObject, exported_namespace, type, scaler
 errors:
   title: Errors encountered for each scaler
   unit: COUNT
   query:
     select: sum(keda_scaler_detail_errors_total)
     from: Metric
-    facet: scaledObject, exported_namespace, type, scaler
