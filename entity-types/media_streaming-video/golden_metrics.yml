@@ -27,11 +27,8 @@ averageStartTimeS:
   title: Average Start Time (s)
   unit: MS
   query:
-    select: average(timeSinceContentRequested - if(contentStartTime > adEndTimestamp,preAdDuration, 0 )) as avgStartTime
-    from: FROM VideoAction SELECT latest(timestamp)  as contentStartTime, latest(timeSinceRequested)  AS timeSinceContentRequested WHERE actionName = 'CONTENT_START' FACET viewId LIMIT MAX)
-            LEFT JOIN
-                  (FROM VideoAdAction SELECT sum(timeSinceAdStarted)  AS preAdDuration ,latest(timestamp) as adEndTimestamp WHERE  actionName = 'AD_END' AND adPosition = 'pre' FACET viewId LIMIT MAX)
-            ON viewId
+    select: average(avgStartTime)
+    from: (FROM VideoAction, VideoAdAction SELECT (filter(latest(timeSinceRequested),  WHERE actionName = 'CONTENT_START') -  filter(earliest(timeSinceAdStarted ), where actionName = 'AD_END' and timeSinceStarted = 0 or timeSinceStarted IS NULL)) AS 'avgStartTime' facet viewId LIMIT MAX)
 adAverageStartTimeS:
   title: Ad Average Start Time (s)
   unit: MS
@@ -43,23 +40,23 @@ videoStartFailures:
   title: Video Start Failures
   unit: PERCENTAGE
   query:
-    select: 100 * (filter(uniqueCount(viewId), WHERE actionName = 'CONTENT_ERROR' AND  timeSinceStarted IS NULL)  / (FROM VideoErrorAction, VideoAdAction SELECT uniqueCount(viewId)))
+    select: (filter(count(viewId), WHERE actionName = 'CONENT_ERROR' and contentPlayhead = 0) * 100) / (FROM VideoAction, VideoErrorAction SELECT count(viewId))
     from: VideoErrorAction
 adStartFailures:
   title: Ad Start Failures
   unit: PERCENTAGE
   query:
-    select: 100 * (filter(uniqueCount(viewId), WHERE actionName = 'AD_ERROR' AND  timeSinceAdStarted IS NULL)  / (FROM VideoErrorAction, VideoAdAction SELECT uniqueCount(viewId)))
+    select: (filter(count(viewId), WHERE actionName = 'AD_ERROR' and adPlayhead = 0 ) * 100) / (FROM VideoAdAction, VideoErrorAction SELECT count(viewId))
     from: VideoErrorAction
 videoPlaybackFailures:
   title: Video Playback Failures
   unit: PERCENTAGE
   query:
-    select: 100 * (filter(uniqueCount(viewId), WHERE actionName = 'CONTENT_END' AND timeSinceLastError < 1000 AND timeSinceStarted > 0)  / (FROM VideoErrorAction, VideoAdAction  SELECT  uniqueCount(viewId)))
-    from: VideoAction
+    select: (filter(count(viewId), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0) * 100) / (FROM VideoAction, VideoErrorAction SELECT count(viewId))
+    from: VideoErrorAction
 adPlaybackFailures:
   title: Ad Playback Failures
   unit: PERCENTAGE
   query:
-    select: 100 * (filter(uniqueCount(viewId), WHERE actionName = 'AD_END' AND timeSinceLastError < 1000 AND timeSinceAdStarted > 0)  / (FROM VideoErrorAction, VideoAdAction  SELECT  uniqueCount(viewId)))
-    from: VideoAdAction
+    select: (filter(count(viewId), WHERE actionName = 'AD_ERROR' and adPlayhead > 0) * 100) / (FROM VideoAdAction, VideoErrorAction SELECT count(viewId))
+    from: VideoErrorAction
