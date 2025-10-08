@@ -1,0 +1,33 @@
+relationships:
+  - name: extStoreContainsDigitalordering
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "XMLRPC" ]
+      - attribute: node
+        anyOf: [ "POS" ]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: STORE
+          identifier:
+            fragments:
+              - attribute: store.number
+            hashAlgorithm: IDENTITY
+      target:
+        lookupGuid:
+          candidateCategory: DIGITALORDERING
+          fields:
+            - field: marketName
+              attribute: market
+            - field: storeNumber
+              attribute: store.number
