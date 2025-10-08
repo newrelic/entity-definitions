@@ -23,16 +23,12 @@ adAverageBitrate:
   query:
     select: filter(average(adBitrate), WHERE adBitrate > 0 OR adBitrate IS NOT NULL)
     from: VideoAdAction
-# TODO: fix this query
-#averageStartTimeS:
-#  title: Average Start Time (s)
-#  unit: MS
-#  query:
-#    select: average(timeSinceContentRequested - if(contentStartTime > adEndTimestamp,preAdDuration, 0 )) as avgStartTime
-#    from: FROM VideoAction SELECT latest(timestamp)  as contentStartTime, latest(timeSinceRequested)  AS timeSinceContentRequested WHERE actionName = 'CONTENT_START' FACET viewId LIMIT MAX)
-#            LEFT JOIN
-#                  (FROM VideoAdAction SELECT sum(timeSinceAdStarted)  AS preAdDuration ,latest(timestamp) as adEndTimestamp WHERE  actionName = 'AD_END' AND adPosition = 'pre' FACET viewId LIMIT MAX)
-#            ON viewId
+averageStartTimeS:
+  title: Average Start Time (s)
+  unit: MS
+  query:
+    select: average(avgStartTime)
+    from: (FROM VideoAction, VideoAdAction SELECT (filter(latest(timeSinceRequested),  WHERE actionName = 'CONTENT_START') -  filter(earliest(timeSinceAdStarted ), where actionName = 'AD_END' and timeSinceStarted = 0 or timeSinceStarted IS NULL)) AS 'avgStartTime' facet viewId LIMIT MAX)
 adAverageStartTimeS:
   title: Ad Average Start Time (s)
   unit: MS
