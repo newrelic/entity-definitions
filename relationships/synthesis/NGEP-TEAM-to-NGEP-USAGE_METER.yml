@@ -1,0 +1,76 @@
+relationships:
+  - name: ngepTeamOwnsUsageMeter
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: ["UsageMeter"]
+      - attribute: owningTeam
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: OWNS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: NGEP
+          type:
+            value: TEAM
+          identifier:
+            fragments:
+              - attribute: owningTeam
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: NGEP
+          type:
+            value: USAGE_METER
+          identifier:
+            fragments:
+              - attribute: meterName
+              - attribute: accountId
+            hashAlgorithm: FARM_HASH
+
+  - name: usageMeterIsOwnedByNgepTeam
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: ["UsageMeter"]
+      - attribute: owningTeam
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: IS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: NGEP
+          type:
+            value: USAGE_METER
+          identifier:
+            fragments:
+              - attribute: meterName
+              - attribute: accountId
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: NGEP
+          type:
+            value: TEAM
+          identifier:
+            fragments:
+              - attribute: owningTeam
+            hashAlgorithm: FARM_HASH
