@@ -1,5 +1,8 @@
 domain: EXT
 type: ARGOCD
+goldenTags:
+  - k8s.clusterName
+  - k8s.namespaceName
 synthesis:
   rules:
     # prometheus
@@ -24,7 +27,6 @@ synthesis:
       conditions:
         - attribute: metricName
           prefix: argocd_
-
   tags:
     # prometheus
     cluster_name:
@@ -39,7 +41,6 @@ synthesis:
     pod:
       entityTagName: k8s.podName
       ttl: P1D
-
     # otel
     k8s.cluster.name:
       entityTagName: k8s.clusterName
@@ -53,11 +54,6 @@ synthesis:
     k8s.pod.name:
       entityTagName: k8s.podName
       ttl: P1D
-
-goldenTags:
-  - k8s.clusterName
-  - k8s.namespaceName
-
 dashboardTemplates:
   newRelic:
     template: dashboard.json
@@ -65,7 +61,6 @@ dashboardTemplates:
     template: dashboard.json
   opentelemetry:
     template: opentelemetry_dashboard.json
-
 configuration:
   entityExpirationTime: FOUR_HOURS
   alertable: true
