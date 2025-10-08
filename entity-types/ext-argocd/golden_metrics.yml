@@ -7,10 +7,9 @@ operations:
     from: Metric
     facet: operation
 syncFailures:
-  title: Sync failures
+  title: Sync failures (apps)
   unit: COUNT
   query:
-    select: max(argocd_app_sync_total)
-    where: (phase = 'Error' OR phase = 'Failed')
+    select: SELECT uniqueCount(name)
+    where: metricName='argocd_app_sync_total' AND (phase = 'Error' OR phase = 'Failed')
     from: Metric
-    facet: name
