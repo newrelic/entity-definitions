@@ -2,10 +2,10 @@ relationships:
   - name: apmProducesAwsMskTopic
     version: "1"
     origins:
-    - APM Metrics
+      - APM Metrics
     conditions:
-    - attribute: metricName
-      regex: "^MessageBroker/Kafka/Nodes/[^/]*\\.amazonaws\\.com:9[0-9]+/Produce/.*"
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/[^/]*\\.amazonaws\\.com:9[0-9]+/Produce/.*"
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -16,24 +16,24 @@ relationships:
         lookupGuid:
           candidateCategory: KAFKATOPIC
           fields:
-          - field: clusterName
-            capture:
-              attribute: metricName__4
-              regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:9[0-9]+"
-          - field: region
-            capture:
-              attribute: metricName__4
-              regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:9[0-9]+"
-          - field: topic
-            attribute: metricName__6
-  
+            - field: clusterName
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:9[0-9]+"
+            - field: region
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:9[0-9]+"
+            - field: topic
+              attribute: metricName__6
+
   - name: apmConsumesAwsMskTopic
     version: "1"
     origins:
-    - APM Metrics
+      - APM Metrics
     conditions:
-    - attribute: metricName
-      regex: "^MessageBroker/Kafka/Nodes/[^/]*\\.amazonaws\\.com:9[0-9]+/Consume/.*"
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/[^/]*\\.amazonaws\\.com:9[0-9]+/Consume/.*"
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -44,24 +44,24 @@ relationships:
         lookupGuid:
           candidateCategory: KAFKATOPIC
           fields:
-          - field: clusterName
-            capture:
-              attribute: metricName__4
-              regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:9[0-9]+"
-          - field: region
-            capture:
-              attribute: metricName__4
-              regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:9[0-9]+"
-          - field: topic
-            attribute: metricName__6
-  
+            - field: clusterName
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:9[0-9]+"
+            - field: region
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:9[0-9]+"
+            - field: topic
+              attribute: metricName__6
+
   - name: apmProducesConfluentCloudKafkaTopic
     version: "1"
     origins:
-    - APM Metrics
+      - APM Metrics
     conditions:
-    - attribute: metricName
-      regex: "^MessageBroker/Kafka/Nodes/.*.confluent.cloud:9[0-9]+/Produce/.+"
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/.*.confluent.cloud:9[0-9]+/Produce/.+"
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -72,18 +72,18 @@ relationships:
         lookupGuid:
           candidateCategory: KAFKATOPIC
           fields:
-          - field: bootstrapServers
-            attribute: metricName__4
-          - field: topic
-            attribute: metricName__6
-  
+            - field: bootstrapServers
+              attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+
   - name: apmConsumesConfluentCloudKafkaTopic
     version: "1"
     origins:
-    - APM Metrics
+      - APM Metrics
     conditions:
-    - attribute: metricName
-      regex: "^MessageBroker/Kafka/Nodes/.*.confluent.cloud:9[0-9]+/Consume/.+"
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/.*.confluent.cloud:9[0-9]+/Consume/.+"
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -94,28 +94,28 @@ relationships:
         lookupGuid:
           candidateCategory: KAFKATOPIC
           fields:
-          - field: bootstrapServers
-            attribute: metricName__4
-          - field: topic
-            attribute: metricName__6
+            - field: bootstrapServers
+              attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
   
   - name: apmProducesOtelKafkaTopic
     version: "1"
     origins:
-    - OpenTelemetry
+      - OpenTelemetry
     conditions:
-    - attribute: eventType
-      anyOf: [ "Metric" ]
-    - attribute: instrumentation.provider
-      anyOf: [ "opentelemetry" ]
-    - attribute: metricName
-      startsWith: "kafka.producer"
-    - attribute: entity.type
-      anyOf: [ "SERVICE" ]
-    - attribute: cluster.name
-      present: true
-    - attribute: topic
-      present: true
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.producer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: cluster.name
+        present: true
+      - attribute: topic
+        present: true
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -126,28 +126,28 @@ relationships:
         lookupGuid:
           candidateCategory: KAFKATOPIC
           fields:
-          - field: clusterName
-            attribute: cluster.name
-          - field: topic
-            attribute: topic
+            - field: clusterName
+              attribute: cluster.name
+            - field: topic
+              attribute: topic
   
   - name: apmConsumesOtelKafkaTopic
     version: "1"
     origins:
-    - OpenTelemetry
+      - OpenTelemetry
     conditions:
-    - attribute: eventType
-      anyOf: [ "Metric" ]
-    - attribute: instrumentation.provider
-      anyOf: [ "opentelemetry" ]
-    - attribute: metricName
-      startsWith: "kafka.consumer"
-    - attribute: entity.type
-      anyOf: [ "SERVICE" ]
-    - attribute: cluster.name
-      present: true
-    - attribute: topic
-      present: true
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.consumer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: cluster.name
+        present: true
+      - attribute: topic
+        present: true
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -158,7 +158,7 @@ relationships:
         lookupGuid:
           candidateCategory: KAFKATOPIC
           fields:
-          - field: clusterName
-          attribute: cluster.name
-        - field: topic
-          attribute: topic
+            - field: clusterName
+              attribute: cluster.name
+            - field: topic
+              attribute: topic
