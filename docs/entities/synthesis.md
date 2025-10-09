@@ -43,9 +43,9 @@ The name does not need to be unique, different entities with the same entityType
 In some cases the name of the entity is not defined by a single attribute, but rather a combination of multiple attributes and literals.
 In these cases, `compositeName` can be used to define how these attributes and literals are combined to form the name.
 
-The `compositeName` is formed from `fragments`, which is a non empty list of objects, each object should be one and only one of the following:
-- An `attribute` property, which represents an attribute name that must be always present in the telemetry. The value of the given attribute in the telemetry data point will be added to the name.
-- A `value` property, that is a literal value to be concatenated to the name.
+The `compositeName` is formed from `fragments`, which is a non-empty list of objects, containing only one of the following properties:
+- `attribute`, which represents an attribute name that must be always present in the telemetry. The value of the given attribute in the telemetry data point will be added to the name.
+- `value`, that is a literal value to be concatenated to the name. It has to be delimited by double quotes.
 
 The `attribute`s and `value`s will be concatenated in the order they are defined in the list to conform the final entity name.
 
@@ -72,7 +72,7 @@ If we take as an example the following data point, and apply the above synthesis
 }
 ```
 
-The `name` of the entity will be: `ks-broker: broker-1 (my-cluster)`
+The `name` of the entity will be synthesized as: `ks-broker: broker-1 (my-cluster)`
 
 ### Identifier
 
