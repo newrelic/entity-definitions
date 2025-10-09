@@ -98,3 +98,67 @@ relationships:
               attribute: metricName__4
             - field: topic
               attribute: metricName__6
+  
+  - name: apmProducesOtelKafkaTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.producer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: cluster.name
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              attribute: cluster.name
+            - field: topic
+              attribute: topic
+  
+  - name: apmConsumesOtelKafkaTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.consumer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: cluster.name
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              attribute: cluster.name
+            - field: topic
+              attribute: topic
