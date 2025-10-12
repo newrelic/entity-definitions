@@ -1,10 +1,11 @@
 domain: INFRA
-type: OCIOBJECTSTORAGE
+type: OCICONNECTOR
 goldenTags:
 - oci.compartmentId
 - oci.region
 - oci.availabilityDomain
-- oci.name
+- oci.displayName
+- oci.lifecycleState
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -12,27 +13,28 @@ synthesis:
   tags:
     newrelic.cloudIntegrations.providerAccountName:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
   rules:
-  - identifier: oci.resourceID
-    name: oci.resourceDisplayName
+  - identifier: oci.connectorId
+    name: oci.connectorName
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
-    - attribute: oci.resourceID
-      prefix: "ocid1.bucket"
+    - attribute: oci.connectorId
+      prefix: "ocid1.serviceconnector"
     - attribute: oci.namespace
-      value: "oci_objectstorage"
-  # Synthesis out of logs. Ref: https://docs.oracle.com/en-us/iaas/Content/Logging/Reference/details_for_object_storage.htm
-  - identifier: data.bucketId
-    name: data.bucketName
+      value: "oci_service_connector_hub"
+  # Synthesis out of logs. Ref: https://docs.oracle.com/en-us/iaas/Content/Logging/Reference/details-for-service-connector-hub.htm
+  - identifier: oracle.resourceid
+    name: source
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
         prefix: Log
-      - attribute: data.bucketId
-        prefix: ocid1.bucket.
+      - attribute: oracle.resourceid
+        prefix: ocid1.serviceconnector.
       - attribute: type
-        prefix: com.oraclecloud.objectstorage.
+        value: com.oraclecloud.sch.serviceconnector.runlog
