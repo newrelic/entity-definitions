@@ -9,8 +9,8 @@ synthesis:
       attributes:
       - rabbitmq.node.name
       - rabbitmq.vhost.name
-      - entity.name
-    name: entity.name
+      - rabbitmq.exchange.name
+    name: rabbitmq.exchange.name
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -27,6 +27,9 @@ synthesis:
       # Exchange-specific conditions - ensure we have exchange-related data
       - attribute: rabbitmq.vhost.name
         present: true
+      # Require exchange name to distinguish from vhost entities
+      - attribute: rabbitmq.exchange.name
+        present: true
       # Exclude queue-specific and node-only metrics
       - attribute: rabbitmq.queue.name
         present: false
@@ -34,6 +37,7 @@ synthesis:
       # Default resource attributes
       rabbitmq.node.name:
       rabbitmq.vhost.name:
+      rabbitmq.exchange.name:
       # OTel attributes
       # The library name contains the name of the receiver that is used to identify the source
       # and select the dashboard.
@@ -48,6 +52,7 @@ synthesis:
 goldenTags:
 - rabbitmq.node.name
 - rabbitmq.vhost.name
+- rabbitmq.exchange.name
 - account
 
 configuration:
