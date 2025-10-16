@@ -19,6 +19,7 @@ const VALID_CONDITIONS = new Map([
   ['Prometheus', []],
   ['Distributed Tracing', []],
   ['Metric API', []],
+  ['Event API', []],
   ['AIOPS', []],
   ['Browser Monitoring', []],
   ['Mobile Monitoring', []]
