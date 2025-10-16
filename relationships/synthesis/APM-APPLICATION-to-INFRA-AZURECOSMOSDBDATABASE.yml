@@ -29,9 +29,38 @@ relationships:
         lookupGuid:
           candidateCategory: AZURECOSMOSDBDATABASE
           fields:
-            - field: accountName
+            - field: accountNameORClusterName
               capture:
                 attribute: server.address
                 regex: '^([a-z0-9\-]+)\.documents\.azure\.com$'
+            - field: databaseName
+              attribute: db.instance
+  - name: apmApplicationCallsAzureCosmosDbMongoVCore
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "mongodb" ]
+      - attribute: db.instance 
+        present: true
+      - attribute: server.address
+        regex: '^[a-z0-9\-]+(?:\.global)?\.mongocluster\.cosmos\.azure\.com$'
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURECOSMOSDBDATABASE
+          fields:
+            - field: accountNameORClusterName
+              capture:
+                attribute: server.address
+                regex: '^([a-z0-9\-]+)(?:\.global)?\.mongocluster\.cosmos\.azure\.com$'
             - field: databaseName
               attribute: db.instance
