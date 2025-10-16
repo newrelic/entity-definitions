@@ -63,3 +63,28 @@ relationships:
           attribute: entity.guid
           entityType:
             value: AZUREWEBAPP
+  - name: apmApplicationHostsOnAzureAppServiceWebApp
+    version: "1"
+    origins:
+      - Azure Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "AzureAppServiceWebAppSample" ]
+      - attribute: nr.entityType
+        anyOf: [ "AZUREAPPSERVICEWEBAPP" ]
+      - attribute: resourceId
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: APMAPPLICATION
+          fields:
+            - field: resourceId
+              attribute: resourceId
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: AZUREAPPSERVICEWEBAPP
