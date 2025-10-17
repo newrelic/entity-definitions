@@ -1,0 +1,59 @@
+domain: INFRA
+type: RABBITMQVHOST
+
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+      - rabbitmq.node.name
+      - rabbitmq.vhost.name
+    name: rabbitmq.vhost.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # All metrics from the receiver starts with the 'rabbitmq.' prefix.
+      - attribute: metricName
+        prefix: rabbitmq.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics coming from rabbitmq receiver, given that metrics
+      # could differ between different runtime receivers.
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/rabbitmqreceiver"
+      # Vhost-specific conditions - ensure we have vhost-related data
+      - attribute: rabbitmq.vhost.name
+        present: true
+      # Exclude queue-specific metrics to avoid overlap with queue entities
+      - attribute: rabbitmq.queue.name
+        present: false
+    tags:
+      # Default resource attributes
+      rabbitmq.node.name:
+      rabbitmq.vhost.name:
+      # OTel attributes
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+goldenTags:
+- rabbitmq.node.name
+- rabbitmq.vhost.name
+- account
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+  newrelic:
+    template: newrelic_dashboard.stg.json
