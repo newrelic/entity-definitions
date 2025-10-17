@@ -1,5 +1,5 @@
 relationships:
-  - name: extServiceProducesAwsMskTopic1_20
+  - name: extServiceProducesAwsMskTopic1_20StgOverride
     version: "1"
     origins:
       - Distributed Tracing
@@ -31,7 +31,7 @@ relationships:
           fields:
             - field: clusterName
               capture:
-                attribute: net.peer.name            
+                attribute: net.peer.name
                 regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
             - field: region
               capture:
@@ -40,7 +40,7 @@ relationships:
             - field: topic
               attribute: messaging.destination.name
 
-  - name: extServiceConsumesAwsMskTopic1_20
+  - name: extServiceConsumesAwsMskTopic1_20StgOverride
     version: "1"
     origins:
       - Distributed Tracing
@@ -81,7 +81,7 @@ relationships:
             - field: topic
               attribute: messaging.destination.name
 
-  - name: extServiceProducesAwsMskTopic1_23
+  - name: extServiceProducesAwsMskTopic1_23StgOverride
     version: "1"
     origins:
       - Distributed Tracing
@@ -113,7 +113,7 @@ relationships:
           fields:
             - field: clusterName
               capture:
-                attribute: server.address           
+                attribute: server.address
                 regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:[0-9]+.*"
             - field: region
               capture:
@@ -122,7 +122,7 @@ relationships:
             - field: topic
               attribute: messaging.destination.name
 
-  - name: extServiceConsumesAwsMskTopic1_23
+  - name: extServiceConsumesAwsMskTopic1_23StgOverride
     version: "1"
     origins:
       - Distributed Tracing
@@ -163,7 +163,7 @@ relationships:
             - field: topic
               attribute: messaging.destination.name
 
-  - name: extServiceCallsAwsMskTopic_Explicit
+  - name: extServiceCallsAwsMskTopic_ExplicitStgOverride
     version: "1"
     origins:
       - Distributed Tracing
@@ -189,3 +189,68 @@ relationships:
           fields:
             - field: cloudResourceId
               attribute: newrelic.aws_metric_streams.arn
+
+  - name: apmProducesOtelKafkaTopicStgOverride
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.producer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: cluster.name
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              attribute: cluster.name
+            - field: topic
+              attribute: topic
+
+  - name: apmConsumesOtelKafkaTopicStgOverride
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.consumer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: cluster.name
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              attribute: cluster.name
+            - field: topic
+              attribute: topic
