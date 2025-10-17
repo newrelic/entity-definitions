@@ -8,10 +8,10 @@ relationships:
         anyOf: [ "Metric" ]
       - attribute: elasticsearch.node.name
         present: true
-      - attribute: entity.type
-        anyOf: ["ELASTICSEARCHNODE"]
+      - attribute: elasticsearch.cluster.name
+        present: true
       - attribute: host.id
-        present: true  
+        present: true 
     relationship:
       expires: P75M
       relationshipType: HOSTS
@@ -28,7 +28,12 @@ relationships:
               - attribute: host.id
             hashAlgorithm: FARM_HASH
       target:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
-            attribute: entity.type
+        lookupGuid:
+          candidateCategory: ELASTICSEARCHNODE
+          fields:
+            - field: elasticsearch.node.name
+              attribute: elasticsearch.node.name
+            - field: elasticsearch.cluster.name
+              attribute: elasticsearch.cluster.name
+            - field: host.id
+              attribute: host.id
