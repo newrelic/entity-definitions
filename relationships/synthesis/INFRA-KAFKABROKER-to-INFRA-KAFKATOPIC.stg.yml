@@ -4,12 +4,10 @@ relationships:
     origins:
       - OnHost Integration
     conditions:
-      - attribute: event_type
+      - attribute: eventType
         anyOf: [ "KafkaBrokerSample" ]
       - attribute: nr.entityType
         anyOf: [ "KafkaBroker","KAFKABROKER" ]
-      - attribute: topic
-        present: true
       - attribute: clusterName
         present: true
     relationship:
@@ -27,7 +25,8 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KAFKATOPIC  
+            value: KAFKATOPIC
+            valueInGuid: NA
           identifier:
             fragments:
               - value: "ka-topic:"
@@ -42,12 +41,10 @@ relationships:
     origins:
       - OnHost Integration
     conditions:
-      - attribute: event_type
-        anyOf: [ "KafkaBrokerSample" ]
+      - attribute: eventType
+        anyOf: [ "KafkaBrokerSample","KafkaTopicSample" ]
       - attribute: nr.entityType
-        anyOf: [ "KafkaBroker","KAFKABROKER" ]
-      - attribute: topic
-        present: true
+        anyOf: [ "KafkaBroker","KAFKABROKER","KAFKATOPIC" ]
       - attribute: clusterName
         present: true
     relationship:
@@ -57,19 +54,9 @@ relationships:
         extractGuid:
           attribute: entityGuid
           entityType:
-            attribute: nr.entityType
+            value: KAFKABROKER
       target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: KafkaTopic  
-          identifier:
-            fragments:
-              - value: "ka-topic:"
-              - attribute: topic
-              - value: ":clustername="
-              - attribute: clusterName
-            hashAlgorithm: FARM_HASH
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KAFKATOPIC
