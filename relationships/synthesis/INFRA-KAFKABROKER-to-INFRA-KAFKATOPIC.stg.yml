@@ -42,9 +42,9 @@ relationships:
       - OnHost Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "KafkaBrokerSample","KafkaTopicSample" ]
+        anyOf: [ "KafkaBrokerSample" ]
       - attribute: nr.entityType
-        anyOf: [ "KafkaBroker","KAFKABROKER","KAFKATOPIC" ]
+        anyOf: [ "KafkaBroker","KAFKABROKER" ]
       - attribute: clusterName
         present: true
     relationship:
@@ -56,7 +56,17 @@ relationships:
           entityType:
             value: KAFKABROKER
       target:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
             value: KAFKATOPIC
+          identifier:
+            fragments:
+              - value: "ka-topic:"
+              - attribute: topic
+              - value: ":clustername="
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
