@@ -11,7 +11,7 @@ dbVersion:
   unit: COUNT
   queries:
     newRelic:
-      select: sql.version
+      select: latest(sql.version)
       from: Metric
       where: otel.library.name = 'newrelicsqlserverreceiver'
 avgCPUTimeMs:
@@ -22,19 +22,6 @@ avgCPUTimeMs:
       select: average(avg_cpu_time_ms)
       from: Metric
       where: otel.library.name = 'newrelicsqlserverreceiver'
-hosting:
-  title: Hosting
-  unit: COUNT
-  queries:
-    newRelic:
-      select: >
-        if(sql.engine_edition = 3, 'Standard SQL Database',
-           if(sql.engine_edition = 5, 'Azure SQL Database',
-              if(sql.engine_edition = 8, 'Azure SQL Managed Instance', 'Unknown')
-           )
-        ) as 'Hosting Type'
-      from: Metric
-      where: otel.library.name = 'newrelicsqlserverreceiver' AND sql.engine_edition IN (3, 5, 8)
 avgLocksWaited:
   title: Avg Locks Waited
   unit: MS
