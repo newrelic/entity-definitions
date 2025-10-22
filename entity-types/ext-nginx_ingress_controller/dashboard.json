@@ -28,7 +28,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT if(latest(nginx_ingress_controller_config_last_reload_successful) < 1, 'Errors', 'No Errors') AS 'Last config reload errors' FACET prometheus_server"
+                        "query": "FROM Metric SELECT if(latest(nginx_ingress_controller_config_last_reload_successful) < 1, 'Errors', 'No Errors') AS 'Last config reload errors'"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false }
@@ -52,71 +52,15 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT latest(nginx_ingress_controller_config_last_reload_successful_timestamp_seconds) * 1000 as 'Last successful config reload' FACET prometheus_server"
+                        "query": "FROM Metric SELECT latest(nginx_ingress_controller_config_last_reload_successful_timestamp_seconds) * 1000 as 'Last successful config reload'"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false }
-                }
-            },
-            {
-              "title": "Ratio of requests by status",
-              "layout": { "column": 1, "row": 4, "width": 4, "height": 3 },
-              "visualization": { "id": "viz.pie" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": true },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT sum(nginx_ingress_controller_requests) FACET status"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false }
-                }
-            },
-            {
-              "title": "Average process connections",
-              "layout": { "column": 5, "row": 4, "width": 4, "height": 3 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT average(nginx_ingress_controller_nginx_process_connections_total) AS 'Average process connections' FACET concat(prometheus_server, ' - ', instance) TIMESERIES"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Requests per second by status",
-              "layout": { "column": 9, "row": 4, "width": 4, "height": 3 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_request_size_count), 1 SECONDS) FACET concat(prometheus_server, ' - ', instance, ' : ', status) TIMESERIES"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
                 }
             },
             {
               "title": "Ingress classes",
-              "layout": { "column": 1, "row": 2, "width": 6, "height": 3 },
+              "layout": { "column": 1, "row": 4, "width": 6, "height": 3 },
               "visualization": { "id": "viz.pie" },
               "rawConfiguration":
                 {
@@ -133,8 +77,26 @@
                 }
             },
             {
-              "title": "Upstream service latency by ingress definition",
-              "layout": { "column": 7, "row": 2, "width": 6, "height": 3 },
+              "title": "Ratio of requests by status",
+              "layout": { "column": 7, "row": 4, "width": 3, "height": 3 },
+              "visualization": { "id": "viz.pie" },
+              "rawConfiguration":
+                {
+                  "facet": { "showOtherSeries": true },
+                  "legend": { "enabled": true },
+                  "nrqlQueries":
+                    [
+                      {
+                        "accountId": 0,
+                        "query": "FROM Metric SELECT sum(nginx_ingress_controller_requests) FACET status"
+                      }
+                    ],
+                  "platformOptions": { "ignoreTimeRange": false }
+                }
+            },
+            {
+              "title": "Requests per second by status",
+              "layout": { "column": 10, "row": 4, "width": 3, "height": 3 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
                 {
@@ -144,7 +106,7 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "SELECT rate(sum(nginx_ingress_controller_ingress_upstream_latency_seconds_sum), 1 SECONDS) FROM Metric TIMESERIES 60000 SLIDE BY 10000"
+                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_request_size_count), 1 SECONDS) FACET status TIMESERIES"
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false },
@@ -152,14 +114,72 @@
                 }
             },
             {
+              "title": "Average process connections",
+              "layout": { "column": 1, "row": 7, "width": 4, "height": 3 },
+              "visualization": { "id": "viz.line" },
+              "rawConfiguration":
+                {
+                  "facet": { "showOtherSeries": false },
+                  "legend": { "enabled": true },
+                  "nrqlQueries":
+                    [
+                      {
+                        "accountId": 0,
+                        "query": "FROM Metric SELECT average(nginx_ingress_controller_nginx_process_connections_total) AS 'Average process connections' TIMESERIES"
+                      }
+                    ],
+                  "platformOptions": { "ignoreTimeRange": false },
+                  "yAxisLeft": { "zero": true }
+                }
+            },
+             {
+              "title": "CPU second rate by pod",
+              "layout": { "column": 5, "row": 7, "width": 4, "height": 3 },
+              "visualization": { "id": "viz.line" },
+              "rawConfiguration":
+                {
+                  "facet": { "showOtherSeries": false },
+                  "legend": { "enabled": true },
+                  "nrqlQueries":
+                    [
+                      {
+                        "accountId": 0,
+                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_nginx_process_cpu_seconds_total), 1 SECONDS) FACET controller_pod TIMESERIES"
+                      }
+                    ],
+                  "platformOptions": { "ignoreTimeRange": false },
+                  "yAxisLeft": { "zero": true }
+                }
+            },
+            {
+              "title": "Process memory bytes by pod",
+              "layout": { "column": 9, "row": 7, "width": 4, "height": 3 },
+              "visualization": { "id": "viz.line" },
+              "rawConfiguration":
+                {
+                  "facet": { "showOtherSeries": false },
+                  "legend": { "enabled": true },
+                  "nrqlQueries":
+                    [
+                      {
+                        "accountId": 0,
+                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_nginx_process_resident_memory_bytes), 1 SECONDS) FACET controller_pod TIMESERIES"
+                      }
+                    ],
+                  "platformOptions": { "ignoreTimeRange": false },
+                  "units": { "unit": "BYTES" },
+                  "yAxisLeft": { "zero": true }
+                }
+            },
+            {
               "title": "",
-              "layout": { "column": 1, "row": 5, "width": 12, "height": 1 },
+              "layout": { "column": 1, "row": 10, "width": 12, "height": 1 },
               "visualization": { "id": "viz.markdown" },
               "rawConfiguration": { "text": "# Requests Stats" }
             },
             {
-              "title": "Request Size Buckets",
-              "layout": { "column": 1, "row": 6, "width": 6, "height": 3 },
+              "title": "Request size buckets",
+              "layout": { "column": 1, "row": 11, "width": 6, "height": 3 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
                 {
@@ -178,7 +198,7 @@
             },
             {
               "title": "Request duration seconds ",
-              "layout": { "column": 7, "row": 6, "width": 6, "height": 3 },
+              "layout": { "column": 7, "row": 11, "width": 6, "height": 3 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
                 {
@@ -197,13 +217,13 @@
             },
             {
               "title": "",
-              "layout": { "column": 1, "row": 9, "width": 12, "height": 1 },
+              "layout": { "column": 1, "row": 14, "width": 12, "height": 1 },
               "visualization": { "id": "viz.markdown" },
               "rawConfiguration": { "text": "# Response Stats" }
             },
             {
-              "title": "Response Size Buckets",
-              "layout": { "column": 1, "row": 10, "width": 6, "height": 3 },
+              "title": "Response size buckets",
+              "layout": { "column": 1, "row": 15, "width": 6, "height": 3 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
                 {
@@ -222,7 +242,7 @@
             },
             {
               "title": "Response duration seconds",
-              "layout": { "column": 7, "row": 10, "width": 6, "height": 3 },
+              "layout": { "column": 7, "row": 15, "width": 6, "height": 3 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
                 {
@@ -236,45 +256,6 @@
                       }
                     ],
                   "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "CPU Second Rate by Pod",
-              "layout": { "column": 1, "row": 7, "width": 6, "height": 3 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_nginx_process_cpu_seconds_total), 1 SECONDS) FACET concat(prometheus_server, ' - ', controller_pod) TIMESERIES"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "yAxisLeft": { "zero": true }
-                }
-            },
-            {
-              "title": "Process Memory Bytes by Pod",
-              "layout": { "column": 7, "row": 7, "width": 6, "height": 3 },
-              "visualization": { "id": "viz.line" },
-              "rawConfiguration":
-                {
-                  "facet": { "showOtherSeries": false },
-                  "legend": { "enabled": true },
-                  "nrqlQueries":
-                    [
-                      {
-                        "accountId": 0,
-                        "query": "FROM Metric SELECT rate(sum(nginx_ingress_controller_nginx_process_resident_memory_bytes), 1 SECONDS) FACET concat(prometheus_server, ' - ', controller_pod) TIMESERIES"
-                      }
-                    ],
-                  "platformOptions": { "ignoreTimeRange": false },
-                  "units": { "unit": "BYTES" },
                   "yAxisLeft": { "zero": true }
                 }
             }

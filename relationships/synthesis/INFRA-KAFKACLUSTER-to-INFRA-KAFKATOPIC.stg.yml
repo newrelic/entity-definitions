@@ -1,0 +1,32 @@
+relationships:
+  - name: otelKafkaClusterManagesKafkaTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: kafka.topic.name
+        present: true
+      - attribute: entity.type
+        anyOf: ["KAFKATOPIC"]
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKACLUSTER
+          identifier:
+            fragments:
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH

@@ -1,18 +1,33 @@
 domain: EXT
-type: ISTIO_INGRESS
+type: ENVOY
 synthesis:
   rules:
-    # prometheus and otel
+    # prometheus
     - compositeIdentifier:
         separator: ":"
         attributes:
           - cluster_name
-          - source_canonical_service
+          - gateway_envoyproxy_io_owning_gateway_name
       encodeIdentifierInGUID: true
-      name: source_canonical_service
+      name: gateway_envoyproxy_io_owning_gateway_name
       conditions:
         - attribute: metricName
-          value: istio_requests_total
+          prefix: envoy_
+        - attribute: instrumentation.provider
+          value: prometheus
+    # otel
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.pod.label.gateway.envoyproxy.io/owning-gateway-name
+      encodeIdentifierInGUID: true
+      name: k8s.pod.label.gateway.envoyproxy.io/owning-gateway-name
+      conditions:
+        - attribute: metricName
+          prefix: envoy_
+        - attribute: instrumentation.provider
+          value: opentelemetry
 
   tags:
     # prometheus
@@ -44,6 +59,8 @@ synthesis:
       ttl: P1D
 
 dashboardTemplates:
+  newRelic:
+    template: dashboard.json
   prometheus:
     template: dashboard.json
 
