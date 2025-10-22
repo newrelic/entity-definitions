@@ -18,8 +18,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.user_connections.authentication.total_failed_logins) AS 'Total Failed Logins' FROM Metric",
-                "accountId": 0
+                "accountId": 0,
+                "query": "SELECT latest(sqlserver.user_connections.authentication.total_failed_logins) AS 'Total Failed Logins' FROM Metric"
               }
             ]
           }
@@ -38,8 +38,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "FROM Metric SELECT latest(sqlserver.failover_cluster.is_primary_replica) AS 'Is Primary', latest(sqlserver.failover_cluster.is_local_replica) AS 'Is Local' FACET replica_server_name, database_name, synchronization_state_desc",
-                "accountId": 0
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(sqlserver.failover_cluster.is_primary_replica ) AS 'Is Primary' , latest(sqlserver.failover_cluster.is_local_replica) AS 'Is Local' facet replica_server_name, database_name, synchronization_state_desc"
               }
             ]
           }
@@ -58,8 +58,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "FROM Metric SELECT latest(sqlserver.failover_cluster.ag_synchronization_health) FACET replica_server_name, synchronization_health_desc",
-                "accountId": 0
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(sqlserver.failover_cluster.ag_synchronization_health) FACET replica_server_name, synchronization_health_desc"
               }
             ]
           }
@@ -78,8 +78,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.user_connections.authentication.logins_per_sec) AS 'Logins/sec', latest(sqlserver.user_connections.authentication.logouts_per_sec) AS 'Logouts/sec' FROM Metric TIMESERIES",
-                "accountId": 0
+                "accountId": 0,
+                "query": "SELECT latest(sqlserver.user_connections.authentication.logins_per_sec) AS 'Logins/sec', latest(sqlserver.user_connections.authentication.logouts_per_sec) AS 'Logouts/sec' FROM Metric TIMESERIES"
               }
             ]
           }
@@ -98,8 +98,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT latest(activeConnections) FROM Metric TIMESERIES AUTO",
-                "accountId": 0
+                "accountId": 0,
+                "query": "SELECT latest(`activeConnections`) FROM Metric TIMESERIES AUTO "
               }
             ]
           }
@@ -118,8 +118,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "FROM Metric SELECT average(sqlserver.instance.memory_total), average(sqlserver.instance.memory_available) TIMESERIES AUTO",
-                "accountId": 0
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(sqlserver.instance.memory_total), average(sqlserver.instance.memory_available) TIMESERIES AUTO "
               }
             ]
           }
@@ -138,8 +138,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT average(sqlserver.slowquery.avg_elapsed_time_ms) FROM Metric WHERE metricName = 'sqlserver.slowquery.avg_elapsed_time_ms' FACET QueryID",
-                "accountId": 0
+                "accountId": 0,
+                "query": "SELECT average(sqlserver.slowquery.avg_elapsed_time_ms) FROM Metric \nWHERE metricName = 'sqlserver.slowquery.avg_elapsed_time_ms' \nAND QueryID IN (\n    SELECT QueryID FROM Metric \n    WHERE metricName = 'sqlserver.slowquery.query_text'\n) \nFACET QueryID"
               }
             ]
           }
@@ -158,8 +158,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.database.pageFileTotal) / 1024 / 1024 / 1024 as 'Used Space (GB)', latest(sqlserver.database.pageFileAvailable) / 1024 / 1024 / 1024 as 'Disk Utilization (GB)' FROM Metric WHERE metricName IN ('sqlserver.database.pageFileTotal', 'sqlserver.database.pageFileAvailable') FACET database_name SINCE 1 hour ago",
-                "accountId": 0
+                "accountId": 0,
+                "query": "SELECT\n       latest(sqlserver.database.pageFileTotal) / 1024 / 1024 / 1024 as 'Used Space (GB)',\n       latest(sqlserver.database.pageFileAvailable) / 1024 / 1024 / 1024 as 'Disk Utilization (GB)'\nFROM Metric \nWHERE metricName IN ('sqlserver.database.pageFileTotal', 'sqlserver.database.pageFileAvailable')\nFACET database_name SINCE 1 hour ago"
               }
             ]
           }
@@ -178,8 +178,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT sum(sqlserver.wait_analysis.total_wait_time_ms) as 'Total Wait Time (ms)' FROM Metric WHERE metricName = 'sqlserver.wait_analysis.total_wait_time_ms' FACET WaitCategory",
-                "accountId": 0
+                "accountId": 0,
+                "query": "SELECT \n  sum(sqlserver.wait_analysis.total_wait_time_ms) as 'Total Wait Time (ms)'\nFROM Metric \nWHERE metricName = 'sqlserver.wait_analysis.total_wait_time_ms'\nFACET WaitCategory\n"
               }
             ]
           }
@@ -198,8 +198,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "FROM Metric SELECT average(sqlserver.stats.lock_waits_per_sec) AS 'Avg Lock Wait Time (ms)' TIMESERIES AUTO",
-                "accountId": 0
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(sqlserver.stats.lock_waits_per_sec) AS 'Avg Lock Wait Time (ms)' TIMESERIES AUTO"
               }
             ]
           }
@@ -218,8 +218,8 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT average(sqlserver.database.pageFileTotal) / 1024 / 1024 as 'Total Page File (MB)' FROM Metric FACET database_name SINCE 1 hour ago TIMESERIES",
-                "accountId": 0
+                "accountId": 0,
+                "query": "SELECT average(`sqlserver.database.pageFileTotal`) / 1024 / 1024 as 'Total Page File (MB)'\nFROM Metric \nWHERE `metric.type` = 'gauge' \nAND `metric.source` = 'sys.partitions_sys.allocation_units'\nFACET database_name\nSINCE 1 hour ago \nTIMESERIES"
               }
             ]
           }
