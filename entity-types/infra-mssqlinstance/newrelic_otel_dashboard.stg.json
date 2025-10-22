@@ -1,0 +1,230 @@
+{
+  "name": "MSSQL Entity",
+  "pages": [
+    {
+      "name": "MSSQL Entity",
+      "widgets": [
+        {
+          "title": "Total Failed Logins",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.user_connections.authentication.total_failed_logins) AS 'Total Failed Logins' FROM Metric",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Primary vs Local Replica Distribution",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(sqlserver.failover_cluster.is_primary_replica) AS 'Is Primary', latest(sqlserver.failover_cluster.is_local_replica) AS 'Is Local' FACET replica_server_name, database_name, synchronization_state_desc",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Availability Group Synchronization Health",
+          "layout": {
+            "column": 8,
+            "row": 1,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(sqlserver.failover_cluster.ag_synchronization_health) FACET replica_server_name, synchronization_health_desc",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Login & Logout Rate (per second)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.user_connections.authentication.logins_per_sec) AS 'Logins/sec', latest(sqlserver.user_connections.authentication.logouts_per_sec) AS 'Logouts/sec' FROM Metric TIMESERIES",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Active Connections",
+          "layout": {
+            "column": 4,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(activeConnections) FROM Metric TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Total & Available Physical Memory",
+          "layout": {
+            "column": 8,
+            "row": 4,
+            "width": 5,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(sqlserver.instance.memory_total), average(sqlserver.instance.memory_available) TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Average execution time (ms)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(sqlserver.slowquery.avg_elapsed_time_ms) FROM Metric WHERE metricName = 'sqlserver.slowquery.avg_elapsed_time_ms' FACET QueryID",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Disk Space Utilization",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.database.pageFileTotal) / 1024 / 1024 / 1024 as 'Used Space (GB)', latest(sqlserver.database.pageFileAvailable) / 1024 / 1024 / 1024 as 'Disk Utilization (GB)' FROM Metric WHERE metricName IN ('sqlserver.database.pageFileTotal', 'sqlserver.database.pageFileAvailable') FACET database_name SINCE 1 hour ago",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Wait Events by Category",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(sqlserver.wait_analysis.total_wait_time_ms) as 'Total Wait Time (ms)' FROM Metric WHERE metricName = 'sqlserver.wait_analysis.total_wait_time_ms' FACET WaitCategory",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Wait Time Per Lock Wait (ms)",
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(sqlserver.stats.lock_waits_per_sec) AS 'Avg Lock Wait Time (ms)' TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Total page file space per database",
+          "layout": {
+            "column": 9,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(sqlserver.database.pageFileTotal) / 1024 / 1024 as 'Total Page File (MB)' FROM Metric FACET database_name SINCE 1 hour ago TIMESERIES",
+                "accountId": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

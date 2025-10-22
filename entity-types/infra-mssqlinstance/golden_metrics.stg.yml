@@ -1,0 +1,53 @@
+connections:
+  title: Connections
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(sqlserver.user_connections.total)
+      from: Metric
+      where: otel.library.name = 'newrelicsqlserverreceiver'
+dbVersion:
+  title: DB Version
+  unit: COUNT
+  queries:
+    newRelic:
+      select: sql.version
+      from: Metric
+      where: otel.library.name = 'newrelicsqlserverreceiver'
+avgCPUTimeMs:
+  title: Avg CPU Time (ms)
+  unit: MS
+  queries:
+    newRelic:
+      select: average(avg_cpu_time_ms)
+      from: Metric
+      where: otel.library.name = 'newrelicsqlserverreceiver'
+hosting:
+  title: Hosting
+  unit: COUNT
+  queries:
+    newRelic:
+      select: >
+        if(sql.engine_edition = 3, 'Standard SQL Database',
+           if(sql.engine_edition = 5, 'Azure SQL Database',
+              if(sql.engine_edition = 8, 'Azure SQL Managed Instance', 'Unknown')
+           )
+        ) as 'Hosting Type'
+      from: Metric
+      where: otel.library.name = 'newrelicsqlserverreceiver' AND sql.engine_edition IN (3, 5, 8)
+avgLocksWaited:
+  title: Avg Locks Waited
+  unit: MS
+  queries:
+    newRelic:
+      select: average(sqlserver.stats.lock_waits_per_sec)
+      from: Metric
+      where: otel.library.name = 'newrelicsqlserverreceiver'
+avgQueryExecutionTimeMs:
+  title: Avg Query Execution Time (ms)
+  unit: MS
+  queries:
+    newRelic:
+      select: latest(sqlserver.slowquery.avg_elapsed_time_ms)
+      from: Metric
+      where: otel.library.name = 'newrelicsqlserverreceiver'
