@@ -24,3 +24,28 @@ relationships:
               attribute: namespace # namespace of pod
             - field: k8s.podName # podName of ext-coredns
               attribute: pod # podName of pod
+  - name: k8sPodContainsExtCorednsOtel
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: entity.type
+        anyOf: ["KUBERNETES_POD"]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: COREDNS
+          fields:
+            - field: k8s.clusterName # cluster of ext-coredns
+              attribute: k8s.clusterName # cluster of pod
+            - field: k8s.namespaceName # namespace of ext-coredns
+              attribute: k8s.namespaceName # namespace of pod
+            - field: k8s.podName # podName of ext-coredns
+              attribute: k8s.podName # podName of pod

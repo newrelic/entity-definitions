@@ -1,69 +1,21 @@
 domain: EXT
 type: ENVOY
-goldenTags:
-  - k8s.clusterName
-  - k8s.namespaceName
-
 synthesis:
   rules:
-    # prometheus
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - cluster_name
-          - pod
+    - identifier: host.hostname
+      name: host.hostname
       encodeIdentifierInGUID: true
-      name: pod
       conditions:
+        - attribute: eventType
+          value: Metric
         - attribute: metricName
-          prefix: envoy_
-    # otel
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - k8s.pod.name
-      encodeIdentifierInGUID: true
-      name: k8s.pod.name
-      conditions:
-        - attribute: metricName
-          prefix: envoy_
-
-  tags:
-    # prometheus
-    cluster_name:
-      entityTagName: k8s.clusterName
-      ttl: P1D
-    namespace:
-      entityTagName: k8s.namespaceName
-      ttl: P1D
-    node:
-      entityTagName: k8s.nodeName
-      ttl: P1D
-    pod:
-      entityTagName: k8s.podName
-      ttl: P1D
-
-    # otel
-    k8s.cluster.name:
-      entityTagName: k8s.clusterName
-      ttl: P1D
-    k8s.namespace.name:
-      entityTagName: k8s.namespaceName
-      ttl: P1D
-    k8s.node.name:
-      entityTagName: k8s.nodeName
-      ttl: P1D
-    k8s.pod.name:
-      entityTagName: k8s.podName
-      ttl: P1D
-
+          value: "envoy_http_downstream_cx_total"
+      tags:
+        ip:
+        newrelic.agentVersion:
 dashboardTemplates:
-  newRelic:
+  newrelic:
     template: dashboard.json
-  prometheus:
-    template: dashboard.json
-
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
