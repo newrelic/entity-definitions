@@ -1,0 +1,25 @@
+relationships:
+  # Modern OpenTelemetry APM metrics for Oracle datastore operations
+  - name: apmApplicationCallsOracleDbFromMetrics
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: ["apm.service.datastore.operation.duration"]
+      - attribute: db.system
+        anyOf: ["oracle"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: ORACLEDBINSTANCE
+          fields:
+            - field: instrumentation.provider
+              attribute: instrumentation.provider
