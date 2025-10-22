@@ -2,13 +2,15 @@ relationships:
   - name: kafkaBrokerServesKafkaTopic
     version: "1"
     origins:
-      - Infrastructure Agent
+      - OnHost Integration
     conditions:
       - attribute: event_type
         anyOf: [ "KafkaBrokerSample" ]
       - attribute: nr.entityType
-        anyOf: [ "KafkaBroker" ]
+        anyOf: [ "KafkaBroker","KAFKABROKER" ]
       - attribute: topic
+        present: true
+      - attribute: clusterName
         present: true
     relationship:
       expires: P75M
@@ -25,9 +27,48 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KAFKATOPIC
+            value: KAFKATOPIC  
           identifier:
             fragments:
+              - value: "ka-topic:"
+              - attribute: topic
+              - value: ":clustername="
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
+
+# testing purpose
+  - name: kafkaBrokerServesKafkaTopic2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: event_type
+        anyOf: [ "KafkaBrokerSample" ]
+      - attribute: nr.entityType
+        anyOf: [ "KafkaBroker","KAFKABROKER" ]
+      - attribute: topic
+        present: true
+      - attribute: clusterName
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: SERVES
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            attribute: nr.entityType
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KafkaTopic  
+          identifier:
+            fragments:
+              - value: "ka-topic:"
               - attribute: topic
               - value: ":clustername="
               - attribute: clusterName

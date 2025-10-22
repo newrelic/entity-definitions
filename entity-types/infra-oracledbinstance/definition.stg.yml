@@ -2,22 +2,26 @@ domain: INFRA
 type: ORACLEDBINSTANCE
 synthesis:
   rules:
-    - identifier: oracledb.endpoint # server.address:server.port
-      name: oracledb.endpoint
+    - identifier: host.name # server.address:server.port
+      name: host.name
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: oracledb.
+          prefix: newrelicoracledb.
         - attribute: instrumentation.provider
           value: opentelemetry
         # This handles both library name formats for backward compatibility
         - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/oracledbreceiver
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
+        db.version.full:
+          entityTagName: database.version
+        deployment.environment:
+          entityTagName: environment
 goldenTags: []
 configuration:
   entityExpirationTime: DAILY
