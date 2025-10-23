@@ -4,11 +4,12 @@ relationships:
     version: "1"
     origins:
       - Infrastructure Agent
+      - OnHost Integration
     conditions:
-      - attribute: event_type
+      - attribute: eventType
         anyOf: ["KafkaBrokerSample"]
       - attribute: nr.entityType
-        anyOf: ["KafkaBroker"]
+        anyOf: ["KafkaBroker","KAFKABROKER"]
       - attribute: hostname
         present: true
       # Local detection - broker address is localhost
@@ -20,11 +21,12 @@ relationships:
       source:
         buildGuid:
           account:
-            lookup: true
+            attribute: accountId
           domain:
             value: INFRA
           type:
             value: HOST
+            valueInGuid: NA
           identifier:
             fragments:
               - attribute: hostname
@@ -33,18 +35,18 @@ relationships:
         extractGuid:
           attribute: entityGuid
           entityType:
-            attribute: nr.entityType
-
+            value: KAFKABROKER
   # Remote scenario: Host monitors remote Kafka broker
   - name: hostMonitorsKafkaBroker
     version: "1"
     origins:
       - Infrastructure Agent
+      - OnHost Integration
     conditions:
-      - attribute: event_type
+      - attribute: eventType
         anyOf: ["KafkaBrokerSample"]
       - attribute: nr.entityType
-        anyOf: ["KafkaBroker"]
+        anyOf: ["KafkaBroker","KAFKABROKER"]
       - attribute: hostname
         present: true
       - attribute: displayName
@@ -55,11 +57,12 @@ relationships:
       source:
         buildGuid:
           account:
-            lookup: true
+            attribute: accountId
           domain:
             value: INFRA
           type:
             value: HOST
+            valueInGuid: NA
           identifier:
             fragments:
               - attribute: hostname
@@ -68,4 +71,4 @@ relationships:
         extractGuid:
           attribute: entityGuid
           entityType:
-            attribute: nr.entityType
+            value: KAFKABROKER
