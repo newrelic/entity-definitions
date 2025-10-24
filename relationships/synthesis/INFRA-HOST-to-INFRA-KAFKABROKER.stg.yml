@@ -74,13 +74,15 @@ relationships:
             value: KAFKABROKER
 
   # Local scenario: Kafka broker running on the same host
-  - name: hostHostsOtelKafkaBroker
+  - name: hostMonitorsOtelKafkaBroker
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
       - attribute: kafka.broker.name
         present: true
       - attribute: entity.type
@@ -120,6 +122,8 @@ relationships:
         anyOf: [ "Metric" ]
       - attribute: kafka.broker.name
         present: true
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
       - attribute: entity.type
         anyOf: ["KAFKABROKER"]
       - attribute: host.name
