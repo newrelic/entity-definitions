@@ -27,6 +27,40 @@ relationships:
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
           entityType:
             attribute: entity.type
+
+  - name: infraElasticsearchClusterContainsNode
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: event_type
+        anyOf: [ "ElasticsearchNodeSample" ]
+      - attribute: nr.entityType
+        anyOf: ["ElasticsearchNode","ELASTICSEARCHNODE"]
+      - attribute: hostname
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: ELASTICSEARCHCLUSTER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "es-node:"
+              - attribute: entityKey # host.id or reportingAgent if host.id does not exist
+              operations:
+                - operation: startsWith
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid

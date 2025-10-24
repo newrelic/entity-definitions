@@ -33,3 +33,37 @@ relationships:
           attribute: entity.guid
           entityType:
             attribute: entity.type
+
+  - name: hostHostsElasticSearchCluster
+    version: "1"
+    origins:
+      - OnHost Integration	
+    conditions:
+      - attribute: event_type
+        anyOf: ["ElasticsearchClusterSample","ELASTICSEARCHCLUSTERSAMPLE"]
+      - attribute: entityGuid
+        present: true
+      - attribute: hostname
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "es-cluster:"
+              - attribute: entityKey # host.id or reportingAgent if host.id does not exist
+              operations:
+                - operation: startsWith
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid

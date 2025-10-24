@@ -1,0 +1,35 @@
+relationships:
+  - name: infraElasticsearchNodeContainsIndex
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: event_type
+        anyOf: [ "ElasticsearchIndexSample" ]
+      - attribute: entityGuid
+        present: true
+      - attribute: hostname
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: ELASTICSEARCHNODE
+            valueInGuid: NA
+          identifier:
+            identifier:
+            fragments:
+              - value: "es-index:"
+              - attribute: entityKey # host.id or reportingAgent if host.id does not exist
+              operations:
+                - operation: startsWith
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
