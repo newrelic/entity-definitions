@@ -59,18 +59,23 @@
         "identifier": "12345"
       }],
       "oneOf": [{
-          "required": [
-            "name",
-            "identifier",
-            "conditions"
-          ]
-        },
-        {
-          "required": [
-            "name",
-            "compositeIdentifier",
-            "conditions"
-          ]
+         "allOf": [
+           {
+             "oneOf": [
+               { "required": ["name"] },
+               { "required": ["compositeName"] }
+             ]
+           },
+           {
+             "oneOf": [
+                { "required": ["identifier"] },
+                { "required": ["compositeIdentifier"] }
+             ]
+           },
+           {
+               "required": ["conditions"]
+           }
+         ]
         },
         {
           "required": [
@@ -93,19 +98,21 @@
           "items": {
             "$id": "#/synthesis/rules/items",
             "type": "object",
-            "oneOf": [{
-                "required": [
-                  "name",
-                  "identifier",
-                  "conditions"
+            "allOf": [
+              {
+                "oneOf": [
+                  { "required": ["name"] },
+                  { "required": ["compositeName"] }
                 ]
               },
               {
-                "required": [
-                  "name",
-                  "compositeIdentifier",
-                  "conditions"
+                "oneOf": [
+                  { "required": ["identifier"] },
+                  { "required": ["compositeIdentifier"] }
                 ]
+              },
+              {
+                "required": ["conditions"]
               }
             ],
             "properties": {
@@ -117,6 +124,50 @@
                 "examples": [
                   "EntityName"
                 ]
+              },
+              "compositeName": {
+                "$id": "#/synthesis/rules/items/compositeName",
+                "type": "object",
+                "title": "The composite entity name",
+                "description": "Information used to synthesize the entity name using a combination of attributes and literals",
+                "required": [ "fragments" ],
+                "properties": {
+                  "fragments": {
+                    "$id": "#/synthesis/rules/items/compositeName/fragments",
+                    "type": "array",
+                    "title": "list of attributes and literals used to build the name",
+                    "description": "The list of attributes and literals to conform the name",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "oneOf": [
+                            {
+                              "required": [ "attribute" ],
+                              "properties": {
+                                "attribute": {
+                                  "type": "string",
+                                  "title": "The attribute to use as part of the name",
+                                  "examples": [ "kafka.cluster.name", "host", "pod_name" ]
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            {
+                              "required": [ "value" ],
+                              "properties": {
+                                "value": {
+                                  "type": "string",
+                                  "title": "The literal string to use as part of the name",
+                                  "minLength": 1,
+                                  "examples": [ "-" , "_" , ":", " (", ")" ]
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                        ]
+                    }
+                  }
+                }
               },
               "identifier": {
                 "$id": "#/synthesis/rules/items/identifier",
@@ -326,6 +377,9 @@
         },
         "name": {
           "$ref": "#/synthesis/rules/items/name"
+        },
+        "compositeName": {
+          "$ref": "#/synthesis/rules/items/compositeName"
         },
         "identifier": {
           "$ref": "#/synthesis/rules/items/identifier"
