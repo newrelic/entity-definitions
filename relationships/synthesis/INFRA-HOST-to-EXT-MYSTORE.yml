@@ -1,26 +1,24 @@
 relationships:
-  - name: extStoreContainsSesame
+  - name: infraHostIsExtMystore
     version: "1"
     origins:
-      - Event API
+      - Infrastructure Agent
     conditions:
-      - attribute: eventType
-        anyOf: [ "XMLRPC" ]
-      - attribute: node
-        anyOf: [ "STORE" ]
+      - attribute: device.type
+        anyOf: [ "BOS" ]
       - attribute: market
         present: true
       - attribute: store.number
         present: true
     relationship:
       expires: P75M
-      relationshipType: CONTAINS
+      relationshipType: IS
       source:
         extractGuid:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: SESAME
+          candidateCategory: MYSTORE
           fields:
             - field: marketName
               attribute: market
