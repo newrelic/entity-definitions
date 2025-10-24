@@ -1,26 +1,24 @@
 relationships:
-  - name: extStoreContainsSesame
+  - name: infraHostIsExtDigitalordering
     version: "1"
     origins:
-      - Event API
+      - Infrastructure Agent
     conditions:
-      - attribute: eventType
-        anyOf: [ "XMLRPC" ]
-      - attribute: node
-        anyOf: [ "STORE" ]
+      - attribute: device.type
+        anyOf: [ "GSC01","GSC02" ]
       - attribute: market
         present: true
       - attribute: store.number
         present: true
     relationship:
       expires: P75M
-      relationshipType: CONTAINS
+      relationshipType: IS
       source:
         extractGuid:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: SESAME
+          candidateCategory: DIGITALORDERING
           fields:
             - field: marketName
               attribute: market
