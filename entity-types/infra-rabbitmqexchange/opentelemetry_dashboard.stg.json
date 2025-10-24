@@ -1,0 +1,189 @@
+{
+  "name": "RabbitMQ Exchange Metrics (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "RabbitMQ Exchange Metrics",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Messages Published",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.published) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Messages Published Rate",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT rate(sum(rabbitmq.message.published), 1 second) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Current Messages",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE instrumentation.provider = 'opentelemetry' FACET state TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Messages Delivered",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.delivered) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Messages Acknowledged",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.acknowledged) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Exchange Health Summary",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.published) AS 'Messages Published', sum(rabbitmq.message.current) AS 'Current Messages', latest(rabbitmq.message.delivered) AS 'Messages Delivered' WHERE instrumentation.provider = 'opentelemetry' AND metricName IN ('rabbitmq.message.published', 'rabbitmq.message.current', 'rabbitmq.message.delivered')",
+                "accountId": 0
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Message Flow Overview",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.published) AS 'Published', latest(rabbitmq.message.delivered) AS 'Delivered', latest(rabbitmq.message.acknowledged) AS 'Acknowledged' WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Exchange Details",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.published) AS 'Messages Published', latest(rabbitmq.message.current) AS 'Current Messages', latest(rabbitmq.message.delivered) AS 'Messages Delivered', latest(rabbitmq.message.acknowledged) AS 'Messages Acknowledged' WHERE instrumentation.provider = 'opentelemetry' FACET entity.name",
+                "accountId": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
