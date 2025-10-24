@@ -53,7 +53,7 @@ relationships:
         regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
     relationship:
       expires: P75M
-      relationshipType: HOSTS
+      relationshipType: MANAGES
       source:
         buildGuid:
           account:
@@ -74,7 +74,7 @@ relationships:
             value: KAFKABROKER
 
   # Local scenario: Kafka broker running on the same host
-  - name: hostMonitorsOtelKafkaBroker
+  - name: hostHostsOtelKafkaBroker
     version: "1"
     origins:
       - OpenTelemetry
@@ -90,10 +90,12 @@ relationships:
       - attribute: host.name
         present: true
       - attribute: broker.endpoint
+        present: true
+      - attribute: broker.endpoint
         regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|$)"
     relationship:
       expires: P75M
-      relationshipType: MANAGES
+      relationshipType: HOSTS
       source:
         buildGuid:
           account:
@@ -112,8 +114,8 @@ relationships:
           entityType:
             attribute: entity.type
 
-  # Local scenario: Kafka broker running on the same host
-  - name: hostHostsOtelKafkaBroker
+  # Remote scenario: Host monitors remote Kafka broker
+  - name: hostMonitorsOtelKafkaBroker
     version: "1"
     origins:
       - OpenTelemetry
@@ -127,6 +129,8 @@ relationships:
       - attribute: entity.type
         anyOf: ["KAFKABROKER"]
       - attribute: host.name
+        present: true
+      - attribute: broker.endpoint
         present: true
       - attribute: broker.endpoint
         regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
