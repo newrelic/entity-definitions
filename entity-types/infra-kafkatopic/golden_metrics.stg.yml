@@ -11,14 +11,14 @@ partitionsWithNonPreferredLeader:
 underReplicatedPartitions:
   queries:
     newRelic:
-      select: latest(topic.underReplicatedPartitions)
+      select: average(topic.underReplicatedPartitions)
       from: KafkaTopicSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(kafka.partition.replicas)
+      select: (sum(kafka.partition.replicas) - sum(kafka.partition.replicas_in_sync))/uniqueCount(kafka.cluster.name), uniques(partition)
       from: Metric
-      where: metricName = 'kafka.partition.replicas'
+      where: metricName IN ('kafka.partition.replicas', 'kafka.partition.replicas_in_sync')
       eventId: entity.guid
       eventName: entity.name
   unit: COUNT
