@@ -23,6 +23,7 @@ relationships:
             value: INFRA
           type:
             value: HOST
+            valueInGuid: NA
           identifier:
             fragments:
               - attribute: host.id
@@ -32,3 +33,34 @@ relationships:
           attribute: entity.guid
           entityType:
             attribute: entity.type
+
+  - name: hostHostsElasticSearchNode
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: event_type
+        anyOf: ["ElasticsearchNodeSample","ELASTICSEARCHNODESAMPLE"]
+      - attribute: entityGuid
+        present: true
+      - attribute: hostname
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: hostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid

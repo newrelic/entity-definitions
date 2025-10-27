@@ -98,21 +98,18 @@ relationships:
               attribute: metricName__4
             - field: topic
               attribute: metricName__6
-  
-  - name: apmProducesOtelKafkaTopic
+
+  - name: apmProducesKafkaTopic
     version: "1"
     origins:
-      - OpenTelemetry
+      - Infrastructure Agent
+      - OnHost Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: metricName
-        startsWith: "kafka.producer"
-      - attribute: entity.type
-        anyOf: [ "SERVICE" ]
-      - attribute: cluster.name
+        anyOf: [ "KafkaProducerSample" ]
+      - attribute: integrationName
+        anyOf: [ "com.newrelic.kafka" ]
+      - attribute: clusterName
         present: true
       - attribute: topic
         present: true
@@ -121,30 +118,27 @@ relationships:
       relationshipType: PRODUCES
       source:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
       target:
         lookupGuid:
           candidateCategory: KAFKATOPIC
           fields:
             - field: clusterName
-              attribute: cluster.name
+              attribute: clusterName
             - field: topic
               attribute: topic
-  
-  - name: apmConsumesOtelKafkaTopic
+
+  - name: apmConsumesKafkaTopic
     version: "1"
     origins:
-      - OpenTelemetry
+      - Infrastructure Agent
+      - OnHost Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: metricName
-        startsWith: "kafka.consumer"
-      - attribute: entity.type
-        anyOf: [ "SERVICE" ]
-      - attribute: cluster.name
+        anyOf: [ "KafkaConsumerSample" ]
+      - attribute: integrationName
+        anyOf: [ "com.newrelic.kafka" ]
+      - attribute: clusterName
         present: true
       - attribute: topic
         present: true
@@ -153,12 +147,12 @@ relationships:
       relationshipType: CONSUMES
       source:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
       target:
         lookupGuid:
           candidateCategory: KAFKATOPIC
           fields:
             - field: clusterName
-              attribute: cluster.name
+              attribute: clusterName
             - field: topic
               attribute: topic

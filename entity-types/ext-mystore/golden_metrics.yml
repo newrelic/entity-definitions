@@ -1,30 +1,18 @@
-frontCounterOnline:
-  title: "Front counter online"
-  unit: COUNT
+freeSpaceMB:
+  title: Free Space (MB)
+  unit: BYTES
   queries:
     newRelic:
-      select: uniqueCount(entity.guid)
-      from: XMLRPC
-      where: "WayState = 'OPEN' AND device.type = 'FC' AND WayBusinessDay = WaySystemDate AND online = '1'"
-      eventId: store.number
-  displayAsValue: false
-driveThruOnline:
-  title: "Drive Thru Online"
-  unit: COUNT
+      select: average(FreeSpaceMB)
+      from: MyStore_FileSize_SQL
+      where: FileName = 'SDM'
+      facet: market,store.number
+currentSizeMB:
+  title: Current Size (MB)
+  unit: BYTES
   queries:
     newRelic:
-      select: uniqueCount(entity.guid)
-      from: XMLRPC
-      where: "WayState = 'OPEN' AND device.type = 'DT' AND WayBusinessDay = WaySystemDate AND online = '1'"
-      eventId: store.number
-  displayAsValue: false
-deliveryOnline:
-  title: "Delivery Online"
-  unit: COUNT
-  queries:
-    newRelic:
-      select: uniqueCount(entity.guid)
-      from: XMLRPC
-      where: "WayState = 'OPEN' AND device.type = 'DLV' AND WayBusinessDay = WaySystemDate AND online = '1'"
-      eventId: store.number
-  displayAsValue: false
+      select: average(CurrentSizeMB)
+      from: MyStore_FileSize_SQL
+      where: FileName = 'SDM'
+      facet: market,store.number

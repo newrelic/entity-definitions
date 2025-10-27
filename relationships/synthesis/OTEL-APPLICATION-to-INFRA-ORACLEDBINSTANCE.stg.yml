@@ -1,0 +1,27 @@
+relationships:
+  # Modern OpenTelemetry APM metrics for Oracle datastore operations
+  - name: apmApplicationCallsOracleDbFromMetrics
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: ["oracle"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: ORACLEDBINSTANCE
+          fields:
+            - field: hostName
+              attribute: server.address:server.port
