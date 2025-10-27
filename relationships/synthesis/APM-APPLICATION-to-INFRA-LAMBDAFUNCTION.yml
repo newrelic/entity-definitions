@@ -1,6 +1,13 @@
 relationships:
   - name: apmCallsLambdafunction
     version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - advanced_maps_ccu
+        - advanced_maps_discount_usage
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
     origins:
       - Distributed Tracing
     conditions:
@@ -22,3 +29,32 @@ relationships:
           fields:
             - field: awsLambdaArn
               attribute: cloud.resource_id
+
+  - name: awsLambdaFunctionHOSTSApm
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - advanced_maps_ccu
+        - advanced_maps_discount_usage
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: aws.lambda.arn
+        regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAFUNCTION
+          fields:
+            - field: awsLambdaArn
+              attribute: aws.lambda.arn
+      target:
+        extractGuid:
+          attribute: entity.guid

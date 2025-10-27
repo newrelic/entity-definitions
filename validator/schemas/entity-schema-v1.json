@@ -76,6 +76,11 @@
           "required": [
             "rules"
           ]
+        },
+        {
+          "required": [
+            "disabled"
+          ]
         }
       ],
       "properties": {
@@ -191,53 +196,52 @@
                 ],
                 "items": {
                   "$id": "#/properties/conditions/items",
-                  "oneOf": [{
-                    "$id": "#/properties/conditions/items/anyOf/0",
-                    "type": "object",
-                    "description": "Match attribute and its value or prefix (if requested)",
-                    "examples": [{
-                      "attribute": "attributeName",
-                      "value": "value"
-                    }],
-                    "required": [
-                      "attribute"
-                    ],
-                    "properties": {
-                      "attribute": {
-                        "$id": "#/properties/conditions/items/anyOf/0/properties/attribute",
-                        "type": "string",
-                        "title": "The attribute name",
-                        "examples": [
-                          "attributeName"
-                        ]
-                      },
-                      "value": {
-                        "$id": "#/properties/conditions/items/anyOf/0/properties/value",
-                        "type": "string",
-                        "title": "The expected value",
-                        "examples": [
-                          "value"
-                        ]
-                      },
-                      "prefix": {
-                        "$id": "#/properties/conditions/items/anyOf/0/properties/prefix",
-                        "type": "string",
-                        "title": "The expected prefix",
-                        "examples": [
-                          "value"
-                        ]
-                      },
-                      "present": {
-                        "$id": "#/properties/conditions/items/anyOf/0/properties/present",
-                        "type": "boolean",
-                        "title": "If the attribute should be present or absent",
-                        "examples": [
-                          true,
-                          false
-                        ]
-                      }
+                  "type": "object",
+                  "description": "A condition that can either be an attribute check on its own, or include a specific value/prefix/presence check.",
+                  "properties": {
+                    "attribute": {
+                      "type": "string",
+                      "description": "The name of the attribute to check."
+                    },
+                    "value": {
+                      "type": "string",
+                      "description": "Checks for an exact match of the attribute's value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Checks if the attribute's value starts with this prefix."
+                    },
+                    "present": {
+                      "type": "boolean",
+                      "description": "Checks if the attribute is present (true) or absent (false)."
                     }
-                  }]
+                  },
+                  "allOf": [
+                    {
+                      "required": [ "attribute" ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "oneOf": [
+                            { "required": ["value"] },
+                            { "required": ["prefix"] },
+                            { "required": ["present"] }
+                          ]
+                        },
+                        {
+                          "not": {
+                            "anyOf": [
+                              { "required": ["value"] },
+                              { "required": ["prefix"] },
+                              { "required": ["present"] }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "additionalProperties": false
                 }
               },
               "tags": {
@@ -338,6 +342,13 @@
         "tags": {
           "$ref": "#/synthesis/rules/items/tags"
         },
+        "disabled": {
+          "$id": "#/synthesis/disabled",
+          "type": "boolean",
+          "title": "Disabled rules",
+          "description": "When true synthesis rules for this type are not allowed.",
+          "default": false
+        },
         "additionalProperties": false
       },
       "additionalProperties": false
@@ -356,11 +367,12 @@
           "template": {
             "$id": "#/properties/query/dashboardTemplates/template",
             "type": "string",
-            "pattern": "^[0-9a-zA-Z_-]*dashboard.json$",
+            "pattern": "^[0-9a-zA-Z_-]*dashboard(\\.stg)?\\.json$",
             "description": "The file where the dashboard is located.",
             "examples": [
               [
-                "prometheus_dashboard.json"
+                "prometheus_dashboard.json",
+                "prometheus_dashboard.stg.json"
               ]
             ]
           },
@@ -409,6 +421,61 @@
           "$id": "#/properties/configuration/properties/alertable",
           "type": "boolean",
           "description": "Defines whether the entity type should have an alert severity field associated"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ownership": {
+      "$id": "#/ownership",
+      "type": "object",
+      "title": "Ownership information",
+      "required": [
+        "primaryOwner"
+      ],
+      "properties": {
+        "primaryOwner": {
+          "$id": "#/ownership/primaryOwner",
+          "type": "object",
+          "required": [
+            "teamName"
+          ],
+          "title": "Primary owner information",
+          "properties": {
+            "teamName": {
+              "$id": "#/ownership/primaryOwner/teamName",
+              "type": "string",
+              "minLength": 1,
+              "title": "Team name",
+              "examples": [
+                "Infra Data Platform"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "secondaryOwners": {
+          "$id": "#/ownership/secondaryOwners",
+          "type": "array",
+          "title": "Secondary owners information",
+          "items": {
+            "$id": "#/ownership/secondaryOwners/items",
+            "type": "object",
+            "required": [
+              "teamName"
+            ],
+            "properties": {
+              "teamName": {
+                "$id": "#/ownership/secondaryOwners/items/teamName",
+                "type": "string",
+                "minLength": 1,
+                "title": "Team name",
+                "examples": [
+                  "K8s Services"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

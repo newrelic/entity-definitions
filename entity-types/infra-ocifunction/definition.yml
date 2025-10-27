@@ -1,0 +1,42 @@
+domain: INFRA
+type: OCIFUNCTION
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.availabilityDomain
+- oci.shape
+- oci.lifecycleState
+- oci.displayName
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  - identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.fnfunc"
+    - attribute: oci.namespace
+      value: "oci_faas"
+  # Synthesis out of logs. Ref: https://docs.oracle.com/en-us/iaas/Content/Logging/Reference/details_for_functions.htm
+  - identifier: data.functionId
+    name: subject
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      prefix: Log
+    - attribute: data.functionId
+      prefix: ocid1.fnfunc.
+    - attribute: type
+      prefix: com.oraclecloud.functions.application.
+

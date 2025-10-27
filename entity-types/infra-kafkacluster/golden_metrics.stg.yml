@@ -1,0 +1,62 @@
+brokerCount:
+  title: Brokers
+  unit: COUNT
+  displayAsValue: true
+  queries:
+    newRelic:
+      select: latest(cluster.activeBrokerCount)
+      from: KafkaClusterSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(kafka.brokers)
+      from: Metric
+      where: metricName='kafka.brokers'
+      eventId: entity.guid
+
+partitionCount:
+  title: Partitions
+  unit: COUNT
+  displayAsValue: true
+  queries:
+    newRelic:
+      select: latest(cluster.globalPartitionCount)
+      from: KafkaClusterSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(kafka.partition.count)
+      from: Metric
+      where: metricName='kafka.partition.count'
+      eventId: entity.guid
+
+offlinePartitions:
+  title: Offline Partitions
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(cluster.offlinePartitionsCount)
+      from: KafkaClusterSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(kafka.partition.offline)
+      from: Metric
+      where: metricName='kafka.partition.offline'
+      eventId: entity.guid
+
+consumerGroups:
+  title: Consumer Groups
+  unit: COUNT
+  displayAsValue: true
+  queries:
+#    newRelic:
+#      select: latest(cluster.numGroups)
+#      from: KafkaClusterSample
+#      eventId: entityGuid
+#      eventName: entityName
+    opentelemetry:
+      select: uniqueCount(group)
+      from: Metric
+      where: metricName='kafka.consumer_group.members'
+      eventId: entity.guid

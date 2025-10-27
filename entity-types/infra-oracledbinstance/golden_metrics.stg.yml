@@ -1,0 +1,92 @@
+hostCpuUtilization:
+  title: Host CPU utilization
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(db.hostCpuUtilization)
+      from: OracleDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(newrelicoracledb.system.host_cpu_utilization)
+      from: Metric
+databaseCpuTimeRatio:
+  title: Database CPU Time Ratio
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.system.database_cpu_time_ratio)
+      from: Metric
+responseTimePerTransaction:
+  title: Latency Metric
+  unit: MS
+  queries:
+    newRelic:
+      select: average(newrelicoracledb.system.response_time_per_transaction)
+      from: Metric
+      where: metricName = 'newrelicoracledb.system.response_time_per_transaction'
+ioMegabytesPerSecond:
+  title: IO megabytes per second
+  unit: BYTES_PER_SECOND
+  queries:
+    newRelic:
+      select: average(network.ioMegabytesPerSecond)
+      from: OracleDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(newrelicoracledb.system.io_megabytes_per_second)
+      from: Metric
+sessions:
+  title: Sessions
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(db.sessionCount)
+      from: OracleDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(newrelicoracledb.sessions.count)
+      from: Metric  
+executionsPerSecond:
+  title: Executions per second (Queries/s)
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(db.executionsPerSecond)
+      from: OracleDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(newrelicoracledb.system.executions_per_second)
+      from: Metric
+      where: metricName = 'newrelicoracledb.system.executions_per_second'
+bufferCacheEfficiency:
+  title: Buffer cache efficiency
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.system.buffer_cache_hit_ratio)
+      from: Metric
+tableSpaceUtilization:
+  title: Tablespace utilization
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.tablespace.used_percent)
+      from: Metric
+deadlockDetection:
+  title: Deadlock detection
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(newrelicoracledb.system.enqueue_deadlocks_per_second)
+      from: Metric
+memoryUsagePerSession:
+  title: Memory usage per session
+  unit: BYTES
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.connection.session_pga_memory)
+      from: Metric

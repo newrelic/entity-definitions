@@ -1,0 +1,145 @@
+{
+    "name": "RabbitMQ Node Metrics (OpenTelemetry)",
+    "pages": [
+        {
+            "name": "RabbitMQ Node Metrics",
+            "widgets": [
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 1,
+                        "row": 1,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Memory Usage",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.mem_used) AS 'Memory Used', latest(rabbitmq.node.mem_limit) AS 'Memory Limit' WHERE metricName LIKE 'rabbitmq.node.mem_%' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 5,
+                        "row": 1,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Disk Space",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.disk_free) AS 'Disk Free', latest(rabbitmq.node.disk_free_limit) AS 'Disk Free Limit' WHERE metricName LIKE 'rabbitmq.node.disk_free%' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 9,
+                        "row": 1,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "File Descriptors",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.fd_used) AS 'FD Used', latest(rabbitmq.node.fd_total) AS 'FD Total' WHERE metricName LIKE 'rabbitmq.node.fd_%' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.billboard"
+                    },
+                    "layout": {
+                        "column": 1,
+                        "row": 4,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Alarms Status",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.mem_alarm) AS 'Memory Alarm', latest(rabbitmq.node.disk_free_alarm) AS 'Disk Alarm' WHERE metricName LIKE 'rabbitmq.node.%_alarm' AND instrumentation.provider = 'opentelemetry'",
+                                "accountId": 0}
+                        ],
+                        "thresholds": [
+                            {
+                                "alertSeverity": "CRITICAL",
+                                "value": 1
+                            }
+                        ]
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 5,
+                        "row": 4,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Erlang Processes",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.proc_used) AS 'Processes Used', latest(rabbitmq.node.proc_total) AS 'Processes Total' WHERE metricName LIKE 'rabbitmq.node.proc_%' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 9,
+                        "row": 4,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Sockets",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.sockets_used) AS 'Sockets Used', latest(rabbitmq.node.sockets_total) AS 'Sockets Total' WHERE metricName LIKE 'rabbitmq.node.sockets_%' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+domain: INFRA
+type: OCIKUBERNETES
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.availabilityDomain
+- oci.kubernetesVersion
+- oci.lifecycleState
+- oci.shape
+- oci.name
+- oci.type
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  - identifier: oci.clusterId
+    name: oci.resourceDisplayName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.clusterId
+      prefix: "ocid1.cluster"
+    - attribute: oci.namespace
+      value: "oci_oke"

@@ -1,5 +1,8 @@
 const utils = require('./utils');
 const isEqual = require('is-equal');
+const {DEFINITION_FILE_NAME_STG, DEFINITION_FILE_NAME, DEFINITIONS_DIR} = require("./props");
+const path = require("path");
+const {promises: fs} = require("fs");
 
 let ENTITY;
 
@@ -64,11 +67,22 @@ function buildKey (compositeIdentifier) {
   return compositeIdentifier.attributes.join(compositeIdentifier.separator);
 }
 
+async function checkDashboardExists (domain, type, dashboardFile) {
+  const defPath = path.resolve(DEFINITIONS_DIR, `${domain}-${type}`.toLowerCase(), dashboardFile);
+  return await fs.access(defPath, fs.constants.F_OK | fs.constants.W_OK)
+    .then(() => true)
+    .catch(() => false);
+}
+
 const RULES = [
   {
     name: 'Entities with the same identifier and conditions must have the same domain and type',
-    apply: def => {
+    apply: (def, _) => {
       if ('synthesis' in def) {
+        if (def.synthesis.disabled === true) {
+          return;
+        }
+
         if (def.synthesis.rules !== undefined) {
           def.synthesis.rules.forEach((rule) => {
             const identifier = rule.identifier;
@@ -89,7 +103,7 @@ const RULES = [
   },
   {
     name: 'Summary metrics for this type are not allowed',
-    apply: def => {
+    apply: (def, _) => {
       const notAllowed = [
         // Types with not exposed functionality.
         'INFRA-AZUREVIRTUALNETWORKSPUBLICIPADDRESS',
@@ -122,7 +136,7 @@ const RULES = [
   },
   {
     name: 'Golden metrics & tags for this type are not allowed',
-    apply: def => {
+    apply: (def, _) => {
       const notAllowed = [
         // Types with not exposed functionality.
         'INFRA-KUBERNETESCLUSTER'
@@ -136,15 +150,70 @@ const RULES = [
         throw new Error(`We don't allow custom golden metrics & tags for ${domainType}. Please open an issue if you want to change this type.`);
       }
     }
+  },
+  {
+    name: 'Non override definitions cannot reference override file',
+    apply: (def, isProd) => {
+      if (!isProd) {
+        return;
+      }
+      const domainType = def.domain + '-' + def.type;
+
+      if (!('dashboardTemplates' in def)) {
+        return;
+      }
+
+      for (const entry in def.dashboardTemplates) {
+        const template = def.dashboardTemplates[entry].template;
+        if (template.includes('.stg.')) {
+          throw new Error(`Non override definition ${domainType} cannot reference override dashboard file (${template}).`);
+        }
+      }
+    }
+  },
+  {
+    name: 'Definition file references must exist',
+    apply: (def, _) => {
+      const domainType = def.domain + '-' + def.type;
+
+      if (!('dashboardTemplates' in def)) {
+        return;
+      }
+
+      for (const entry in def.dashboardTemplates) {
+        const template = def.dashboardTemplates[entry].template;
+        checkDashboardExists(def.domain, def.type, template)
+          .then((exists) => {
+            if (!exists) {
+              throw new Error(`The dashboard file '${template}' referenced in '${domainType}' does not exist.`);
+            }
+          });
+      }
+    }
+  },
+  {
+    name: 'UNINSTRUMENTED entities must not use synthesis',
+    apply: (def, _) => {
+      synthesisBlock = def.synthesis || {}
+
+      if (def.domain === 'UNINSTRUMENTED' &&
+        (synthesisBlock.disabled !== true ||
+        synthesisBlock.name !== undefined ||
+        synthesisBlock.rules !== undefined)
+      ) {
+        throw new Error(`Synthesis rules is not allowed for UNINSTRUMENTED types.`)
+      }
+
+    }
   }
 ];
 
 RULES.forEach(rule => {
   ENTITY = new Map();
   utils.getAllDefinitions().then(
-    definitions => definitions.forEach(definition => {
+    definitions => definitions.forEach((definition, filename) => {
       try {
-        rule.apply(definition);
+        rule.apply(definition, !filename.includes(DEFINITION_FILE_NAME_STG));
       } catch (errorMessage) {
         console.error(`Definition for ${definition.domain}-${definition.type} violates rule "${rule.name}":`);
         console.error(errorMessage);

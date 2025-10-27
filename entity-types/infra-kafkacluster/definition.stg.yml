@@ -1,0 +1,60 @@
+domain: INFRA
+type: KAFKACLUSTER
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+    # This rule is for OTEL kafka cluster metrics
+  - identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: kafka.broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: metricName
+        prefix: kafka.
+    tags:
+      # Environment resource attributes
+      host.name:
+        entityTagName: hostName
+      instrumentation.provider:
+      kafka.cluster.name:
+        entityTagName: clusterName
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # This rule is for native kafka cluster metrics
+  - identifier: clusterName
+    name: displayName
+    encodeIdentifierInGUID: true
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+      - attribute: event_type
+        value: "KafkaClusterSample"
+    tags:
+      # Cluster information
+      clusterName:
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.stg.json
+  # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+goldenTags:
+- clusterName
+- hostName

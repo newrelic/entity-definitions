@@ -42,18 +42,56 @@ Whenever there's a contribution via pull request, some validations are automatic
 * The *identifier* cannot be extracted from an attribute with the same name for two different Domain-Types, unless conditions are set to differentiate them, so that the conditions from one entity are not a superset of the other.
 
 You can execute the validations locally using our dockerized validator:
-
 ```
-docker-compose run validate-definitions
+docker compose run validate-definitions
 ```
 
 Remember that you may need to rebuild the images to pick up validation changes if you have run this in the past.
 
 ```
-docker-compose build validate-definitions
+docker compose build validate-definitions
 ```
 
 Read more about the [current validations](/validator/README.md).
+
+## Deploying to Staging
+
+It is possible to perform staging-only changes via file overrides. If you need some changes only to be applied in staging
+temporarily, follow these steps:
+1. Duplicate file to override (e.g. `definition.yml`) and add `.stg` to extension (e.g. `definition.stg.yml`)
+2. Perform changes to `.stg` file
+3. When deploying, `.stg` file will replace original in STG while original will be used for PRODUCTION
+
+Overrides can be applied to all files within `entity-types` and `relationships` directories. Override files live next to originals.
+
+Note that it is still required original file remains untouched so that PRODUCTION deployment is not impacted. Once
+testing in STG is ended, original file can be deleted and `.stg` suffix can be removed to promote it to PRODUCTION.
+
+When testing file deletions, it is needed to duplicate file with `.stg` and leave it empty. Example:
+
+`APM-APPLICATION-to-INFRA-HOST.stg.yml`
+
+```
+relationships: []
+```
+
+It is also possible to test new definitions by adding `.stg` suffix to its files so that they are only deployed in Staging.
+
+> [!CAUTION]
+> Please note while `.stg` files can reference regular files, it cannot happen vice versa. For example, `defintion.stg.yml`
+> can reference `dashboard.json` but `definition.yml` **should not** reference any `.stg` file.
+
+Required validation steps:
+1. Ensure no file references are broken by override
+2. Verify override rule identifiers are different from originals (e.g. mySuperRule -> mySuperRuleStgOverride)
+3. If override changes file enough, you might need to consider adding a new definition / rule
+
+> [!NOTE]  
+> Testing in STG requests will be approved along with an ETA to be released to PRODUCTION. Support to persistent
+> staging-only changes will not be provided or considered
+
+#### How to keep track of override changes
+At any point of time, diff between `.stg` and original file can be done to find what is being overwritten.
 
 ## Testing
 

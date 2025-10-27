@@ -1,0 +1,55 @@
+relationships:
+  # Pattern 1: Legacy Datastore/instance pattern (for older APM agents)
+  - name: apmApplicationCallsInfraMongodbInstance
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "datastore/instance/MongoDB/$host/$port" or "Datastore/instance/MongoDB/$host/$port"
+        regex: "^[Dd]atastore/instance/[Mm]ongo[Dd][Bb]/[^/]+/[0-9]+"
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MONGODB_INSTANCE
+          identifier:
+            fragments:
+              - attribute: metricName__4 # hostname
+            hashAlgorithm: FARM_HASH
+
+  # Pattern 2: Modern APM dimensional metrics for MongoDB datastore operations
+  - name: apmApplicationCallsMongodbFromDimensionalMetrics
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        anyOf: ["apm.service.datastore.operation.duration"]
+    relationship:
+      expires: P75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: MONGODB_INSTANCE
+          identifier:
+            fragments:
+              - attribute: host # Uses MongoDB server hostname: "pk-nri-kafka"
+            hashAlgorithm: FARM_HASH
