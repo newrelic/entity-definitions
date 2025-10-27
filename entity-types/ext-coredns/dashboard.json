@@ -3,7 +3,7 @@
   "description": null,
   "pages": [
     {
-      "name": "Heath and requests",
+      "name": "Health and requests",
       "description": null,
       "widgets": [
         {
@@ -71,7 +71,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(coredns_dns_responses_total) as `Requests by instance` facet instance"
+                "query": "FROM Metric SELECT sum(coredns_dns_responses_total) as `Requests`"
               }
             ]
           }
@@ -141,7 +141,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(coredns_forward_requests_total), 1 second)  TIMESERIES "
+                "query": "FROM Metric SELECT rate(sum(coredns_proxy_request_duration_seconds_count), 1 second) FACET to WHERE proxy_name='forward' TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -243,7 +243,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT histogrampercentile(coredns_forward_request_duration_seconds_bucket, (100 * 0.99), (100 * 0.5)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET to LIMIT 100 TIMESERIES 300000 SLIDE BY 10000"
+                "query": "SELECT histogrampercentile(coredns_proxy_request_duration_seconds_bucket, (100 * 0.99), (100 * 0.5)) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET to, rcode LIMIT 100 WHERE proxy_name='forward' TIMESERIES 300000 SLIDE BY 10000"
               }
             ],
             "yAxisLeft": {
@@ -401,24 +401,9 @@
           }
         },
         {
-          "title": "",
-          "layout": {
-            "column": 1,
-            "row": 19,
-            "width": 6,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "## Understanding CoreDNS `rcode`\nThese should predominantly be `NOERROR`, other codes could indicate a poorly performing system. The possible response codes for CoreDNS Prometheus monitoring can be found [here](https://github.com/miekg/dns/blob/af5144a5ca498e2cfee14264e31371d8af111709/msg.go#L137-L159)."
-          }
-        },
-        {
           "title": "Response codes",
           "layout": {
-            "column": 7,
+            "column": 1,
             "row": 19,
             "width": 6,
             "height": 3
