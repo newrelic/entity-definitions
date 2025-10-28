@@ -1,0 +1,38 @@
+requestsPerMin:
+  title: Requests per Minute
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    oci:
+      select: rate(sum(oci.lbaas.http.requests), 1 minute)
+      from: Metric
+      facet: oci.lbComponent
+      eventId: entity.guid
+      eventName: entity.name
+latency:
+  title: Average Response Time
+  unit: MS
+  queries:
+    oci:
+      select: average(oci.lbaas.response.time.http.header)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+errorRate:
+  title: Error Rate
+  unit: PERCENTAGE
+  queries:
+    oci:
+      select: (sum(`oci.lbaas.http.responses.4xx`) + sum(`oci.lbaas.http.responses.5xx`)) / sum(`oci.lbaas.http.responses`) * 100
+      from: Metric
+      facet: oci.lbComponent
+      eventId: entity.guid
+      eventName: entity.name
+unhealthyHosts:
+  title: Unhealthy Hosts
+  unit: COUNT
+  queries:
+    oci:
+      select: sum(oci.lbaas.unhealthy.backend.servers)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name

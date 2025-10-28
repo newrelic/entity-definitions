@@ -1,0 +1,85 @@
+totalMemoryUsedInBytes:
+  title: Total memory used (bytes)
+  units: BYTES
+  queries:
+    newRelic:
+      select: latest(node.totalMemoryUsedInBytes)
+      from: RabbitmqNodeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(rabbitmq.node.mem_used)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+diskSpaceFreeInBytes:
+  title: Disk space free (bytes)
+  units: BYTES
+  queries:
+    newRelic:
+      select: latest(node.diskSpaceFreeInBytes)
+      from: RabbitmqNodeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(rabbitmq.node.disk_free)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+fileDescriptorsTotalUsed:
+  title: File descriptors total used
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(node.fileDescriptorsTotalUsed)
+      from: RabbitmqNodeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(rabbitmq.node.fd_used)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+erlangProcessesUsed:
+  title: Erlang processes used
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(node.averageErlangProcessesWaiting)
+      from: RabbitmqNodeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(rabbitmq.node.proc_used)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+memoryAlarm:
+  title: Memory alarm status
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(rabbitmq.node.mem_alarm)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+diskAlarm:
+  title: Disk alarm status
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(rabbitmq.node.disk_free_alarm)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name

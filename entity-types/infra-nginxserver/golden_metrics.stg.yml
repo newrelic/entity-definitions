@@ -1,0 +1,62 @@
+requests:
+  title: Requests per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(net.requestsPerSecond)
+      from: NginxSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(`nginx.requests` OR `nginxplus_http_requests_total`) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND ((metricName = 'nginx.requests' AND nginxplus_http_requests_total is NULL) OR (metricName = 'nginxplus_http_requests_total' AND nginx.requests is NULL))
+      eventId: entity.guid
+      eventName: entity.name
+
+activeConnections:
+  title: Active Connections
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(net.connectionsActive)
+      from: NginxSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(`nginx.connections_current` OR `nginxplus_connections_active`)
+      from: Metric
+      where: ((nginxplus_connections_active IS NULL AND state = 'active' AND metricName = 'nginx.connections_current') OR (nginx.connections_current is NULL AND metricName = 'nginxplus_connections_active')) AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+connectionsAccepted:
+  title: Connections Accepted per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(net.connectionsAcceptedPerSecond)
+      from: NginxSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(`nginx.connections_accepted` OR `nginxplus_connections_accepted`) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: ((nginxplus_connections_accepted is NULL AND metricName = 'nginx.connections_accepted') OR (nginx.connections_accepted is NULL AND metricName = 'nginxplus_connections_accepted')) AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+connectionsDropped:
+  title: Connections Dropped per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(net.connectionsDroppedPerSecond)
+      from: NginxSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: ((sum(`nginx.connections_accepted`) - sum(`nginx.connections_handled`)) OR sum(`nginxplus_connections_dropped`)) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND ((nginxplus_connections_dropped is NULL AND metricName = 'nginx.connections_accepted' OR metricName = 'nginx.connections_handled') OR (metricName = 'nginxplus_connections_dropped' AND nginx.connections_accepted is NULL AND nginx.connections_handled is NULL))
+      eventName: entity.name

@@ -1,0 +1,48 @@
+domain: INFRA
+type: ELASTICSEARCHCLUSTER
+
+goldenTags:
+- elasticsearch.cluster.name
+- host.name
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+  - identifier: elasticsearch.cluster.name
+    name: elasticsearch.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: elasticsearch.cluster.name
+      present: true
+    tags:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      # elasticsearch.node.names:
+      #   entityTagName: contains.elasticsearchnode  # This tag enables the relationship  
+
+  # Data from Elastic search integation OHI
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - entityKey
+        - fullHostname
+    name: entityKey
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: event_type
+      value: ElasticsearchClusterSample
+    - attribute: agentName
+      value: Infrastructure
+    - attribute: fullHostname
+      present: true
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json

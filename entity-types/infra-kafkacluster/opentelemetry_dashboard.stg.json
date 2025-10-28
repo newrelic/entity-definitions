@@ -1,0 +1,212 @@
+{
+  "name": "OTEL Kafka Cluster",
+  "description": "Performance and health metrics for Kafka Cluster",
+  "pages": [
+    {
+      "name": "Cluster Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Brokers",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.brokers) as 'Brokers' FROM Metric WHERE metricName='kafka.brokers'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Partition Count",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.partition.count) AS 'Partition Count' FROM Metric WHERE metricName='kafka.partition.count'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Offline Partitions",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`kafka.partition.offline`) AS 'Offline Partitions'  FROM Metric WHERE metricName='kafka.partition.offline'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Consumer Groups",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 2,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(group) as 'Consumer Groups' FROM Metric WHERE metricName='kafka.consumer_group.members'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Consumer Group Members Count",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.consumer_group.members) AS 'Count' FROM Metric WHERE metricName = 'kafka.consumer_group.members' FACET group"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Under Replicated Partitions",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.partition.under_replicated) AS 'Under Replicated Partitions' FROM Metric WHERE metricName='kafka.partition.under_replicated' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "In-Sync Replica Operations (per min)",
+          "layout": {
+            "column": 5,
+            "row": 3,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.isr.operation.count), 1 minute) AS 'ISR Operations' FROM Metric WHERE metricName = 'kafka.isr.operation.count' TIMESERIES AUTO FACET operation"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Leader Elections Rate (per min)",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.leader.election.rate), 1 minute) AS 'Leader Elections' FROM Metric WHERE metricName = 'kafka.leader.election.rate' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Unclean Leader Elections Rate (per min)",
+          "layout": {
+            "column": 5,
+            "row": 6,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.unclean.election.rate), 1 minute) AS 'Unclean Leader Elections/min' FROM Metric WHERE metricName = 'kafka.unclean.election.rate' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Max Replica Lag (Messages)",
+          "layout": {
+            "column": 9,
+            "row": 6,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.max.lag) as 'Messages' FROM Metric WHERE metricName = 'kafka.max.lag' TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

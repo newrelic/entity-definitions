@@ -1,0 +1,39 @@
+domain: INFRA
+type: ORACLEDBINSTANCE
+synthesis:
+  rules:
+    - identifier: host.name # server.address:server.port
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: newrelicoracledb.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This handles both library name formats for backward compatibility
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        db.version.full:
+          entityTagName: database.version
+        deployment.environment:
+          entityTagName: environment
+        host.address:
+          entityTagName: host.address
+        host.port:
+          entityTagName: host.port
+goldenTags: []
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json

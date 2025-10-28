@@ -18,7 +18,7 @@
             "id": "viz.markdown"
           },
           "rawConfiguration": {
-            "text": "![ArgoCD Logo](https://avatars1.githubusercontent.com/u/30269780?s=110&v=4)\n\n# ArgoCD\n\n\nFilter dashboard by `clusterName='<cluster_name>'`."
+            "text": "![ArgoCD Logo](https://avatars1.githubusercontent.com/u/30269780?s=110&v=4)\n\n# ArgoCD\n\n\n"
           }
         },
         {
@@ -37,7 +37,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count('apps') as 'Apps' FROM (SELECT latest(argocd_app_info) AS 'apps' FROM Metric FACET name, clusterName LIMIT MAX)"
+                "query": "SELECT uniqueCount(name) AS 'Apps' FROM Metric WHERE metricName='argocd_app_info'"
               }
             ],
             "thresholds": []
@@ -59,14 +59,14 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count('repos') as 'Repos' FROM (SELECT latest(argocd_app_info) AS 'repos' FROM Metric FACET repo, clusterName LIMIT MAX) "
+                "query": "SELECT uniqueCount(repo) AS 'Repos' FROM Metric WHERE metricName='argocd_app_info'"
               }
             ],
             "thresholds": []
           }
         },
         {
-          "title": "Applications Top 10",
+          "title": "Applications top 10",
           "layout": {
             "column": 7,
             "row": 1,
@@ -86,7 +86,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric  SINCE 60 MINUTES AGO UNTIL NOW FACET name LIMIT 10 TIMESERIES "
+                "query": "SELECT max(argocd_app_info) FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET name LIMIT 10 TIMESERIES "
               }
             ],
             "yAxisLeft": {
@@ -115,7 +115,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (latest(argocd_app_info)) FROM Metric Facet operation Where operation != '' LIMIT MAX TIMESERIES "
+                "query": "SELECT (max(argocd_app_info)) FROM Metric FACET operation WHERE operation != '' LIMIT MAX TIMESERIES "
               }
             ],
             "yAxisLeft": {
@@ -144,7 +144,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (average(argocd_kubectl_exec_pending) * cardinality(argocd_kubectl_exec_pending)) FROM Metric  FACET command LIMIT MAX TIMESERIES"
+                "query": "SELECT max(argocd_kubectl_exec_pending) FROM Metric FACET command LIMIT MAX TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -168,7 +168,7 @@
           }
         },
         {
-          "title": "Health Status",
+          "title": "Health status",
           "layout": {
             "column": 3,
             "row": 7,
@@ -188,7 +188,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric WHERE NOT (health_status = '') FACET health_status LIMIT MAX TIMESERIES "
+                "query": "SELECT (uniqueCount(name)) FROM Metric WHERE health_status != '' FACET health_status LIMIT MAX TIMESERIES "
               }
             ],
             "yAxisLeft": {
@@ -197,7 +197,7 @@
           }
         },
         {
-          "title": "Sync Status",
+          "title": "Sync status",
           "layout": {
             "column": 8,
             "row": 7,
@@ -217,7 +217,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (average(argocd_app_info) * cardinality(argocd_app_info)) FROM Metric WHERE NOT (health_status = '') SINCE 60 MINUTES AGO UNTIL NOW FACET sync_status LIMIT MAX TIMESERIES"
+                "query": "SELECT uniqueCount(name) FROM Metric WHERE metricName='argocd_app_info' FACET sync_status LIMIT MAX TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -241,7 +241,7 @@
           }
         },
         {
-          "title": "Sync Activity",
+          "title": "Sync activity",
           "layout": {
             "column": 3,
             "row": 10,
@@ -261,7 +261,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (sum(round(`Sync Total`)) * cardinality(round(`Sync Total`))) FROM (SELECT sum(argocd_app_sync_total) AS `Sync Total` FROM Metric  FACET dimensions() LIMIT 100 TIMESERIES ) TIMESERIES SINCE 30 minutes ago UNTIL now"
+                "query": "SELECT max(argocd_app_sync_total) FROM Metric FACET name LIMIT MAX TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -270,7 +270,7 @@
           }
         },
         {
-          "title": "Sync Failures",
+          "title": "Sync failures",
           "layout": {
             "column": 8,
             "row": 10,
@@ -290,7 +290,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (average(round(`__result_1`)) * cardinality(round(`__result_1`))) FROM (SELECT sum(argocd_app_sync_total) AS `__result_0`, sum(argocd_app_sync_total) AS `__result_1` FROM Metric FACET dimensions() LIMIT 100 TIMESERIES where (phase = 'Error' OR phase = 'Failed' ))  FACET name LIMIT 100 TIMESERIES"
+                "query": "SELECT uniqueCount(name) as 'Failures' FROM Metric WHERE metricName='argocd_app_sync_total' AND (phase = 'Error' OR phase = 'Failed') LIMIT 100 TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -314,7 +314,7 @@
           }
         },
         {
-          "title": "Reconciliation Activity",
+          "title": "Reconciliation activity",
           "layout": {
             "column": 3,
             "row": 13,
@@ -334,7 +334,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (average(argocd_app_reconcile_count) * cardinality(argocd_app_reconcile_count)) FROM Metric WHERE  (namespace = 'argocd')  FACET namespace LIMIT 100 TIMESERIES"
+                "query": "SELECT average(argocd_app_reconcile_count) FROM Metric WHERE (namespace = 'argocd') FACET namespace LIMIT 100 TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -343,7 +343,7 @@
           }
         },
         {
-          "title": "Reconciliation Performance",
+          "title": "Reconciliation performance",
           "layout": {
             "column": 8,
             "row": 13,
@@ -357,7 +357,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT histogram(argocd_app_reconcile_bucket) FROM Metric FACET le "
+                "query": "SELECT histogram(argocd_app_reconcile_bucket) FROM Metric FACET le"
               }
             ]
           }
@@ -378,7 +378,7 @@
           }
         },
         {
-          "title": "Git Requests (ls-remote)",
+          "title": "Git requests (ls-remote)",
           "layout": {
             "column": 3,
             "row": 16,
@@ -398,7 +398,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'ls-remote')  FACET request_type LIMIT 100 TIMESERIES"
+                "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'ls-remote') FACET request_type LIMIT 100 TIMESERIES"
               }
             ],
             "yAxisLeft": {
@@ -407,7 +407,7 @@
           }
         },
         {
-          "title": "Git Requests (checkout)",
+          "title": "Git requests (checkout)",
           "layout": {
             "column": 8,
             "row": 16,
@@ -427,7 +427,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'fetch')  FACET request_type LIMIT 100 TIMESERIES "
+                "query": "SELECT sum(argocd_git_request_total) FROM Metric WHERE (request_type = 'fetch') FACET request_type LIMIT 100 TIMESERIES"
               }
             ],
             "yAxisLeft": {
