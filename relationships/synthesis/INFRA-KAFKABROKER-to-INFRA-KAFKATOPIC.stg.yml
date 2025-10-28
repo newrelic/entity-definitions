@@ -70,3 +70,37 @@ relationships:
               - value: ":clustername="
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
+
+  - name: otelKafkaBrokerServesOtelKafkaTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "KAFKATOPIC" ]
+      - attribute: kafka.broker.name
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKABROKER
+          identifier:
+            fragments:
+              - attribute: kafka.broker.name
+              - value: ":"
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
