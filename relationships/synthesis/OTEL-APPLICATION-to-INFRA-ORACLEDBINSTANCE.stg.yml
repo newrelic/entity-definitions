@@ -5,12 +5,14 @@ relationships:
     origins:
       - OpenTelemetry
     conditions:
-      - attribute: metricName
-        anyOf: ["apm.service.datastore.operation.duration"]
+      - attribute: eventType
+        anyOf: [ "Span" ]
       - attribute: db.system
         anyOf: ["oracle"]
-      - attribute: instrumentation.provider
-        anyOf: ["opentelemetry"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
     relationship:
       expires: P75M
       relationshipType: CALLS
@@ -21,5 +23,7 @@ relationships:
         lookupGuid:
           candidateCategory: ORACLEDBINSTANCE
           fields:
-            - field: instrumentation.provider
-              attribute: instrumentation.provider
+            - field: hostAddress
+              attribute: server.address
+            - field: hostPort
+              attribute: server.port
