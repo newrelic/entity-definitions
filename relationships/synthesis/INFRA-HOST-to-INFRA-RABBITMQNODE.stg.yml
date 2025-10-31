@@ -1,0 +1,58 @@
+relationships:
+  # Local scenario: RabbitMQ node running on the same host
+  - name: hostHostsRabbitMQNode
+    version: "1"
+    origins:
+      - Infrastructure Agent
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["RabbitMQNodeSample"]
+      - attribute: nr.entityType
+        anyOf: ["RabbitMQNode","RABBITMQNODE"]
+      - attribute: hostname
+        present: true
+      # Local detection - broker address is localhost
+      - attribute: displayName
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|$)"
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: HOST
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: RABBITMQNODE
+  # Remote scenario: Host monitors remote RabbitMQ node
+  - name: hostMonitorsRabbitMQNode
+    version: "1"
+    origins:
+      - Infrastructure Agent
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["RabbitMQNodeSample"]
+      - attribute: nr.entityType
+        anyOf: ["RabbitMQNode","RABBITMQNODE"]
+      - attribute: hostname
+        present: true
+      - attribute: displayName
+        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: HOST
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: RABBITMQNODE
