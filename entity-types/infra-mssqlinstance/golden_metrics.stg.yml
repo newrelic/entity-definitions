@@ -36,6 +36,9 @@ blockedProcesses:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: max(instance.blockedProcessesCount)
+      from: Metric
 
 # 4. I/O Stall Time 
 ioStallTime:
@@ -62,7 +65,7 @@ transactionsPerSecond:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(sqlserver.database.log.flushesPerSec)
+      select: average(sqlserver.instance.transactions_per_sec)
       from: Metric
 
 # 6. SQL Compilations 
@@ -75,6 +78,9 @@ sqlCompilations:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.stats.sql_compilations_per_sec)
+      from: Metric
 
 # 7. Buffer Cache Hit Ratio 
 bufferCacheHitRatio:
@@ -86,6 +92,9 @@ bufferCacheHitRatio:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.bufferPoolHitPercent)
+      from: Metric
 
 # 8. Memory Utilization 
 memoryUtilization:
@@ -110,11 +119,11 @@ logBytesFlushedPerSec:
       select: average(sqlserver.database.log.bytesFlushesPerSec)
       from: Metric
 
-# 10. Log Space Used 
-logSpaceUsed:
-  title: Log Space Used (MB)
-  unit: BYTES
+# 10. Deadlocks Per Second
+DeadlocksPerSecond:
+  title: Deadlocks Per Second
+  unit: OPERATIONS_PER_SECOND
   queries:
     opentelemetry:
-      select: average(sqlserver.database.log.usedSpaceMB)
+      select: average(sqlserver.stats.deadlocks_per_sec)
       from: Metric
