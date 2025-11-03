@@ -14,12 +14,25 @@ synthesis:
     conditions:
       - attribute: eventType
         value: Metric
-      - attribute: kafka.broker.name
-        present: true
       - attribute: instrumentation.provider
         value: opentelemetry
-      - attribute: otel.library.name
-        value: "io.opentelemetry.contrib.jmxmetrics"
+      - attribute: topic
+        present: false
+      - attribute: kafka.partition.count
+        present: false
+      - attribute: kafka.partition.offline
+        present: false
+      - attribute: kafka.leader.election.rate
+        present: false
+      - attribute: kafka.unclean.election.rate
+        present: false
+      - attribute: kafka.isr.operation.count
+        present: false
+      - attribute: kafka.max.lag
+        present: false
+      - attribute: kafka.partition.under_replicated
+        present: false
+
     tags:
       # Environment resource attributes
       host.name:
@@ -29,7 +42,7 @@ synthesis:
         entityTagName: clusterName
       otel.library.name:
         entityTagName: instrumentation.name
-      kafka.broker.id:
+      broker.id:
         entityTagName: brokerId
 
 dashboardTemplates:
@@ -47,3 +60,7 @@ goldenTags:
 configuration:
   entityExpirationTime: DAILY
   alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"
