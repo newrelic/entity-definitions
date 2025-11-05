@@ -19,4 +19,27 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_POD
-### TODO OTEL? 
+  - name: otelKsmK8sHostHostsPod
+    # use kube-state-metrics system metric
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        prefix: system.
+    relationship:
+      expires: P2H
+      relationshipType: HOST
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KUBERNETES_POD
+          fields:
+            - field: k8s.node.name # node name of host
+              attribute: host.name # node name of pod
+            - field: k8s.namespace.name # namespace of host
+              attribute: k8s.namespace.name # namespace of pod
+            - field: k8s.cluster.name # cluster of host
+              attribute: k8s.cluster.name # cluster of pod
