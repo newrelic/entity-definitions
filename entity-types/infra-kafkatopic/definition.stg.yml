@@ -6,29 +6,79 @@ configuration:
 
 synthesis:
   rules:
-  # This rule is for OTEL contrib jmx kafka receivers metrics
-  - identifier: kafka.topic.name
-    name: kafka.topic.name
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: eventType
-        value: Metric
-      - attribute: topic
-        present: true
-      - attribute: kafka.topic.name
-        present: true
-      - attribute: instrumentation.provider
-        value: opentelemetry
-    tags:
-      # Environment resource attributes
-      host.name:
-        entityTagName: hostName
-      instrumentation.provider:
-      kafka.cluster.name:
-        entityTagName: clusterName
-      otel.library.name:
-        entityTagName: instrumentation.name
-      topic:
+    # This rule is for OTEL contrib jmx kafka receivers metrics
+    - identifier: kafka.topic.name
+      name: kafka.topic.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: topic
+          present: true
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: metricName
+          prefix: kafka.
+        - attribute: otel.library.name
+          value: "io.opentelemetry.contrib.jmxmetrics"
+      tags:
+        # Environment resource attributes
+        host.name:
+          entityTagName: hostName
+        instrumentation.provider:
+        kafka.cluster.name:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        topic:
+
+    # This rule is for OTEL JMX Kafka receivers with custom JMX configuration metrics
+    - identifier: kafka.topic.name
+      name: kafka.topic.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: topic
+          present: true
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "io.opentelemetry.jmx"
+      tags:
+        # Environment resource attributes
+        host.name:
+          entityTagName: hostName
+        instrumentation.provider:
+        kafka.cluster.name:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        topic:
+
+      # This rule is for OTEL kafkametrics receivers metrics
+    - identifier: kafka.topic.name
+      name: kafka.topic.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: topic
+          present: true
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver"
+      tags:
+        # Environment resource attributes
+        host.name:
+          entityTagName: hostName
+        instrumentation.provider:
+        kafka.cluster.name:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        topic:
 
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
@@ -45,4 +95,4 @@ goldenTags:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "OHAI"
