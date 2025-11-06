@@ -1,12 +1,11 @@
 relationships:
-  # Modern OpenTelemetry APM metrics for Oracle datastore operations
   - name: apmApplicationCallsOracleDbFromMetrics
     version: "1"
     origins:
-      - OpenTelemetry
+      - Distributed Tracing
     conditions:
-      - attribute: eventType
-        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: ["api.traces.otlp"]
       - attribute: db.system
         anyOf: ["oracle"]
       - attribute: server.address
@@ -23,5 +22,7 @@ relationships:
         lookupGuid:
           candidateCategory: ORACLEDBINSTANCE
           fields:
-            - field: hostName
-              attribute: server.address:server.port
+            - field: hostAddress
+              attribute: server.address
+            - field: hostPort
+              attribute: server.port
