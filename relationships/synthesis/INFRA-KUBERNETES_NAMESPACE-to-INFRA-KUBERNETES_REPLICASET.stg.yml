@@ -1,11 +1,11 @@
 relationships:
-  - name: k8sClusterContainsPod
+  - name: k8sNamespaceContainsReplicaSet
     version: "1"
     origins:
       - Kubernetes Integration
     conditions: 
       - attribute: eventType
-        anyOf: [ "K8sPodSample" ]
+        anyOf: [ "K8sNamespaceSample" ]
     relationship:
       expires: P75M
       relationshipType: CONTAINS
@@ -16,26 +16,26 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETESCLUSTER
+            value: KUBERNETES_NAMESPACE
             valueInGuid: NA
           identifier:
             fragments:
-              - value: "k8s:cluster:"
-              - attribute: clusterName
+              - value: "k8s:namespace:"
+              - attribute: namespaceName
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: KUBERNETES_POD
-  - name: otelKsmK8sClusterContainsPod
-    # use kube-state-metrics kube_pod_created metric
+            value: KUBERNETES_REPLICASET
+  - name: otelKsmK8sNamespaceContainsReplicaSet
+    # use kube-state-metrics kube_replicaset_owner
     version: "1"
     origins: 
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        anyOf: [ "kube_pod_created" ]
+        anyOf: [ "kube_replicaset_owner" ]
     relationship:
       expires: P75M
       relationshipType: CONTAINS
@@ -46,13 +46,14 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETESCLUSTER
+            value: KUBERNETES_NAMESPACE
           identifier:
             fragments:
-              - attribute: k8s.cluster.name            
+              - attribute: k8s.cluster.name
+              - attribute: k8s.namespace.name         
             hashAlgorithm: FARM_HASH
       target:  
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: KUBERNETES_POD
+            value: KUBERNETES_REPLICASET

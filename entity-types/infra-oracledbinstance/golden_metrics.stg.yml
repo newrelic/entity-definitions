@@ -1,14 +1,14 @@
-hostCpuUtilization:
-  title: Host CPU utilization
+bufferCacheHitRatio:
+  title: Buffer Cache Hit Ratio
   unit: PERCENTAGE
   queries:
     newRelic:
-      select: average(db.hostCpuUtilization)
-      from: OracleDatabaseSample
+      select: average(memory.bufferCacheHitRatio)
+      from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(newrelicoracledb.system.host_cpu_utilization)
+      select: average(newrelicoracledb.system.buffer_cache_hit_ratio)
       from: Metric
 databaseCpuTimeRatio:
   title: Database CPU Time Ratio
@@ -21,10 +21,9 @@ responseTimePerTransaction:
   title: Latency
   unit: MS
   queries:
-    newRelic:
+    opentelemetry:
       select: average(newrelicoracledb.system.response_time_per_transaction)
       from: Metric
-      where: metricName = 'newrelicoracledb.system.response_time_per_transaction'
 ioMegabytesPerSecond:
   title: IO megabytes per second
   unit: BYTES_PER_SECOND
@@ -37,18 +36,13 @@ ioMegabytesPerSecond:
     opentelemetry:
       select: average(newrelicoracledb.system.io_megabytes_per_second)
       from: Metric
-sessions:
-  title: Sessions
-  unit: COUNT
+redoGeneratedBytesPerSecond:
+  title: I/O Throughput
+  unit: BYTES_PER_SECOND
   queries:
-    newRelic:
-      select: latest(db.sessionCount)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
-      select: latest(newrelicoracledb.sessions.count)
-      from: Metric  
+      select: average(newrelicoracledb.system.redo_generated_bytes_per_second)
+      from: Metric 
 executionsPerSecond:
   title: Executions per second (Queries/s)
   unit: OPERATIONS_PER_SECOND
@@ -61,13 +55,12 @@ executionsPerSecond:
     opentelemetry:
       select: average(newrelicoracledb.system.executions_per_second)
       from: Metric
-      where: metricName = 'newrelicoracledb.system.executions_per_second'
 averageActiveSessions:
-  title: Active Sessions
+  title: Active Workload
   unit: COUNT
   queries:
     opentelemetry:
-      select: average(newrelicoracledb.system.active_sessions)
+      select: latest(newrelicoracledb.system.average_active_sessions)
       from: Metric
 physicalReadsPerSecond:
   title: Physical Reads per Second

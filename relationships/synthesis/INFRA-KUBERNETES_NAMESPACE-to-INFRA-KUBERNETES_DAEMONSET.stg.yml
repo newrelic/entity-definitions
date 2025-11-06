@@ -1,14 +1,14 @@
 relationships:
-  - name: k8sClusterHostsPersistentVolume
+  - name: k8sNamespaceContainsDaemonSet
     version: "1"
     origins:
       - Kubernetes Integration
     conditions: 
       - attribute: eventType
-        anyOf: [ "K8sPersistentVolumeSample" ]
+        anyOf: [ "K8sNamespaceSample" ]
     relationship:
       expires: P75M
-      relationshipType: HOSTS
+      relationshipType: CONTAINS
       source:
         buildGuid:
           account:
@@ -16,7 +16,7 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETESCLUSTER
+            value: KUBERNETES_NAMESPACE
             valueInGuid: NA
           identifier:
             fragments:
@@ -27,18 +27,18 @@ relationships:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: KUBERNETES_PERSISTENTVOLUME
-  - name: otelKsmK8sClusterHostsPersistentVolume
-    # use kube-state-metrics kube_persistentvolume_created metric
+            value: KUBERNETES_DAEMONSET
+  - name: otelKsmK8sNamespaceContainsDaemonSet
+    # use kube-state-metrics kube_daemonset_created
     version: "1"
     origins: 
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        anyOf: [ "kube_persistentvolume_created" ]
+        anyOf: [ "kube_daemonset_created" ]
     relationship:
       expires: P75M
-      relationshipType: HOSTS
+      relationshipType: CONTAINS
       source:
         buildGuid:
           account:
@@ -46,13 +46,14 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETESCLUSTER
+            value: KUBERNETES_NAMESPACE
           identifier:
             fragments:
               - attribute: k8s.cluster.name
+              - attribute: k8s.namespace.name
             hashAlgorithm: FARM_HASH
       target:  
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: KUBERNETES_PERSISTENTVOLUME
+            value: KUBERNETES_DAEMONSET
