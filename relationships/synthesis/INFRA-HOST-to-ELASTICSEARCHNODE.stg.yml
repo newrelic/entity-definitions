@@ -38,17 +38,15 @@ relationships:
     version: "1"
     origins:
       - OnHost Integration
-    conditions:
-      - attribute: event_type
-        anyOf: ["ElasticsearchNodeSample","ELASTICSEARCHNODESAMPLE"]
-      - attribute: entityGuid
-        present: true
-      - attribute: hostname
-        present: true
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "ElasticsearchNodeSample" ]
+      - attribute: nr.entityType
+        anyOf: ["ElasticsearchNode","ELASTICSEARCHNODE"]
     relationship:
       expires: P75M
-      relationshipType: HOSTS
-      source:
+      relationshipType: CONTAINS
+      target:
         buildGuid:
           account:
             attribute: accountId
@@ -61,6 +59,8 @@ relationships:
             fragments:
               - attribute: hostname
             hashAlgorithm: FARM_HASH
-      target:
+      source:
         extractGuid:
           attribute: entityGuid
+          entityType:
+            attribute: nr.entityType
