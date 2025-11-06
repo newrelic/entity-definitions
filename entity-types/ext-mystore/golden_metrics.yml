@@ -1,3 +1,13 @@
+services:
+  title: Services running
+  unit: COUNT
+  queries:
+    newRelic:
+      select: uniqueCount(name)
+      from: Metric
+      where: metricName = 'windows_running_services' AND name IN ('rds.net wfm interface service','mystore newpos6 interface','mystore windows service','mssql$sqlexpress') AND windows_running_services IS NOT NULL AND device.type = 'BOS'
+      facet: store.number
+
 freeSpaceMB:
   title: Free Space (MB)
   unit: BYTES
@@ -6,7 +16,8 @@ freeSpaceMB:
       select: average(FreeSpaceMB)
       from: MyStore_FileSize_SQL
       where: FileName = 'SDM'
-      facet: market,store.number
+      facet: store.number
+
 currentSizeMB:
   title: Current Size (MB)
   unit: BYTES
@@ -15,4 +26,4 @@ currentSizeMB:
       select: average(CurrentSizeMB)
       from: MyStore_FileSize_SQL
       where: FileName = 'SDM'
-      facet: market,store.number
+      facet: store.number

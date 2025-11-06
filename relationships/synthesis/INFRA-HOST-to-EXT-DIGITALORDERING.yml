@@ -1,0 +1,28 @@
+relationships:
+  - name: infraHostIsExtDigitalordering
+    version: "1"
+    origins:
+      - Infrastructure Agent
+    conditions:
+      - attribute: device.type
+        anyOf: [ "GSC01","GSC02" ]
+      - attribute: market
+        present: true
+      - attribute: store.number
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: DIGITALORDERING
+          fields:
+            - field: marketName
+              attribute: market
+            - field: storeNumber
+              attribute: store.number
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: HOST
