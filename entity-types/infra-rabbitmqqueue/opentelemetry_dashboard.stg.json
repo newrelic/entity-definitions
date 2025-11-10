@@ -19,6 +19,9 @@
             "nrqlQueries": [
               {
                 "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE state = 'ready' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0},
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_messages_ready) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -37,7 +40,10 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE AND state = 'unacknowledged' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE state = 'unacknowledged' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0},
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_messages_unacked) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -57,6 +63,9 @@
             "nrqlQueries": [
               {
                 "query": "FROM Metric SELECT latest(rabbitmq.message.published) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0},
+              {
+                "query": "FROM Metric SELECT sum(rabbitmq_queue_messages_published_total) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -76,6 +85,9 @@
             "nrqlQueries": [
               {
                 "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE instrumentation.provider = 'opentelemetry' FACET state TIMESERIES AUTO",
+                "accountId": 0},
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_messages) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -95,6 +107,9 @@
             "nrqlQueries": [
               {
                 "query": "FROM Metric SELECT latest(rabbitmq.consumer.count) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0},
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_consumers) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
@@ -114,9 +129,145 @@
             "nrqlQueries": [
               {
                 "query": "FROM Metric SELECT latest(rabbitmq.consumer.count) AS 'Consumers', sum(rabbitmq.message.current) AS 'Total Messages' WHERE instrumentation.provider = 'opentelemetry' AND metricName IN ('rabbitmq.consumer.count', 'rabbitmq.message.current')",
+                "accountId": 0},
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_consumers) AS 'Consumers (Prometheus)', latest(rabbitmq_queue_messages) AS 'Total Messages (Prometheus)' WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'",
                 "accountId": 0}
             ],
             "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Messages RAM",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_messages_ram) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Messages Persistent",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_messages_persistent) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Queue Process Memory",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_process_memory_bytes) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk Reads",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT rate(sum(rabbitmq_queue_disk_reads_total), 1 minute) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk Writes",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT rate(sum(rabbitmq_queue_disk_writes_total), 1 minute) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Consumer Utilisation",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_consumer_utilisation) WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Queue Details",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq_queue_messages) AS 'Total Messages', latest(rabbitmq_queue_messages_ready) AS 'Ready', latest(rabbitmq_queue_messages_unacked) AS 'Unacked', latest(rabbitmq_queue_consumers) AS 'Consumers', latest(rabbitmq_queue_messages_ram) AS 'Messages in RAM', latest(rabbitmq_queue_messages_persistent) AS 'Persistent' WHERE instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver' FACET queue, rabbitmq_vhost, rabbitmq_node",
+                "accountId": 0}
+            ]
           }
         }
       ]
