@@ -4,6 +4,7 @@ type: RABBITMQQUEUE
 synthesis:
   # Apart from this rule RABBITMQQUEUE entities are also created from infra pipeline.
   rules:
+  # OpenTelemetry RabbitMQ Receiver
   - compositeIdentifier:
       separator: ":"
       attributes:
@@ -43,6 +44,38 @@ synthesis:
     conditions:
     - attribute: eventType
       value: RabbitmqQueueSample
+  
+  # OpenTelemetry with Prometheus Receiver (RabbitMQ Prometheus Exporter)
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+      - rabbitmq_node
+      - queue
+      - rabbitmq_vhost
+    name: queue
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # Prometheus exporter metrics start with 'rabbitmq_queue_' prefix
+      - attribute: metricName
+        prefix: rabbitmq_queue_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters metrics coming from prometheus receiver
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      # Prometheus exporter attributes
+      rabbitmq_node:
+        entityTagName: rabbitmq.node.name
+      queue:
+        entityTagName: rabbitmq.queue.name
+      rabbitmq_vhost:
+        entityTagName: rabbitmq.vhost.name
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
 
   tags:
     # For OpenTelemetry
