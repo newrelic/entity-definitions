@@ -1,23 +1,39 @@
+services:
+  title: Services running
+  unit: COUNT
+  queries:
+    newRelic:
+      select: uniqueCount(name)
+      from: Metric
+      where: metricName = 'windows_running_services' AND name IN ('sotec.instore.service','mssql$sqlexpress') AND windows_running_services IS NOT NULL AND device.type = 'EPR'
+      facet: store.number
+
 cpuUsage:
   title: CPU usage (%)
   unit: PERCENTAGE
-  query:
+  queries:
+    newRelic:
       select: average(cpuPercent)
       from: SystemSample
-      eventId: hostname
+      where: device.type = 'EPR'
+      facet: store.number
 
 memoryUsage:
   title: Memory usage (%)
   unit: PERCENTAGE
-  query:
+  queries:
+    newRelic:
       select: average(memoryUsedPercent)
       from: SystemSample
-      eventId: hostname
+      where: device.type = 'EPR'
+      facet: store.number
 
 storageUsage:
   title: Storage usage (%)
   unit: PERCENTAGE
-  query:
+  queries:
+    newRelic:
       select: average(diskUsedPercent)
       from: StorageSample
-      eventId: hostname
+      where: device.type = 'EPR'
+      facet: store.number
