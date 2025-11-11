@@ -9,8 +9,8 @@ relationships:
         anyOf: [ "Log", "Metric", "Span" ]
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
-      - attribute: entity.type
-        anyOf: [ "SERVICE" ]
+      - attribute: host.id
+        present: true
     relationship:
       expires: P75M
       relationshipType: HOSTS
@@ -28,14 +28,7 @@ relationships:
               - attribute: host.id
             hashAlgorithm: FARM_HASH
       target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
             value: CONTAINER
-          identifier:
-            fragments:
-              - attribute: container.id
-            hashAlgorithm: FARM_HASH
