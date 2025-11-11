@@ -1,14 +1,14 @@
 relationships:
-  - name: k8sClusterHostsHost
+  - name: k8sNamespaceContainsStatefulSet
     version: "1"
     origins:
       - Kubernetes Integration
     conditions: 
       - attribute: eventType
-        anyOf: [ "SystemSample" ]
+        anyOf: [ "K8sNamespaceSample" ]
     relationship:
       expires: P75M
-      relationshipType: HOSTS
+      relationshipType: CONTAINS
       source:
         buildGuid:
           account:
@@ -27,30 +27,18 @@ relationships:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: HOST           
-  - name: oTelK8sClusterHostsHost
-    # use kube-state-metrics host metrics
+            value: KUBERNETES_STATEFULSET
+  - name: otelKsmK8sNamespaceContainsStatefulSet
+    # use kube-state-metrics kube_statefulset_created
     version: "1"
     origins: 
       - OpenTelemetry
     conditions:
-        - attribute: eventType
-          anyOf: [ "Metric" ]
-        - attribute: metricName
-          startsWith: system.
-        - attribute: newrelic.source
-          anyOf: [ "api.metrics.otlp" ]
-        # if service.name is present, it's a service, not a host
-        - attribute: service.name
-          present: false
-        # if container.id is present, it's a container, not a host
-        - attribute: container.id
-          present: false
-        - attribute: k8s.cluster.name
-          present: true
+      - attribute: metricName
+        anyOf: [ "kube_statefulset_created" ]
     relationship:
       expires: P75M
-      relationshipType: HOSTS
+      relationshipType: CONTAINS
       source:
         buildGuid:
           account:
@@ -61,10 +49,11 @@ relationships:
             value: KUBERNETESCLUSTER
           identifier:
             fragments:
-              - attribute: k8s.cluster.name            
+              - attribute: k8s.cluster.name
+              - attribute: k8s.namespace.name       
             hashAlgorithm: FARM_HASH
-      target:
+      target:  
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: HOST 
+            value: KUBERNETES_DAEMONSET

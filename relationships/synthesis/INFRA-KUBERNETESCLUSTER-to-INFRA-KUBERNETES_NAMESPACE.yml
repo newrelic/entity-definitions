@@ -1,11 +1,11 @@
 relationships:
-  - name: k8sClusterContainsDeployment
+  - name: k8sClusterContainsPod
     version: "1"
     origins:
       - Kubernetes Integration
     conditions: 
       - attribute: eventType
-        anyOf: [ "K8sDeploymentSample" ]
+        anyOf: [ "K8sNamespaceSample" ]
     relationship:
       expires: P75M
       relationshipType: CONTAINS
@@ -22,20 +22,21 @@ relationships:
             fragments:
               - value: "k8s:cluster:"
               - attribute: clusterName
+              - attribute: namespaceName
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: KUBERNETES_DEPLOYMENT
-  - name: otelKsmK8sClusterContainsDeployment
-    # use kube-state-metrics kube_deployment_created metrics
+            value: KUBERNETES_NAMESPACE
+  - name: otelKsmK8sNamespaceContainsNamespace
+    # use kube-state-metrics kube_namespace_created metric
     version: "1"
     origins: 
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        anyOf: [ "kube_deployment_created" ]
+        anyOf: [ "kube_namespace_created" ]
     relationship:
       expires: P75M
       relationshipType: CONTAINS
@@ -49,10 +50,11 @@ relationships:
             value: KUBERNETESCLUSTER
           identifier:
             fragments:
-              - attribute: k8s.cluster.name            
+              - attribute: k8s.cluster.name
+              - attribute: k8s.namespace.name
             hashAlgorithm: FARM_HASH
       target:  
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: KUBERNETES_DEPLOYMENT
+            value: KUBERNETES_NAMESPACE

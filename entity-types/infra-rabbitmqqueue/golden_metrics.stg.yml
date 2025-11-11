@@ -13,6 +13,12 @@ consumers:
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
       eventName: entity.name
+    prometheus:
+      select: latest(rabbitmq_queue_consumers)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
 
 messagesDelivered:
   title: Messages delivered
@@ -29,6 +35,12 @@ messagesDelivered:
       where: state = 'ready' AND instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
       eventName: entity.name
+    prometheus:
+      select: sum(rabbitmq_queue_messages_ready)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
 
 messagesDeliveredPerSecond:
   title: Messages delivered per second
@@ -39,6 +51,12 @@ messagesDeliveredPerSecond:
       from: RabbitmqQueueSample
       eventId: entityGuid
       eventName: entityName
+    prometheus:
+      select: latest(rabbitmq_channel_messages_delivered_total)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
 
 messagesUnacknowledged:
   title: Messages Unacknowledged
@@ -48,6 +66,12 @@ messagesUnacknowledged:
       select: latest(rabbitmq.message.current)
       from: Metric
       where: state = 'unacknowledged' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: latest(rabbitmq_queue_messages_unacked)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
       eventId: entity.guid
       eventName: entity.name
 
@@ -66,6 +90,12 @@ messagesPublished:
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
       eventName: entity.name
+    prometheus:
+      select: sum(rabbitmq_queue_messages_published_total)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
 
 messagesPublishedPerSecond:
   title: Messages published per second
@@ -76,6 +106,12 @@ messagesPublishedPerSecond:
       from: RabbitmqQueueSample
       eventId: entityGuid
       eventName: entityName
+    prometheus:
+      select: average(rabbitmq_queue_messages_published_total)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
 
 totalCurrentMessages:
   title: Total Current Messages
@@ -85,5 +121,11 @@ totalCurrentMessages:
       select: sum(rabbitmq.message.current)
       from: Metric
       where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: sum(rabbitmq_queue_messages)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
       eventId: entity.guid
       eventName: entity.name
