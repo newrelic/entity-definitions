@@ -43,7 +43,7 @@ relationships:
     relationship:
       expires: P75M
       relationshipType: CONTAINS
-      source:
+      target:
         buildGuid:
           account:
             attribute: accountId
@@ -55,11 +55,16 @@ relationships:
           identifier:
             fragments:
               - attribute: "es-cluster:"
-              - value: displayName
-              - attribute: ":clustername="
-              - value: displayName
+              - capture:
+                  attribute: entityKey
+                  regex: ".*:clustername=([^:]+)"
+              - value: ":"
+              - attribute: "clustername="
+              - capture:
+                  attribute: entityKey
+                  regex: ".*:clustername=([^:]+)"
             hashAlgorithm: FARM_HASH
-      target:
+      source:
         extractGuid:
           attribute: entityGuid
           entityType:
