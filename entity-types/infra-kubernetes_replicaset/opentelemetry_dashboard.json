@@ -40,8 +40,7 @@
             "nrqlQueries": [
               {
                 "query": "FROM Metric SELECT latest(k8s.replicaset.name) AS `Deployment Name`, latest(k8s.namespace.name) AS `Namespace Name`, latest(k8s.cluster.name) AS `Cluster name`, latest(kube_replicaset_created)*1000 AS `Created At` WHERE entity.guid = '{{entity.id}}' AND metricName IN ('kube_replicaset_created')",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
@@ -72,8 +71,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(condition) AS `Conditions`, latest(if((k8s.replicaset.isPaused = 1), 'true', 'false')) AS `Paused`, latest(kube_replicaset_metadata_generation) AS `Metadata Generation`, latest(kube_replicaset_status_observed_generation) AS `Observed Generation`, latest(kube_replicaset_spec_strategy_rollingupdate_max_surge) AS `Rolling Update Max Surge` FROM Metric  WHERE ( (entity.guid  = '{{entity.id}}') AND metricName IN ('kube_replicaset_status_condition','kube_replicaset_metadata_generation','kube_replicaset_status_observed_generation','kube_replicaset_spec_strategy_rollingupdate_max_surge'))",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
@@ -98,8 +96,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_status_replicas_available) AS `Pods Available` FROM Metric WHERE (entity.guid = '{{entity.id}}')",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
@@ -124,8 +121,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_spec_replicas) AS `Pods Desired` FROM Metric WHERE ((entity.guid = '{{entity.id}}'))",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
@@ -150,8 +146,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_status_replicas) AS `Pods Total` FROM Metric WHERE ( (entity.guid = '{{entity.id}}'))",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
@@ -176,8 +171,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_status_replicas_updated) AS `Pods Updated` FROM Metric WHERE ((entity.guid = '{{entity.id}}'))",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
@@ -202,8 +196,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_status_replicas_unavailable) AS `Pods Unavailable` FROM Metric WHERE ((entity.guid = '{{entity.id}}'))",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "thresholds": [
               {
@@ -240,8 +233,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_spec_replicas) - latest(kube_deployment_status_replicas) AS `Missing (Desired - Total)` FROM Metric WHERE ( (entity.guid = '{{entity.id}}'))",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "thresholds": [
               {
@@ -272,8 +264,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT max(kube_deployment_status_replicas_unavailable) AS `Pods MaxUnavailable` FROM Metric WHERE ( (entity.guid = '{{entity.id}}'))",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "thresholds": [],
             "facet": {
@@ -299,8 +290,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_status_replicas_ready) AS `Pods Ready` FROM Metric WHERE ( (entity.guid = '{{entity.id}}'))",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "thresholds": [],
             "facet": {
@@ -326,8 +316,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_status_replicas) AS `Pods Total`, latest(kube_deployment_spec_replicas) AS `Pods Desired`, latest(kube_deployment_spec_replicas) - latest(kube_deployment_status_replicas) AS `Pods Missing` FROM Metric WHERE (entity.guid = '{{entity.id}}') TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -352,8 +341,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_status_replicas_unavailable) AS `Pods Unavailable`, max(kube_deployment_status_replicas_unavailable) AS `Pods Max Unavailable`, latest(kube_deployment_status_replicas_available) AS `Pods Available`, latest(kube_deployment_status_replicas_ready) AS `Pods Ready` FROM Metric WHERE (entity.guid = '{{entity.id}}') TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -381,8 +369,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(kube_deployment_status_replicas_updated) AS `Pods Updated` FROM Metric WHERE (entity.guid = '{{entity.id}}') TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -434,8 +421,7 @@
             "nrqlQueries": [
               {
                 "query": "FROM (FROM Metric SELECT latest(kube_pod_status_ready) AS ready, latest(kube_pod_status_scheduled) AS scheduled, latest(kube_pod_status_phase) AS status, latest(owner_name) AS `joinKey` FACET k8s.pod.name, k8s.cluster.name WHERE (k8s.cluster.name = '{{{clusterName}}}') AND (k8s.namespace.name = '{{{namespaceName}}}') LIMIT MAX) JOIN (FROM Metric SELECT 1 AS '1'  FACET k8s.replicaset.name as 'joinKey', owner_name as 'Deployment' WHERE k8s.cluster.name = '{{{clusterName}}}' and owner_kind = 'Deployment' AND owner_name IS NOT NULL AND owner_name = '{{{entity.name}}}' LIMIT MAX) ON joinKey SELECT latest(if(ready = 1, 'True', 'False')) AS Ready, latest(if(scheduled = 1, 'True', 'False')) AS Scheduled, latest(status) FACET k8s.pod.name AS podName LIMIT MAX",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
@@ -457,8 +443,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT (max(container_network_transmit_bytes_total) or 0) AS `Transferred (bytes)` FROM Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.pod.name IN (SELECT uniques(k8s.pod.name) FROM Metric WHERE metricName = 'kube_pod_info' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%' LIMIT MAX) FACET k8s.pod.name LIMIT MAX TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -489,8 +474,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT (max(container_network_receive_bytes_total) or 0) AS `Transferred (bytes)` FROM Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.pod.name IN (SELECT uniques(k8s.pod.name) FROM Metric WHERE metricName = 'kube_pod_info' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%' LIMIT MAX) FACET k8s.pod.name LIMIT MAX TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -521,8 +505,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT ((max(container_network_receive_errors_total) / 1000) or 0) + ((max(container_network_transmit_errors_total) / 1000) or 0) AS `Errors (per second)` FROM Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.pod.name IN (SELECT uniques(k8s.pod.name) FROM Metric WHERE metricName = 'kube_pod_info' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%' LIMIT MAX) FACET k8s.pod.name LIMIT MAX TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -568,8 +551,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT rate(average(container_cpu_usage_seconds_total), 1 second) as `CPU usage (in seconds)` FROM  Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.container.name IS NOT NULL AND k8s.pod.name in (SELECT uniques(k8s.pod.name) FROM Metric WHERE metricName = 'kube_pod_info' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%' LIMIT MAX) FACET tuple(k8s.pod.name, k8s.container.name) LIMIT MAX TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -598,8 +580,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT (max(container.cpu.usage) * 1000) AS `CPU usage (in milli-cores)` FROM Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.container.name IS NOT NULL AND k8s.pod.name in (SELECT uniques(k8s.pod.name) FROM Metric WHERE metricName = 'kube_pod_info' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%' LIMIT MAX) FACET tuple(k8s.pod.name, k8s.container.name) LIMIT MAX TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "thresholds": []
           }
@@ -619,8 +600,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT ((latest(container_cpu_cfs_throttled_periods_total) / latest(container_cpu_cfs_periods_total))) AS `CPU throttling (%)` FROM Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.container.name IS NOT NULL AND k8s.pod.name in (SELECT uniques(k8s.pod.name) FROM Metric WHERE metricName = 'kube_pod_info' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%' LIMIT MAX) FACET tuple(k8s.pod.name, k8s.container.name) LIMIT MAX TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -651,8 +631,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT max(container_memory_working_set_bytes) AS `Memory usage (bytes)` FROM Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.container.name IS NOT NULL AND k8s.pod.name IN (SELECT uniques(k8s.pod.name) FROM Metric WHERE metricName = 'kube_pod_info' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%' LIMIT MAX) FACET tuple(k8s.pod.name, k8s.container.name) LIMIT MAX TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -684,8 +663,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT max(container_memory_working_set_bytes) / filter(max(kube_pod_container_resource_limits), where resource = 'memory') AS `Memory utilization (%)` FROM Metric WHERE (k8s.cluster.name = '{{{clusterName}}}' AND k8s.container.name IS NOT NULL AND k8s.pod.name in (SELECT uniques(k8s.pod.name) FROM Metric WHERE metricName = 'kube_pod_info' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%' LIMIT MAX)) FACET tuple(k8s.pod.name, k8s.container.name) LIMIT MAX TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "thresholds": [],
             "units": {
@@ -708,8 +686,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT rate(sum(container.filesystem.usage), 1 second) AS 'Filesystem used (bytes)' FROM Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.container.name IS NOT NULL AND k8s.pod.name IN (SELECT uniques(k8s.pod.name) FROM Metric WHERE (k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%') AND metricName IN ('kube_pod_info', 'kube_pod_created')) FACET tuple(k8s.pod.name, k8s.container.name) LIMIT 100 TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -740,8 +717,7 @@
             "nrqlQueries": [
               {
                 "query": "SELECT max(container.filesystem.usage) / max(container.filesystem.capacity) * 100 AS `Filesystem Utilization (%)` FROM Metric WHERE k8s.cluster.name = '{{{clusterName}}}' AND k8s.container.name IS NOT NULL AND k8s.pod.name IN (SELECT uniques(k8s.pod.name) FROM Metric WHERE (k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%') AND metricName IN ('kube_pod_info', 'kube_pod_created')) FACET tuple(k8s.pod.name, k8s.container.name) LIMIT 100 TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -772,8 +748,7 @@
             "nrqlQueries": [
               {
                 "query": "FROM Metric SELECT sum(kube_pod_container_status_restarts_total)  AS `Container restarts` WHERE metricName LIKE '%kube_pod_container_status_restarts_total%' AND k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND k8s.pod.name IN (SELECT uniques(k8s.pod.name) FROM Metric WHERE (k8s.cluster.name = '{{{clusterName}}}' AND k8s.namespace.name = '{{{namespaceName}}}' AND created_by_name LIKE '{{{entity.name}}}%') AND metricName IN ('kube_pod_info', 'kube_pod_created')) FACET tuple(k8s.pod.name, k8s.container.name) LIMIT 100 TIMESERIES AUTO",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "yAxisLeft": {
               "zero": true
@@ -816,8 +791,7 @@
             "nrqlQueries": [
               {
                 "query": "FROM OtlpInfrastructureEvent select concat(k8s.object.kind, ' / ', k8s.object.name) as 'Kind / Name', message as 'Message', k8s.event.reason as 'Reason', if(k8s.event.count is not null, k8s.event.count, event.count) as 'Event Count', timestamp as 'Last Timestamp', k8s.event.start_time as 'First Timestamp' where (entity.guid = '{{entity.id}}' and severity.text = 'Warning') limit 100",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
@@ -839,8 +813,7 @@
             "nrqlQueries": [
               {
                 "query": "FROM OtlpInfrastructureEvent select count(concat(severity.text, ':', k8s.event.reason)) as 'Reason' where (entity.guid = '{{entity.id}}' and severity.text = 'Warning') facet k8s.event.reason TIMESERIES limit 100",
-                "accountId": 0
-              }
+                "accountId": 0}
             ],
             "facet": {
               "showOtherSeries": false
