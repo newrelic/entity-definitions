@@ -56,7 +56,8 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KAFKABROKER
-    # Local scenario: Kafka broker running on the same host
+
+    # Local scenario: Kafka broker running on the same host with OpenTelemetry
   - name: hostHostsOtelKafkaBroker
     version: "1"
     origins:
@@ -68,9 +69,9 @@ relationships:
         anyOf: [ "opentelemetry" ]
       - attribute: kafka.broker.name
         present: true
-      - attribute: entity.type
-        anyOf: ["KAFKABROKER"]
-      - attribute: host.name
+      - attribute: host.id
+        present: true
+      - attribute: broker.endpoint
         present: true
       - attribute: broker.endpoint
         regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|$)"
@@ -85,18 +86,19 @@ relationships:
             value: INFRA
           type:
             value: HOST
+            valueInGuid: NA
           identifier:
             fragments:
-              - attribute: host.name
+              - attribute: host.id
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            attribute: entity.type
+            value: KAFKABROKER
 
-  # Remote scenario: Host monitors remote Kafka broker
-  - name: hostMonitorsOtelKafkaBroker
+# Remote scenario: Host monitors remote Kafka broker with OpenTelemetry when broker.endpoint is present
+  - name: hostMonitorsOtelKafkaBroker1
     version: "1"
     origins:
       - OpenTelemetry
@@ -107,9 +109,9 @@ relationships:
         present: true
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
-      - attribute: entity.type
-        anyOf: ["KAFKABROKER"]
-      - attribute: host.name
+      - attribute: host.id
+        present: true
+      - attribute: broker.endpoint
         present: true
       - attribute: broker.endpoint
         regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
@@ -124,13 +126,54 @@ relationships:
             value: INFRA
           type:
             value: HOST
+            valueInGuid: NA
           identifier:
             fragments:
-              - attribute: host.name
+              - attribute: host.id
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            attribute: entity.type
+            value: KAFKABROKER
+
+  # When broker.endpoint is not present: Host monitors Kafka broker with OpenTelemetry
+  - name: hostMonitorsOtelKafkaBroker2
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: kafka.broker.name
+        present: true
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+      - attribute: broker.endpoint
+        present: false
+      - attribute: broker.id
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KAFKABROKER
 
