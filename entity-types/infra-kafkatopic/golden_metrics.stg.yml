@@ -1,23 +1,64 @@
-partitionsWithNonPreferredLeader:
-  title: Partitions with non-preferred leader
+topicPartitionsCount:
+  queries:
+    opentelemetry:
+      select: latest(kafka.topic.partitions)
+      from: Metric
+      where: metricName = 'kafka.topic.partitions'
+      eventId: entity.guid
+      eventName: entity.name
   unit: COUNT
+  title: Topic Partitions
+
+bytesInPerSecond:
+  title: Bytes in per second
+  unit: BYTES_PER_SECOND
   queries:
-    newRelic:
-      select: average(topic.partitionsWithNonPreferredLeader)
-      from: KafkaTopicSample
-      eventId: entityGuid
-      eventName: entityName
-underReplicatedPartitions:
+    opentelemetry:
+      select: rate(sum(kafka.topic.io), 1 second)
+      from: Metric
+      where: metricName = 'kafka.topic.io' AND (state = 'in' OR direction = 'in')
+      eventId: entity.guid
+      eventName: entity.name
+
+bytesOutPerSecond:
+  title: Bytes out per second
+  unit: BYTES_PER_SECOND
   queries:
+    opentelemetry:
+      select: rate(sum(kafka.topic.io), 1 second)
+      from: Metric
+      where: metricName = 'kafka.topic.io' AND (state = 'out' OR direction = 'out')
+      eventId: entity.guid
+      eventName: entity.name
+
+messagesInPerSecond:
+  title: Messages in per second
+  unit: COUNT_PER_SECOND
+  queries:
+    opentelemetry:
+      select: rate(sum(kafka.prod.msg.count), 1 second)
+      from: Metric
+      where: metricName = 'kafka.prod.msg.count'
+      eventId: entity.guid
+      eventName: entity.name
+
+# TO-DO: Need to find a way how we can generate below metric in OTEL
+# Commented out metrics below are not yet supported by OpenTelemetry integration and only available via New Relic integration.
+#underReplicatedPartitions:
+#  queries:
 #    newRelic:
 #      select: latest(topic.underReplicatedPartitions)
 #      from: KafkaTopicSample
 #      facet:
 #      eventId: entityGuid
 #      eventName: entityName
-    opentelemetry:
-      select: (sum(kafka.partition.replicas) - sum(kafka.partition.replicas_in_sync))/(datapointCount()/2)
-      from: Metric
-      facet: partition
-  unit: COUNT
-  title: Under replicated partitions
+#
+#partitionsWithNonPreferredLeader:
+#  title: Partitions with non-preferred leader
+#  unit: COUNT
+#  queries:
+#    newRelic:
+#      select: average(topic.partitionsWithNonPreferredLeader)
+#      from: KafkaTopicSample
+#      eventId: entityGuid
+#      eventName: entityName
