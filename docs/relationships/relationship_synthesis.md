@@ -84,7 +84,7 @@ relationships:
     entitlements:
       matching: anyOf
       values:
-        - advanced_ccu
+        - auto_discover_entities_ccu
     conditions:
       - attribute: entity.type
         anyOf: [ "PIXIE_DNS" ]
@@ -183,12 +183,11 @@ The mapping of origins to sources allows for performance improvements when evalu
 
 Optionally, you can create a rule that will only match if the account of the telemetry has the required entitlements.
 
-
 ```yaml
 entitlements:
   matching: anyOf
   values:
-    - advanced_ccu
+    - auto_discovery_entities_ccu
 ```
 
 #### Matching
@@ -204,15 +203,12 @@ The account producing the telemetry must contain the entitlements in order for t
 
 The entitlements to use is a closed list defined below:
 
-| **Entitlement** | **Description** |
-|-----------------|-----------------|
-| advanced_ccu    | Controls whether certain advanced capabilities are accessible in the product |
-| catalog_ccu     | Controls whether customers can use Catalogs in the product |
-| catalogs_discount_usage | Trial version of the above |
-| auto_discovery_entities_ccu | Controls whether customers can enable and use Auto Discovery |
-| auto_discovery_entities_ccu_discount_usage | Trial version of the previous one |
-| advanced_maps_ccu | Controls whether customers can use advanced maps (infrastructure maps and Dynamic Flow Maps) |
-| advanced_maps_discount_usage | Trial version of the previous one |
+| **Entitlement**                            | **Description**                                              |
+|--------------------------------------------|--------------------------------------------------------------|
+| auto_discovery_entities_ccu                | Controls whether customers can enable and use Auto Discovery |
+| auto_discovery_entities_ccu_discount_usage | Trial version of the previous one                            |
+| azure_auto_discovery                       | Controls whether customers can enable and use Auto Discovery |
+| azure_auto_discovery_discount_usage        | Trial version of the previous one                            |
 
 If you need an entitlement not in the list reach us.
 
@@ -243,8 +239,8 @@ The list of supported operations can be found on the table below:
 | startsWith             | Commonly used with the `metricName` attribute, to match on the prefix of the metric.                  |
 | regex                  | Commonly used with the `metricName` attribute, to extract match more complex use cases (e.g. URI(s)). |
 
-Only one matcher should be present in each condition, and matching is case-insensitive by default unless 
-specified otherwise with `caseSensitive: true`. 
+Only one matcher should be present in each condition, and matching is case-insensitive by default unless
+specified otherwise with `caseSensitive: true`.
 Multiple conditions must all match for the rule to apply; there is no support for `OR` conditions.
 
 In the following subsections, we will provide an example for each possible matcher usage.
