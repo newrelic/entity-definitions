@@ -1,0 +1,61 @@
+relationships:
+  - name: apmApplicationHostsOnAzureFunctionsAppStg
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+    origins:
+      - Azure Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AZUREFUNCTIONSAPP" ]
+      - attribute: azure.resourceId
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: APMAPPLICATION
+          fields:
+            - field: resourceId
+              attribute: azure.resourceId
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AZUREFUNCTIONSAPP
+  - name: apmApplicationHostsOnAzureWebAppStg
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+    origins:
+      - Azure Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "AZUREWEBAPP" ]
+      - attribute: azure.resourceId
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: APMAPPLICATION
+          fields:
+            - field: resourceId
+              attribute: azure.resourceId
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AZUREWEBAPP
