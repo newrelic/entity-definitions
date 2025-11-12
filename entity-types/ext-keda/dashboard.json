@@ -18,7 +18,7 @@
                 }
             },
             {
-              "title": "Registered Resources",
+              "title": "Registered resources",
               "layout": { "column": 3, "row": 1, "width": 5, "height": 3 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -27,14 +27,14 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT sum(keda_resource_registered_total) FACET type, exported_namespace TIMESERIES"
+                        "query": "FROM Metric SELECT max(keda_resource_registered_total) FACET type, exported_namespace TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
                 }
             },
             {
-              "title": "Registered Triggers",
+              "title": "Registered triggers",
               "layout": { "column": 8, "row": 1, "width": 5, "height": 3 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -43,14 +43,14 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT sum(keda_trigger_registered_total) FACET type TIMESERIES"
+                        "query": "FROM Metric SELECT max(keda_trigger_registered_total) FACET type TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
                 }
             },
             {
-              "title": "Scaled Object Errors Rate",
+              "title": "Scaled object errors rate",
               "layout": { "column": 1, "row": 4, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -66,7 +66,7 @@
                 }
             },
             {
-              "title": "Scaler Errors Rate",
+              "title": "Scaler errors rate",
               "layout": { "column": 7, "row": 4, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -82,23 +82,23 @@
                 }
             },
             {
-              "title": "Scaler Metrics Value",
+              "title": "Scaler metrics value",
               "layout": { "column": 1, "row": 8, "width": 6, "height": 4 },
-              "visualization": { "id": "viz.line" },
+              "visualization": { "id": "viz.table" },
               "rawConfiguration":
                 {
                   "nrqlQueries":
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT latest(keda_scaler_metrics_value) FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
+                        "query": "FROM Metric SELECT latest(keda_scaler_metrics_value) FACET scaler, scaledObject"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
                 }
             },
             {
-              "title": "Scaler Metrics Latency",
+              "title": "Scaler metrics latency",
               "layout": { "column": 7, "row": 8, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -114,7 +114,7 @@
                 }
             },
             {
-              "title": "Active Scalers",
+              "title": "Active scalers",
               "layout": { "column": 1, "row": 12, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -123,14 +123,14 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT latest(keda_scaler_active) WHERE keda_scaler_active = 1 AND job = '{{tags.job}}' FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
+                        "query": "FROM Metric SELECT latest(keda_scaler_active) WHERE keda_scaler_active = 1.0 FACET scaledObject, exported_namespace, type, scaler TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
                 }
             },
             {
-              "title": "gRPC Server Handled Rate",
+              "title": "gRPC server handled rate",
               "layout": { "column": 7, "row": 12, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -146,7 +146,7 @@
                 }
             },
             {
-              "title": "gRPC Server Handling Duration (p50/p95/p99)",
+              "title": "gRPC server handling duration (p50/p95/p99)",
               "layout": { "column": 1, "row": 16, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":
@@ -155,14 +155,14 @@
                     [
                       {
                         "accountId": 0,
-                        "query": "FROM Metric SELECT percentile(keda_internal_metricsservice_grpc_server_handling_seconds, 99, 95, 50) FACET grpc_service, grpc_method TIMESERIES"
+                        "query": "FROM Metric SELECT histogrampercentile(keda_internal_metricsservice_grpc_server_handling_seconds_bucket, 99, 95, 50) FACET grpc_service, grpc_method TIMESERIES"
                       }
                     ],
                   "yAxisLeft": { "zero": true }
                 }
             },
             {
-              "title": "Scale Loop Latency",
+              "title": "Scale loop latency",
               "layout": { "column": 7, "row": 16, "width": 6, "height": 4 },
               "visualization": { "id": "viz.line" },
               "rawConfiguration":

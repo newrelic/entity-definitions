@@ -1,0 +1,28 @@
+relationships:
+  - name: infraHostIsExtMystore
+    version: "1"
+    origins:
+      - Infrastructure Agent
+    conditions:
+      - attribute: device.type
+        anyOf: [ "BOS" ]
+      - attribute: market
+        present: true
+      - attribute: store.number
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: MYSTORE
+          fields:
+            - field: marketName
+              attribute: market
+            - field: storeNumber
+              attribute: store.number
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: HOST

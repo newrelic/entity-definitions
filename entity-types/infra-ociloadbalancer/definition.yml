@@ -1,0 +1,44 @@
+domain: INFRA
+type: OCILOADBALANCER
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.availabilityDomain
+- oci.displayName
+- oci.lifecycleState
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  - identifier: oci.resourceId
+    name: oci.lbName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.loadbalancer"
+    - attribute: oci.namespace
+      value: "oci_lbaas"
+  # Synthesis out of logs. Ref: https://docs.oracle.com/en-us/iaas/Content/Logging/Reference/details_for_load_balancer_logs.htm
+  - identifier: oracle.resourceid
+    name: source
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        prefix: Log
+      - attribute: oracle.resourceid
+        prefix: ocid1.loadbalancer.
+      - attribute: type
+        prefix: com.oraclecloud.loadbalancer.
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"
