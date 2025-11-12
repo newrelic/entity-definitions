@@ -24,4 +24,28 @@ relationships:
               attribute: namespace # namespace of pod
             - field: k8s.podName # podName of ext-keda
               attribute: pod # podName of pod
-
+  - name: k8sPodContainsExtKedaOtel
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: entity.type
+        anyOf: ["KUBERNETES_POD"]
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KEDA
+          fields:
+            - field: k8s.clusterName # cluster of ext-keda
+              attribute: k8s.clusterName # cluster of pod
+            - field: k8s.namespaceName # namespace of ext-keda
+              attribute: k8s.namespaceName # namespace of pod
+            - field: k8s.podName # podName of ext-keda
+              attribute: k8s.podName # podName of pod

@@ -1,0 +1,28 @@
+relationships:
+  - name: extStoreContainsDigitalordering
+    version: "1"
+    origins:
+      - Event API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "XMLRPC" ]
+      - attribute: node
+        anyOf: [ "STORE" ]
+      - attribute: market
+        present: true
+      - attribute: store.number
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: DIGITALORDERING
+          fields:
+            - field: marketName
+              attribute: market
+            - field: storeNumber
+              attribute: store.number
