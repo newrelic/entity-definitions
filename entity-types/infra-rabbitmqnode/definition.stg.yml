@@ -7,6 +7,7 @@ goldenTags:
 
 synthesis:
   rules:
+    # OpenTelemetry RabbitMQ Receiver
     - identifier: rabbitmq.node.name
       name: rabbitmq.node.name
       encodeIdentifierInGUID: true
@@ -34,6 +35,31 @@ synthesis:
         # OTel attributes
         # The library name contains the name of the receiver that is used to identify the source
         # and select the dashboard.
+        otel.library.name:
+          entityTagName: instrumentation.name
+    
+    # OpenTelemetry with Prometheus Receiver (RabbitMQ Prometheus Exporter)
+    - identifier: rabbitmq_node
+      name: rabbitmq_node
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        # Prometheus exporter metrics start with 'rabbitmq_' prefix
+        - attribute: metricName
+          prefix: rabbitmq_
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This filters metrics coming from prometheus receiver
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+        - attribute: rabbitmq_node
+          present: true
+      tags:
+        # Prometheus exporter attributes
+        rabbitmq_node:
+          entityTagName: rabbitmq.node.name
+        # OTel attributes
         otel.library.name:
           entityTagName: instrumentation.name
 
