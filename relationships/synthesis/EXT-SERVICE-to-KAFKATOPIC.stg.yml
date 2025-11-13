@@ -190,7 +190,72 @@ relationships:
             - field: cloudResourceId
               attribute: newrelic.aws_metric_streams.arn
 
-  - name: apmProducesOtelKafkaTopicStgOverride
+#  - name: apmProducesOtelKafkaTopicStgOverride
+#    version: "1"
+#    origins:
+#      - Distributed Tracing
+#      - OpenTelemetry
+#    conditions:
+#      - attribute: eventType
+#        anyOf: [ "Metric" ]
+#      - attribute: instrumentation.provider
+#        anyOf: [ "opentelemetry" ]
+#      - attribute: metricName
+#        startsWith: "kafka.producer"
+#      - attribute: entity.type
+#        anyOf: [ "SERVICE" ]
+#      - attribute: kafka.cluster.name
+#        present: true
+#      - attribute: topic
+#        present: true
+#    relationship:
+#      expires: P75M
+#      relationshipType: PRODUCES
+#      source:
+#        extractGuid:
+#          attribute: entity.guid
+#      target:
+#        lookupGuid:
+#          candidateCategory: KAFKATOPIC
+#          fields:
+#            - field: clusterName
+#              attribute: cluster.name
+#            - field: topic
+#              attribute: topic
+
+#  - name: apmConsumesOtelKafkaTopicStgOverride
+#    version: "1"
+#    origins:
+#      - OpenTelemetry
+#    conditions:
+#      - attribute: eventType
+#        anyOf: [ "Metric" ]
+#      - attribute: instrumentation.provider
+#        anyOf: [ "opentelemetry" ]
+#      - attribute: metricName
+#        startsWith: "kafka.consumer"
+#      - attribute: entity.type
+#        anyOf: [ "SERVICE" ]
+#      - attribute: kafka.cluster.name
+#        present: true
+#      - attribute: topic
+#        present: true
+#    relationship:
+#      expires: P75M
+#      relationshipType: CONSUMES
+#      source:
+#        extractGuid:
+#          attribute: entity.guid
+#      target:
+#        lookupGuid:
+#          candidateCategory: KAFKATOPIC
+#          fields:
+#            - field: clusterName
+#              attribute: cluster.name
+#            - field: topic
+#              attribute: topic
+
+  - name: apmProducesOtelKafkaTopicStgOverrideExp
     version: "1"
     origins:
       - Distributed Tracing
@@ -215,15 +280,22 @@ relationships:
         extractGuid:
           attribute: entity.guid
       target:
-        lookupGuid:
-          candidateCategory: KAFKATOPIC
-          fields:
-            - field: clusterName
-              attribute: kafka.cluster.name
-            - field: topic
-              attribute: topic
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: " ("
+              - attribute: cluster.name
+              - value: ")"
+            hashAlgorithm: FARM_HASH
 
-  - name: apmConsumesOtelKafkaTopicStgOverride
+  - name: apmConsumesOtelKafkaTopicStgOverrideExp
     version: "1"
     origins:
       - OpenTelemetry
@@ -247,10 +319,17 @@ relationships:
         extractGuid:
           attribute: entity.guid
       target:
-        lookupGuid:
-          candidateCategory: KAFKATOPIC
-          fields:
-            - field: clusterName
-              attribute: kafka.cluster.name
-            - field: topic
-              attribute: topic
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: " ("
+              - attribute: cluster.name
+              - value: ")"
+            hashAlgorithm: FARM_HASH

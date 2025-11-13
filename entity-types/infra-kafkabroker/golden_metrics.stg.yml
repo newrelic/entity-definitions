@@ -12,7 +12,6 @@ incomingMessagesPerSecond:
       from: Metric
       where: metricName = 'kafka.message.count'
       eventId: entity.guid
-      eventName: kafka.broker.name
 
 bytesInPerSecond:
   title: Bytes in per second
@@ -28,7 +27,21 @@ bytesInPerSecond:
       from: Metric
       where: metricName = 'kafka.network.io' AND (state = 'in' OR direction = 'in')
       eventId: entity.guid
-      eventName: kafka.broker.name
+
+underReplicatedPartitions:
+  title: Under replicated partitions
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(replication.unreplicatedPartitions)
+      from: KafkaBrokerSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(kafka.partition.under_replicated)
+      from: Metric
+      where: metricName = 'kafka.partition.under_replicated'
+      eventId: entity.guid
 
 produceRequestLatency99p:
   title: Produce request latency (99th percentile)
@@ -42,9 +55,8 @@ produceRequestLatency99p:
     opentelemetry:
       select: average(`kafka.request.time.99p`)
       from: Metric
-      where: metricName = 'kafka.request.time.99p' AND type = 'produce'
+      where: metricName = 'kafka.request.time.99p' AND type = 'Produce'
       eventId: entity.guid
-      eventName: kafka.broker.name
 
 failedRequestsPerSecond:
   title: Failed requests per second
@@ -60,4 +72,3 @@ failedRequestsPerSecond:
       from: Metric
       where: metricName = 'kafka.request.failed'
       eventId: entity.guid
-      eventName: kafka.broker.name
