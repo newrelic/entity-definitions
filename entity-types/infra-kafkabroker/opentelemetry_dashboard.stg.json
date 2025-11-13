@@ -80,7 +80,27 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.partition.under_replicated) AS 'Under Replicated Partitions' FROM Metric WHERE metricName='kafka.partition.under_replicated' TIMESERIES AUTO"
+                "query": "SELECT max(kafka.partition.under_replicated) AS 'Under Replicated Partitions' FROM Metric WHERE metricName='kafka.partition.under_replicated' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Under Min ISR Partitions",
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.partition.under_min_isr) AS 'Under Min ISR Partitions' FROM Metric WHERE metricName = 'kafka.partition.under_min_isr' TIMESERIES AUTO"
               }
             ]
           }
@@ -88,9 +108,9 @@
         {
           "title": "In-Sync Replica Operations (per min)",
           "layout": {
-            "column": 7,
-            "row": 5,
-            "width": 6,
+            "column": 1,
+            "row": 8,
+            "width": 4,
             "height": 3
           },
           "visualization": {
@@ -108,7 +128,7 @@
         {
           "title": "Max Replica Lag (Messages)",
           "layout": {
-            "column": 1,
+            "column": 5,
             "row": 8,
             "width": 4,
             "height": 3
@@ -126,10 +146,30 @@
           }
         },
         {
+          "title": "Request Latency (99th Percentile) (ms)",
+          "layout": {
+            "column": 9,
+            "row": 8,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(average(`kafka.request.time.99p`), WHERE type='Produce') AS `Produce`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchConsumer') AS `Consumer Fetch`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchFollower') AS `Follower Fetch` FROM Metric WHERE metricName = 'kafka.request.time.99p' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
           "title": "Requests In Per Second",
           "layout": {
-            "column": 5,
-            "row": 8,
+            "column": 1,
+            "row": 11,
             "width": 4,
             "height": 3
           },
@@ -148,46 +188,6 @@
         {
           "title": "Request Failures Per Second",
           "layout": {
-            "column": 9,
-            "row": 8,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000) AS `Failed Requests` FROM Metric WHERE metricName = 'kafka.request.failed' TIMESERIES AUTO FACET type"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Request Latency (99th Percentile) (ms)",
-          "layout": {
-            "column": 1,
-            "row": 11,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT filter(average(`kafka.request.time.99p`), WHERE type='Produce') AS `Produce`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchConsumer') AS `Consumer Fetch`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchFollower') AS `Follower Fetch` FROM Metric WHERE metricName = 'kafka.request.time.99p' TIMESERIES AUTO"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Request Queue Size",
-          "layout": {
             "column": 5,
             "row": 11,
             "width": 4,
@@ -200,7 +200,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(kafka.request.queue) as `Request Queue Size` FROM Metric WHERE metricName = 'kafka.request.queue' TIMESERIES AUTO"
+                "query": "SELECT sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000) AS `Failed Requests` FROM Metric WHERE metricName = 'kafka.request.failed' TIMESERIES AUTO FACET type"
               }
             ]
           }
