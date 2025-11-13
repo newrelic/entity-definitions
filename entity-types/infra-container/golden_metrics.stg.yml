@@ -4,10 +4,10 @@ cpuUsage:
     newRelic:
       select: max(docker.container.cpuUsedCores) or max(k8s.container.cpuUsedCores) as 'CPU used cores'
     opentelemetry:
-      # Defaulting to the New Relic query for now since value functions for OpenTelemetry cumulative metrics cannot be matched reliably in golden_metrics.yml.
+      # Emulate a rate calculation using timestamps to get CPU cores used
+      # container.cpu.usage.total is in nanoseconds, divide by 1E9 to get seconds, then by time delta for cores
       # See: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/dockerstatsreceiver/metadata.yaml
-      # Note: CPU limit (container.cpu.limit) is emitted, but cannot be reliably queried in golden_metrics.yml due to NRQL limitations.
-      select: rate(sum(container.cpu.usage.total)/1E9, 1 second) AS 'CPU usage (cores)'
+      select: (sum(container.cpu.usage.total) / 1E9) / sum((endTimestamp - timestamp) / 1000) AS 'CPU usage (cores)'
 cpuUtilization:
   title: CPU utilization (%)
   unit: PERCENTAGE
@@ -42,4 +42,5 @@ networkTrafficTotal:
     newRelic:
       select: max(docker.container.networkRxBytesPerSecond) + max(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
     opentelemetry:
-      select: rate(sum(container.network.io.usage.rx_bytes), 1 second) + rate(sum(container.network.io.usage.tx_bytes), 1 second) AS 'Network traffic (bytes per second)'
+      # Emulate a rate calculation using timestamps to get bytes per second
+      select: (sum(container.network.io.usage.rx_bytes) / sum((endTimestamp - timestamp) / 1000)) + (sum(container.network.io.usage.tx_bytes) / sum((endTimestamp - timestamp) / 1000)) AS 'Network traffic (bytes per second)'
