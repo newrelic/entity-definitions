@@ -190,70 +190,70 @@ relationships:
             - field: cloudResourceId
               attribute: newrelic.aws_metric_streams.arn
 
-  - name: apmProducesOtelKafkaTopicStgOverride
-    version: "1"
-    origins:
-      - Distributed Tracing
-      - OpenTelemetry
-    conditions:
-      - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: metricName
-        startsWith: "kafka.producer"
-      - attribute: entity.type
-        anyOf: [ "SERVICE" ]
-      - attribute: kafka.cluster.name
-        present: true
-      - attribute: topic
-        present: true
-    relationship:
-      expires: P75M
-      relationshipType: PRODUCES
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: KAFKATOPIC
-          fields:
-            - field: clusterName
-              attribute: kafka.cluster.name
-            - field: topic
-              attribute: topic
+#  - name: apmProducesOtelKafkaTopicStgOverride
+#    version: "1"
+#    origins:
+#      - Distributed Tracing
+#      - OpenTelemetry
+#    conditions:
+#      - attribute: eventType
+#        anyOf: [ "Metric" ]
+#      - attribute: instrumentation.provider
+#        anyOf: [ "opentelemetry" ]
+#      - attribute: metricName
+#        startsWith: "kafka.producer"
+#      - attribute: entity.type
+#        anyOf: [ "SERVICE" ]
+#      - attribute: kafka.cluster.name
+#        present: true
+#      - attribute: topic
+#        present: true
+#    relationship:
+#      expires: P75M
+#      relationshipType: PRODUCES
+#      source:
+#        extractGuid:
+#          attribute: entity.guid
+#      target:
+#        lookupGuid:
+#          candidateCategory: KAFKATOPIC
+#          fields:
+#            - field: clusterName
+#              attribute: cluster.name
+#            - field: topic
+#              attribute: topic
 
-  - name: apmConsumesOtelKafkaTopicStgOverride
-    version: "1"
-    origins:
-      - OpenTelemetry
-    conditions:
-      - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: metricName
-        startsWith: "kafka.consumer"
-      - attribute: entity.type
-        anyOf: [ "SERVICE" ]
-      - attribute: kafka.cluster.name
-        present: true
-      - attribute: topic
-        present: true
-    relationship:
-      expires: P75M
-      relationshipType: CONSUMES
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: KAFKATOPIC
-          fields:
-            - field: clusterName
-              attribute: kafka.cluster.name
-            - field: topic
-              attribute: topic
+#  - name: apmConsumesOtelKafkaTopicStgOverride
+#    version: "1"
+#    origins:
+#      - OpenTelemetry
+#    conditions:
+#      - attribute: eventType
+#        anyOf: [ "Metric" ]
+#      - attribute: instrumentation.provider
+#        anyOf: [ "opentelemetry" ]
+#      - attribute: metricName
+#        startsWith: "kafka.consumer"
+#      - attribute: entity.type
+#        anyOf: [ "SERVICE" ]
+#      - attribute: kafka.cluster.name
+#        present: true
+#      - attribute: topic
+#        present: true
+#    relationship:
+#      expires: P75M
+#      relationshipType: CONSUMES
+#      source:
+#        extractGuid:
+#          attribute: entity.guid
+#      target:
+#        lookupGuid:
+#          candidateCategory: KAFKATOPIC
+#          fields:
+#            - field: clusterName
+#              attribute: cluster.name
+#            - field: topic
+#              attribute: topic
 
   - name: apmProducesOtelKafkaTopicStgOverrideExp
     version: "1"
@@ -291,7 +291,7 @@ relationships:
             fragments:
               - attribute: topic
               - value: " ("
-              - attribute: kafka.cluster.name
+              - attribute: cluster.name
               - value: ")"
             hashAlgorithm: FARM_HASH
 
@@ -330,6 +330,6 @@ relationships:
             fragments:
               - attribute: topic
               - value: " ("
-              - attribute: kafka.cluster.name
+              - attribute: cluster.name
               - value: ")"
             hashAlgorithm: FARM_HASH
