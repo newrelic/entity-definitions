@@ -85,75 +85,6 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
 
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - deployment
-      encodeIdentifierInGUID: true
-      name: deployment
-      conditions:
-        # kube-state-metrics deployment prefix
-        - attribute: metricName
-          prefix: kube_deployment_
-        # identifier attributes
-        - attribute: deployment
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # open telemetry
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
-        # if service.name is present, it's a service
-        - attribute: service.name
-          present: false
-      tags:
-        deployment:
-          entityTagNames: [k8s.deploymentName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - deployment
-      encodeIdentifierInGUID: true
-      name: deployment
-      conditions:
-        # kube-state-metrics deployment prefix
-        - attribute: metricName
-          prefix: kube_deployment_
-        # identifier attributes
-        - attribute: deployment
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # open telemetry
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
-        # if newrelic.entity.type is present, it's not a service
-        - attribute: service.name
-          present: true
-        - attribute: newrelic.entity.type
-          present: true
-      tags:
-        deployment:
-          entityTagNames: [k8s.deploymentName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
-
     # Infrastructure event data via opentelemetry
     - compositeIdentifier:
         separator: ":"
@@ -249,3 +180,7 @@ synthesis:
           entityTagName: aws.region
       prefixedTags:
         label.:
+
+ownership:
+  primaryOwner:
+    teamName: "K8s Agents"
