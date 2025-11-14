@@ -1,15 +1,29 @@
-hostCpuUtilization:
-  title: Host CPU utilization
+bufferCacheHitRatio:
+  title: Buffer Cache Hit Ratio
   unit: PERCENTAGE
   queries:
     newRelic:
-      select: average(db.hostCpuUtilization)
-      from: OracleDatabaseSample
+      select: average(memory.bufferCacheHitRatio)
+      from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(oracledb.cpu_time)
-      from: Metric  
+      select: average(newrelicoracledb.system.buffer_cache_hit_ratio)
+      from: Metric
+databaseCpuTimeRatio:
+  title: Database CPU Time Ratio
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.system.database_cpu_time_ratio)
+      from: Metric
+responseTimePerTransaction:
+  title: Latency
+  unit: MS
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.system.response_time_per_transaction)
+      from: Metric
 ioMegabytesPerSecond:
   title: IO megabytes per second
   unit: BYTES_PER_SECOND
@@ -19,20 +33,18 @@ ioMegabytesPerSecond:
       from: OracleDatabaseSample
       eventId: entityGuid
       eventName: entityName
-sessions:
-  title: Sessions
-  unit: COUNT
-  queries:
-    newRelic:
-      select: latest(db.sessionCount)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
-      select: latest(oracledb.sessions.usage)
-      from: Metric  
+      select: average(newrelicoracledb.system.io_megabytes_per_second)
+      from: Metric
+redoGeneratedBytesPerSecond:
+  title: I/O Throughput
+  unit: BYTES_PER_SECOND
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.system.redo_generated_bytes_per_second)
+      from: Metric 
 executionsPerSecond:
-  title: Executions per second
+  title: Executions per second (Queries/s)
   unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
@@ -41,24 +53,33 @@ executionsPerSecond:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(oracledb.executions)
-      from: Metric 
-longTableScans:
-  queries:
-    newRelic:
-      select: average(`db.longTableScansPerSecond`)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
-  unit: OPERATIONS_PER_SECOND
-  title: Long table scans
-softParseRatio:
-  queries:
-    newRelic:
-      select: average(`db.softParseRatio`)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
+      select: average(newrelicoracledb.system.executions_per_second)
+      from: Metric
+averageActiveSessions:
+  title: Active Workload
   unit: COUNT
-  title: Soft parse ratio
-
+  queries:
+    opentelemetry:
+      select: latest(newrelicoracledb.system.average_active_sessions)
+      from: Metric
+physicalReadsPerSecond:
+  title: Physical Reads per Second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.system.physical_reads_per_second)
+      from: Metric
+enqueueWaitsPerSecond:
+  title: Enqueue Waits per Second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.system.enqueue_waits_per_second)
+      from: Metric
+hardParseCountPerSecond:
+  title: Hard Parse Count per Second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: average(newrelicoracledb.system.hard_parse_count_per_second)
+      from: Metric

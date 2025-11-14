@@ -1,0 +1,129 @@
+# 1. Active Connections 
+activeConnections:
+  title: Active Workload
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(activeConnections)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(activeConnections)
+      from: Metric
+
+# 2. Total Connections 
+connections:
+  title: Connections
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(stats.connections)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.stats.connections)
+      from: Metric
+
+# 3. Blocked Processes
+blockedProcesses:
+  title: Blocked Processes
+  unit: COUNT
+  queries:
+    newRelic:
+      select: max(instance.blockedProcessesCount)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: max(instance.blockedProcessesCount)
+      from: Metric
+
+# 4. I/O Stall Time 
+ioStallTime:
+  title: I/O Stall Time (ms)
+  unit: MS
+  queries:
+    newRelic:
+      select: average(io.stallInMilliseconds)
+      from: MssqlDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.database.io.stallInMilliseconds)
+      from: Metric
+
+# 5. Transactions per Second 
+transactionsPerSecond:
+  title: Transactions
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(instance.transactionsPerSecond)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.instance.transactions_per_sec)
+      from: Metric
+
+# 6. SQL Compilations 
+sqlCompilations:
+  title: SQL Compilations
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(stats.sqlCompilations)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.stats.sql_compilations_per_sec)
+      from: Metric
+
+# 7. Buffer Cache Hit Ratio 
+bufferCacheHitRatio:
+  title: Buffer Cache Hit Ratio
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(system.bufferPoolHitPercent)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.bufferPoolHitPercent)
+      from: Metric
+
+# 8. Memory Utilization 
+memoryUtilization:
+  title: Memory Utilization
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(memoryUtilization)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.instance.memory_utilization)
+      from: Metric
+
+# 9. Log Bytes Flushed 
+logBytesFlushedPerSec:
+  title: I/O Throughput
+  unit: BYTES_PER_SECOND
+  queries:
+    opentelemetry:
+      select: average(sqlserver.database.log.bytesFlushesPerSec)
+      from: Metric
+
+# 10. Deadlocks Per Second
+DeadlocksPerSecond:
+  title: Deadlocks Per Second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: average(sqlserver.stats.deadlocks_per_sec)
+      from: Metric

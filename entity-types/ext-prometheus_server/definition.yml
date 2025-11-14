@@ -1,0 +1,53 @@
+domain: EXT
+type: PROMETHEUS_SERVER
+goldenTags:
+  - k8s.clusterName
+  - k8s.namespaceName
+synthesis:
+  rules:
+    # prometheus
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - cluster_name
+          - prometheus_server
+      encodeIdentifierInGUID: true
+      name: prometheus_server
+      conditions:
+        - attribute: metricName
+          prefix: prometheus_
+    # otel
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - prometheus_server
+      encodeIdentifierInGUID: true
+      name: prometheus_server
+      conditions:
+        - attribute: metricName
+          prefix: prometheus_
+
+  tags:
+    cluster_name:
+      entityTagName: k8s.clusterName
+      ttl: P1D
+    namespace:
+      entityTagName: k8s.namespaceName
+      ttl: P1D
+    node:
+      entityTagName: k8s.nodeName
+      ttl: P1D
+    pod:
+      entityTagName: k8s.podName
+      ttl: P1D
+dashboardTemplates:
+  prometheus:
+    template: dashboard.json
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"
