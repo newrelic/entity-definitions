@@ -86,83 +86,6 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
 
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - daemonset
-      encodeIdentifierInGUID: true
-      name: daemonset
-      conditions:
-        # kube-state-metrics daemonset prefix
-        - attribute: metricName
-          prefix: kube_daemonset_
-        # identifier attributes
-        - attribute: daemonset
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # open telemetry
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
-        # if service.name is present, it's a service
-        - attribute: service.name
-          present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
-      tags:
-        daemonset:
-          entityTagNames: [k8s.daemonsetName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
-
-
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - daemonset
-      encodeIdentifierInGUID: true
-      name: daemonset
-      conditions:
-        # kube-state-metrics daemonset prefix
-        - attribute: metricName
-          prefix: kube_daemonset_
-        # identifier attributes
-        - attribute: daemonset
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # open telemetry
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
-        # if newrelic.entity.type is present, it's not a service
-        - attribute: service.name
-          present: true
-        - attribute: newrelic.entity.type
-          present: true
-      tags:
-        daemonset:
-          entityTagNames: [k8s.daemonsetName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
-
     # Infrastructure event data via opentelemetry
     - compositeIdentifier:
         separator: ":"
@@ -255,4 +178,4 @@ synthesis:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "K8s Agents"
