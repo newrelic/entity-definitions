@@ -102,17 +102,11 @@ relationships:
   - name: apmProducesKafkaTopicStgOverride
     version: "1"
     origins:
-      - Infrastructure Agent
-      - OnHost Integration
+      - APM Metrics
     conditions:
-      - attribute: eventType
-        anyOf: [ "KafkaProducerSample" ]
-      - attribute: integrationName
-        anyOf: [ "com.newrelic.kafka" ]
-      - attribute: clusterName
-        present: true
-      - attribute: topic
-        present: true
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/*:9[0-9]+/Produce/.+"
+    
     relationship:
       expires: P75M
       relationshipType: PRODUCES
@@ -130,7 +124,7 @@ relationships:
           identifier:
             fragments:
               - value: "ka-topic:"
-              - attribute: topic
+              - attribute: metricName__5
               - value: ":clustername="
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
@@ -138,17 +132,10 @@ relationships:
   - name: apmConsumesKafkaTopicStgOverride
     version: "1"
     origins:
-      - Infrastructure Agent
-      - OnHost Integration
+      - APM Metrics
     conditions:
-      - attribute: eventType
-        anyOf: [ "KafkaConsumerSample" ]
-      - attribute: integrationName
-        anyOf: [ "com.newrelic.kafka" ]
-      - attribute: clusterName
-        present: true
-      - attribute: topic
-        present: true
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/*:9[0-9]+/Consume/.+"
     relationship:
       expires: P75M
       relationshipType: CONSUMES
@@ -166,7 +153,7 @@ relationships:
           identifier:
             fragments:
               - value: "ka-topic:"
-              - attribute: topic
+              - attribute: metricName__5
               - value: ":clustername="
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
