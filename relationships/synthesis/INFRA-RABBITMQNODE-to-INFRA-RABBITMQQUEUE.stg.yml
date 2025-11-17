@@ -51,29 +51,33 @@ relationships:
       - OnHost Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "RabbitmqNodeSample","RabbitmqQueueSample" ]
+        anyOf: [ "RabbitmqQueueSample" ]
       - attribute: nr.entityType
-        anyOf: [ "RabbitmqNode","RABBITMQNODE","RabbitmqQueue","RABBITMQQUEUE" ]
+        anyOf: [ "RabbitmqQueue","RABBITMQQUEUE" ]
       - attribute: clusterName
         present: true
     relationship:
       expires: P75M
       relationshipType: CONTAINS
       source:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            attribute: nr.entityType
-      target:
         buildGuid:
           account:
             attribute: accountId
           domain:
             value: INFRA
           type:
-            value: RABBITMQQUEUE
+            value: RABBITMQNODE
             valueInGuid: NA
           identifier:
             fragments:
-              - value: entityKey
+              - value: "ra-node:"
+              - attribute: "reportingEndpoint"
+              - attribute: "displayName"
+              - value: ":clustername=rabbit@"
+              - attribute: "fullHostname"
             hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            attribute: nr.entityType
