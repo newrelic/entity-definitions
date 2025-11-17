@@ -33,6 +33,43 @@ synthesis:
           value: 'api.metrics.otlp'
         # if newrelic.entity.type is present, it's not a service
         - attribute: service.name
+          present: false
+      tags:
+        k8s.replicaset.name:
+          entityTagNames: [k8s.replicasetName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+    
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.replicaset.name
+      encodeIdentifierInGUID: true
+      name: k8s.replicaset.name
+      conditions:
+        # kube-state-metrics 
+        - attribute: metricName
+          value: kube_replicaset_owner
+        # identifier attributes
+        - attribute: k8s.replicaset.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
           present: true
         - attribute: newrelic.entity.type
           present: true
@@ -46,6 +83,7 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
+    
     # newrelic integration data via nri-bundle
     - identifier: entityId
       name: displayName
