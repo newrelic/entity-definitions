@@ -3,7 +3,6 @@ relationships:
   - name: hostHostsKafkaBroker
     version: "1"
     origins:
-      - Infrastructure Agent
       - OnHost Integration
     conditions:
       - attribute: eventType
@@ -19,10 +18,53 @@ relationships:
       expires: P75M
       relationshipType: HOSTS
       source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
+      target:
         extractGuid:
           attribute: entityGuid
           entityType:
+            value: KAFKABROKER
+  - name: hostHostsKafkaBrokerRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["KafkaBrokerSample"]
+      - attribute: nr.entityType
+        anyOf: ["KafkaBroker","KAFKABROKER"]
+      - attribute: hostname
+        present: true
+      # Local detection - broker address is localhost
+      - attribute: displayName
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|$)"
+    relationship:
+      expires: P75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
             value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
@@ -32,7 +74,6 @@ relationships:
   - name: hostMonitorsKafkaBroker
     version: "1"
     origins:
-      - Infrastructure Agent
       - OnHost Integration
     conditions:
       - attribute: eventType
@@ -47,16 +88,57 @@ relationships:
       expires: P75M
       relationshipType: MANAGES
       source:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
             value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
             value: KAFKABROKER
-
+  - name: hostMonitorsKafkaBrokerRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["KafkaBrokerSample"]
+      - attribute: nr.entityType
+        anyOf: ["KafkaBroker","KAFKABROKER"]
+      - attribute: hostname
+        present: true
+      - attribute: displayName
+        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KAFKABROKER
     # Local scenario: Kafka broker running on the same host with OpenTelemetry
   - name: hostHostsOtelKafkaBroker
     version: "1"
