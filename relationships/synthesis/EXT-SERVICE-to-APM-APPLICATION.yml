@@ -1,0 +1,30 @@
+relationships:
+  - name: extEbpfServiceISApmApplication
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: instrumentation.name
+        anyOf: ["nr_ebpf"]
+      - attribute: instrumentation.provider
+        anyOf: ["newrelic-ebpf"]
+    relationship:
+      expires: 24H
+      relationshipType: IS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: APM
+          type:
+            value: APPLICATION
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
