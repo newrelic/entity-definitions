@@ -153,7 +153,58 @@ synthesis:
         entityTagName: k8s.deploymentName
         ttl: P1D
     
-    # telemetry from NR eBPF agent
+    # telemetry from NR eBPF agent client
+  - identifier: service.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.name
+      value: nr_ebpf
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: trace_role
+      value: client
+    - attribute: service.name
+    tags:
+      k8s.cluster.name:
+        entityTagName: k8s.clusterName
+        ttl: P1D
+      k8s.namespace.name:
+        entityTagName: k8s.namespaceName
+        ttl: P1D
+      deployment.name:
+        entityTagName: k8s.deploymentName
+        ttl: P1D
+      host.name:
+      local_addr:
+
+    # telemetry from NR eBPF agent server
+  - identifier: service.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.name
+      value: nr_ebpf
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: trace_role
+      value: server
+    - attribute: service.name
+    tags:
+      k8s.cluster.name:
+        entityTagName: k8s.clusterName
+        ttl: P1D
+      k8s.namespace.name:
+        entityTagName: k8s.namespaceName
+        ttl: P1D
+      deployment.name:
+        entityTagName: k8s.deploymentName
+        ttl: P1D
+      host.name:
+      local_addr:
+      local_port:
+
+    # telemetry from NR eBPF agent with instrumentation.provider newrelic-ebpf
   - compositeIdentifier:
         separator: ":"
         attributes:
@@ -162,11 +213,12 @@ synthesis:
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
+    - attribute: instrumentation.provider
+      value: newrelic-ebpf
     - attribute: instrumentation.name
       value: nr_ebpf
     - attribute: service.name
-    - attribute: ebpf_entity
-      present: false
+    - attribute: trace_role
     tags:
       k8s.cluster.name:
         entityTagName: k8s.clusterName
@@ -193,8 +245,6 @@ synthesis:
     conditions:
     - attribute: service.name
     - attribute: newrelic.entity.type
-      present: false
-    - attribute: ebpf_entity
       present: false
     tags:
       k8s.cluster.name:
