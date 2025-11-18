@@ -75,6 +75,80 @@ synthesis:
       # and select the dashboard.
       otel.library.name:
         entityTagName: instrumentation.name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: metricName
+        prefix: nginxplus_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "otelcol/prometheusreceiver"
+    tags:
+      nginx.server.endpoint:
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: metricName
+        prefix: nginxplus_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      nginx.server.endpoint:
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: newrelic.source
+        value: 'api.logs.otlp'
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: instrumentation.provider
+        value: opentelemetry
+    tags:
+      nginx.server.endpoint:
 
   tags:
     # For OpenTelemetry
@@ -92,3 +166,7 @@ dashboardTemplates:
   # otel receiver
   opentelemetry:
     template: opentelemetry_dashboard.stg.json
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"
