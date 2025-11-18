@@ -139,7 +139,10 @@ const RULES = [
     apply: (def, _) => {
       const notAllowed = [
         // Types with not exposed functionality.
-        'INFRA-KUBERNETESCLUSTER'
+        'INFRA-KUBERNETESCLUSTER',
+
+        // Types with special implementations.
+        'BROWSER-APPLICATION'
       ];
 
       const domainType = def.domain + '-' + def.type;
