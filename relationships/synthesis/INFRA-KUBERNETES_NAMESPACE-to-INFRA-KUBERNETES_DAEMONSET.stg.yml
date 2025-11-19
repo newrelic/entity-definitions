@@ -1,11 +1,11 @@
 relationships:
-  - name: k8sClusterContainsStatefulSet
+  - name: k8sNamespaceContainsDaemonSet
     version: "1"
     origins:
       - Kubernetes Integration
     conditions: 
       - attribute: eventType
-        anyOf: [ "K8sStatefulsetSample" ]
+        anyOf: [ "K8sNamespaceSample" ]
     relationship:
       expires: P75M
       relationshipType: CONTAINS
@@ -16,7 +16,7 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETESCLUSTER
+            value: KUBERNETES_NAMESPACE
             valueInGuid: NA
           identifier:
             fragments:
@@ -27,15 +27,15 @@ relationships:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: KUBERNETES_STATEFULSET
-  - name: otelKsmK8sClusterContainsStatefulSet
-    # use kube-state-metrics kube_statefulset_created metrics
+            value: KUBERNETES_DAEMONSET
+  - name: otelKsmK8sNamespaceContainsDaemonSet
+    # use kube-state-metrics kube_daemonset_created
     version: "1"
     origins: 
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        anyOf: [ "kube_statefulset_created" ]
+        anyOf: [ "kube_daemonset_created" ]
     relationship:
       expires: P75M
       relationshipType: CONTAINS
@@ -46,13 +46,14 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETESCLUSTER
+            value: KUBERNETES_NAMESPACE
           identifier:
             fragments:
-              - attribute: k8s.cluster.name            
+              - attribute: k8s.cluster.name
+              - attribute: k8s.namespace.name
             hashAlgorithm: FARM_HASH
       target:  
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: KUBERNETES_STATEFULSET
+            value: KUBERNETES_DAEMONSET
