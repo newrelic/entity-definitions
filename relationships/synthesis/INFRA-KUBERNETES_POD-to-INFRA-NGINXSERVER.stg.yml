@@ -30,11 +30,52 @@ relationships:
             valueInGuid: NA
           identifier:
             fragments:
-              - value: "k8s:"
               - attribute: k8s.cluster.name
               - value: ":"
               - attribute: k8s.namespace.name
-              - value: ":pod:"
+              - value: ":"
+              - attribute: k8s.pod.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: NGINXSERVER
+  - name: k8sPodContainsNginxPlusServer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: nginxplus_
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: k8s.cluster.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+    relationship:
+      expires: P75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
               - attribute: k8s.pod.name
             hashAlgorithm: FARM_HASH
       target:
