@@ -89,7 +89,7 @@ relationships:
       - attribute: entity.type
         anyOf: [ "PIXIE_DNS" ]
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         buildGuid:
@@ -298,7 +298,7 @@ Example of a valid relationship section:
 
 ```yaml
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         buildGuid:
