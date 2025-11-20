@@ -279,6 +279,9 @@ conditions:
 
 ##### regex 
 
+The regex should match the entire attribute value. 
+For example `\.rds\.amazonaws\.com` regex will not match `metricName = mydb.rds.amazonaws.com` but `.*\.rds\.amazonaws\.com.*` regex will.
+
 Example:
 
 ```yaml
