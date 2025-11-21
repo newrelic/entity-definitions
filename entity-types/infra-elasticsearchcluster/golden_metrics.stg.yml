@@ -1,25 +1,78 @@
 clusterHealth:
   title: Cluster Health
-  query:
-    select: latest(status)
-    from: Metric
-    where: "entityType = 'ELASTICSEARCHCLUSTER'"
-  enabled: true
-
-nodeCount:
-  title: Total Nodes
-  query:
-    select: latest(elasticsearch.cluster.nodes)
-    from: Metric
-    where: "entityType = 'ELASTICSEARCHCLUSTER'"
-  unit: COUNT
-  enabled: true
-
-shardCount:
-  title: Total Shards
-  query:
-    select: latest(elasticsearch.cluster.shards)
-    from: Metric
-    where: "entityType = 'ELASTICSEARCHCLUSTER'"
-  unit: COUNT
-  enabled: true
+  displayAsValue: true
+  queries:
+    opentelemetry:
+      select: latest(status)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+clusterDataNode:
+  title: Cluster Data Node
+  queries:
+    opentelemetry:
+      select: average(elasticsearch.cluster.data_nodes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+clusterNode:
+  title: Cluster Node
+  queries:
+    opentelemetry:
+      select: average(elasticsearch.cluster.nodes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name 
+clusterActiveShard:
+  title: Cluster Active Shard
+  queries:
+    opentelemetry:
+      select: average(elasticsearch.cluster.shards)
+      from: Metric
+      where: state='active'
+      eventId: entity.guid
+      eventName: entity.name
+clusterInitializingShard:
+  title: Cluster Initializing Shard
+  queries:
+    opentelemetry:
+      select: average(elasticsearch.cluster.shards)
+      from: Metric
+      where: state='initializing'
+      eventId: entity.guid
+      eventName: entity.name
+clusterPrimaryActiveShard:
+  title: Cluster Primary Active Shard
+  queries:
+    opentelemetry:
+      select: average(elasticsearch.cluster.shards)
+      from: Metric
+      where: state='active_primary'
+      eventId: entity.guid
+      eventName: entity.name
+clusterRelocatingShard:
+  title: Cluster Relocating Shard
+  queries:
+    opentelemetry:
+      select: average(elasticsearch.cluster.shards)
+      from: Metric
+      where: state='relocating'
+      eventId: entity.guid
+      eventName: entity.name
+clusterUnassignedShard:
+  title: Cluster Unassigned Shard
+  queries:
+    opentelemetry:
+      select: average(elasticsearch.cluster.shards)
+      from: Metric
+      where: state='unassigned'
+      eventId: entity.guid
+      eventName: entity.name
+clusterPendingTask:
+  title: Cluster Pending Task
+  queries:
+    opentelemetry:
+      select: latest(elasticsearch.cluster.pending_tasks)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name      
