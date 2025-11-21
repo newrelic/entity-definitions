@@ -89,7 +89,7 @@ relationships:
       - attribute: entity.type
         anyOf: [ "PIXIE_DNS" ]
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         buildGuid:
@@ -279,6 +279,9 @@ conditions:
 
 ##### regex 
 
+The regex should match the entire attribute value. 
+For example `\.rds\.amazonaws\.com` regex will not match `metricName = mydb.rds.amazonaws.com` but `.*\.rds\.amazonaws\.com.*` regex will.
+
 Example:
 
 ```yaml
@@ -298,7 +301,7 @@ Example of a valid relationship section:
 
 ```yaml
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         buildGuid:
