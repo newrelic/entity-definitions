@@ -1,0 +1,22 @@
+relationships:
+  - name: ApmApplicationISextEbpfService
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: entity.type
+        present: false
+    relationship:
+      expires: P24H
+      relationshipType: IS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: EXTEBPFSERVICE
+          fields:
+            - field: service.name
+              attribute: entity.name
