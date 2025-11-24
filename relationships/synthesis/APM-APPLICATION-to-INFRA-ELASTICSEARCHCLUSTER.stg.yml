@@ -1,19 +1,24 @@
 relationships:
-  - name: otelelasticsearchClusterContainsNode
+  - name: apmCallsOtelElasticsearchCluster
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: elasticsearch.node.name
-        present: true
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
       - attribute: entity.type
-        anyOf: ["ELASTICSEARCHNODE"]
+        anyOf: [ "SERVICE" ]
+      - attribute: es.cluster.name
+        present: true
     relationship:
       expires: PT75M
-      relationshipType: CONTAINS
+      relationshipType: CALLS
       source:
+        extractGuid:
+          attribute: entity.guid
+      target:
         buildGuid:
           account:
             attribute: accountId
@@ -23,11 +28,5 @@ relationships:
             value: ELASTICSEARCHCLUSTER
           identifier:
             fragments:
-              - attribute: elasticsearch.cluster.name
+              - attribute: es.cluster.name
             hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
-            attribute: entity.type
-
