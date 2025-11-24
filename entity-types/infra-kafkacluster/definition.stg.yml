@@ -25,11 +25,33 @@ synthesis:
         value: opentelemetry
     tags:
       # Environment resource attributes
-      host.name:
-        entityTagName: hostName
       instrumentation.provider:
       kafka.cluster.name:
-        entityTagName: clusterName
+      otel.library.name:
+        entityTagName: instrumentation.name
+      k8s.namespace.name:
+
+    # This rule is for OTEL kafka cluster logs
+  - identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Logs
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: client-id
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
       otel.library.name:
         entityTagName: instrumentation.name
       k8s.namespace.name:
@@ -58,7 +80,7 @@ dashboardTemplates:
 
 goldenTags:
 - clusterName
-- hostName
+- kafka.cluster.name
 
 ownership:
   primaryOwner:

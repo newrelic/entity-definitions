@@ -7,8 +7,17 @@ configuration:
 synthesis:
   rules:
     # This rule is for OTEL contrib jmx kafka receivers metrics
-    - identifier: kafka.topic.name
-      name: kafka.topic.name
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - topic
+          - kafka.cluster.name
+      compositeName:
+        fragments:
+          - attribute: topic
+          - value: " ("
+          - attribute: kafka.cluster.name
+          - value: ")"
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -17,8 +26,8 @@ synthesis:
           present: true
         - attribute: instrumentation.provider
           value: opentelemetry
-        - attribute: metricName
-          prefix: kafka.
+        - attribute: client-id
+          present: false
         - attribute: otel.library.name
           value: "io.opentelemetry.contrib.jmxmetrics"
       tags:
@@ -35,14 +44,25 @@ synthesis:
 
 
     # This rule is for OTEL JMX Kafka receivers with custom JMX configuration metrics
-    - identifier: kafka.topic.name
-      name: kafka.topic.name
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - topic
+          - kafka.cluster.name
+      compositeName:
+        fragments:
+          - attribute: topic
+          - value: " ("
+          - attribute: kafka.cluster.name
+          - value: ")"
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: topic
           present: true
+        - attribute: client-id
+          present: false
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
@@ -60,14 +80,25 @@ synthesis:
         k8s.namespace.name:
 
       # This rule is for OTEL kafkametrics receivers metrics
-    - identifier: kafka.topic.name
-      name: kafka.topic.name
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - topic
+          - kafka.cluster.name
+      compositeName:
+        fragments:
+          - attribute: topic
+          - value: " ("
+          - attribute: kafka.cluster.name
+          - value: ")"
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: topic
           present: true
+        - attribute: client-id
+          present: false
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
@@ -76,6 +107,40 @@ synthesis:
         # Environment resource attributes
         host.name:
           entityTagName: hostName
+        instrumentation.provider:
+        kafka.cluster.name:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        topic:
+        k8s.namespace.name:
+
+      # This rule is for OTEL prometheus receivers metrics
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - topic
+          - kafka.cluster.name
+      compositeName:
+        fragments:
+          - attribute: topic
+          - value: " ("
+          - attribute: kafka.cluster.name
+          - value: ")"
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: topic
+          present: true
+        - attribute: client-id
+          present: false
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+      tags:
+        # Environment resource attributes
         instrumentation.provider:
         kafka.cluster.name:
           entityTagName: clusterName
@@ -94,7 +159,6 @@ dashboardTemplates:
 
 goldenTags:
 - clusterName
-- hostName
 - topic
 
 ownership:
