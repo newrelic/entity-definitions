@@ -35,7 +35,6 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
       broker.id:
-        entityTagName: brokerId
       k8s.pod.name:
       k8s.node.name:
       k8s.pod.uid:
@@ -66,38 +65,6 @@ synthesis:
         present: true
       - attribute: kafka.cluster.name
         present: true
-    tags:
-      instrumentation.provider:
-      kafka.cluster.name:
-      otel.library.name:
-        entityTagName: instrumentation.name
-      broker.id:
-      k8s.pod.name:
-      k8s.node.name:
-      k8s.pod.uid:
-      k8s.namespace.name:
-
-  # This rule is for OTEL kafka broker traces
-  - compositeIdentifier:
-      separator: ":"
-      attributes:
-        - broker.id
-        - kafka.cluster.name
-    compositeName:
-      fragments:
-        - value: "BrokerId: "
-        - attribute: broker.id
-        - value: " ("
-        - attribute: kafka.cluster.name
-        - value: ")"
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: eventType
-        value: Span
-      - attribute: instrumentation.provider
-        value: opentelemetry
-      - attribute: topic
-        present: false
     tags:
       instrumentation.provider:
       kafka.cluster.name:
