@@ -111,12 +111,12 @@ function relationshipExpiryValidation (rule) {
     expiry = durationParser.parse(rule.relationship.expires);
   } catch (e) {
     console.log(e);
-    throw new Error(rule.name + ': invalid expiry format');
+    throw new Error(rule.name + ': invalid relationship synthesis rule expires format');
   }
 
   const expiryMillis = toMillis(expiry);
   if (expiryMillis < minRelationshipTtl || expiryMillis > maxRelationshipTtl) {
-    throw new Error(rule.name + `: expiry must be between ${minRelationshipTtl} (10min) and ${maxRelationshipTtl} (72h) milliseconds`);
+    throw new Error(rule.name + `: relationship synthesis rule expires must be between ${minRelationshipTtl} (10min) and ${maxRelationshipTtl} (72h) milliseconds`);
   }
 }
 
