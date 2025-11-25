@@ -1,0 +1,128 @@
+{
+  "name": "OTEL Kafka Cluster",
+  "description": "Performance and health metrics for Kafka Cluster",
+  "pages": [
+    {
+      "name": "Cluster Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Cluster Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.brokers) as 'Brokers' FROM Metric WHERE metricName='kafka.brokers'"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.cluster.topic.count) AS 'Topics' FROM Metric WHERE metricName='kafka.cluster.topic.count'"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.cluster.partition.count) AS 'Total Partitions' FROM Metric WHERE metricName='kafka.cluster.partition.count'"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`kafka.partition.offline`) AS 'Offline Partitions'  FROM Metric WHERE metricName='kafka.partition.offline'"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(group) as 'Consumer Groups' FROM Metric WHERE metricName='kafka.consumer_group.members'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Leader Elections Rate (per min)",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.leader.election.rate), 1 minute) AS 'Leader Elections' FROM Metric WHERE metricName = 'kafka.leader.election.rate' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Unclean Leader Elections Rate (per min)",
+          "layout": {
+            "column": 7,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.unclean.election.rate), 1 minute) AS 'Unclean Leader Elections/min' FROM Metric WHERE metricName = 'kafka.unclean.election.rate' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Partitions with non-preferred leader",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.partition.non_preferred_leader) AS 'Partitions with non-preferred leader' FROM Metric WHERE metricName = 'kafka.partition.non_preferred_leader' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Fenced brokers",
+          "layout": {
+            "column": 7,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.broker.fenced.count) AS 'Fenced brokers' FROM Metric WHERE metricName = 'kafka.broker.fenced.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

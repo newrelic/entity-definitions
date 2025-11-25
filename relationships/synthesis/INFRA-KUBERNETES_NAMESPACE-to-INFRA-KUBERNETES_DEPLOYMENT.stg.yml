@@ -1,0 +1,59 @@
+relationships:
+  - name: k8sNamespaceContainsDeployment
+    version: "1"
+    origins:
+      - Kubernetes Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "K8sNamespaceSample" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_NAMESPACE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:namespace:"
+              - attribute: namespaceName
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_DEPLOYMENT  
+  - name: otelKsmK8sNamespaceContainsDeployment
+    # use kube-state-metrics kube_deployment_created
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_deployment_created" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_NAMESPACE
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - attribute: k8s.namespace.name
+            hashAlgorithm: FARM_HASH
+      target:  
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_DEPLOYMENT

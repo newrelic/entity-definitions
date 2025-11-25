@@ -1,0 +1,93 @@
+domain: INFRA
+type: RABBITMQNODE
+
+goldenTags:
+  - account
+  - rabbitmq.node.name
+
+synthesis:
+  rules:
+    # OpenTelemetry RabbitMQ Receiver
+    - identifier: rabbitmq.node.name
+      name: rabbitmq.node.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        # All metrics from the receiver starts with the 'rabbitmq.' prefix.
+        - attribute: metricName
+          prefix: rabbitmq.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This filters only metrics coming from rabbitmq receiver, given that metrics
+        # could differ between different runtime receivers.
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/rabbitmqreceiver"
+        - attribute: rabbitmq.node.name
+          present: true
+        - attribute: rabbitmq.vhost.name
+          present: false
+        - attribute: rabbitmq.queue.name
+          present: false
+      tags:
+        # Default resource attributes
+        rabbitmq.node.name:
+        # OTel attributes
+        # The library name contains the name of the receiver that is used to identify the source
+        # and select the dashboard.
+        otel.library.name:
+          entityTagName: instrumentation.name
+    
+    # OpenTelemetry with Prometheus Receiver (RabbitMQ Prometheus Exporter)
+    - identifier: rabbitmq_node
+      name: rabbitmq_node
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        # Prometheus exporter metrics start with 'rabbitmq_' prefix
+        - attribute: metricName
+          prefix: rabbitmq_
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This filters metrics coming from prometheus receiver
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+      tags:
+        # Prometheus exporter attributes
+        rabbitmq_node:
+          entityTagName: rabbitmq.node.name
+        # OTel attributes
+        otel.library.name:
+          entityTagName: instrumentation.name
+
+
+    # Data from RabbitMQ integation OHI
+    - identifier: entityId
+      name: entityName
+      legacyFeatures:
+        useNonStandardAttributes: true
+        overrideGuidType: true
+      conditions:
+      - attribute: eventType
+        value: RabbitmqNodeSample
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.stg.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"

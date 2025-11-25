@@ -1,0 +1,24 @@
+relationships:
+  - name: hostHostsWinservice
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: entity.type
+        anyOf: ["WIN_SERVICE"]
+      - attribute: hostname
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: onHostEntityHostname
+              attribute: hostname
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: WIN_SERVICE

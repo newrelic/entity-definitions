@@ -1,0 +1,41 @@
+scheduledCheckpoints:
+  title: Scheduled checkpoints
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(bgwriter.checkpointsScheduledPerSecond)
+      from: PostgresqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(postgresql.bgwriter.checkpoint.count)
+      from: Metric
+      where: type = 'scheduled'
+      
+
+requestedCheckpoints:
+  title: Requested checkpoints
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(bgwriter.checkpointsRequestedPerSecond)
+      from: PostgresqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(postgresql.bgwriter.checkpoint.count)
+      from: Metric
+      where: type = 'requested'
+
+buffersAllocated:
+  title: Buffers allocated
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(bgwriter.buffersAllocatedPerSecond)
+      from: PostgresqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(postgresql.bgwriter.buffers.allocated)
+      from: Metric

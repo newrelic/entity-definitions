@@ -1,6 +1,13 @@
 relationships:
   - name: apmApplicationProducesToAzureServiceBusNamespace
     version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
     origins:
       - Distributed Tracing 
     conditions:
@@ -8,7 +15,6 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: server.address
         regex: '^[a-z0-9\-]+\.servicebus\.windows\.net$'
-        present: true
       - attribute: span.kind
         anyOf: [ "producer" ] 
       - attribute: name 
@@ -16,7 +22,7 @@ relationships:
       - attribute: messaging.destination.name 
         present: true
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: PRODUCES
       source:
         extractGuid:
@@ -30,6 +36,11 @@ relationships:
 
   - name: apmApplicationConsumesFromAzureServiceBusNamespace
     version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
     origins:
       - Distributed Tracing
     conditions:
@@ -37,7 +48,6 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: server.address
         regex: '^[a-z0-9\-]+\.servicebus\.windows\.net$'
-        present: true
       - attribute: span.kind
         anyOf: [ "consumer" ] 
       - attribute: name 
@@ -45,7 +55,40 @@ relationships:
       - attribute: messaging.destination.name 
         present: true
     relationship:
-      expires: P75M
+      expires: PT75M
+      relationshipType: CONSUMES 
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURESERVICEBUSNAMESPACE 
+          fields:
+            - field: endpoint
+              attribute: server.address
+
+  - name: apmApplicationProcessConsumesFromAzureServiceBusNamespace
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: server.address
+        regex: '^[a-z0-9\-]+\.servicebus\.windows\.net$'
+      - attribute: span.kind
+        anyOf: [ "consumer" ] 
+      - attribute: name 
+        regex: "MessageBroker/[^/]*/[^/]*/Process/Named/[^/]*"
+      - attribute: messaging.destination.name 
+        present: true
+    relationship:
+      expires: PT75M
       relationshipType: CONSUMES 
       source:
         extractGuid:

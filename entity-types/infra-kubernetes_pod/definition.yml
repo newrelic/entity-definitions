@@ -56,6 +56,14 @@ synthesis:
         entityTagNames: [k8s.podName]
       k8s.daemonset.name:
         entityTagNames: [k8s.daemonsetName]
+      k8s.statefulset.name:
+        entityTagNames: [k8s.statefulsetName]
+      k8s.replicaset.name:
+        entityTagNames: [k8s.replicasetName]
+      k8s.job.name:
+        entityTagNames: [k8s.jobName]
+      k8s.cronjob.name:
+        entityTagNames: [k8s.cronjobName]
       k8s.node.name:
         # from kube-state-metrics kube_pod_info
         entityTagNames: [k8s.nodeName]
@@ -69,7 +77,7 @@ synthesis:
         entityTagNames: [newrelic.chartVersion]
         ttl: P1D
 
-    # kube-state-metrics data via opentelemetry prometheusReceiver
+  # kube-state-metrics data via opentelemetry prometheusReceiver
   - compositeIdentifier:
       separator: ":"
       attributes:
@@ -95,13 +103,11 @@ synthesis:
       # open telemetry
       - attribute: newrelic.source
         value: 'api.metrics.otlp'
-
       # if newrelic.entity.type is present, it's not a service
       - attribute: service.name
         present: true
       - attribute: newrelic.entity.type
         present: true
-
     tags:
       phase:
         # from kube-state-metrics kube_pod_status_phase
@@ -117,6 +123,14 @@ synthesis:
         entityTagNames: [k8s.podName]
       k8s.daemonset.name:
         entityTagNames: [k8s.daemonsetName]
+      k8s.statefulset.name:
+        entityTagNames: [k8s.statefulsetName]
+      k8s.replicaset.name:
+        entityTagNames: [k8s.replicasetName]
+      k8s.job.name:
+        entityTagNames: [k8s.jobName]
+      k8s.cronjob.name:
+        entityTagNames: [k8s.cronjobName]
       k8s.node.name:
         # from kube-state-metrics kube_pod_info
         entityTagNames: [k8s.nodeName]
@@ -130,120 +144,7 @@ synthesis:
         entityTagNames: [newrelic.chartVersion]
         ttl: P1D
 
-  # kube-state-metrics data via opentelemetry prometheusReceiver preview
-  - compositeIdentifier:
-      separator: ":"
-      attributes:
-        - k8s.cluster.name
-        - namespace
-        - pod
-    encodeIdentifierInGUID: true
-    name: pod
-    conditions:
-      # kube-state-metrics pod prefix
-      - attribute: metricName
-        prefix: kube_pod_
-      # exclude kube_pod_container_*
-      - attribute: container
-        present: false
-      # identifier attributes
-      - attribute: pod
-        present: true
-      - attribute: namespace
-        present: true
-      - attribute: k8s.cluster.name
-        present: true
-      # open telemetry
-      - attribute: newrelic.source
-        value: 'api.metrics.otlp'
-      # if service.name is present, handle as one
-      - attribute: service.name
-        present: false
-      # value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
-    tags:
-      phase:
-        # from kube-state-metrics kube_pod_status_phase
-        multiValue: false
-        entityTagNames: [k8s.status]
-      namespace:
-        entityTagNames: [k8s.namespaceName]
-      k8s.cluster.name:
-        entityTagNames: [k8s.clusterName]
-      k8s.deployment.name:
-        entityTagNames: [k8s.deploymentName]
-      k8s.pod.name:
-        entityTagNames: [k8s.podName]
-      node:
-        # from kube-state-metrics kube_pod_info
-        entityTagNames: [k8s.nodeName]
-      created_by_name:
-        # from kube-state-metrics kube_pod_info
-        entityTagNames: [k8s.createdBy]
-      created_by_kind:
-        # from kube-state-metrics kube_pod_info
-        entityTagNames: [k8s.createdKind]
-
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-  - compositeIdentifier:
-      separator: ":"
-      attributes:
-        - k8s.cluster.name
-        - namespace
-        - pod
-    encodeIdentifierInGUID: true
-    name: pod
-    conditions:
-      # kube-state-metrics pod prefix
-      - attribute: metricName
-        prefix: kube_pod_
-      # exclude kube_pod_container_*
-      - attribute: container
-        present: false
-      # identifier attributes
-      - attribute: pod
-        present: true
-      - attribute: namespace
-        present: true
-      - attribute: k8s.cluster.name
-        present: true
-      # open telemetry
-      - attribute: newrelic.source
-        value: 'api.metrics.otlp'
-      # value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
-      # if newrelic.entity.type is present, it's not a service
-      - attribute: service.name
-        present: true
-      - attribute: newrelic.entity.type
-        present: true
-
-    tags:
-      phase:
-        # from kube-state-metrics kube_pod_status_phase
-        multiValue: false
-        entityTagNames: [k8s.status]
-      namespace:
-        entityTagNames: [k8s.namespaceName]
-      k8s.cluster.name:
-        entityTagNames: [k8s.clusterName]
-      k8s.deployment.name:
-        entityTagNames: [k8s.deploymentName]
-      k8s.pod.name:
-        entityTagNames: [k8s.podName]
-      node:
-        # from kube-state-metrics kube_pod_info
-        entityTagNames: [k8s.nodeName]
-      created_by_name:
-        # from kube-state-metrics kube_pod_info
-        entityTagNames: [k8s.createdBy]
-      created_by_kind:
-        # from kube-state-metrics kube_pod_info
-        entityTagNames: [k8s.createdKind]
-
-    # Infrastructure event data via opentelemetry
+  # Infrastructure event data via opentelemetry
   - compositeIdentifier:
       separator: ":"
       attributes:
@@ -329,8 +230,9 @@ synthesis:
       k8s.deployment.name:
         entityTagNames: [k8s.deploymentName]
 
+  # newrelic integration data via nri-bundle
   - identifier: entityId
-    name: podName
+    name: displayName
     legacyFeatures:
       overrideGuidType: true
       useNonStandardAttributes: true
@@ -389,3 +291,7 @@ synthesis:
         entityTagName: aws.region
     prefixedTags:
       label.:
+
+ownership:
+  primaryOwner:
+    teamName: "K8s Agents"

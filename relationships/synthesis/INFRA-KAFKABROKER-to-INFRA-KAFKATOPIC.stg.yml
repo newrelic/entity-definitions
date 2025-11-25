@@ -2,16 +2,16 @@ relationships:
   - name: kafkaBrokerServesKafkaTopic
     version: "1"
     origins:
-      - Infrastructure Agent
+      - OnHost Integration
     conditions:
-      - attribute: event_type
+      - attribute: eventType
         anyOf: [ "KafkaBrokerSample" ]
       - attribute: nr.entityType
-        anyOf: [ "KafkaBroker" ]
-      - attribute: topic
+        anyOf: [ "KafkaBroker","KAFKABROKER" ]
+      - attribute: clusterName
         present: true
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: SERVES
       source:
         extractGuid:
@@ -26,9 +26,79 @@ relationships:
             value: INFRA
           type:
             value: KAFKATOPIC
+            valueInGuid: NA
           identifier:
             fragments:
+              - value: "ka-topic:"
               - attribute: topic
               - value: ":clustername="
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
+
+# testing purpose
+  - name: kafkaBrokerServesKafkaTopic2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "KafkaBrokerSample" ]
+      - attribute: nr.entityType
+        anyOf: [ "KafkaBroker","KAFKABROKER" ]
+      - attribute: clusterName
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: SERVES
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KAFKABROKER
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - value: "ka-topic:"
+              - attribute: topic
+              - value: ":clustername="
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
+
+  - name: otelKafkaBrokerServesOtelKafkaTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "KAFKATOPIC" ]
+      - attribute: kafka.broker.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKABROKER
+          identifier:
+            fragments:
+              - attribute: kafka.broker.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type

@@ -1,0 +1,54 @@
+domain: INFRA
+type: KAFKABROKER
+
+synthesis:
+  rules:
+  # This rule is for OTEL kafka receivers metrics
+  - identifier: kafka.broker.name
+    name: kafka.broker.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: kafka.broker.name
+        present: true
+      - attribute: topic
+        present: false
+    tags:
+      # Environment resource attributes
+      host.name:
+        entityTagName: hostName
+      instrumentation.provider:
+      kafka.cluster.name:
+        entityTagName: clusterName
+      otel.library.name:
+        entityTagName: instrumentation.name
+      broker.id:
+        entityTagName: brokerId
+      k8s.pod.name:
+      k8s.node.name:
+      k8s.pod.uid:
+      k8s.namespace.name:
+
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+goldenTags:
+- clusterName
+- hostName
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"

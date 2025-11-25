@@ -1,0 +1,172 @@
+domain: INFRA
+type: NGINXSERVER
+
+goldenTags:
+  - nginx.port
+  - nginx.version
+  - nginx.edition
+  - nginx.hostname
+
+synthesis:
+  rules:
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      # All metrics from the receiver starts with the 'nginx.' prefix.
+      - attribute: metricName
+        prefix: nginx.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics coming from nginx receiver, given that metrics
+      # could differ between different runtime receivers.
+      - attribute: otel.library.name
+        value: "otelcol/nginxreceiver"
+    tags:
+      # Default resource attributes
+      nginx.server.endpoint:
+      # OTel attributes
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      # All metrics from the receiver starts with the 'nginx.' prefix.
+      - attribute: metricName
+        prefix: nginx.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics coming from nginx receiver, given that metrics
+      # could differ between different runtime receivers.
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/nginxreceiver"
+    tags:
+      # Default resource attributes
+      nginx.server.endpoint:
+      # OTel attributes
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: metricName
+        prefix: nginxplus_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "otelcol/prometheusreceiver"
+    tags:
+      nginx.server.endpoint:
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: metricName
+        prefix: nginxplus_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      nginx.server.endpoint:
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: newrelic.source
+        value: 'api.logs.otlp'
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: instrumentation.provider
+        value: opentelemetry
+    tags:
+      nginx.server.endpoint:
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.stg.json
+  # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"
