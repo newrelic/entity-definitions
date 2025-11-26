@@ -75,29 +75,35 @@ async function checkDashboardExists (domain, type, dashboardFile) {
 }
 
 let ALL_SYNTHESIS_RULES;
-function checkDuplicateOrStore(ruleName) {
-  if (ALL_SYNTHESIS_RULES.has(ruleName)) {
-    throw new Error(`Duplicate ruleName '${ruleName}' found in synthesis rules`);
-  }
-  ALL_SYNTHESIS_RULES.add(ruleName);
-}
 
+function validateRuleName(ruleName, entityType) {
+  if (ALL_SYNTHESIS_RULES.has(ruleName)) {
+    const existing = ALL_SYNTHESIS_RULES.get(ruleName);
+    throw new Error(`Duplicate ruleName '${ruleName}' - already used in ${existing}`);
+  }
+  ALL_SYNTHESIS_RULES.set(ruleName, entityType);
+}
 
 const RULES = [
   {
-    name: 'Synthesis rules should have unique ruleName',
+    name: 'Synthesis rules should have unique ruleName across all definitions',
     apply: (def, _) => {
       if ('synthesis' in def) {
         if (def.synthesis.disabled === true) {
           return;
         }
 
+        const entityType = `${def.domain}-${def.type}`;
+
         if (def.synthesis.ruleName !== undefined) {
-          checkDuplicateOrStore(def.synthesis.ruleName)
+          validateRuleName(def.synthesis.ruleName, entityType);
         } else {
           def.synthesis.rules.forEach((rule, index) => {
-            checkDuplicateOrStore(rule.ruleName)
-          })
+            if (!rule.ruleName) {
+              throw new Error(`Rule at index ${index} is missing required 'ruleName' property`);
+            }
+            validateRuleName(rule.ruleName, entityType);
+          });
         }
       }
     }
