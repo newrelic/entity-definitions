@@ -3,7 +3,7 @@
   "description": "Performance and health metrics for a single Kafka Broker",
   "pages": [
     {
-      "name": "Broker Overview",
+      "name": "Broker overview",
       "widgets": [
         {
           "title": "Broker details",
@@ -20,13 +20,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.partition.count) as 'Partitions on this broker' FROM Metric WHERE metricName='kafka.partition.count' facet kafka.cluster.name as 'Kafka cluster name', broker.id as 'Broker Id' limit 1"
+                "query": "SELECT latest(kafka.partition.count) as 'Partitions on this broker' FROM Metric WHERE metricName='kafka.partition.count' facet kafka.cluster.name as 'Kafka cluster name', broker.id as 'Broker ID' limit 1"
               }
             ]
           }
         },
         {
-          "title": "Messages In Per Second",
+          "title": "Messages in per second",
           "layout": {
             "column": 1,
             "row": 2,
@@ -40,13 +40,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(kafka.message.count) / sum((endTimestamp - timestamp) / 1000) AS `Messages In per Second` FROM Metric WHERE metricName = 'kafka.message.count' TIMESERIES AUTO"
+                "query": "SELECT sum(kafka.message.count) / sum((endTimestamp - timestamp) / 1000) AS `Messages in per second` FROM Metric WHERE metricName = 'kafka.message.count' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Bytes In and Out",
+          "title": "Bytes in and out",
           "layout": {
             "column": 7,
             "row": 2,
@@ -60,13 +60,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT  filter(sum(kafka.network.io) /sum((endTimestamp - timestamp) / 1000), WHERE (state = 'in' or direction = 'in')) AS `Bytes In`, filter(sum(kafka.network.io) / sum((endTimestamp - timestamp) / 1000), WHERE (state = 'out' or direction = 'out')) AS `Bytes Out` FROM Metric WHERE metricName = 'kafka.network.io' TIMESERIES AUTO"
+                "query": "SELECT  filter(sum(kafka.network.io) /sum((endTimestamp - timestamp) / 1000), WHERE (state = 'in' or direction = 'in')) AS `Bytes in`, filter(sum(kafka.network.io) / sum((endTimestamp - timestamp) / 1000), WHERE (state = 'out' or direction = 'out')) AS `Bytes out` FROM Metric WHERE metricName = 'kafka.network.io' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Under Replicated Partitions",
+          "title": "Under replicated partitions",
           "layout": {
             "column": 1,
             "row": 5,
@@ -80,13 +80,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(kafka.partition.under_replicated) AS 'Under Replicated Partitions' FROM Metric WHERE metricName='kafka.partition.under_replicated' TIMESERIES AUTO"
+                "query": "SELECT max(kafka.partition.under_replicated) AS 'Under replicated partitions' FROM Metric WHERE metricName='kafka.partition.under_replicated' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Under Min ISR Partitions",
+          "title": "Under min ISR partitions",
           "layout": {
             "column": 7,
             "row": 5,
@@ -100,13 +100,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(kafka.partition.under_min_isr) AS 'Under Min ISR Partitions' FROM Metric WHERE metricName = 'kafka.partition.under_min_isr' TIMESERIES AUTO"
+                "query": "SELECT max(kafka.partition.under_min_isr) AS 'Under min ISR partitions' FROM Metric WHERE metricName = 'kafka.partition.under_min_isr' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "In-Sync Replica Operations (per min)",
+          "title": "In-sync replica operations (per min)",
           "layout": {
             "column": 1,
             "row": 8,
@@ -120,13 +120,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(kafka.isr.operation.count), 1 minute) AS 'ISR Operations' FROM Metric WHERE metricName = 'kafka.isr.operation.count' TIMESERIES AUTO FACET operation"
+                "query": "SELECT rate(sum(kafka.isr.operation.count), 1 minute) AS 'ISR operations' FROM Metric WHERE metricName = 'kafka.isr.operation.count' TIMESERIES AUTO FACET operation"
               }
             ]
           }
         },
         {
-          "title": "Max Replica Lag (Messages)",
+          "title": "Max replica lag (messages)",
           "layout": {
             "column": 5,
             "row": 8,
@@ -146,7 +146,7 @@
           }
         },
         {
-          "title": "Request Latency (99th Percentile) (ms)",
+          "title": "Request latency (99th percentile) (ms)",
           "layout": {
             "column": 9,
             "row": 8,
@@ -160,13 +160,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT filter(average(`kafka.request.time.99p`), WHERE type='Produce') AS `Produce`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchConsumer') AS `Consumer Fetch`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchFollower') AS `Follower Fetch` FROM Metric WHERE metricName = 'kafka.request.time.99p' TIMESERIES AUTO"
+                "query": "SELECT filter(average(`kafka.request.time.99p`), WHERE type='Produce') AS `Produce`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchConsumer') AS `Consumer fetch`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchFollower') AS `Follower fetch` FROM Metric WHERE metricName = 'kafka.request.time.99p' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Requests In Per Second",
+          "title": "Requests in per second",
           "layout": {
             "column": 1,
             "row": 11,
@@ -180,13 +180,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(kafka.request.count), 1 second) AS `Requests Per Second` FROM Metric WHERE metricName = 'kafka.request.count' AND type IN ('fetch', 'produce') TIMESERIES AUTO FACET type"
+                "query": "SELECT rate(sum(kafka.request.count), 1 second) AS `Requests per second` FROM Metric WHERE metricName = 'kafka.request.count' AND type IN ('fetch', 'produce') TIMESERIES AUTO FACET type"
               }
             ]
           }
         },
         {
-          "title": "Request Failures Per Second",
+          "title": "Request failures per second",
           "layout": {
             "column": 5,
             "row": 11,
@@ -200,13 +200,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000) AS `Failed Requests` FROM Metric WHERE metricName = 'kafka.request.failed' TIMESERIES AUTO FACET type"
+                "query": "SELECT sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000) AS `Failed requests` FROM Metric WHERE metricName = 'kafka.request.failed' TIMESERIES AUTO FACET type"
               }
             ]
           }
         },
         {
-          "title": "Requests Waiting in Purgatory",
+          "title": "Requests waiting in purgatory",
            "layout": {
             "column": 9,
             "row": 11,
@@ -220,7 +220,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(kafka.purgatory.size) AS `Requests Waiting in Purgatory` FROM Metric WHERE metricName = 'kafka.purgatory.size' facet type TIMESERIES AUTO"
+                "query": "SELECT average(kafka.purgatory.size) AS `Requests waiting in purgatory` FROM Metric WHERE metricName = 'kafka.purgatory.size' facet type TIMESERIES AUTO"
               }
             ]
           }
@@ -240,7 +240,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(`jvm.gc.collections.count`) AS 'Garbage Collections Count' FROM Metric WHERE metricName = 'jvm.gc.collections.count' TIMESERIES AUTO"
+                "query": "SELECT sum(`jvm.gc.collections.count`) AS 'Garbage collections count' FROM Metric WHERE metricName = 'jvm.gc.collections.count' TIMESERIES AUTO"
               }
             ]
           }
@@ -260,7 +260,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(`jvm.memory.heap.used`) AS `Heap Used in Bytes`, average(`jvm.memory.heap.max`) AS `Heap Max in Bytes` FROM Metric WHERE metricName IN ('jvm.memory.heap.used', 'jvm.memory.heap.max') TIMESERIES AUTO"
+                "query": "SELECT average(`jvm.memory.heap.used`) AS `Heap used in bytes`, average(`jvm.memory.heap.max`) AS `Heap max in bytes` FROM Metric WHERE metricName IN ('jvm.memory.heap.used', 'jvm.memory.heap.max') TIMESERIES AUTO"
               }
             ]
           }
@@ -280,7 +280,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(`jvm.threads.count`) AS `Thread Count` FROM Metric WHERE metricName = 'jvm.threads.count' TIMESERIES AUTO"
+                "query": "SELECT average(`jvm.threads.count`) AS `Thread count` FROM Metric WHERE metricName = 'jvm.threads.count' TIMESERIES AUTO"
               }
             ]
           }
