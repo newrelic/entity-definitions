@@ -97,7 +97,7 @@ const RULES = [
 
         if (def.synthesis.ruleName !== undefined) {
           validateRuleName(def.synthesis.ruleName, entityType);
-        } else {
+        } else if (def.synthesis.rules !== undefined) {
           def.synthesis.rules.forEach((rule, index) => {
             if (!rule.ruleName) {
               throw new Error(`Rule at index ${index} is missing required 'ruleName' property`);
