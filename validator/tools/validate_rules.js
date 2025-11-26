@@ -74,7 +74,34 @@ async function checkDashboardExists (domain, type, dashboardFile) {
     .catch(() => false);
 }
 
+let ALL_SYNTHESIS_RULES;
+function checkDuplicateOrStore(ruleName) {
+  if (ALL_SYNTHESIS_RULES.has(ruleName)) {
+    throw new Error(`Duplicate ruleName '${ruleName}' found in synthesis rules`);
+  }
+  ALL_SYNTHESIS_RULES.add(ruleName);
+}
+
+
 const RULES = [
+  {
+    name: 'Synthesis rules should have unique ruleName',
+    apply: (def, _) => {
+      if ('synthesis' in def) {
+        if (def.synthesis.disabled === true) {
+          return;
+        }
+
+        if (def.synthesis.ruleName !== undefined) {
+          checkDuplicateOrStore(def.synthesis.ruleName)
+        } else {
+          def.synthesis.rules.forEach((rule, index) => {
+            checkDuplicateOrStore(rule.ruleName)
+          })
+        }
+      }
+    }
+  },
   {
     name: 'Entities with the same identifier and conditions must have the same domain and type',
     apply: (def, _) => {
@@ -210,6 +237,7 @@ const RULES = [
 
 RULES.forEach(rule => {
   ENTITY = new Map();
+  ALL_SYNTHESIS_RULES = new Map();
   utils.getAllDefinitions().then(
     definitions => definitions.forEach((definition, filename) => {
       try {
