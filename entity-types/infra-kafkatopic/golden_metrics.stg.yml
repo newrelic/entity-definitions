@@ -19,7 +19,7 @@ bytesOutPerSecond:
       eventId: entity.guid
 
 messagesInPerSecond:
-  title: Messages in per second
+  title: Messages in per second (OTel)
   unit: MESSAGES_PER_SECOND
   queries:
     opentelemetry:
@@ -27,6 +27,16 @@ messagesInPerSecond:
       from: Metric
       where: metricName = 'kafka.prod.msg.count'
       eventId: entity.guid
+
+consumerGroupLag:
+  title: Consumer Group Lag (OTel)
+  queries:
+    opentelemetry:
+      select: latest(kafka.consumer_group.lag_sum)
+      from: Metric
+      where: metricName = 'kafka.consumer_group.lag_sum'
+      eventId: entity.guid
+      facet: group
 
 underReplicatedPartitions:
   unit: COUNT
@@ -37,6 +47,7 @@ underReplicatedPartitions:
       from: KafkaTopicSample
       eventId: entityGuid
       eventName: entityName
+
 partitionsWithNonPreferredLeader:
   title: Non-preferred leader Partitions (NR)
   unit: COUNT
