@@ -1,5 +1,5 @@
 relationships:
-  - name: apmApplicationCallsOracleDbFromMetrics
+  - name: otelApplicationCallsOracleDbFromMetrics
     version: "1"
     origins:
       - Distributed Tracing
@@ -26,3 +26,43 @@ relationships:
               attribute: server.address
             - field: hostPort
               attribute: server.port
+  - name: nativeapmApplicationCallsOtelOracleDb
+    version: "1"
+    origins: 
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        anyOf: ["apm.service.datastore.operation.duration"]
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: ORACLEDBINSTANCE
+          fields:
+            - field: hostAddress
+              attribute: peer.hostname
+  - name: nrdotInfraCallsOtelOracleDb
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: entity.type
+        anyOf: ["HOST"]
+      - attribute: host.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: ORACLEDBINSTANCE
+          fields:
+            - field: hostAddress
+              attribute: host.name
