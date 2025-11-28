@@ -1,5 +1,17 @@
 const utils = require('./utils');
 const githubHelper = require('./ghHelper');
+const durationParser = require('tinyduration');
+
+const secondInMillis = 1000n;
+const minutesInMillis = 60n * secondInMillis;
+const hoursInMillis = 60n * minutesInMillis;
+const daysInMillis = 24n * hoursInMillis;
+const weeksInMillis = 7n * daysInMillis;
+const monthsInMillis = 30n * daysInMillis;
+const yearsInMillis = 365n * daysInMillis;
+
+const minRelationshipTtl = 10n * minutesInMillis; // 10 minutes
+const maxRelationshipTtl = 72n * hoursInMillis; // 72 hours
 
 /**
  * Allowed conditions per origin
@@ -81,6 +93,33 @@ function conditionsMatchOrigins (rule) {
   });
 }
 
+function toMillis (duration) {
+  // Uses BigInt to avoid overflow for large durations that could trick the validation
+  return BigInt(duration.years || 0) * yearsInMillis +
+      BigInt(duration.months || 0) * monthsInMillis +
+      BigInt(duration.weeks || 0) * weeksInMillis +
+      BigInt(duration.days || 0) * daysInMillis +
+      BigInt(duration.hours || 0) * hoursInMillis +
+      BigInt(duration.minutes || 0) * minutesInMillis +
+      BigInt(duration.seconds || 0) * secondInMillis;
+}
+
+function relationshipExpiryValidation (rule) {
+  let expiry;
+
+  try {
+    expiry = durationParser.parse(rule.relationship.expires);
+  } catch (e) {
+    console.log(e);
+    throw new Error(rule.name + ': invalid relationship synthesis rule expires format');
+  }
+
+  const expiryMillis = toMillis(expiry);
+  if (expiryMillis < minRelationshipTtl || expiryMillis > maxRelationshipTtl) {
+    throw new Error(rule.name + `: relationship synthesis rule expires must be between ${minRelationshipTtl} (10min) and ${maxRelationshipTtl} (72h) milliseconds`);
+  }
+}
+
 const RULES = [
   {
     name: 'Relationship Synthesis rules should have a unique name',
@@ -97,6 +136,10 @@ const RULES = [
   {
     name: 'Relationship Synthesis conditions must ve valid for given origins',
     apply: rule => conditionsMatchOrigins(rule)
+  },
+  {
+    name: 'Relationship Synthesis expiry must be valid ISO-8601 between 10 minutes and 72 hours',
+    apply: rule => relationshipExpiryValidation(rule)
   }
 ];
 
