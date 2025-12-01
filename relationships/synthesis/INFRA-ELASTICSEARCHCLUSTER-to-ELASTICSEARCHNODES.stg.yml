@@ -11,7 +11,7 @@ relationships:
       - attribute: entity.type
         anyOf: ["ELASTICSEARCHNODE"]
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CONTAINS
       source:
         buildGuid:
@@ -31,41 +31,3 @@ relationships:
           entityType:
             attribute: entity.type
 
-  - name: infraElasticsearchClusterContainsNode
-    version: "1"
-    origins:
-      - OnHost Integration
-    conditions: 
-      - attribute: eventType
-        anyOf: [ "ElasticsearchNodeSample" ]
-      - attribute: nr.entityType
-        anyOf: ["ElasticsearchNode","ELASTICSEARCHNODE"]
-    relationship:
-      expires: P75M
-      relationshipType: CONTAINS
-      source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: ELASTICSEARCHCLUSTER
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - attribute: "es-cluster:"
-              - capture:
-                  attribute: entityKey
-                  regex: ".*:clustername=([^:]+)"
-              - value: ":"
-              - attribute: "clustername="
-              - capture:
-                  attribute: entityKey
-                  regex: ".*:clustername=([^:]+)"
-            hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            attribute: nr.entityType
