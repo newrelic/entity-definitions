@@ -11,7 +11,8 @@ configuration:
 
 synthesis:
   rules:
-  - identifier: elasticsearch.cluster.name
+  - ruleName: infra_elasticsearchcluster_elasticsearch_cluster_name_stg
+    identifier: elasticsearch.cluster.name
     name: elasticsearch.cluster.name
     encodeIdentifierInGUID: true
     conditions:
@@ -19,16 +20,55 @@ synthesis:
       value: Metric
     - attribute: instrumentation.provider
       value: opentelemetry
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/elasticsearchreceiver"  
     - attribute: elasticsearch.cluster.name
       present: true
     tags:
       otel.library.name:
         entityTagName: instrumentation.name
-      # elasticsearch.node.names:
-      #   entityTagName: contains.elasticsearchnode  # This tag enables the relationship  
+      elasticsearch.cluster.name:
+      host.name:
+  - ruleName: infra_elasticsearchcluster_elasticsearch_cluster_name_stg_2
+    identifier: elasticsearch.cluster.name
+    name: elasticsearch.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "otelcol/elasticsearchreceiver"  
+    - attribute: elasticsearch.cluster.name
+      present: true
+    tags:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      elasticsearch.cluster.name:
+      host.name:
+  - ruleName: infra_elasticsearchcluster_elasticsearch_cluster_name_stg_3
+    identifier: elasticsearch.cluster.name
+    name: elasticsearch.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Log
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: newrelic.source
+      value: 'api.logs.otlp'  
+    - attribute: elasticsearch.cluster.name
+      present: true
+    tags:
+      instrumentation.provider:
+        entityTagName: instrumentation.name
+      elasticsearch.cluster.name:
+      host.name:        
 
   # Data from Elastic search integation OHI
-  - identifier: entityId
+  - ruleName: infra_elasticsearchcluster_entityId_stg
+    identifier: entityId
     name: entityName
     legacyFeatures:
       useNonStandardAttributes: true
@@ -36,8 +76,13 @@ synthesis:
     conditions:
     - attribute: eventType
       value: ElasticsearchClusterSample
+    tags:
+      displayName:
+        entityTagNames: [elasticsearch.cluster.name]
 
 dashboardTemplates:
+  newRelic:
+      template: newrelic_dashboard.stg.json
   opentelemetry:
     template: opentelemetry_dashboard.stg.json
 

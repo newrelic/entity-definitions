@@ -1,0 +1,68 @@
+relationships:
+  - name: hostHostsElasticSearchNode
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "ElasticsearchNodeSample" ]
+      - attribute: nr.entityType
+        anyOf: ["ElasticsearchNode","ELASTICSEARCHNODE"]
+      - attribute: reportingAgent
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent # cloudproviderID
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: ELASTICSEARCHNODE
+
+  - name: hostHostsElasticSearchNodeRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "ElasticsearchNodeSample" ]
+      - attribute: nr.entityType
+        anyOf: ["ElasticsearchNode","ELASTICSEARCHNODE"]
+      - attribute: fullHostname
+        present: true
+      - attribute: reportingAgent
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: ELASTICSEARCHNODE

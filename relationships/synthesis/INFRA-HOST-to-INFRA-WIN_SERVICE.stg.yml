@@ -6,8 +6,10 @@ relationships:
     conditions:
       - attribute: entity.type
         anyOf: ["WIN_SERVICE"]
+      - attribute: reportingAgent
+        present: true
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: HOSTS
       source:
         buildGuid:
@@ -20,10 +22,43 @@ relationships:
             valueInGuid: NA
           identifier:
             fragments:
-              - attribute: hostname
+              - attribute: reportingAgent # cloudproviderID
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            attribute: WIN_SERVICE
+            value: WIN_SERVICE
+
+  - name: hostHostsWinserviceRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: entity.type
+        anyOf: ["WIN_SERVICE"]
+      - attribute: fullHostname
+        present: true
+      - attribute: reportingAgent
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: WIN_SERVICE
