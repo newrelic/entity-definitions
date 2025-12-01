@@ -7,7 +7,7 @@ goldenTags:
 synthesis:
   rules:
     # prometheus
-    - ruleName: ext_istio_service_composite_stg
+    - ruleName: ext_istio_service_prometheus_request_metrics
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -16,11 +16,15 @@ synthesis:
       encodeIdentifierInGUID: true
       name: service_istio_io_canonical_name
       conditions:
+        - attribute: cluster_name
+          present: true
+        - attribute: service_istio_io_canonical_name
+          present: true
         - attribute: metricName
           prefix: istio_request
         - attribute: instrumentation.provider
           value: prometheus
-    - ruleName: ext_istio_service_composite_stg_2
+    - ruleName: ext_istio_service_prometheus_response_metrics
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -29,12 +33,16 @@ synthesis:
       encodeIdentifierInGUID: true
       name: service_istio_io_canonical_name
       conditions:
+        - attribute: cluster_name
+          present: true
+        - attribute: service_istio_io_canonical_name
+          present: true
         - attribute: metricName
           prefix: istio_response
         - attribute: instrumentation.provider
           value: prometheus
     # otel
-    - ruleName: ext_istio_service_composite_stg_3
+    - ruleName: ext_istio_service_otel_request_metrics
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -43,11 +51,15 @@ synthesis:
       encodeIdentifierInGUID: true
       name: k8s.pod.label.service.istio.io/canonical-name
       conditions:
+        - attribute: k8s.cluster.name
+          present: true
+        - attribute: k8s.pod.label.service.istio.io/canonical-name
+          present: true
         - attribute: metricName
           prefix: istio_request
         - attribute: instrumentation.provider
           value: opentelemetry
-    - ruleName: ext_istio_service_composite_stg_4
+    - ruleName: ext_istio_service_otel_response_metrics
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -56,6 +68,10 @@ synthesis:
       encodeIdentifierInGUID: true
       name: k8s.pod.label.service.istio.io/canonical-name
       conditions:
+        - attribute: k8s.cluster.name
+          present: true
+        - attribute: k8s.pod.label.service.istio.io/canonical-name
+          present: true
         - attribute: metricName
           prefix: istio_response
         - attribute: instrumentation.provider
