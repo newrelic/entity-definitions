@@ -6,13 +6,15 @@ Synthesis rules should be defined in the `definition.yaml` file, under a `synthe
 
 A rule should define an `identifier` that will be a unique value for that domainType in one user account.
 It should also provide the attribute that defines the `name` (or alternatively a `compositeName`) of the entity.
+Finally a unique `ruleName` should be provided to identify the rule around our telemetry.
 
-These two attributes **must be always present** on the telemetry in order to create an entity.
+These three attributes **must be always present** on the telemetry in order to create an entity.
 
 ```yaml
 synthesis:
   rules:
-  - identifier: hostname
+  - ruleName: hostFromInfra
+    identifier: hostname
     name: hostname
 ```
 
@@ -25,6 +27,7 @@ synthesis:
 
 | **Name** | **Type** | **Required** | **Description**                                                                                                               |
 | -------- | -------- | ------------ |-------------------------------------------------------------------------------------------------------------------------------|
+| ruleName | String | Yes | A unique identifier for this rule.
 | name    | String | Yes | The attribute to use for the entity name.                                                                                     |
 | compositeName | Object | No | Set of attributes and literals that will be concatenated to form the entity name. When this one is used name is not required. |
 | identifier| String| Yes | Telemetry attribute to use as the entity identifier.                                                                          |
@@ -32,6 +35,10 @@ synthesis:
 | encodeIdentifierInGUID | Boolean | No | If true, the identifier value will be hashed to respect the [GUID limits][guid_spec]. Defaults to `false`.                    |
 | conditions | List | No | The list of conditions to apply in the data point to match the rule. Defaults to an empty list.                               |
 | tags     | List   | No | The list of attributes to copy as entity tags if the rule matches. Defaults to an empty list.                                 |
+
+### RuleName
+
+The ruleName property serves as a unique identifier for the rule and must be distinct from all other rules.
 
 ### Name
 
