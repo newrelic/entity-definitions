@@ -56,7 +56,7 @@ connectionsDropped:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: ((sum(`nginx.connections_accepted`) - sum(`nginx.connections_handled`)) OR sum(`nginxplus_connections_dropped`)) / sum((endTimestamp - timestamp) / 1000)
+      select: ((sum(`nginx.connections_accepted`) - sum(`nginx.connections_handled`)) + sum(`nginxplus_connections_dropped`)) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
       where: instrumentation.provider = 'opentelemetry' AND ((nginxplus_connections_dropped is NULL AND metricName = 'nginx.connections_accepted' OR metricName = 'nginx.connections_handled') OR (metricName = 'nginxplus_connections_dropped' AND nginx.connections_accepted is NULL AND nginx.connections_handled is NULL))
       eventName: entity.name

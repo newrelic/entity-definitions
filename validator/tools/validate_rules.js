@@ -74,7 +74,40 @@ async function checkDashboardExists (domain, type, dashboardFile) {
     .catch(() => false);
 }
 
+let ALL_SYNTHESIS_RULES;
+
+function validateRuleName(ruleName, entityType) {
+  if (ALL_SYNTHESIS_RULES.has(ruleName)) {
+    const existing = ALL_SYNTHESIS_RULES.get(ruleName);
+    throw new Error(`Duplicate ruleName '${ruleName}' - already used in ${existing}`);
+  }
+  ALL_SYNTHESIS_RULES.set(ruleName, entityType);
+}
+
 const RULES = [
+  {
+    name: 'Synthesis rules should have unique ruleName across all definitions',
+    apply: (def, _) => {
+      if ('synthesis' in def) {
+        if (def.synthesis.disabled === true) {
+          return;
+        }
+
+        const entityType = `${def.domain}-${def.type}`;
+
+        if (def.synthesis.ruleName !== undefined) {
+          validateRuleName(def.synthesis.ruleName, entityType);
+        } else if (def.synthesis.rules !== undefined) {
+          def.synthesis.rules.forEach((rule, index) => {
+            if (!rule.ruleName) {
+              throw new Error(`Rule at index ${index} is missing required 'ruleName' property`);
+            }
+            validateRuleName(rule.ruleName, entityType);
+          });
+        }
+      }
+    }
+  },
   {
     name: 'Entities with the same identifier and conditions must have the same domain and type',
     apply: (def, _) => {
@@ -210,6 +243,7 @@ const RULES = [
 
 RULES.forEach(rule => {
   ENTITY = new Map();
+  ALL_SYNTHESIS_RULES = new Map();
   utils.getAllDefinitions().then(
     definitions => definitions.forEach((definition, filename) => {
       try {
