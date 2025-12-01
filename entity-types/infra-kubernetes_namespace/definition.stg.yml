@@ -9,7 +9,8 @@ goldenTags:
 synthesis:
   rules:
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_namespace_composite_stg
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -39,8 +40,51 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
+      prefixedTags:
+        label_:
+          ttl: P1D
+
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - ruleName: infra_kubernetes_namespace_composite_stg_2
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+      encodeIdentifierInGUID: true
+      name: k8s.namespace.name
+      conditions:
+        # kube-state-metrics namespace prefix
+        - attribute: metricName
+          prefix: kube_namespace_
+        # identifier attributes
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+      prefixedTags:
+        label_:
+          ttl: P1D
+
     # newrelic integration data via nri-bundle
-    - identifier: entityId
+    - ruleName: infra_kubernetes_namespace_entityId_stg
+      identifier: entityId
       name: displayName
       legacyFeatures:
         overrideGuidType: true
@@ -76,4 +120,4 @@ synthesis:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "K8s Agents"

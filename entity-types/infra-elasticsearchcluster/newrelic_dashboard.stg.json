@@ -1,0 +1,72 @@
+{
+  "name": "Newrelic ElasticSearch Cluster",
+  "description": "ElasticSearch cluster Metrics",
+  "pages": [
+    {
+      "name": "Cluster Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Cluster status",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM ElasticsearchClusterSample SELECT latest(cluster.status)"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Node count",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT \n  latest(cluster.nodes) AS 'Total Nodes', \n  latest(cluster.dataNodes) AS 'Data Nodes' \nFROM ElasticsearchClusterSample"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Shards",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM ElasticsearchClusterSample \n SELECT latest(shards.active) as 'Active Shards', latest(shards.initializing) as 'Initializing Shards', atest(shards.primaryActive) as 'Primary Active Shards, latest(shards.relocating) as 'Relocating Shards', latest(shards.unassigned) as 'Unassigned Shards', latest(shards.active + shards.initializing + shards.primaryActive + shards.relocating  + shards.unassigned ) as 'Total shards'"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
