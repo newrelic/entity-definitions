@@ -12,7 +12,7 @@
         "height" : 3,
         "width" : 6
       },
-      "title" : "Client Requests per second",
+      "title" : "Client requests per second",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
           "query" : "FROM Metric SELECT sum(`nginx.requests` OR `nginxplus_http_requests_total`) / sum((endTimestamp - timestamp) / 1000) AS 'Requests' WHERE instrumentation.provider = 'opentelemetry' AND ((metricName = 'nginx.requests' AND nginxplus_http_requests_total is NULL) OR (metricName = 'nginxplus_http_requests_total' AND nginx.requests is NULL)) TIMESERIES AUTO",
@@ -28,7 +28,7 @@
         "height" : 3,
         "width" : 6
       },
-      "title" : "Connections Waiting",
+      "title" : "Connections waiting",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
           "query" : "FROM Metric SELECT average(`nginx.connections_current` or `nginxplus_connections_idle`) AS `Waiting` WHERE ((metricName = 'nginx.connections_current' AND state = 'waiting' AND nginxplus_connections_idle is NULL) OR (metricName = 'nginxplus_connections_idle' AND nginx.connections_current is NULL)) AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
@@ -44,7 +44,7 @@
         "height" : 3,
         "width" : 6
       },
-      "title" : "Active vs Dropped Connections",
+      "title" : "Active vs dropped connections",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
           "query" : "FROM Metric, Metric SELECT filter(average(`nginx.connections_current` OR `nginxplus_connections_active`), WHERE ((nginxplus_connections_active IS NULL AND state = 'active' AND metricName = 'nginx.connections_current') OR (nginx.connections_current is NULL AND metricName = 'nginxplus_connections_active')) AND instrumentation.provider = 'opentelemetry') AS 'Active connections', filter((abs(sum(`nginx.connections_accepted`) - sum(`nginx.connections_handled`)) + sum(`nginxplus_connections_dropped`)) / sum((endTimestamp - timestamp) / 1000), WHERE ((nginxplus_connections_dropped is NULL AND metricName = 'nginx.connections_accepted' OR metricName = 'nginx.connections_handled') OR (metricName = 'nginxplus_connections_dropped' AND nginx.connections_accepted is NULL AND nginx.connections_handled is NULL)) AND instrumentation.provider = 'opentelemetry') AS 'Connections dropped' TIMESERIES AUTO",
@@ -60,7 +60,7 @@
         "height" : 3,
         "width" : 6
       },
-      "title" : "Connections Accepted vs Handled",
+      "title" : "Connections accepted vs handled",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
           "query" : "FROM Metric, Metric SELECT filter(sum(`nginx.connections_accepted` OR `nginxplus_connections_accepted`) / sum((endTimestamp - timestamp) / 1000), WHERE ((nginxplus_connections_accepted is NULL AND metricName = 'nginx.connections_accepted') OR (nginx.connections_accepted is NULL AND metricName = 'nginxplus_connections_accepted')) AND instrumentation.provider = 'opentelemetry') AS 'Connections accepted', filter((abs(sum(`nginxplus_connections_accepted`) - sum(`nginxplus_connections_dropped`)) + sum(`nginx.connections_handled`)) / sum((endTimestamp - timestamp) / 1000), WHERE instrumentation.provider = 'opentelemetry' AND (((metricName = 'nginxplus_connections_accepted' OR metricName = 'nginxplus_connections_dropped') AND nginx.connections_handled is NULL) OR (nginxplus_connections_accepted is NULL AND nginxplus_connections_dropped is NULL AND metricName = 'nginx.connections_handled'))) AS 'Connections handled' TIMESERIES AUTO",
@@ -76,10 +76,10 @@
         "height" : 3,
         "width" : 6
       },
-      "title" : "Active Connections",
+      "title" : "Active connections",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
-          "query" : "FROM Metric SELECT average(`nginx.connections_current` OR `nginxplus_connections_active`) AS 'Active Connections' WHERE ((nginxplus_connections_active IS NULL AND state = 'active' AND metricName = 'nginx.connections_current') OR (nginx.connections_current is NULL AND metricName = 'nginxplus_connections_active')) AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+          "query" : "FROM Metric SELECT average(`nginx.connections_current` OR `nginxplus_connections_active`) AS 'Active connections' WHERE ((nginxplus_connections_active IS NULL AND state = 'active' AND metricName = 'nginx.connections_current') OR (nginx.connections_current is NULL AND metricName = 'nginxplus_connections_active')) AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
           "accountId": 0} ]
       }
     }, {
@@ -92,17 +92,17 @@
         "height" : 3,
         "width" : 6
       },
-      "title" : "Connections Dropped",
+      "title" : "Connections dropped",
       "rawConfiguration" : {
         "dataFormatters": [
           {
-            "name": "Connections Dropped",
+            "name": "Connections dropped",
             "precision": null,
             "type": "decimal"
           }
         ],
         "nrqlQueries" : [ {
-          "query" : "FROM Metric SELECT (sum(`nginxplus_connections_dropped`) + abs(sum(`nginx.connections_accepted`) - sum(`nginx.connections_handled`))) / sum((endTimestamp - timestamp) / 1000) AS 'Connections Dropped' WHERE (((metricName = 'nginx.connections_accepted' OR metricName = 'nginx.connections_handled') AND nginxplus_connections_dropped is NULL) OR (nginx.connections_accepted is NULL AND nginx.connections_handled is NULL AND metricName = 'nginxplus_connections_dropped')) AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+          "query" : "FROM Metric SELECT (sum(`nginxplus_connections_dropped`) + abs(sum(`nginx.connections_accepted`) - sum(`nginx.connections_handled`))) / sum((endTimestamp - timestamp) / 1000) AS 'Connections dropped' WHERE (((metricName = 'nginx.connections_accepted' OR metricName = 'nginx.connections_handled') AND nginxplus_connections_dropped is NULL) OR (nginx.connections_accepted is NULL AND nginx.connections_handled is NULL AND metricName = 'nginxplus_connections_dropped')) AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
           "accountId": 0} ]
       }
     }, {
@@ -115,10 +115,10 @@
         "height" : 2,
         "width" : 6
       },
-      "title" : "Total Number of connections Accepted vs Handled",
+      "title" : "Total number of connections accepted vs handled",
       "rawConfiguration" : {
         "nrqlQueries" : [ {
-          "query" : "FROM Metric SELECT sum(`nginx.connections_accepted` OR `nginxplus_connections_accepted`) AS 'Total Number of connections accepted', (sum(`nginx.connections_handled`) + abs(sum(`nginxplus_connections_accepted`) - sum(`nginxplus_connections_dropped`))) AS 'Total Number of handled connections' WHERE ((nginxplus_connections_accepted is NULL AND metricName = 'nginx.connections_accepted') OR (nginx.connections_accepted is NULL AND metricName = 'nginxplus_connections_accepted')) OR ((nginxplus_connections_accepted is NULL AND nginxplus_connections_dropped is NULL AND metricName = 'nginx.connections_handled') OR ((metricName = 'nginxplus_connections_accepted' OR metricName = 'nginxplus_connections_dropped') AND nginx.connections_handled is NULL)) AND instrumentation.provider = 'opentelemetry'",
+          "query" : "FROM Metric SELECT sum(`nginx.connections_accepted` OR `nginxplus_connections_accepted`) AS 'Total number of connections accepted', (sum(`nginx.connections_handled`) + abs(sum(`nginxplus_connections_accepted`) - sum(`nginxplus_connections_dropped`))) AS 'Total number of handled connections' WHERE ((nginxplus_connections_accepted is NULL AND metricName = 'nginx.connections_accepted') OR (nginx.connections_accepted is NULL AND metricName = 'nginxplus_connections_accepted')) OR ((nginxplus_connections_accepted is NULL AND nginxplus_connections_dropped is NULL AND metricName = 'nginx.connections_handled') OR ((metricName = 'nginxplus_connections_accepted' OR metricName = 'nginxplus_connections_dropped') AND nginx.connections_handled is NULL)) AND instrumentation.provider = 'opentelemetry'",
           "accountId": 0} ]
       }
     }, {
@@ -131,7 +131,7 @@
         "height" : 2,
         "width" : 6
       },
-      "title" : "Total Number of Client Requests",
+      "title" : "Total number of client requests",
       "rawConfiguration" : {
         "billboardSettings": {
           "visual": {
@@ -139,7 +139,7 @@
           }
         },
         "nrqlQueries" : [ {
-          "query" : "FROM Metric SELECT sum(`nginx.requests` OR `nginxplus_http_requests_total`) AS 'Total Requests' WHERE instrumentation.provider = 'opentelemetry' AND ((metricName = 'nginx.requests' AND nginxplus_http_requests_total is NULL) OR (metricName = 'nginxplus_http_requests_total' AND nginx.requests is NULL))",
+          "query" : "FROM Metric SELECT sum(`nginx.requests` OR `nginxplus_http_requests_total`) AS 'Total requests' WHERE instrumentation.provider = 'opentelemetry' AND ((metricName = 'nginx.requests' AND nginxplus_http_requests_total is NULL) OR (metricName = 'nginxplus_http_requests_total' AND nginx.requests is NULL))",
           "accountId": 0} ]
       }
     } ]
