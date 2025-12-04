@@ -78,9 +78,9 @@ let PROD_SYNTHESIS_RULES;
 let STG_SYNTHESIS_RULES;
 
 function validateRuleName(ruleName, entityType, isProd) {
-  var lookup = PROD_SYNTHESIS_RULES
+  var lookup = STG_SYNTHESIS_RULES
   if (isProd) {
-    var lookup = STG_SYNTHESIS_RULES
+    var lookup = PROD_SYNTHESIS_RULES
   }
 
   if (lookup.has(ruleName)) {
