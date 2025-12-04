@@ -1,6 +1,6 @@
 {
-  "name": "OTEL Kafka Broker",
-  "description": "Performance and health metrics for a single Kafka Broker",
+  "name": "OTEL kafka broker",
+  "description": "Performance and health metrics for a single kafka broker",
   "pages": [
     {
       "name": "Broker overview",
@@ -20,7 +20,50 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.partition.count) as 'Partitions on this broker' FROM Metric WHERE metricName='kafka.partition.count' facet kafka.cluster.name as 'Kafka cluster name', broker.id as 'Broker ID' limit 1"
+                "query": "SELECT latest(kafka.partition.count) as 'Partition replicas on this broker' FROM Metric WHERE metricName='kafka.partition.count' facet kafka.cluster.name as 'Kafka cluster name', broker.id as 'Broker ID' limit 1"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Broker uptime",
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(`kafka.broker.uptime`) AS 'Broker uptime' WHERE metricName='kafka.broker.uptime' TIMESERIES AUTO"
+              }
+            ],
+            "units": {
+              "unit": "MS"
+            }
+          }
+        },
+        {
+          "title": "Leader partitions vs follower partitions on broker",
+          "layout": {
+            "column": 7,
+            "row": 2,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kafka.broker.leader.count) AS 'Leader partitions', average(kafka.partition.count) - latest(kafka.broker.leader.count) AS 'Follower partitions' WHERE metricName IN ('kafka.broker.leader.count', 'kafka.partition.count') TIMESERIES AUTO"
               }
             ]
           }
@@ -29,7 +72,7 @@
           "title": "Messages in per second",
           "layout": {
             "column": 1,
-            "row": 2,
+            "row": 5,
             "height": 3,
             "width": 6
           },
@@ -49,7 +92,7 @@
           "title": "Bytes in and out",
           "layout": {
             "column": 7,
-            "row": 2,
+            "row": 5,
             "height": 3,
             "width": 6
           },
@@ -69,7 +112,7 @@
           "title": "Under replicated partitions",
           "layout": {
             "column": 1,
-            "row": 5,
+            "row": 8,
             "width": 6,
             "height": 3
           },
@@ -89,7 +132,7 @@
           "title": "Under min ISR partitions",
           "layout": {
             "column": 7,
-            "row": 5,
+            "row": 8,
             "width": 6,
             "height": 3
           },
@@ -109,7 +152,7 @@
           "title": "In-sync replica operations (per min)",
           "layout": {
             "column": 1,
-            "row": 8,
+            "row": 11,
             "width": 4,
             "height": 3
           },
@@ -129,7 +172,7 @@
           "title": "Max replica lag (messages)",
           "layout": {
             "column": 5,
-            "row": 8,
+            "row": 11,
             "width": 4,
             "height": 3
           },
@@ -149,7 +192,7 @@
           "title": "Request latency (99th percentile) (ms)",
           "layout": {
             "column": 9,
-            "row": 8,
+            "row": 11,
             "width": 4,
             "height": 3
           },
@@ -169,7 +212,7 @@
           "title": "Requests per second",
           "layout": {
             "column": 1,
-            "row": 11,
+            "row": 14,
             "width": 4,
             "height": 3
           },
@@ -189,7 +232,7 @@
           "title": "Request failures per second",
           "layout": {
             "column": 5,
-            "row": 11,
+            "row": 14,
             "width": 4,
             "height": 3
           },
@@ -209,7 +252,7 @@
           "title": "Requests waiting in purgatory",
            "layout": {
             "column": 9,
-            "row": 11,
+            "row": 14,
             "width": 4,
             "height": 3
           },
@@ -229,7 +272,7 @@
           "title": "JVM garbage collections count",
           "layout": {
             "column": 1,
-            "row": 14,
+            "row": 17,
             "width": 4,
             "height": 3
           },
@@ -249,7 +292,7 @@
           "title": "JVM heap memory usage",
           "layout": {
             "column": 5,
-            "row": 14,
+            "row": 17,
             "width": 4,
             "height": 3
           },
@@ -269,7 +312,7 @@
           "title": "JVM threads count",
           "layout": {
             "column": 9,
-            "row": 14,
+            "row": 17,
             "width": 4,
             "height": 3
           },
