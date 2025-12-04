@@ -74,20 +74,26 @@ async function checkDashboardExists (domain, type, dashboardFile) {
     .catch(() => false);
 }
 
-let ALL_SYNTHESIS_RULES;
+let PROD_SYNTHESIS_RULES;
+let STG_SYNTHESIS_RULES;
 
-function validateRuleName(ruleName, entityType) {
-  if (ALL_SYNTHESIS_RULES.has(ruleName)) {
-    const existing = ALL_SYNTHESIS_RULES.get(ruleName);
-    throw new Error(`Duplicate ruleName '${ruleName}' - already used in ${existing}`);
+function validateRuleName(ruleName, entityType, isProd) {
+  var lookup = PROD_SYNTHESIS_RULES
+  if (isProd) {
+    var lookup = STG_SYNTHESIS_RULES
   }
-  ALL_SYNTHESIS_RULES.set(ruleName, entityType);
+
+  if (lookup.has(ruleName)) {
+    const existing = lookup.get(ruleName);
+    throw new Error(`Duplicate ruleName '${ruleName}' - already used in ${existing} prod file: ${isProd}`);
+  }
+  lookup.set(ruleName, entityType);
 }
 
 const RULES = [
   {
     name: 'Synthesis rules should have unique ruleName across all definitions',
-    apply: (def, _) => {
+    apply: (def, isProd) => {
       if ('synthesis' in def) {
         if (def.synthesis.disabled === true) {
           return;
@@ -96,13 +102,13 @@ const RULES = [
         const entityType = `${def.domain}-${def.type}`;
 
         if (def.synthesis.ruleName !== undefined) {
-          validateRuleName(def.synthesis.ruleName, entityType);
+          validateRuleName(def.synthesis.ruleName, entityType, isProd);
         } else if (def.synthesis.rules !== undefined) {
           def.synthesis.rules.forEach((rule, index) => {
             if (!rule.ruleName) {
               throw new Error(`Rule at index ${index} is missing required 'ruleName' property`);
             }
-            validateRuleName(rule.ruleName, entityType);
+            validateRuleName(rule.ruleName, entityType, isProd);
           });
         }
       }
@@ -243,7 +249,9 @@ const RULES = [
 
 RULES.forEach(rule => {
   ENTITY = new Map();
-  ALL_SYNTHESIS_RULES = new Map();
+  PROD_SYNTHESIS_RULES = new Map();
+  STG_SYNTHESIS_RULES = new Map();
+
   utils.getAllDefinitions().then(
     definitions => definitions.forEach((definition, filename) => {
       try {
