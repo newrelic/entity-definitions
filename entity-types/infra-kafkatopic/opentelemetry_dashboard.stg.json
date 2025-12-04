@@ -3,10 +3,10 @@
   "description": "Health and performance metrics for Kafka Topics",
   "pages": [
     {
-      "name": "Topic Overview",
+      "name": "Topic overview",
       "widgets": [
         {
-          "title": "Topic Partitions",
+          "title": "Topic partitions",
           "layout": {
             "column": 1,
             "row": 1,
@@ -20,13 +20,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.topic.partitions) AS `Topic Partitions` FROM Metric WHERE metricName = 'kafka.topic.partitions'"
+                "query": "SELECT latest(kafka.topic.partitions) AS `Topic partitions` FROM Metric WHERE metricName = 'kafka.topic.partitions'"
               }
             ]
           }
         },
         {
-          "title": "Replication Factor",
+          "title": "Replication factor",
           "layout": {
             "column": 4,
             "row": 1,
@@ -40,13 +40,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.topic.replication_factor) AS `Replication Factor` FROM Metric WHERE metricName = 'kafka.topic.replication_factor'"
+                "query": "SELECT latest(kafka.topic.replication_factor) AS `Replication factor` FROM Metric WHERE metricName = 'kafka.topic.replication_factor'"
               }
             ]
           }
         },
         {
-          "title": "Replication Health",
+          "title": "Under replicated partitions",
           "layout": {
             "column": 7,
             "row": 1,
@@ -60,17 +60,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select sum(Total_Replicas) as 'Total Replicas' from (SELECT average(kafka.partition.replicas) AS 'Total_Replicas' FROM Metric WHERE metricName = 'kafka.partition.replicas' FACET partition,entity.guid TIMESERIES AUTO limit max) TIMESERIES AUTO limit max"
-              },
-              {
-                "accountId": 0,
-                "query": "SELECT sum(In_Sync_Replicas) as 'In-Sync Replicas' FROM (SELECT average(kafka.partition.replicas_in_sync) AS 'In_Sync_Replicas' FROM Metric WHERE metricName = 'kafka.partition.replicas_in_sync' FACET partition,entity.guid TIMESERIES AUTO limit max) TIMESERIES AUTO limit max"
+                "query": "select (latest(kafka.topic.partitions)*latest(kafka.topic.replication_factor) - latest(kafka.partition.replicas_in_sync.total)) AS 'Under replicated partitions' from Metric where metricName in ('kafka.partition.replicas_in_sync.total', 'kafka.topic.partitions', 'kafka.topic.replication_factor') TIMESERIES auto"
               }
             ]
           }
         },
         {
-          "title": "Min In-Sync Replicas",
+          "title": "Min in-sync replicas",
           "layout": {
             "column": 1,
             "row": 3,
@@ -84,13 +80,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.topic.min_insync_replicas) AS 'Min In-Sync Replicas' FROM Metric WHERE metricName = 'kafka.topic.min_insync_replicas'"
+                "query": "SELECT latest(kafka.topic.min_insync_replicas) AS 'Min in-sync replicas' FROM Metric WHERE metricName = 'kafka.topic.min_insync_replicas'"
               }
             ]
           }
         },
         {
-          "title": "Messages In Per Second",
+          "title": "Messages in per second",
           "layout": {
             "column": 1,
             "row": 4,
@@ -104,13 +100,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(kafka.prod.msg.count), 1 second) AS `Messages In per Second` FROM Metric WHERE metricName = 'kafka.prod.msg.count' TIMESERIES AUTO"
+                "query": "SELECT rate(sum(kafka.prod.msg.count), 1 second) AS `Messages in per second` FROM Metric WHERE metricName = 'kafka.prod.msg.count' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Data Throughput (Bytes/sec)",
+          "title": "Data throughput (bytes/sec)",
           "layout": {
             "column": 7,
             "row": 4,
@@ -124,13 +120,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT filter(rate(sum(kafka.topic.io), 1 second), WHERE (state = 'in' or direction = 'in')) AS `Bytes In`, filter(rate(sum(kafka.topic.io), 1 second), WHERE (state = 'out' or direction = 'out')) AS `Bytes Out` FROM Metric WHERE metricName = 'kafka.topic.io' TIMESERIES AUTO"
+                "query": "SELECT filter(rate(sum(kafka.topic.io), 1 second), WHERE (state = 'in' or direction = 'in')) AS `Bytes in`, filter(rate(sum(kafka.topic.io), 1 second), WHERE (state = 'out' or direction = 'out')) AS `Bytes out` FROM Metric WHERE metricName = 'kafka.topic.io' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Consumer Group Lag (Total Messages)",
+          "title": "Consumer group lag (total messages)",
           "layout": {
             "column": 1,
             "row": 7,
@@ -144,13 +140,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(kafka.consumer_group.lag_sum) AS `Consumer Lag` FROM Metric WHERE metricName = 'kafka.consumer_group.lag_sum' TIMESERIES AUTO FACET group"
+                "query": "SELECT max(kafka.consumer_group.lag_sum) AS `Consumer lag` FROM Metric WHERE metricName = 'kafka.consumer_group.lag_sum' TIMESERIES AUTO FACET group"
               }
             ]
           }
         },
         {
-          "title": "Partition Lag (messages)",
+          "title": "Partition lag (messages)",
           "layout": {
             "column": 7,
             "row": 7,
@@ -163,12 +159,12 @@
           "rawConfiguration": {
             "initialSorting": {
               "direction": "desc",
-              "name": "Max Lag"
+              "name": "Max lag"
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(kafka.consumer_group.lag) AS `Max Lag` FROM Metric WHERE metricName = 'kafka.consumer_group.lag' FACET group, partition"
+                "query": "SELECT max(kafka.consumer_group.lag) AS `Max lag` FROM Metric WHERE metricName = 'kafka.consumer_group.lag' FACET group, partition"
               }
             ]
           }

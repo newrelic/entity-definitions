@@ -1,0 +1,24 @@
+relationships:
+  # APM native agent to OpenTelemetry SQL Server database relationship
+  # Uses dimensional metrics from APM agents
+  # Matches on metricName "apm.service.datastore.operation.duration"
+  # The dimensional attributes (db.system=mssql, peer.hostname) are used in identifier building
+  - name: apmApplicationCallsOtelMssqlInstance
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        anyOf: ["apm.service.datastore.operation.duration"]
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MSSQLINSTANCE
+          fields:
+            - field: hostName
+              attribute: host.name
