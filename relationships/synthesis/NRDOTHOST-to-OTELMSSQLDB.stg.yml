@@ -1,0 +1,24 @@
+relationships:
+  - name: nrDothostreceivertoOtelMssqlDb
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: newrelic.source
+        anyOf: ["api.traces.otlp"]
+      - attribute: entity.type
+        anyOf: ["HOST"]
+      - attribute: host.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MSSQLINSTANCE
+          fields:
+            - field: hostName
+              attribute: host.name

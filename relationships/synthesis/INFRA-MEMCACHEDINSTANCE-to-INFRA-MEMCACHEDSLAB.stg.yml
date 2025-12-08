@@ -1,0 +1,29 @@
+relationships:
+  - name: MemcachedInstanceContainsMemcachedSlab
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MemcachedSample" ]
+      - attribute: nr.entityType
+        anyOf: [ "MemcachedInstance","MEMCACHEDINSTANCE" ]
+      - attribute: reportingEndpoint
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            attribute: nr.entityType
+      target:
+        lookupGuid:
+          candidateCategory: MEMCACHEDSLAB
+          fields:
+            - field: reportingEndpoint
+              capture:
+                attribute: reportingEndpoint
+                regex: "(.*)"
+
