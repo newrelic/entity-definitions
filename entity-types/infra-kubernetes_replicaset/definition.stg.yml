@@ -86,6 +86,32 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
     
+    # Infrastructure event data via opentelemetry 
+    - ruleName: infra_kubernetes_replicatset_composite_events
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.event.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Replicaset
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8s.event.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+
     # newrelic integration data via nri-bundle
     - ruleName: infra_kubernetes_replicaset_entityId
       identifier: entityId
@@ -122,6 +148,12 @@ synthesis:
       prefixedTags:
         label.:
 
+dashboardTemplates:
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+    
 ownership:
   primaryOwner:
     teamName: "K8s Agents"
