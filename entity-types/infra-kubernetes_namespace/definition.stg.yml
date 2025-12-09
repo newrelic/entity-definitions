@@ -4,12 +4,12 @@ configuration:
   entityExpirationTime: DAILY
   alertable: true
 goldenTags:
-- k8s.clusterName
-- k8s.namespaceName
+  - k8s.clusterName
+  - k8s.namespaceName
 synthesis:
   rules:
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - ruleName: infra_kubernetes_namespace_composite_stg
+    - ruleName: infra_kubernetes_namespace_composite
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -45,7 +45,7 @@ synthesis:
           ttl: P1D
 
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - ruleName: infra_kubernetes_namespace_composite_stg_2
+    - ruleName: infra_kubernetes_namespace_composite_2
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -75,6 +75,9 @@ synthesis:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
+        phase:
+          multiValue: false
+          entityTagNames: [k8s.namespace.statusPhase]    
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
@@ -83,7 +86,7 @@ synthesis:
           ttl: P1D
 
     # newrelic integration data via nri-bundle
-    - ruleName: infra_kubernetes_namespace_entityId_stg
+    - ruleName: infra_kubernetes_namespace_entityId
       identifier: entityId
       name: displayName
       legacyFeatures:
@@ -118,6 +121,13 @@ synthesis:
       prefixedTags:
         label.:
 
+dashboardTemplates:
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+    
 ownership:
   primaryOwner:
     teamName: "K8s Agents"
+    
