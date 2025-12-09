@@ -1,0 +1,47 @@
+relationships:
+  # From K8s container to redis service
+  - name: ContainerContainsNginxserver
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "NginxSample" ]
+      - attribute: nr.entityType
+        anyOf: ["NGINXServer","NGINXSERVER"]
+      - attribute: clusterName
+        present: true
+      - attribute: namespace
+        present: true
+      - attribute: podName
+        present: true
+      - attribute: name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespace
+              - value: ":"
+              - attribute: podName
+              - value: ":container:"
+              - attribute: name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: NGINXSERVER
