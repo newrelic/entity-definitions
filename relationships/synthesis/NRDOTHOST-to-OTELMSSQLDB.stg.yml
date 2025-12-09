@@ -1,0 +1,26 @@
+relationships:
+  - name: nrDothostreceivertoOtelMssqlDb
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: newrelic.source
+        anyOf: ["api.traces.otlp"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["HOST"]
+      - attribute: host.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MSSQLINSTANCE
+          fields:
+            - field: hostName
+              attribute: host.name
