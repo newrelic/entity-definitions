@@ -38,6 +38,7 @@ synthesis:
       # and select the dashboard.
       otel.library.name:
         entityTagName: instrumentation.name
+  
   # kube-state-metrics data via opentelemetry prometheusReceiver
   - ruleName: infra_container_composite
     compositeIdentifier:
@@ -90,7 +91,7 @@ synthesis:
         entityTagNames: [newrelic.chartVersion]
         ttl: P1D
 
-    # kube-state-metrics data via opentelemetry prometheusReceiver
+  # kube-state-metrics data via opentelemetry prometheusReceiver
   - ruleName: infra_container_composite_2
     compositeIdentifier:
       separator: ":"
@@ -144,7 +145,7 @@ synthesis:
         entityTagNames: [newrelic.chartVersion]
         ttl: P1D
 
-    # cAdvisor data via opentelemetry prometheusReceiver
+  # cAdvisor data via opentelemetry prometheusReceiver
   - ruleName: infra_container_composite_3
     compositeIdentifier:
       separator: ":"
@@ -196,7 +197,7 @@ synthesis:
         entityTagNames: [newrelic.chartVersion]
         ttl: P1D
 
-    # cAdvisor data via opentelemetry prometheusReceiver
+  # cAdvisor data via opentelemetry prometheusReceiver
   - ruleName: infra_container_composite_4
     compositeIdentifier:
       separator: ":"
@@ -250,209 +251,8 @@ synthesis:
         entityTagNames: [newrelic.chartVersion]
         ttl: P1D
 
-  # kube-state-metrics data via opentelemetry prometheusReceiver preview
-  - ruleName: infra_container_composite_5
-    compositeIdentifier:
-      separator: ":"
-      attributes:
-        - k8s.cluster.name
-        - namespace
-        - pod
-        - container
-    encodeIdentifierInGUID: true
-    name: container
-    conditions:
-      # kube-state-metrics container prefix
-      - attribute: metricName
-        prefix: kube_pod_container_
-      # identifier attributes
-      - attribute: container
-        present: true
-      - attribute: pod
-        present: true
-      - attribute: namespace
-        present: true
-      - attribute: k8s.cluster.name
-        present: true
-      # open telemetry
-      - attribute: newrelic.source
-        value: 'api.metrics.otlp'
-      # if service.name is present, handle as one
-      - attribute: service.name
-        present: false
-      # value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
-    tags:
-      container_id:
-        entityTagNames: [k8s.containerId]
-        multiValue: false
-      image:
-        entityTagNames: [k8s.containerImage]
-      container:
-        entityTagNames: [k8s.containerName]
-      pod:
-        entityTagNames: [k8s.podName]
-      namespace:
-        entityTagNames: [k8s.namespaceName]
-      k8s.cluster.name:
-        entityTagNames: [k8s.clusterName]
-      k8s.deployment.name:
-        entityTagNames: [k8s.deploymentName]
-
-
-  # kube-state-metrics data via opentelemetry prometheusReceiver preview
-  - ruleName: infra_container_composite_6
-    compositeIdentifier:
-      separator: ":"
-      attributes:
-        - k8s.cluster.name
-        - namespace
-        - pod
-        - container
-    encodeIdentifierInGUID: true
-    name: container
-    conditions:
-      # kube-state-metrics container prefix
-      - attribute: metricName
-        prefix: kube_pod_container_
-      # identifier attributes
-      - attribute: container
-        present: true
-      - attribute: pod
-        present: true
-      - attribute: namespace
-        present: true
-      - attribute: k8s.cluster.name
-        present: true
-      # open telemetry
-      - attribute: newrelic.source
-        value: 'api.metrics.otlp'
-      # value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
-      # if newrelic.entity.type is present, it's not a service
-      - attribute: service.name
-        present: true
-      - attribute: newrelic.entity.type
-        present: true
-    tags:
-      container_id:
-        entityTagNames: [k8s.containerId]
-        multiValue: false
-      image:
-        entityTagNames: [k8s.containerImage]
-      container:
-        entityTagNames: [k8s.containerName]
-      pod:
-        entityTagNames: [k8s.podName]
-      namespace:
-        entityTagNames: [k8s.namespaceName]
-      k8s.cluster.name:
-        entityTagNames: [k8s.clusterName]
-      k8s.deployment.name:
-        entityTagNames: [k8s.deploymentName]
-
-  # cAdvisor data via opentelemetry prometheusReceiver preview
-  - ruleName: infra_container_composite_7
-    compositeIdentifier:
-      separator: ":"
-      attributes:
-        - k8s.cluster.name
-        - namespace
-        - pod
-        - container
-    encodeIdentifierInGUID: true
-    name: container
-    conditions:
-      # cadvisor container prefix
-      - attribute: metricName
-        prefix: container_
-      # identifier attributes
-      - attribute: container
-        present: true
-      - attribute: pod
-        present: true
-      - attribute: namespace
-        present: true
-      - attribute: k8s.cluster.name
-        present: true
-      # open telemetry
-      - attribute: newrelic.source
-        value: 'api.metrics.otlp'
-      # if service.name is present, handle as one
-      - attribute: service.name
-        present: false
-      # value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
-    tags:
-      container:
-        entityTagNames: [k8s.containerName]
-      pod:
-        entityTagNames: [k8s.podName]
-      namespace:
-        entityTagNames: [k8s.namespaceName]
-      k8s.cluster.name:
-        entityTagNames: [k8s.clusterName]
-      k8s.node.name:
-        entityTagNames: [k8s.nodeName]
-      k8s.deployment.name:
-        entityTagNames: [k8s.deploymentName]
-
-
-  # cAdvisor data via opentelemetry prometheusReceiver preview
-  - ruleName: infra_container_composite_8
-    compositeIdentifier:
-      separator: ":"
-      attributes:
-        - k8s.cluster.name
-        - namespace
-        - pod
-        - container
-    encodeIdentifierInGUID: true
-    name: container
-    conditions:
-      # cadvisor container prefix
-      - attribute: metricName
-        prefix: container_
-      # identifier attributes
-      - attribute: container
-        present: true
-      - attribute: pod
-        present: true
-      - attribute: namespace
-        present: true
-      - attribute: k8s.cluster.name
-        present: true
-      # open telemetry
-      - attribute: newrelic.source
-        value: 'api.metrics.otlp'
-      # value added for test entities only
-      - attribute: newrelicOnly
-        value: "true"
-      # if newrelic.entity.type is present, it's not a service
-      - attribute: service.name
-        present: true
-      - attribute: newrelic.entity.type
-        present: true
-    tags:
-      container:
-        entityTagNames: [k8s.containerName]
-      pod:
-        entityTagNames: [k8s.podName]
-      namespace:
-        entityTagNames: [k8s.namespaceName]
-      k8s.cluster.name:
-        entityTagNames: [k8s.clusterName]
-      k8s.node.name:
-        entityTagNames: [k8s.nodeName]
-      k8s.deployment.name:
-        entityTagNames: [k8s.deploymentName]
-
-
   # kubeletstatsreceiver data via opentelemetry
-  - ruleName: infra_container_composite_9
+  - ruleName: infra_container_composite_5
     compositeIdentifier:
       separator: ":"
       attributes:
@@ -495,9 +295,8 @@ synthesis:
       k8s.node.name:
         entityTagNames: [k8s.nodeName]
 
-
   # kubeletstatsreceiver data via opentelemetry
-  - ruleName: infra_container_composite_10
+  - ruleName: infra_container_composite_6
     compositeIdentifier:
       separator: ":"
       attributes:
