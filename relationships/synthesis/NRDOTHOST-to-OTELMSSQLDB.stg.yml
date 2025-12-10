@@ -1,24 +1,26 @@
 relationships:
-  - name: nrDothostreceivertoOtelMssqlDb
+  - name: OtelMSSQLDBtoNRDOTHOST
     version: "1"
     origins:
-      - OnHost Integration
+      - OpenTelemetry
     conditions:
-      - attribute: newrelic.source
-        anyOf: ["api.traces.otlp"]
-      - attribute: entity.type
-        anyOf: ["HOST"]
-      - attribute: host.name
+      - attribute: metricName
+        startsWith: sqlserver.
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: otel.library.name
+        anyOf: ["newrelicsqlserverreceiver"]
+      - attribute: host.id
         present: true
     relationship:
       expires: PT75M
-      relationshipType: CALLS
-      source:
+      relationshipType: HOSTS
+      target:
         extractGuid:
           attribute: entity.guid
-      target:
+      source:
         lookupGuid:
-          candidateCategory: MSSQLINSTANCE
+          candidateCategory: HOST
           fields:
-            - field: hostName
-              attribute: host.name
+            - field: hostId
+              attribute: host.id
