@@ -1,0 +1,26 @@
+relationships:
+  - name: OtelMSSQLDBtoNRDOTHOST
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        startsWith: sqlserver.
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: otel.library.name
+        anyOf: ["newrelicsqlserverreceiver"]
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      target:
+        extractGuid:
+          attribute: entity.guid
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id

@@ -45,24 +45,31 @@ relationships:
           fields:
             - field: hostAddress
               attribute: peer.hostname
-  - name: nrdotInfraCallsOtelOracleDb
+  - name: OtelOracledbCallsNrdotInfra
     version: "1"
     origins:
-      - OnHost Integration
+      - OpenTelemetry
     conditions:
-      - attribute: entity.type
-        anyOf: ["HOST"]
-      - attribute: host.name
+      - attribute: eventType
+        anyOf: [Metric]
+      - attribute: metricName
+        startsWith: newrelicoracledb.
+      - attribute: instrumentation.provider
+        anyOf: [opentelemetry]
+      # This handles both library name formats for backward compatibility
+      - attribute: otel.library.name
+        anyOf: [github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver]
+      - attribute: host.id
         present: true
     relationship:
       expires: PT75M
-      relationshipType: CALLS
-      source:
+      relationshipType: HOSTS
+      target:
         extractGuid:
           attribute: entity.guid
-      target:
+      source:
         lookupGuid:
-          candidateCategory: ORACLEDBINSTANCE
+          candidateCategory: HOST
           fields:
-            - field: hostAddress
-              attribute: host.name
+            - field: hostId
+              attribute: host.id
