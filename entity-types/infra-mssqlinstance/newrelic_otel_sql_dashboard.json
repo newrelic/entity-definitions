@@ -1,11 +1,11 @@
 {
-  "name": "MSSQL NEW ENTITY SUMMARY",
+  "name": "MSSQL Summary Dashboard - OpenTelemetry",
   "pages": [
     {
-      "name": "MSSQL NEW ENTITY SUMMARY",
+      "name": "MSSQL Summary",
       "widgets": [
         {
-          "title": "\ud83d\udd17 Active Workload",
+          "title": "Active Workload",
           "layout": {
             "column": 1,
             "row": 1,
@@ -36,7 +36,7 @@
           }
         },
         {
-          "title": "\ud83d\udcca Buffer Pool Efficiency",
+          "title": "Buffer Pool Efficiency",
           "layout": {
             "column": 7,
             "row": 1,
@@ -52,7 +52,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.bufferPoolHitPercent) AS 'Hit Ratio %', latest(sqlserver.bufferpool.page_life_expectancy_ms) / 1000 AS 'Page Life (sec)' FROM Metric SINCE 5 minutes ago",
+                "query": "SELECT latest(sqlserver.instance.buffer_pool_hit_percent) AS 'Hit Ratio %', latest(sqlserver.bufferpool.page_life_expectancy_ms) / 1000 AS 'Page Life (sec)' FROM Metric SINCE 5 minutes ago",
                 "accountId": 0}
             ],
             "platformOptions": {
@@ -86,7 +86,7 @@
           "title": ""
         },
         {
-          "title": "\ud83e\udde0 Memory Management Center",
+          "title": "Memory Management Center",
           "layout": {
             "column": 1,
             "row": 5,
@@ -108,7 +108,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.instance.memory_utilization) AS 'Memory Utilization %', latest(sqlserver.instance.memory_available) / 1024 / 1024 / 1024 AS 'Available (GB)', latest(sqlserver.instance.buffer_pool_size) / 1024 / 1024 / 1024 AS 'Buffer Pool (GB)', latest(sqlserver.instance.target_memory_kb) / 1024 / 1024 AS 'Target Memory (MB)' FROM Metric SINCE 2 hours ago TIMESERIES AUTO",
+                "query": "SELECT latest(sqlserver.instance.memory_utilization_percent) AS 'Memory Utilization %', latest(sqlserver.instance.memory_available) / 1024 / 1024 / 1024 AS 'Available (GB)', latest(sqlserver.instance.buffer_pool_size) / 1024 / 1024 / 1024 AS 'Buffer Pool (GB)', latest(sqlserver.instance.target_memory_kb) / 1024 / 1024 AS 'Target Memory (MB)' FROM Metric SINCE 2 hours ago TIMESERIES AUTO",
                 "accountId": 0}
             ],
             "platformOptions": {
@@ -117,7 +117,7 @@
           }
         },
         {
-          "title": "\ud83d\udd04 SQL Server Activity Metrics",
+          "title": "SQL Server Activity Metrics",
           "layout": {
             "column": 1,
             "row": 8,
@@ -148,7 +148,7 @@
           }
         },
         {
-          "title": "\u26a1 Advanced Performance Analytics",
+          "title": "Advanced Performance Analytics",
           "layout": {
             "column": 7,
             "row": 8,
@@ -179,7 +179,7 @@
           }
         },
         {
-          "title": "\ud83d\udd12 Lock & Deadlock Analysis",
+          "title": "Lock & Deadlock Analysis",
           "layout": {
             "column": 1,
             "row": 11,
@@ -210,7 +210,7 @@
           }
         },
         {
-          "title": "\u274c Error & Exception Monitoring",
+          "title": "Error & Exception Monitoring",
           "layout": {
             "column": 7,
             "row": 11,
@@ -256,7 +256,7 @@
           "title": ""
         },
         {
-          "title": "\ud83d\udcca Database Storage Analytics",
+          "title": "Database Storage Analytics",
           "layout": {
             "column": 1,
             "row": 15,
@@ -272,7 +272,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.database.size.totalSizeMB) AS 'Total (MB)', latest(sqlserver.database.size.dataSizeMB) AS 'Data (MB)', (latest(sqlserver.database.pageFileAvailable)/latest(sqlserver.database.pageFileTotal)*100) AS 'Free %' FROM Metric FACET database_name SINCE 1 hour ago",
+                "query": "SELECT latest(sqlserver.database.size.total_mb) AS 'Total (MB)', latest(sqlserver.database.size.data_mb) AS 'Data (MB)', (latest(sqlserver.database.page_file_available_bytes)/latest(sqlserver.database.page_file_total_bytes)*100) AS 'Free %' FROM Metric FACET database_name SINCE 1 hour ago",
                 "accountId": 0}
             ],
             "platformOptions": {
@@ -281,7 +281,7 @@
           }
         },
         {
-          "title": "\u26a1 I/O Performance Monitor",
+          "title": "I/O Performance Monitor",
           "layout": {
             "column": 9,
             "row": 15,
@@ -297,7 +297,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT average(sqlserver.database.io.stallInMilliseconds) AS 'Avg I/O Stall (ms)' FROM Metric SINCE 1 hour ago",
+                "query": "SELECT average(sqlserver.database.io.stall_ms) AS 'Avg I/O Stall (ms)' FROM Metric SINCE 1 hour ago",
                 "accountId": 0}
             ],
             "platformOptions": {
@@ -316,7 +316,7 @@
           }
         },
         {
-          "title": "\ud83d\udcbe Buffer Pool Distribution",
+          "title": "Buffer Pool Distribution",
           "layout": {
             "column": 1,
             "row": 18,
@@ -335,7 +335,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.database.bufferpool.sizePerDatabaseInBytes) / 1024 / 1024 AS 'Buffer Pool (MB)' FROM Metric FACET database_name SINCE 1 hour ago",
+                "query": "SELECT latest(sqlserver.database.bufferpool.size_per_database_bytes) / 1024 / 1024 AS 'Buffer Pool (MB)' FROM Metric FACET database_name SINCE 1 hour ago",
                 "accountId": 0}
             ],
             "platformOptions": {
@@ -344,7 +344,7 @@
           }
         },
         {
-          "title": "\ud83d\udcca Database Capacity Planning",
+          "title": "Database Capacity Planning",
           "layout": {
             "column": 7,
             "row": 18,
@@ -366,7 +366,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT latest(sqlserver.database.size.totalSizeMB) AS 'Current Size (MB)', (latest(sqlserver.database.maxDiskSizeInBytes) / 1024 / 1024) AS 'Max Size (MB)', latest(sqlserver.database.log.transactionGrowth) AS 'Growth Events' FROM Metric FACET database_name SINCE 24 hours ago TIMESERIES 1 hour",
+                "query": "SELECT latest(sqlserver.database.size.total_mb) AS 'Current Size (MB)', (latest(sqlserver.database.max_disk_size_bytes) / 1024 / 1024) AS 'Max Size (MB)', latest(sqlserver.database.log.transaction_growth) AS 'Growth Events' FROM Metric FACET database_name SINCE 24 hours ago TIMESERIES 1 hour",
                 "accountId": 0}
             ],
             "platformOptions": {
