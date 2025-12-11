@@ -19,7 +19,40 @@ synthesis:
       # This filters only metrics comming from docker receiver, given that metrics
       # could deffer between different runtime receivers.
       - attribute: otel.library.name
-        value: otelcol/dockerstatsreceiver
+        value: "otelcol/dockerstatsreceiver"
+    tags:
+      # Default resource attributes
+      container.runtime:
+      container.image.name:
+      container.hostname:
+      # Optional resource attribute
+      container.image.id:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      host.id:
+      host.name:
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  - ruleName: infra_container_container_id_2
+    identifier: container.id
+    name: container.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # All metrics from the receiver starts with the 'container.' prefix.
+      - attribute: metricName
+        prefix: container.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/dockerstatsreceiver"
     tags:
       # Default resource attributes
       container.runtime:
