@@ -7,6 +7,9 @@ connections:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.stats.connections)
+      from: Metric
 blockedProcesses:
   title: Blocked processes
   unit: COUNT
@@ -16,6 +19,9 @@ blockedProcesses:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: max(sqlserver.instance.blocked_processes_count)
+      from: Metric
 waitTimeMs:
   title: Wait time (ms)
   unit: MS
@@ -25,6 +31,9 @@ waitTimeMs:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.wait_stats.wait_time_ms)
+      from: Metric
 availability:
   queries:
     newRelic:
@@ -32,6 +41,9 @@ availability:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.instance.connections_active)
+      from: Metric
   unit: COUNT
   title: Connections
 monitorStatus:
@@ -41,6 +53,9 @@ monitorStatus:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.instance.transactions_per_sec)
+      from: Metric
   unit: OPERATIONS_PER_SECOND
   title: Transactions
 sessionStatus:
@@ -50,6 +65,32 @@ sessionStatus:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.stats.sql_compilations_per_sec)
+      from: Metric
   unit: COUNT
   title: SQL (re-)compilations
-
+bufferCacheHitRatio:
+  title: Buffer Cache Hit Ratio
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(system.bufferPoolHitPercent)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.instance.buffer_pool_hit_percent)
+      from: Metric
+logBytesFlushedPerSec:
+  title: I/O Throughput
+  unit: BYTES_PER_SECOND
+  queries:
+    newrelic:
+      select: average(log.transactionGrowth)
+      from: MssqlDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.database.log.flushes_per_sec)
+      from: Metric
