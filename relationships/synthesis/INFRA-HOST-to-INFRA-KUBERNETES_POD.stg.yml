@@ -27,12 +27,26 @@ relationships:
     conditions:
       - attribute: metricName
         startsWith: system.
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.metrics.otlp" ]
+      # if service.name is present, it's a service, not a host
+      - attribute: service.name
+        present: false
+      # if container.id is present, it's a container, not a host
+      - attribute: container.id
+        present: false
+      - attribute: k8s.cluster.name
+        present: true
     relationship:
       expires: PT2H
       relationshipType: HOSTS
       source:
         extractGuid:
-          attribute: entity.guid
+          attribute: host.guid
+        entityType:
+          value: HOST
       target:
         lookupGuid:
           candidateCategory: KUBERNETES_POD
