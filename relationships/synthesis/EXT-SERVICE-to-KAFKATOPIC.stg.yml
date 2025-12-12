@@ -204,7 +204,7 @@ relationships:
 #        startsWith: "kafka.producer"
 #      - attribute: entity.type
 #        anyOf: [ "SERVICE" ]
-#      - attribute: kafka.cluster.name
+#      - attribute: cluster.name
 #        present: true
 #      - attribute: topic
 #        present: true
@@ -236,7 +236,7 @@ relationships:
 #        startsWith: "kafka.consumer"
 #      - attribute: entity.type
 #        anyOf: [ "SERVICE" ]
-#      - attribute: kafka.cluster.name
+#      - attribute: cluster.name
 #        present: true
 #      - attribute: topic
 #        present: true
@@ -244,9 +244,6 @@ relationships:
 #      expires: PT75M
 #      relationshipType: CONSUMES
 #      source:
-#        extractGuid:
-#          attribute: entity.guid
-#      target:
 #        lookupGuid:
 #          candidateCategory: KAFKATOPIC
 #          fields:
@@ -254,6 +251,9 @@ relationships:
 #              attribute: cluster.name
 #            - field: topic
 #              attribute: topic
+#      target:
+#        extractGuid:
+#          attribute: entity.guid
 
   - name: apmProducesOtelKafkaTopicStgOverrideExp
     version: "1"
@@ -290,9 +290,8 @@ relationships:
           identifier:
             fragments:
               - attribute: topic
-              - value: " ("
+              - value: ":"
               - attribute: cluster.name
-              - value: ")"
             hashAlgorithm: FARM_HASH
 
   - name: apmConsumesOtelKafkaTopicStgOverrideExp
@@ -316,9 +315,6 @@ relationships:
       expires: PT75M
       relationshipType: CONSUMES
       source:
-        extractGuid:
-          attribute: entity.guid
-      target:
         buildGuid:
           account:
             attribute: accountId
@@ -329,7 +325,9 @@ relationships:
           identifier:
             fragments:
               - attribute: topic
-              - value: " ("
+              - value: ":"
               - attribute: cluster.name
-              - value: ")"
             hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
