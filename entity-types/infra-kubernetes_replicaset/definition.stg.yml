@@ -32,7 +32,7 @@ synthesis:
         # open telemetry
         - attribute: newrelic.source
           value: 'api.metrics.otlp'
-        # if service.name is present, it's a service
+       # if service.name is present, it's a service
         - attribute: service.name
           present: false
       tags:
@@ -46,12 +46,53 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
     
-    # Infrastructure event data via opentelemetry
-    - compositeIdentifier:
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - ruleName: infra_kubernetes_replicaset_composite_stg_2
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - k8s.namespace.name
+          - k8s.replicaset.name
+      encodeIdentifierInGUID: true
+      name: k8s.replicaset.name
+      conditions:
+        # kube-state-metrics 
+        - attribute: metricName
+          value: kube_replicaset_owner
+        # identifier attributes
+        - attribute: k8s.replicaset.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        k8s.replicaset.name:
+          entityTagNames: [k8s.replicasetName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+    
+    # Infrastructure event data via opentelemetry 
+    - ruleName: infra_kubernetes_replicatset_composite_events
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.event.name
           - k8s.object.name
       encodeIdentifierInGUID: true
       name: k8s.object.name
@@ -59,18 +100,18 @@ synthesis:
         - attribute: newrelic.event.type
           value: OtlpInfrastructureEvent
         - attribute: k8s.object.kind
-          value: ReplicaSet
+          value: Replicaset
         # identifier attributes
         - attribute: k8s.object.name
           present: true
-        - attribute: k8s.namespace.name
+        - attribute: k8s.event.name
           present: true
         - attribute: k8s.cluster.name
           present: true
-        # if newrelic.entity.type is present, it's not a service
-        - attribute: newrelic.entity.type
-          present: true
-          
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+
     # newrelic integration data via nri-bundle
     - ruleName: infra_kubernetes_replicaset_entityId
       identifier: entityId
@@ -107,6 +148,12 @@ synthesis:
       prefixedTags:
         label.:
 
+dashboardTemplates:
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+    
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "K8s Agents"
