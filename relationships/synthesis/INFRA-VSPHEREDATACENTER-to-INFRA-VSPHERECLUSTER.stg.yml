@@ -1,0 +1,74 @@
+relationships:
+  - name: vsphereDatacenterHostsVsphereCluster
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "VSphereClusterSample" ]
+      - attribute: nr.entityType
+        anyOf: ["VSphereCluster", "VSPHERECLUSTER"]
+      - attribute: datacenterLocation
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: VSPHEREATACENTER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "vsphere-datacenter:"
+              - attribute: datacenterLocation
+              - value: ":"
+              - attribute: datacenterName
+              - operations:
+                  - operation: toLowercase
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: VSPHERECLUSTER
+
+  - name: vsphereDatacenterHostsVsphereClusterRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "VSphereClusterSample" ]
+      - attribute: nr.entityType
+        anyOf: ["VSphereCluster", "VSPHERECLUSTER"]
+      - attribute: datacenterLocation
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: VSPHEREATACENTER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "vsphere-datacenter:"
+              - attribute: datacenterName
+              - operations:
+                  - operation: toLowercase
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: VSPHERECLUSTER
