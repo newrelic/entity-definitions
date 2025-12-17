@@ -14,6 +14,8 @@ relationships:
       # Local detection - broker address is localhost
       - attribute: displayName
         regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
     relationship:
       expires: PT75M
       relationshipType: HOSTS
@@ -49,6 +51,8 @@ relationships:
       # Local detection - broker address is localhost
       - attribute: displayName
         regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
     relationship:
       expires: PT75M
       relationshipType: HOSTS
@@ -86,7 +90,7 @@ relationships:
         regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
     relationship:
       expires: PT75M
-      relationshipType: MANAGES
+      relationshipType: MEASURES
       source:
         buildGuid:
           account:
@@ -120,7 +124,7 @@ relationships:
         regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
     relationship:
       expires: PT75M
-      relationshipType: MANAGES
+      relationshipType: MEASURES
       source:
         buildGuid:
           account:
@@ -149,30 +153,21 @@ relationships:
         anyOf: [ "Metric" ]
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
-      - attribute: kafka.broker.name
-        present: true
       - attribute: host.id
         present: true
       - attribute: broker.endpoint
         present: true
       - attribute: broker.endpoint
-        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|$)"
+        regex: ".*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: HOST
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - attribute: host.id
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
       target:
         extractGuid:
           attribute: entity.guid
@@ -187,8 +182,6 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: kafka.broker.name
-        present: true
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
       - attribute: host.id
@@ -196,63 +189,16 @@ relationships:
       - attribute: broker.endpoint
         present: true
       - attribute: broker.endpoint
-        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+        regex: "^(?!.*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)).*$"
     relationship:
       expires: PT75M
-      relationshipType: MANAGES
+      relationshipType: MEASURES
       source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: HOST
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - attribute: host.id
-            hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
-            value: KAFKABROKER
-
-  # When broker.endpoint is not present: Host monitors Kafka broker with OpenTelemetry
-  - name: hostMonitorsOtelKafkaBroker2
-    version: "1"
-    origins:
-      - OpenTelemetry
-    conditions:
-      - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: kafka.broker.name
-        present: true
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: host.id
-        present: true
-      - attribute: broker.endpoint
-        present: false
-      - attribute: broker.id
-        present: true
-    relationship:
-      expires: PT75M
-      relationshipType: HOSTS
-      source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: HOST
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - attribute: host.id
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
       target:
         extractGuid:
           attribute: entity.guid
