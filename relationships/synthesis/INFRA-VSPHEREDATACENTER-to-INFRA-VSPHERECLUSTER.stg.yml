@@ -1,22 +1,18 @@
 relationships:
-  - name: hostHostsElasticSearchNode
+  - name: vsphereDatacenterContainsVsphereCluster
     version: "1"
     origins:
       - OnHost Integration
     conditions: 
       - attribute: eventType
-        anyOf: [ "ElasticsearchNodeSample" ]
+        anyOf: [ "VSphereClusterSample" ]
       - attribute: nr.entityType
-        anyOf: ["ELASTICSEARCHNODE"]
-      - attribute: reportingAgent
+        anyOf: ["VSphereCluster", "VSPHERECLUSTER"]
+      - attribute: datacenterLocation
         present: true
-      - attribute: clusterName # condition to exclude k8s hosts
-        present: false
-      - attribute: podName
-        present: false
     relationship:
       expires: PT75M
-      relationshipType: MEASURES
+      relationshipType: CONTAINS
       source:
         buildGuid:
           account:
@@ -24,38 +20,37 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: HOST
+            value: VSPHEREATACENTER
             valueInGuid: NA
           identifier:
             fragments:
-              - attribute: reportingAgent # cloudproviderID
+              - value: "vsphere-datacenter:"
+              - attribute: datacenterLocation
+              - value: ":"
+              - attribute: datacenterName
+                operations:
+                  - operation: toLowerCase
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: ELASTICSEARCHNODE
+            value: VSPHERECLUSTER
 
-  - name: hostHostsElasticSearchNodeRule2
+  - name: vsphereDatacenterContainsVsphereClusterRule2
     version: "1"
     origins:
       - OnHost Integration
     conditions: 
       - attribute: eventType
-        anyOf: [ "ElasticsearchNodeSample" ]
+        anyOf: [ "VSphereClusterSample" ]
       - attribute: nr.entityType
-        anyOf: ["ELASTICSEARCHNODE"]
-      - attribute: fullHostname
-        present: true
-      - attribute: reportingAgent
-        present: false
-      - attribute: clusterName # condition to exclude k8s hosts
-        present: false
-      - attribute: podName
+        anyOf: ["VSphereCluster", "VSPHERECLUSTER"]
+      - attribute: datacenterLocation
         present: false
     relationship:
       expires: PT75M
-      relationshipType: MEASURES
+      relationshipType: CONTAINS
       source:
         buildGuid:
           account:
@@ -63,14 +58,17 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: HOST
+            value: VSPHEREATACENTER
             valueInGuid: NA
           identifier:
             fragments:
-              - attribute: fullHostname
+              - value: "vsphere-datacenter:"
+              - attribute: datacenterName
+                operations:
+                  - operation: toLowerCase
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: ELASTICSEARCHNODE
+            value: VSPHERECLUSTER
