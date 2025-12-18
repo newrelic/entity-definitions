@@ -1,23 +1,21 @@
 relationships:
-  - name: BrowserApplicationContainsMicrofrontend
+  - name: MicrofrontendContainsMicrofrontend
     version: "1"
     origins:
       - Browser Monitoring
     conditions:
-      - attribute: appId
-        present: true
-      - attribute: appName
+      - attribute: source.type
+        anyOf: [ "MFE" ]
+      - attribute: parent.id
         present: true
     relationship:
       expires: PT72H
-      relationshipType: CONTAINS 
+      relationshipType: CONTAINS
       source:
         extractGuid:
           attribute: parent.id
-        entityType:
-          value: MICRO_FRONTEND
       target:
         extractGuid:
-          attribute: entityGuid
-        entityType:
-          value: BROWSER_APPLICATION
+          attribute: entity.guid
+          entityType:
+            value: MICRO_FRONTEND
