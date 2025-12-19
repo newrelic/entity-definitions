@@ -7,7 +7,9 @@ goldenTags:
 
 synthesis:
   rules:
-    - identifier: rabbitmq.node.name
+    # OpenTelemetry RabbitMQ Receiver
+    - ruleName: infra_rabbitmqnode_rabbitmq_node_name
+      identifier: rabbitmq.node.name
       name: rabbitmq.node.name
       encodeIdentifierInGUID: true
       conditions:
@@ -36,6 +38,45 @@ synthesis:
         # and select the dashboard.
         otel.library.name:
           entityTagName: instrumentation.name
+    
+    # OpenTelemetry with Prometheus Receiver (RabbitMQ Prometheus Exporter)
+    - ruleName: infra_rabbitmqnode_rabbitmq_node
+      identifier: rabbitmq_node
+      name: rabbitmq_node
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        # Prometheus exporter metrics start with 'rabbitmq_' prefix
+        - attribute: metricName
+          prefix: rabbitmq_
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This filters metrics coming from prometheus receiver
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+      tags:
+        # Prometheus exporter attributes
+        rabbitmq_node:
+          entityTagName: rabbitmq.node.name
+        # OTel attributes
+        otel.library.name:
+          entityTagName: instrumentation.name
+
+
+    # Data from RabbitMQ integation OHI
+    - ruleName: infra_rabbitmqnode_entityId
+      identifier: entityId
+      name: entityName
+      legacyFeatures:
+        useNonStandardAttributes: true
+        overrideGuidType: true
+      conditions:
+      - attribute: eventType
+        value: RabbitmqNodeSample
+      tags:
+        rabbitmqClusterName:
+          entityTagNames: [rabbitmq.cluster.name]
 
   tags:
     # For OpenTelemetry
@@ -55,4 +96,4 @@ dashboardTemplates:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "OnHost Agent and Integrations"

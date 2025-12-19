@@ -3,26 +3,72 @@ relationships:
   - name: hostHostsKafkaBroker
     version: "1"
     origins:
-      - Infrastructure Agent
       - OnHost Integration
     conditions:
       - attribute: eventType
         anyOf: ["KafkaBrokerSample"]
       - attribute: nr.entityType
-        anyOf: ["KafkaBroker","KAFKABROKER"]
+        anyOf: ["KAFKABROKER"]
       - attribute: hostname
         present: true
       # Local detection - broker address is localhost
       - attribute: displayName
-        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|$)"
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: HOSTS
       source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
+      target:
         extractGuid:
           attribute: entityGuid
           entityType:
+            value: KAFKABROKER
+  - name: hostHostsKafkaBrokerRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["KafkaBrokerSample"]
+      - attribute: nr.entityType
+        anyOf: ["KAFKABROKER"]
+      - attribute: hostname
+        present: true
+      # Local detection - broker address is localhost
+      - attribute: displayName
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
             value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
@@ -32,31 +78,72 @@ relationships:
   - name: hostMonitorsKafkaBroker
     version: "1"
     origins:
-      - Infrastructure Agent
       - OnHost Integration
     conditions:
       - attribute: eventType
         anyOf: ["KafkaBrokerSample"]
       - attribute: nr.entityType
-        anyOf: ["KafkaBroker","KAFKABROKER"]
+        anyOf: ["KAFKABROKER"]
       - attribute: hostname
         present: true
       - attribute: displayName
         regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
     relationship:
-      expires: P75M
-      relationshipType: MANAGES
+      expires: PT75M
+      relationshipType: MEASURES
       source:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
             value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
             value: KAFKABROKER
-    # Local scenario: Kafka broker running on the same host
+  - name: hostMonitorsKafkaBrokerRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["KafkaBrokerSample"]
+      - attribute: nr.entityType
+        anyOf: ["KAFKABROKER"]
+      - attribute: hostname
+        present: true
+      - attribute: displayName
+        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KAFKABROKER
+    # Local scenario: Kafka broker running on the same host with OpenTelemetry
   - name: hostHostsOtelKafkaBroker
     version: "1"
     origins:
@@ -66,71 +153,55 @@ relationships:
         anyOf: [ "Metric" ]
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
-      - attribute: kafka.broker.name
-        present: true
-      - attribute: entity.type
-        anyOf: ["KAFKABROKER"]
-      - attribute: host.name
+      - attribute: host.id
         present: true
       - attribute: broker.endpoint
-        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|$)"
+        present: true
+      - attribute: broker.endpoint
+        regex: ".*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: HOSTS
       source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: HOST
-          identifier:
-            fragments:
-              - attribute: host.name
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            attribute: entity.type
+            value: KAFKABROKER
 
-  # Remote scenario: Host monitors remote Kafka broker
-  - name: hostMonitorsOtelKafkaBroker
+# Remote scenario: Host monitors remote Kafka broker with OpenTelemetry when broker.endpoint is present
+  - name: hostMonitorsOtelKafkaBroker1
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: kafka.broker.name
-        present: true
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
-      - attribute: entity.type
-        anyOf: ["KAFKABROKER"]
-      - attribute: host.name
+      - attribute: host.id
         present: true
       - attribute: broker.endpoint
-        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+        present: true
+      - attribute: broker.endpoint
+        regex: "^(?!.*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)).*$"
     relationship:
-      expires: P75M
-      relationshipType: MANAGES
+      expires: PT75M
+      relationshipType: MEASURES
       source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: HOST
-          identifier:
-            fragments:
-              - attribute: host.name
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            attribute: entity.type
+            value: KAFKABROKER
 

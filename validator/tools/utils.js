@@ -35,6 +35,7 @@ module.exports = {
     const definitionFiles = files.filter(file => file.includes(DEFINITION_FILE_NAME) || file.includes(DEFINITION_FILE_NAME_STG));
     return new Map(definitionFiles.map((filename) => [filename, yaml.load(fs.readFileSync(filename, 'utf8'))]));
   },
+
   sanitizeDashboard (fileContent) {
     return fileContent
       .replace(/"accountId"\s*:\s*\d+\s*/g, '"accountId": 0') // Anonymize account ID

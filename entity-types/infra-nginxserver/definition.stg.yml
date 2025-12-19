@@ -9,7 +9,8 @@ goldenTags:
 
 synthesis:
   rules:
-  - compositeIdentifier:
+  - ruleName: infra_nginxserver_composite
+    compositeIdentifier:
       separator: ":"
       attributes:
         - nginx.deployment.name
@@ -42,7 +43,8 @@ synthesis:
       # and select the dashboard.
       otel.library.name:
         entityTagName: instrumentation.name
-  - compositeIdentifier:
+  - ruleName: infra_nginxserver_composite_2
+    compositeIdentifier:
       separator: ":"
       attributes:
         - nginx.deployment.name
@@ -75,7 +77,8 @@ synthesis:
       # and select the dashboard.
       otel.library.name:
         entityTagName: instrumentation.name
-  - compositeIdentifier:
+  - ruleName: infra_nginxserver_composite_3
+    compositeIdentifier:
       separator: ":"
       attributes:
         - nginx.deployment.name
@@ -101,7 +104,8 @@ synthesis:
       nginx.server.endpoint:
       otel.library.name:
         entityTagName: instrumentation.name
-  - compositeIdentifier:
+  - ruleName: infra_nginxserver_composite_4
+    compositeIdentifier:
       separator: ":"
       attributes:
         - nginx.deployment.name
@@ -127,6 +131,29 @@ synthesis:
       nginx.server.endpoint:
       otel.library.name:
         entityTagName: instrumentation.name
+  - ruleName: infra_nginxserver_composite_5
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: newrelic.source
+        value: 'api.logs.otlp'
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: instrumentation.provider
+        value: opentelemetry
+    tags:
+      nginx.server.endpoint:
 
   tags:
     # For OpenTelemetry
