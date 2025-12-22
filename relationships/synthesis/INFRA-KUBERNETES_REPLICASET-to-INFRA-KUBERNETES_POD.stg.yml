@@ -1,16 +1,14 @@
 relationships:
-  - name: k8sJobContainsPod
+  - name: k8sReplicaSetManagesPod
     version: "1"
-    origins: 
+    origins:
       - Kubernetes Integration
-    conditions:
+    conditions: 
       - attribute: eventType
-        anyOf: [ "K8sPodSample" ]
-      - attribute: createdKind
-        anyOf: [ "Job" ]
+        anyOf: [ "K8sReplicaSetSample" ]
     relationship:
       expires: PT75M
-      relationshipType: CONTAINS
+      relationshipType: MANAGES
       source:
         buildGuid:
           account:
@@ -18,24 +16,20 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETES_JOB
+            value: KUBERNETES_REPLICASET
             valueInGuid: NA
           identifier:
             fragments:
-              - value: "k8s:"
-              - attribute: clusterName
-              - value: ":"
-              - attribute: namespaceName
-              - value: ":job:"
-              - attribute: createdBy
+              - value: "k8s:replicaset:"
+              - attribute: replicasetName
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_POD
-  - name: otelKsmK8sJobContainsPod
-    # use kube-state-metrics kube_pod_owner metric
+  - name: otelKsmK8sReplicaSetManagesPod
+   # use kube-state-metrics kube_pod_owner metric
     version: "1"
     origins: 
       - OpenTelemetry
@@ -43,10 +37,10 @@ relationships:
       - attribute: metricName
         anyOf: [ "kube_pod_owner" ]
       - attribute: owner_kind
-        anyOf: [ "Job" ]
+        anyOf: [ "ReplicaSet" ]
     relationship:
       expires: PT75M
-      relationshipType: CONTAINS
+      relationshipType: MANAGES
       source:
         buildGuid:
           account:
@@ -54,16 +48,14 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETES_JOB
+            value: KUBERNETES_REPLICASET
           identifier:
             fragments:
               - attribute: k8s.cluster.name
-              - value: ":"
-              - attribute: k8s.namespace.name
-              - value: ":"
-              - attribute: owner_name
+              - attribute: k8s.namespace.name   
+              - attribute: k8s.replicaset.name
             hashAlgorithm: FARM_HASH
-      target:
+      target:  
         extractGuid:
           attribute: entity.guid
           entityType:
