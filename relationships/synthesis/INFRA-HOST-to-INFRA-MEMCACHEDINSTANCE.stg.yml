@@ -1,0 +1,149 @@
+relationships:
+  # Local scenario: Memcached instance running on the same host
+  - name: hostHostsMemcachedInstance
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["MemcachedSample"]
+      - attribute: nr.entityType
+        anyOf: ["MemcachedInstance","MEMCACHEDINSTANCE"]
+      - attribute: hostname
+        present: true
+      # Local detection - instance address is localhost
+      - attribute: displayName
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: MEMCACHEDINSTANCE
+  - name: hostHostsMemcachedInstanceRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["MemcachedSample"]
+      - attribute: nr.entityType
+        anyOf: ["MemcachedInstance","MEMCACHEDINSTANCE"]
+      - attribute: hostname
+        present: true
+      # Local detection - instance address is localhost
+      - attribute: displayName
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: MEMCACHEDINSTANCE
+  # Remote scenario: Host measures remote Memcached instance
+  - name: hostMeasuresMemcachedInstance
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["MemcachedSample"]
+      - attribute: nr.entityType
+        anyOf: ["MemcachedInstance","MEMCACHEDINSTANCE"]
+      - attribute: hostname
+        present: true
+      - attribute: displayName
+        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: MEMCACHEDINSTANCE
+  - name: hostMeasuresMemcachedInstanceRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["MemcachedSample"]
+      - attribute: nr.entityType
+        anyOf: ["MemcachedInstance","MEMCACHEDINSTANCE"]
+      - attribute: hostname
+        present: true
+      - attribute: displayName
+        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: MEMCACHEDINSTANCE

@@ -1,7 +1,6 @@
 brokerCount:
   title: Brokers
   unit: COUNT
-  displayAsValue: true
   queries:
     newRelic:
       select: latest(cluster.activeBrokerCount)
@@ -17,7 +16,6 @@ brokerCount:
 TopicCount:
   title: Topics
   unit: COUNT
-  displayAsValue: true
   queries:
     newRelic:
       select: latest(cluster.globalTopicCount)
@@ -27,13 +25,12 @@ TopicCount:
     opentelemetry:
       select: latest(kafka.cluster.topic.count)
       from: Metric
-      where: metricName='kafka.cluster.topic.count'
+      where: metricName='kafka.cluster.topic.count' and kafka.cluster.topic.count > 0
       eventId: entity.guid
 
 partitionCount:
   title: Partitions
   unit: COUNT
-  displayAsValue: true
   queries:
     newRelic:
       select: latest(cluster.globalPartitionCount)
@@ -41,22 +38,22 @@ partitionCount:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(kafka.partition.count)
+      select: latest(kafka.cluster.partition.count)
       from: Metric
-      where: metricName='kafka.cluster.partition.count'
+      where: metricName='kafka.cluster.partition.count' and kafka.cluster.partition.count > 0
       eventId: entity.guid
 
 offlinePartitions:
-  title: Offline Partitions
+  title: Offline partitions
   unit: COUNT
   queries:
     newRelic:
-      select: latest(cluster.offlinePartitionsCount)
+      select: max(cluster.offlinePartitionsCount)
       from: KafkaClusterSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(kafka.partition.offline)
+      select: max(kafka.partition.offline)
       from: Metric
       where: metricName='kafka.partition.offline'
       eventId: entity.guid

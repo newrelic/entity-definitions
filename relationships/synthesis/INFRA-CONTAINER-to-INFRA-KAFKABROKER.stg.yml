@@ -1,0 +1,47 @@
+relationships:
+  # From K8s container to Kafka broker
+  - name: ContainerContainsKafkaBroker
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "KafkaBrokerSample" ]
+      - attribute: nr.entityType
+        anyOf: ["KafkaBroker","KAFKABROKER"]
+      - attribute: clusterName
+        present: true
+      - attribute: namespace
+        present: true
+      - attribute: podName
+        present: true
+      - attribute: name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespace
+              - value: ":"
+              - attribute: podName
+              - value: ":container:"
+              - attribute: name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KAFKABROKER

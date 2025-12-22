@@ -1,0 +1,56 @@
+relationships:
+  - name: otelApplicationCallsOracleDbFromMetrics
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: newrelic.source
+        anyOf: ["api.traces.otlp"]
+      - attribute: db.system
+        anyOf: ["oracle"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: ORACLEDBINSTANCE
+          fields:
+            - field: hostAddress
+              attribute: server.address
+            - field: hostPort
+              attribute: server.port
+  - name: OtelOracledbCallsNrdotInfra
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [Metric]
+      - attribute: metricName
+        startsWith: newrelicoracledb.
+      - attribute: instrumentation.provider
+        anyOf: [opentelemetry]
+      # This handles both library name formats for backward compatibility
+      - attribute: otel.library.name
+        anyOf: [github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver]
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      target:
+        extractGuid:
+          attribute: entity.guid
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
