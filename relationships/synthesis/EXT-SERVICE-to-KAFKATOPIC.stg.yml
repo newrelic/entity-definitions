@@ -219,7 +219,7 @@ relationships:
 #          candidateCategory: KAFKATOPIC
 #          fields:
 #            - field: clusterName
-#              attribute: cluster.name
+#              attribute: kafka.cluster.name
 #            - field: topic
 #              attribute: topic
 
@@ -244,16 +244,16 @@ relationships:
 #      expires: PT75M
 #      relationshipType: CONSUMES
 #      source:
-#        extractGuid:
-#          attribute: entity.guid
-#      target:
 #        lookupGuid:
 #          candidateCategory: KAFKATOPIC
 #          fields:
 #            - field: clusterName
-#              attribute: cluster.name
+#              attribute: kafka.cluster.name
 #            - field: topic
 #              attribute: topic
+#      target:
+#        extractGuid:
+#          attribute: entity.guid
 
   - name: apmProducesOtelKafkaTopicStgOverrideExp
     version: "1"
@@ -269,7 +269,7 @@ relationships:
         startsWith: "kafka.producer"
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
-      - attribute: cluster.name
+      - attribute: kafka.cluster.name
         present: true
       - attribute: topic
         present: true
@@ -290,9 +290,8 @@ relationships:
           identifier:
             fragments:
               - attribute: topic
-              - value: " ("
-              - attribute: cluster.name
-              - value: ")"
+              - value: ":"
+              - attribute: kafka.cluster.name
             hashAlgorithm: FARM_HASH
 
   - name: apmConsumesOtelKafkaTopicStgOverrideExp
@@ -308,7 +307,7 @@ relationships:
         startsWith: "kafka.consumer"
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
-      - attribute: cluster.name
+      - attribute: kafka.cluster.name
         present: true
       - attribute: topic
         present: true
@@ -316,9 +315,6 @@ relationships:
       expires: PT75M
       relationshipType: CONSUMES
       source:
-        extractGuid:
-          attribute: entity.guid
-      target:
         buildGuid:
           account:
             attribute: accountId
@@ -329,7 +325,9 @@ relationships:
           identifier:
             fragments:
               - attribute: topic
-              - value: " ("
-              - attribute: cluster.name
-              - value: ")"
+              - value: ":"
+              - attribute: kafka.cluster.name
             hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid

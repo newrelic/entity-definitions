@@ -3,7 +3,7 @@ type: KAFKABROKER
 
 synthesis:
   rules:
-  # This rule is for OTEL kafka receivers metrics
+  # This rule is for OTEL receivers metrics starts with kafka prefix
   - ruleName: infra_kafkabroker_kafka_broker_name_stg_1
     compositeIdentifier:
       separator: ":"
@@ -12,7 +12,7 @@ synthesis:
         - kafka.cluster.name
     compositeName:
       fragments:
-        - value: "BrokerId: "
+        - value: "BrokerId:"
         - attribute: broker.id
         - value: " ("
         - attribute: kafka.cluster.name
@@ -29,6 +29,48 @@ synthesis:
         present: true
       - attribute: topic
         present: false
+      - attribute: metricName
+        prefix: kafka
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      broker.id:
+      k8s.pod.name:
+      k8s.node.name:
+      k8s.pod.uid:
+      k8s.namespace.name:
+
+    # This rule is for OTEL kafka receivers metrics starts with jvm prefix
+  - ruleName: infra_kafkabroker_kafka_broker_name_stg_2
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - broker.id
+        - kafka.cluster.name
+    compositeName:
+      fragments:
+        - value: "BrokerId:"
+        - attribute: broker.id
+        - value: " ("
+        - attribute: kafka.cluster.name
+        - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: broker.id
+        present: true
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: topic
+        present: false
+      - attribute: metricName
+        prefix: jvm
     tags:
       # Environment resource attributes
       instrumentation.provider:
@@ -42,7 +84,7 @@ synthesis:
       k8s.namespace.name:
 
   # This rule is for OTEL kafka broker logs
-  - ruleName: infra_kafkabroker_kafka_broker_name_stg_2
+  - ruleName: infra_kafkabroker_kafka_broker_name_stg_3
     compositeIdentifier:
       separator: ":"
       attributes:

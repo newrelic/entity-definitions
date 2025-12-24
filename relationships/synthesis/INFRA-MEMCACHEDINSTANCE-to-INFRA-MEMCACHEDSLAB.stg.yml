@@ -5,25 +5,23 @@ relationships:
       - OnHost Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "MemcachedSample" ]
-      - attribute: nr.entityType
-        anyOf: [ "MemcachedInstance","MEMCACHEDINSTANCE" ]
+        anyOf: [ "MemcachedSlabSample" ]
+      - attribute: entityType
+        anyOf: [ "MEMCACHEDSLAB" ]
       - attribute: reportingEndpoint
         present: true
     relationship:
       expires: PT75M
       relationshipType: CONTAINS
       source:
+        lookupGuid:
+          candidateCategory: MEMCACHEDINSTANCE
+          fields:
+            - field: reportingEndpoint
+              attribute: reportingEndpoint
+      target:
         extractGuid:
           attribute: entityGuid
           entityType:
-            attribute: nr.entityType
-      target:
-        lookupGuid:
-          candidateCategory: MEMCACHEDSLAB
-          fields:
-            - field: reportingEndpoint
-              capture:
-                attribute: reportingEndpoint
-                regex: "(.*)"
+            value: MEMCACHEDSLAB
 
