@@ -1,0 +1,74 @@
+relationships:
+  - name: rabbitmqNodeHostsRabbitmqQueueStgOverride
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: otel.library.name
+        anyOf: [ "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/rabbitmqreceiver" ]
+      - attribute: rabbitmq.node.name
+        present: true
+      - attribute: rabbitmq.queue.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId  
+          domain:
+            value: INFRA
+          type:
+            value: RABBITMQNODE
+          identifier:
+            fragments:
+              - attribute: "rabbitmq.node.name"
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            attribute: accountId  
+          domain:
+            value: INFRA
+          type:
+            value: RABBITMQQUEUE
+          identifier:
+            fragments:
+              - attribute: "rabbitmq.node.name"
+              - value: ":"
+              - attribute: "rabbitmq.queue.name"
+              - value: ":"
+              - attribute: "rabbitmq.vhost.name"
+            hashAlgorithm: FARM_HASH
+  - name: rabbitmqNodeContainsRabbitmqQueueStgOverride
+    version: "1"
+    origins: 
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "RabbitmqQueueSample" ]
+      - attribute: nr.entityType
+        anyOf: [ "RabbitmqQueue","RABBITMQQUEUE" ]
+      - attribute: entityKey
+        regex: ".*:clustername=([^:]+)"
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: RABBITMQNODE
+          fields:
+            - field: rabbitmqClusterName
+              capture:
+                attribute: entityKey
+                regex: ".*:clustername=([^:]+)"
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: RABBITMQQUEUE

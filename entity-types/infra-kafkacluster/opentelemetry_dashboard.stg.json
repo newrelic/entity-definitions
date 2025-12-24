@@ -3,205 +3,290 @@
   "description": "Performance and health metrics for Kafka Cluster",
   "pages": [
     {
-      "name": "Cluster Overview",
+      "name": "Cluster overview",
       "description": null,
       "widgets": [
         {
-          "title": "Brokers",
+          "title": "Cluster summary",
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 2,
+            "width": 12,
             "height": 2
           },
           "visualization": {
             "id": "viz.billboard"
           },
           "rawConfiguration": {
+            "billboardSettings": {
+              "gridOptions": {
+                "label": 15,
+                "value": 40
+              }
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.brokers) as 'Brokers' FROM Metric WHERE metricName='kafka.brokers'"
+                "query": "SELECT latest(kafka.brokers) as 'Brokers online' FROM Metric WHERE metricName='kafka.brokers'"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.cluster.topic.count) or 0 AS 'Total topics' FROM Metric WHERE metricName='kafka.cluster.topic.count' AND kafka.cluster.topic.count>0"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.cluster.partition.count) or 0 AS 'Total partitions' FROM Metric WHERE metricName='kafka.cluster.partition.count' AND kafka.cluster.partition.count > 0"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`kafka.partition.offline`) AS 'Offline partitions'  FROM Metric WHERE metricName='kafka.partition.offline'"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.partition.non_preferred_leader) or 0 AS 'Partitions with non-preferred leader' FROM Metric WHERE metricName = 'kafka.partition.non_preferred_leader' AND kafka.partition.non_preferred_leader > 0"
+              },
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(group) or 0 as 'Consumer groups' FROM Metric WHERE metricName='kafka.consumer_group.members'"
               }
-            ]
+            ],
+            "thresholdsWithSeriesOverrides": {
+              "seriesOverrides": [
+                {
+                  "from": 0,
+                  "seriesName": "Offline partitions",
+                  "severity": "success",
+                  "to": 0
+                },
+                {
+                  "from": 1,
+                  "seriesName": "Offline partitions",
+                  "severity": "severe"
+                },
+                {
+                  "from": 0,
+                  "seriesName": "Partitions with non-preferred leader",
+                  "severity": "success"
+                },
+                {
+                  "from": 1,
+                  "seriesName": "Partitions with non-preferred leader",
+                  "severity": "severe"
+                }
+              ],
+              "thresholds": [
+                {
+                  "from": 1,
+                  "severity": "success"
+                }
+              ]
+            }
           }
         },
         {
-          "title": "Partition Count",
+          "title": "Brokers online",
           "layout": {
-            "column": 3,
-            "row": 1,
-            "width": 2,
-            "height": 2
+            "column": 1,
+            "row": 3,
+            "width": 6,
+            "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.area"
           },
           "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.partition.count) AS 'Partition Count' FROM Metric WHERE metricName='kafka.partition.count'"
+                "query": "SELECT max(kafka.brokers) as 'Brokers online' FROM Metric WHERE metricName='kafka.brokers' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Offline Partitions",
-          "layout": {
-            "column": 5,
-            "row": 1,
-            "width": 2,
-            "height": 2
-          },
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT latest(`kafka.partition.offline`) AS 'Offline Partitions'  FROM Metric WHERE metricName='kafka.partition.offline'"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Consumer Groups",
+          "title": "Total topics",
           "layout": {
             "column": 7,
-            "row": 1,
-            "width": 2,
-            "height": 2
-          },
-          "visualization": {
-            "id": "viz.billboard"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT uniqueCount(group) as 'Consumer Groups' FROM Metric WHERE metricName='kafka.consumer_group.members'"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Consumer Group Members Count",
-          "layout": {
-            "column": 9,
-            "row": 1,
-            "width": 4,
-            "height": 5
-          },
-          "visualization": {
-            "id": "viz.table"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT latest(kafka.consumer_group.members) AS 'Count' FROM Metric WHERE metricName = 'kafka.consumer_group.members' FACET group"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Under Replicated Partitions",
-          "layout": {
-            "column": 1,
             "row": 3,
-            "width": 4,
+            "width": 6,
             "height": 3
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.area"
           },
           "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(kafka.partition.under_replicated) AS 'Under Replicated Partitions' FROM Metric WHERE metricName='kafka.partition.under_replicated' TIMESERIES AUTO"
+                "query": "SELECT latest(kafka.cluster.topic.count) AS 'Total topics' FROM Metric WHERE metricName='kafka.cluster.topic.count' AND kafka.cluster.topic.count>0 TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "In-Sync Replica Operations (per min)",
-          "layout": {
-            "column": 5,
-            "row": 3,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT rate(sum(kafka.isr.operation.count), 1 minute) AS 'ISR Operations' FROM Metric WHERE metricName = 'kafka.isr.operation.count' TIMESERIES AUTO FACET operation"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Leader Elections Rate (per min)",
+          "title": "Cluster partition health",
           "layout": {
             "column": 1,
             "row": 6,
-            "width": 4,
+            "width": 6,
             "height": 3
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.area"
           },
           "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(kafka.leader.election.rate), 1 minute) AS 'Leader Elections' FROM Metric WHERE metricName = 'kafka.leader.election.rate' TIMESERIES AUTO"
+                "query": "SELECT filter(latest(kafka.cluster.partition.count), WHERE metricName='kafka.cluster.partition.count' AND kafka.cluster.partition.count > 0) AS 'Total partitions', filter(latest(`kafka.partition.offline`), WHERE metricName='kafka.partition.offline') AS 'Offline partitions' FROM Metric TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Unclean Leader Elections Rate (per min)",
+          "title": "Unclean leader elections rate (per min)",
           "layout": {
-            "column": 5,
+            "column": 7,
             "row": 6,
-            "width": 4,
+            "width": 6,
             "height": 3
           },
           "visualization": {
             "id": "viz.line"
           },
           "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(kafka.unclean.election.rate), 1 minute) AS 'Unclean Leader Elections/min' FROM Metric WHERE metricName = 'kafka.unclean.election.rate' TIMESERIES AUTO"
+                "query": "SELECT rate(sum(kafka.unclean.election.rate), 1 minute) AS 'Unclean leader elections/min' FROM Metric WHERE metricName = 'kafka.unclean.election.rate' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Max Replica Lag (Messages)",
+          "title": "Partitions with non-preferred leader",
           "layout": {
-            "column": 9,
-            "row": 6,
-            "width": 4,
+            "column": 1,
+            "row": 9,
+            "width": 6,
             "height": 3
           },
           "visualization": {
             "id": "viz.line"
           },
           "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT max(kafka.max.lag) as 'Messages' FROM Metric WHERE metricName = 'kafka.max.lag' TIMESERIES AUTO"
+                "query": "SELECT max(kafka.partition.non_preferred_leader) AS 'Partitions with non-preferred leader' FROM Metric WHERE metricName = 'kafka.partition.non_preferred_leader' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Leader elections rate (per min)",
+          "layout": {
+            "column": 7,
+            "row": 9,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.leader.election.rate), 1 minute) AS 'Leader elections' FROM Metric WHERE metricName = 'kafka.leader.election.rate' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Fenced brokers",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.broker.fenced.count) AS 'Fenced brokers' FROM Metric WHERE metricName = 'kafka.broker.fenced.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Consumer groups",
+          "layout": {
+            "column": 7,
+            "row": 12,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT uniqueCount(group) or 0 as 'Consumer groups' FROM Metric WHERE metricName='kafka.consumer_group.members' TIMESERIES AUTO"
               }
             ]
           }

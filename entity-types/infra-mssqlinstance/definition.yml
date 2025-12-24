@@ -3,7 +3,8 @@ type: MSSQLINSTANCE
 
 synthesis:
   rules:
-    - identifier: entityId
+    - ruleName: infra_mssqlinstance_entityId
+      identifier: entityId
       name: entityName
       legacyFeatures:
         useNonStandardAttributes: true
@@ -13,7 +14,7 @@ synthesis:
           ttl: PT4H
       conditions:
         - attribute: event_type
-          value: 'MssqlInstanceSample'
+          value: "MssqlInstanceSample"
       tags:
         integrationName:
           ttl: P1D
@@ -24,9 +25,33 @@ synthesis:
         entityKey:
           ttl: P1D
 
+    - ruleName: infra_mssqlinstance_server_address
+      identifier: server.address
+      name: server.address
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: sqlserver.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicsqlserverreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+        server.address:
+          entityTagName: server.address
+        server.port:
+          entityTagName: server.port
+        sql.version:
+          entityTagName: database.version
 goldenTags:
-- mssql.host
-- mssql.instance
+  - mssql.host
+  - mssql.instance
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -35,7 +60,9 @@ dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+  opentelemetry:
+    template: newrelic_otel_sql_dashboard.json
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "Database Integrations"

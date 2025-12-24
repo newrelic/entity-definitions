@@ -1,0 +1,153 @@
+relationships:
+  # Local scenario: RabbitMQ node running on the same host
+  - name: hostHostsRabbitMQNode
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["RabbitmqNodeSample"]
+      - attribute: nr.entityType
+        anyOf: ["RABBITMQNODE"]
+      - attribute: hostname
+        present: true
+      # Local detection - broker address is localhost
+      - attribute: displayName
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: RABBITMQNODE
+  # Remote scenario: Host monitors remote RabbitMQ node
+  - name: hostMonitorsRabbitMQNode
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["RabbitmqNodeSample"]
+      - attribute: nr.entityType
+        anyOf: ["RABBITMQNODE"]
+      - attribute: hostname
+        present: true
+      - attribute: displayName
+        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: RABBITMQNODE
+
+    # Local scenario: RabbitMQ node running on the same host
+  - name: hostHostsRabbitMQNodeRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["RabbitmqNodeSample"]
+      - attribute: nr.entityType
+        anyOf: ["RABBITMQNODE"]
+      - attribute: hostname
+        present: true
+      # Local detection - broker address is localhost
+      - attribute: displayName
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: RABBITMQNODE
+  # Remote scenario: Host monitors remote RabbitMQ node
+  - name: hostMonitorsRabbitMQNodeRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["RabbitmqNodeSample"]
+      - attribute: nr.entityType
+        anyOf: ["RABBITMQNODE"]
+      - attribute: hostname
+        present: true
+      - attribute: displayName
+        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: RABBITMQNODE
+
