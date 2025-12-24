@@ -6,8 +6,8 @@ configuration:
 
 synthesis:
   rules:
-    # This rule is for OTEL kafka cluster metrics
-  - ruleName: infra_kafkacluster_kafka_cluster_name_stg
+    # This rule is for OTEL kafka cluster metrics from jmx receiver - jmxmetrics
+  - ruleName: infra_kafkacluster_kafka_cluster_name_stg_1
     identifier: kafka.cluster.name
     name: kafka.cluster.name
     encodeIdentifierInGUID: true
@@ -24,19 +24,219 @@ synthesis:
         present: false
       - attribute: instrumentation.provider
         value: opentelemetry
+      - attribute: metricName
+        prefix: kafka
+      - attribute: otel.library.name
+        value: "io.opentelemetry.contrib.jmxmetrics"
     tags:
       # Environment resource attributes
-      host.name:
-        entityTagName: hostName
       instrumentation.provider:
       kafka.cluster.name:
-        entityTagName: clusterName
       otel.library.name:
         entityTagName: instrumentation.name
-      k8s.namespace.name:
+
+  # This rule is for OTEL kafka cluster metrics from jmx receiver - jmxscraper
+  - ruleName: infra_kafkacluster_kafka_cluster_name_stg_2
+    identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: client-id
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: metricName
+        prefix: kafka
+      - attribute: otel.library.name
+        value: "io.opentelemetry.jmx"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # This rule is for OTEL kafka cluster metrics from kafka metrics receiver
+  - ruleName: infra_kafkacluster_kafka_cluster_name_stg_3
+    identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: client-id
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: metricName
+        prefix: kafka
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+    # This rule is for OTEL kafka cluster metrics from prometheus receiver
+  - ruleName: infra_kafkacluster_kafka_cluster_name_stg_4
+    identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: client-id
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: metricName
+        prefix: kafka
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+
+  # This rule is for OTEL jvm metrics from jmx receiver - jmxscraper
+  - ruleName: infra_kafkacluster_kafka_cluster_name_stg_5
+    identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: client-id
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: metricName
+        prefix: jvm
+      - attribute: otel.library.name
+        value: "io.opentelemetry.jmx"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # This rule is for OTEL jvm metrics from jmx receiver - jmxmetrics
+  - ruleName: infra_kafkacluster_kafka_cluster_name_stg_6
+    identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: client-id
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: metricName
+        prefix: jvm
+      - attribute: otel.library.name
+        value: "io.opentelemetry.contrib.jmxmetrics"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # This rule is for OTEL jvm metrics from prometheus receiver
+  - ruleName: infra_kafkacluster_kafka_cluster_name_stg_7
+    identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: client-id
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: metricName
+        prefix: jvm
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+    # This rule is for OTEL kafka cluster logs
+  - ruleName: infra_kafkacluster_kafka_cluster_name_stg_8
+    identifier: kafka.cluster.name
+    name: kafka.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: broker.id
+        present: false
+      - attribute: topic
+        present: false
+      - attribute: client-id
+        present: false
+      - attribute: instrumentation.provider
+        value: opentelemetry
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
 
     # This rule is for native kafka cluster metrics
-  - ruleName: infra_kafkacluster_clusterName_stg
+  - ruleName: infra_kafkacluster_clusterName_stg_3
     identifier: clusterName
     name: displayName
     encodeIdentifierInGUID: true
@@ -60,7 +260,7 @@ dashboardTemplates:
 
 goldenTags:
 - clusterName
-- hostName
+- kafka.cluster.name
 
 ownership:
   primaryOwner:

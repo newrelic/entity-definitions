@@ -1,5 +1,5 @@
 incomingMessagesPerSecond:
-  title: Incoming messages per second
+  title: Messages in per second
   unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
@@ -28,23 +28,38 @@ bytesInPerSecond:
       where: metricName = 'kafka.network.io' AND (state = 'in' OR direction = 'in')
       eventId: entity.guid
 
+bytesOutSecond:
+  title: Bytes out per second
+  unit: BYTES_PER_SECOND
+  queries:
+    newRelic:
+      select: average(broker.IOOutPerSecond)
+      from: KafkaBrokerSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(kafka.network.io) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: metricName = 'kafka.network.io' AND (state = 'out' OR direction = 'out')
+      eventId: entity.guid
+
 underReplicatedPartitions:
   title: Under replicated partitions
   unit: COUNT
   queries:
     newRelic:
-      select: latest(replication.unreplicatedPartitions)
+      select: max(replication.unreplicatedPartitions)
       from: KafkaBrokerSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(kafka.partition.under_replicated)
+      select: max(kafka.partition.under_replicated)
       from: Metric
       where: metricName = 'kafka.partition.under_replicated'
       eventId: entity.guid
 
 produceRequestLatency99p:
-  title: Produce request latency (99th percentile)
+  title: Produce request latency (p99)
   unit: MS
   queries:
     newRelic:
@@ -58,8 +73,8 @@ produceRequestLatency99p:
       where: metricName = 'kafka.request.time.99p' AND type = 'Produce'
       eventId: entity.guid
 
-failedRequestsPerSecond:
-  title: Failed requests per second
+produceRequestsFailedPerSecond:
+  title: Failed produce requests per second
   unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
@@ -70,5 +85,5 @@ failedRequestsPerSecond:
     opentelemetry:
       select: sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
-      where: metricName = 'kafka.request.failed'
+      where: metricName = 'kafka.request.failed' AND type = 'produce'
       eventId: entity.guid

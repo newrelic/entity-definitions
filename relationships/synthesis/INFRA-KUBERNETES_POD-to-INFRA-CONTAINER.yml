@@ -64,37 +64,3 @@ relationships:
           attribute: entity.guid
           entityType:
             value: CONTAINER
-  - name: otelKsmK8sPodContainsContainerPreview
-    # use kube-state-metrics kube_pod_container_info metric
-    version: "1"
-    origins: 
-      - OpenTelemetry
-    conditions:
-      - attribute: metricName
-        anyOf: [ "kube_pod_container_info" ]
-      - attribute: newrelicOnly
-        anyOf: [ "true" ]
-    relationship:
-      expires: PT75M
-      relationshipType: CONTAINS
-      source:
-        buildGuid:
-          account:
-            lookup: true  
-          domain:
-            value: INFRA
-          type:
-            value: KUBERNETES_POD
-          identifier:
-            fragments:
-              - attribute: k8s.cluster.name
-              - value: ":"
-              - attribute: namespace
-              - value: ":"
-              - attribute: pod
-            hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
-            value: CONTAINER

@@ -1,0 +1,119 @@
+{
+  "name" : "MemcachedSlabSample",
+  "pages" : [ {
+    "name" : "MemcachedSlabSample",
+    "widgets" : [{
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 1,
+        "height" : 4,
+        "width" : 6
+      },
+      "title" : "Slab Operation Rates",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(cmdSetRateSlabPerSecond), average(deleteRateSlabPerSecond), average(getHitRateSlabPerSecond) FROM MemcachedSlabSample TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    },{
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 7,
+        "row" : 1,
+        "height" : 4,
+        "width" : 6
+      },
+      "title" : "CAS Operations",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT average(casModifiedSlabPerSecond), average(casBadValPerSecond) FROM MemcachedSlabSample TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    } , {
+      "visualization" : {
+        "id" : "viz.line"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 5,
+        "height" : 4,
+        "width" : 6
+      },
+      "title" : "Chunk Usage",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT latest(usedChunksItems), latest(freedChunks) FROM MemcachedSlabSample TIMESERIES AUTO",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.billboard"
+      },
+      "layout" : {
+        "column" : 7,
+        "row" : 5,
+        "height" : 4,
+        "width" : 6
+      },
+      "title" : "Slab Utilization (%)",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT (latest(usedChunksItems) / latest(totalChunksSlab)) * 100 AS `Utilization %` FROM MemcachedSlabSample",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.billboard"
+      },
+      "layout" : {
+        "column" : 1,
+        "row" : 9,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Total Chunks",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT latest(totalChunksSlab) FROM MemcachedSlabSample",
+          "accountId": 0} ]
+      }
+    }, {
+      "visualization" : {
+        "id" : "viz.billboard"
+      },
+      "layout" : {
+        "column" : 5,
+        "row" : 9,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Chunk Size (Bytes)",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT latest(chunkSizeInBytes) FROM MemcachedSlabSample",
+          "accountId": 0} ]
+      }
+    } , {
+      "visualization" : {
+        "id" : "viz.billboard"
+      },
+      "layout" : {
+        "column" : 9,
+        "row" : 9,
+        "height" : 3,
+        "width" : 4
+      },
+      "title" : "Total Pages",
+      "rawConfiguration" : {
+        "nrqlQueries" : [ {
+          "query" : "SELECT latest(totalPagesSlab) FROM MemcachedSlabSample",
+          "accountId": 0} ]
+      }
+    } ]
+  } ]
+}

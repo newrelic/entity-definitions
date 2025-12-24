@@ -28,13 +28,8 @@ relationships:
             - field: awsLambdaArn
               attribute: cloud.resource_id
 
-  - name: awsLambdaFunctionHOSTSApm
+  - name: awsLambdaFunctionIsAPM
     version: "1"
-    entitlements:
-      matching: anyOf
-      values:
-        - auto_discovery_entities_ccu
-        - auto_discovery_entities_ccu_discount_usage
     origins:
       - Distributed Tracing
     conditions:
@@ -44,13 +39,13 @@ relationships:
         regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
     relationship:
       expires: PT75M
-      relationshipType: HOSTS
+      relationshipType: IS
       source:
+        extractGuid:
+          attribute: entity.guid
+      target:
         lookupGuid:
           candidateCategory: AWSLAMBDAFUNCTION
           fields:
             - field: awsLambdaArn
               attribute: aws.lambda.arn
-      target:
-        extractGuid:
-          attribute: entity.guid
