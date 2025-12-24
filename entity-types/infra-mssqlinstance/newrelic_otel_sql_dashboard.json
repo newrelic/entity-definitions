@@ -1,0 +1,423 @@
+{
+  "name": "MSSQL Summary Dashboard - OpenTelemetry",
+  "pages": [
+    {
+      "name": "MSSQL Summary",
+      "widgets": [
+        {
+          "title": "Active Workload",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.stats.connections) AS 'Connections', latest(sqlserver.instance.transactions_per_sec) AS 'TPS' FROM Metric SINCE 5 minutes ago",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 500
+              }
+            ]
+          }
+        },
+        {
+          "title": "Buffer Pool Efficiency",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.instance.buffer_pool_hit_percent) AS 'Hit Ratio %', latest(sqlserver.bufferpool.page_life_expectancy_ms) / 1000 AS 'Page Life (sec)' FROM Metric SINCE 5 minutes ago",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              },
+              {
+                "alertSeverity": "WARNING",
+                "value": 98
+              }
+            ]
+          }
+        },
+        {
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# Server Metrics\n"
+          },
+          "title": ""
+        },
+        {
+          "title": "Memory Management Center",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.instance.memory_utilization_percent) AS 'Memory Utilization %', latest(sqlserver.instance.memory_available) / 1024 / 1024 / 1024 AS 'Available (GB)', latest(sqlserver.instance.buffer_pool_size) / 1024 / 1024 / 1024 AS 'Buffer Pool (GB)', latest(sqlserver.instance.target_memory_kb) / 1024 / 1024 AS 'Target Memory (MB)' FROM Metric SINCE 2 hours ago TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "SQL Server Activity Metrics",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.stats.sql_compilations_per_sec) AS 'Compilations/s', latest(sqlserver.stats.sql_recompilations_per_sec) AS 'Recompilations/s', latest(sqlserver.instance.compilations_per_batch) AS 'Compilations/Batch', latest(sqlserver.instance.forced_parameterizations_per_sec) AS 'Parameterizations/s' FROM Metric SINCE 2 hours ago TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Advanced Performance Analytics",
+          "layout": {
+            "column": 7,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.instance.page_splits_per_batch) AS 'Page Splits/Batch', latest(sqlserver.access.page_splits_per_sec) AS 'Page Splits/sec', latest(sqlserver.instance.full_scans_rate) AS 'Full Scans/sec', latest(sqlserver.buffer.checkpoint_pages_per_sec) AS 'Checkpoints/sec' FROM Metric SINCE 2 hours ago TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Lock & Deadlock Analysis",
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.stats.lock_waits_per_sec) AS 'Lock Waits/s', latest(sqlserver.instance.lock_timeouts_rate) AS 'Lock Timeouts/s', latest(sqlserver.stats.deadlocks_per_sec) AS 'Deadlocks/s' FROM Metric SINCE 2 hours ago TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Error & Exception Monitoring",
+          "layout": {
+            "column": 7,
+            "row": 11,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.stats.user_errors_per_sec) AS 'User Errors/s', latest(sqlserver.stats.kill_connection_errors_per_sec) AS 'Connection Errors/s' FROM Metric SINCE 2 hours ago TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "layout": {
+            "column": 1,
+            "row": 14,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# Database Instances"
+          },
+          "title": ""
+        },
+        {
+          "title": "Database Storage Analytics",
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.database.size.total_mb) AS 'Total (MB)', latest(sqlserver.database.size.data_mb) AS 'Data (MB)', (latest(sqlserver.database.page_file_available_bytes)/latest(sqlserver.database.page_file_total_bytes)*100) AS 'Free %' FROM Metric FACET database_name SINCE 1 hour ago",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "I/O Performance Monitor",
+          "layout": {
+            "column": 9,
+            "row": 15,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(sqlserver.database.io.stall_ms) AS 'Avg I/O Stall (ms)' FROM Metric SINCE 1 hour ago",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 50
+              },
+              {
+                "alertSeverity": "WARNING",
+                "value": 20
+              }
+            ]
+          }
+        },
+        {
+          "title": "Buffer Pool Distribution",
+          "layout": {
+            "column": 1,
+            "row": 18,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.database.bufferpool.size_per_database_bytes) / 1024 / 1024 AS 'Buffer Pool (MB)' FROM Metric FACET database_name SINCE 1 hour ago",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Database Capacity Planning",
+          "layout": {
+            "column": 7,
+            "row": 18,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(sqlserver.database.size.total_mb) AS 'Current Size (MB)', (latest(sqlserver.database.max_disk_size_bytes) / 1024 / 1024) AS 'Max Size (MB)', latest(sqlserver.database.log.transaction_growth) AS 'Growth Events' FROM Metric FACET database_name SINCE 24 hours ago TIMESERIES 1 hour",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "layout": {
+            "column": 1,
+            "row": 21,
+            "width": 12,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# Queries"
+          },
+          "title": ""
+        },
+        {
+          "title": "Top N slow queries",
+          "layout": {
+            "column": 1,
+            "row": 22,
+            "width": 12,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "initialSorting": {
+              "direction": "desc"
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT  latest(last_execution_timestamp) as 'lastActiveTime',\n    latest(query_id) AS 'queryId',\n    latest(database_name) AS 'databaseName',\n    latest(query_text) AS 'queryText',\n    latest(sqlserver.slowquery.historical_execution_count) as 'historicalTotalCalls',\n    if (sum(sqlserver.slowquery.interval_execution_count) < latest(sqlserver.slowquery.historical_execution_count), sum(sqlserver.slowquery.interval_execution_count), latest(sqlserver.slowquery.historical_execution_count)) as 'intervalTotalCalls', \n    average(sqlserver.slowquery.interval_avg_elapsed_time_ms) as 'intervalAvgElapsedTime',\n    latest(sqlserver.slowquery.historical_avg_elapsed_time_ms) as 'historicalAvgElapsedTime'\n  FROM Metric\n  WHERE metricName in ('sqlserver.slowquery.historical_avg_elapsed_time_ms', 'sqlserver.slowquery.interval_avg_elapsed_time_ms', \n'sqlserver.slowquery.interval_execution_count', 'sqlserver.slowquery.historical_execution_count', 'sqlserver.slowquery.avg_rows_processed')\n  FACET query_id",
+                "accountId": 0}
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

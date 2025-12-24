@@ -14,7 +14,8 @@ goldenTags:
 synthesis:
   rules:
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_cronjob_composite
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -50,9 +51,13 @@ synthesis:
           entityTagNames: [k8s.cronjob.schedule]
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+      prefixedTags:
+        tags.:
           ttl: P1D
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_cronjob_composite_2
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -91,86 +96,13 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - cronjob
-      encodeIdentifierInGUID: true
-      name: cronjob
-      conditions:
-        # kube-state-metrics cronjob prefix
-        - attribute: metricName
-          prefix: kube_cronjob_
-        # identifier attributes
-        - attribute: cronjob
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # open telemetry
-        - attribute: newrelic.source
-          value: "api.metrics.otlp"
-        # if service.name is present, it's a service
-        - attribute: service.name
-          present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
-      tags:
-        cronjob:
-          entityTagNames: [k8s.cronjobName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
-        schedule:
-          entityTagNames: [k8s.cronjob.schedule]
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - cronjob
-      encodeIdentifierInGUID: true
-      name: cronjob
-      conditions:
-        # kube-state-metrics cronjob prefix
-        - attribute: metricName
-          prefix: kube_cronjob_
-        # identifier attributes
-        - attribute: cronjob
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # open telemetry
-        - attribute: newrelic.source
-          value: "api.metrics.otlp"
-        # if newrelic.entity.type is present, it's not a service
-        - attribute: service.name
-          present: true
-        - attribute: newrelic.entity.type
-          present: true
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
-      tags:
-        cronjob:
-          entityTagNames: [k8s.cronjobName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
-        schedule:
-          entityTagNames: [k8s.cronjob.schedule]
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
     # Infrastructure event data via opentelemetry
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_cronjob_composite_3
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -193,8 +125,12 @@ synthesis:
         # if service.name is present, handle as one
         - attribute: service.name
           present: false
+      prefixedTags:
+        tags.:
+          ttl: P1D
     # Infrastructure event data via opentelemetry
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_cronjob_composite_4
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -219,8 +155,12 @@ synthesis:
           present: true
         - attribute: newrelic.entity.type
           present: true
+      prefixedTags:
+        tags.:
+          ttl: P1D
     # newrelic integration data via nri-bundle
-    - identifier: entityId
+    - ruleName: infra_kubernetes_cronjob_entityId
+      identifier: entityId
       name: displayName
       legacyFeatures:
         overrideGuidType: true
@@ -262,4 +202,4 @@ synthesis:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "K8s Agents"

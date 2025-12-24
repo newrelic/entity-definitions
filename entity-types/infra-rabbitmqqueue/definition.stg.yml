@@ -4,7 +4,9 @@ type: RABBITMQQUEUE
 synthesis:
   # Apart from this rule RABBITMQQUEUE entities are also created from infra pipeline.
   rules:
-  - compositeIdentifier:
+  # OpenTelemetry RabbitMQ Receiver
+  - ruleName: infra_rabbitmqqueue_composite
+    compositeIdentifier:
       separator: ":"
       attributes:
       - rabbitmq.node.name
@@ -34,6 +36,44 @@ synthesis:
       # and select the dashboard.
       otel.library.name:
         entityTagName: instrumentation.name
+    
+  - ruleName: infra_rabbitmqqueue_entityId
+    identifier: entityId
+    name: entityName
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+    - attribute: eventType
+      value: RabbitmqQueueSample
+  
+  # OpenTelemetry with Prometheus Receiver (RabbitMQ Prometheus Exporter)
+  - ruleName: infra_rabbitmqqueue_queue
+    identifier: queue
+    name: queue
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # Prometheus exporter metrics start with 'rabbitmq_queue_' prefix
+      - attribute: metricName
+        prefix: rabbitmq_queue_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters metrics coming from prometheus receiver
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      # Prometheus exporter attributes
+      rabbitmq_node:
+        entityTagName: rabbitmq.node.name
+      queue:
+        entityTagName: rabbitmq.queue.name
+      rabbitmq_vhost:
+        entityTagName: rabbitmq.vhost.name
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
 
   tags:
     # For OpenTelemetry
@@ -60,4 +100,4 @@ dashboardTemplates:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "OnHost Agent and Integrations"

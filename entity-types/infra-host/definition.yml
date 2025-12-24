@@ -24,80 +24,9 @@ goldenTags:
 - cloud.platform
 synthesis:
   rules:
-    # opentelemetry host data from k8s-otel-collector preview
-    - identifier: k8s.node.name
-      name: k8s.node.name
-      legacyFeatures:
-        overrideGuidType: true
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: k8s.node.name
-          present: true
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: system.
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
-        # if service.name is present, it's a service, not a host
-        - attribute: service.name
-          present: false
-        # if container.id is present, it's a container, not a host
-        - attribute: container.id
-          present: false
-      tags:
-        k8s.cluster.name:
-        cloud.provider:
-        cloud.account.id:
-        cloud.region:
-        cloud.availability_zone:
-        cloud.platform:
-        host.type:
-        host.arch:
-        host.image.name:
-        host.image.id:
-        host.image.version:
-        instrumentation.provider:
-
-    # opentelemetry host data from k8s-otel-collector preview
-    - identifier: k8s.node.name
-      name: k8s.node.name
-      legacyFeatures:
-        overrideGuidType: true
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: k8s.node.name
-          present: true
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: system.
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
-        # if container.id is present, it's a container, not a host
-        - attribute: container.id
-          present: false
-        # if newrelic.entity.type is present, it's not a service
-        - attribute: service.name
-          present: true
-        - attribute: newrelic.entity.type
-          present: true
-      tags:
-        k8s.cluster.name:
-        cloud.provider:
-        cloud.account.id:
-        cloud.region:
-        cloud.availability_zone:
-        cloud.platform:
-        host.type:
-        host.arch:
-        host.image.name:
-        host.image.id:
-        host.image.version:
-        instrumentation.provider:
-
     # opentelemetry host data from opentelemetry-collector
-    - identifier: host.id
+    - ruleName: infra_host_host_id
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -130,9 +59,13 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         k8s.cluster.name:
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # opentelemetry host data from opentelemetry-collector
-    - identifier: host.id
+    - ruleName: infra_host_host_id_2
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -167,9 +100,13 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         k8s.cluster.name:
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # opentelemetry host data from opentelemetry-collector
-    - identifier: host.id
+    - ruleName: infra_host_host_id_3
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -202,9 +139,13 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         k8s.cluster.name:
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # opentelemetry host data from opentelemetry-collector
-    - identifier: host.id
+    - ruleName: infra_host_host_id_4
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -239,9 +180,13 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         k8s.cluster.name:
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # opentelemetry host data from opentelemetry-collector
-    - identifier: host.id
+    - ruleName: infra_host_host_id_5
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -273,7 +218,8 @@ synthesis:
         instrumentation.provider:
 
     # opentelemetry host data from opentelemetry-collector
-    - identifier: host.id
+    - ruleName: infra_host_host_id_6
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -307,7 +253,8 @@ synthesis:
         instrumentation.provider:
 
     # opentelemetry host data from opentelemetry-collector (explicit type)
-    - identifier: host.id
+    - ruleName: infra_host_host_id_7
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -336,9 +283,13 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         service.name:
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # opentelemetry host data from opentelemetry-collector (explicit type)
-    - identifier: host.id
+    - ruleName: infra_host_host_id_8
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -367,9 +318,13 @@ synthesis:
         host.image.version:
         instrumentation.provider:
         service.name:
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # opentelemetry host data from opentelemetry-collector (explicit type)
-    - identifier: host.id
+    - ruleName: infra_host_host_id_9
+      identifier: host.id
       name: host.name
       legacyFeatures:
         overrideGuidType: true
@@ -398,7 +353,8 @@ synthesis:
         service.name:
 
     # opentelemetry host data from New Relic sap solutions
-    - identifier: host.id
+    - ruleName: infra_host_host_id_10
+      identifier: host.id
       name: host.id
       encodeIdentifierInGUID: true
       conditions:
@@ -410,7 +366,8 @@ synthesis:
         instrumentation.provider:
 
     # Infrastructure event data via opentelemetry
-    - compositeIdentifier:
+    - ruleName: infra_host_composite
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -435,7 +392,8 @@ synthesis:
           present: false
 
     # Infrastructure event data via opentelemetry
-    - compositeIdentifier:
+    - ruleName: infra_host_composite_2
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -463,7 +421,8 @@ synthesis:
 
     # Prometheus node exporter entities
     # AWS by taskArn
-    - identifier: taskarn
+    - ruleName: infra_host_taskarn
+      identifier: taskarn
       name: taskarn
       legacyFeatures:
         overrideGuidType: true
@@ -483,7 +442,8 @@ synthesis:
           entityTagNames: [hostname]
         instrumentation.provider:
     # AWS EC2 or On a host
-    - identifier: instance
+    - ruleName: infra_host_instance
+      identifier: instance
       name: instance
       legacyFeatures:
         overrideGuidType: true
@@ -502,7 +462,8 @@ synthesis:
         instrumentation.provider:
     # Logs received via Lambda/Firehose log forwarder and enriched by the Logs Pipeline. See: https://docs.newrelic.com/docs/logs/logs-context/aws-logs-in-context/
     # AWS EC2 host synthesized via ElasticBeanstalk logs. Metrics Streams and API Polling entities use the instanceId to compute the entity.guid
-    - identifier: aws.ec2.InstanceId
+    - ruleName: infra_host_aws_ec2_InstanceId
+      identifier: aws.ec2.InstanceId
       name: aws.ec2.InstanceId
       encodeIdentifierInGUID: true
       legacyFeatures:
@@ -525,4 +486,4 @@ configuration:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "K8s Agents"

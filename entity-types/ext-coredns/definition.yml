@@ -7,7 +7,8 @@ goldenTags:
 synthesis:
   rules:
     # prometheus
-    - compositeIdentifier:
+    - ruleName: ext_coredns_composite
+      compositeIdentifier:
         separator: ":"
         attributes:
           - cluster_name
@@ -17,8 +18,12 @@ synthesis:
       conditions:
         - attribute: metricName
           prefix: coredns_
+      prefixedTags:
+        tags.:
+          ttl: P1D
     # otel
-    - compositeIdentifier:
+    - ruleName: ext_coredns_composite_2
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -28,6 +33,9 @@ synthesis:
       conditions:
         - attribute: metricName
           prefix: coredns_
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
   tags:
     # prometheus
@@ -72,4 +80,4 @@ configuration:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "K8s Agents"

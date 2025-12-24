@@ -3,47 +3,122 @@ type: KAFKABROKER
 
 synthesis:
   rules:
-  # This rule is for OTEL kafka receivers metrics
-  - compositeIdentifier:
+  # This rule is for OTEL receivers metrics starts with kafka prefix
+  - ruleName: infra_kafkabroker_kafka_broker_name_stg_1
+    compositeIdentifier:
       separator: ":"
       attributes:
-        - kafka.broker.name
-        - host.id
-    name: kafka.broker.name
+        - broker.id
+        - kafka.cluster.name
+    compositeName:
+      fragments:
+        - value: "BrokerId:"
+        - attribute: broker.id
+        - value: " ("
+        - attribute: kafka.cluster.name
+        - value: ")"
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
         value: Metric
       - attribute: instrumentation.provider
         value: opentelemetry
+      - attribute: broker.id
+        present: true
+      - attribute: kafka.cluster.name
+        present: true
       - attribute: topic
         present: false
-      - attribute: kafka.partition.count
-        present: false
-      - attribute: kafka.partition.offline
-        present: false
-      - attribute: kafka.leader.election.rate
-        present: false
-      - attribute: kafka.unclean.election.rate
-        present: false
-      - attribute: kafka.isr.operation.count
-        present: false
-      - attribute: kafka.max.lag
-        present: false
-      - attribute: kafka.partition.under_replicated
-        present: false
-
+      - attribute: metricName
+        prefix: kafka
     tags:
       # Environment resource attributes
-      host.name:
-        entityTagName: hostName
       instrumentation.provider:
       kafka.cluster.name:
-        entityTagName: clusterName
       otel.library.name:
         entityTagName: instrumentation.name
       broker.id:
-        entityTagName: brokerId
+      k8s.pod.name:
+      k8s.node.name:
+      k8s.pod.uid:
+      k8s.namespace.name:
+
+    # This rule is for OTEL kafka receivers metrics starts with jvm prefix
+  - ruleName: infra_kafkabroker_kafka_broker_name_stg_2
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - broker.id
+        - kafka.cluster.name
+    compositeName:
+      fragments:
+        - value: "BrokerId:"
+        - attribute: broker.id
+        - value: " ("
+        - attribute: kafka.cluster.name
+        - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: broker.id
+        present: true
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: topic
+        present: false
+      - attribute: metricName
+        prefix: jvm
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      broker.id:
+      k8s.pod.name:
+      k8s.node.name:
+      k8s.pod.uid:
+      k8s.namespace.name:
+
+  # This rule is for OTEL kafka broker logs
+  - ruleName: infra_kafkabroker_kafka_broker_name_stg_3
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - broker.id
+        - kafka.cluster.name
+    compositeName:
+      fragments:
+        - value: "BrokerId: "
+        - attribute: broker.id
+        - value: " ("
+        - attribute: kafka.cluster.name
+        - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: topic
+        present: false
+      - attribute: broker.id
+        present: true
+      - attribute: kafka.cluster.name
+        present: true
+    tags:
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      broker.id:
+      k8s.pod.name:
+      k8s.node.name:
+      k8s.pod.uid:
+      k8s.namespace.name:
 
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
@@ -55,7 +130,9 @@ dashboardTemplates:
 
 goldenTags:
 - clusterName
-- hostName
+- broker.id
+- brokerId
+- kafka.cluster.name
 
 configuration:
   entityExpirationTime: DAILY
@@ -63,4 +140,4 @@ configuration:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "OnHost Agent and Integrations"
