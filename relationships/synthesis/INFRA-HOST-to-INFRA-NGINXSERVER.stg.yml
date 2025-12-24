@@ -1,4 +1,5 @@
 relationships:
+  # Local scenario: NGINX server running on the same host as the OpenTelemetry collector
   - name: hostHostsNginxServer
     version: "1"
     origins:
@@ -12,22 +13,17 @@ relationships:
         anyOf: [ "opentelemetry" ]
       - attribute: host.id
         present: true
+      - attribute: nginx.server.endpoint
+        regex: "^https?://(localhost|127\\.0\\.0\\.1)(:|/|$)"
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: HOST
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - attribute: host.id
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
       target:
         extractGuid:
           attribute: entity.guid
@@ -46,22 +42,77 @@ relationships:
         anyOf: [ "opentelemetry" ]
       - attribute: host.id
         present: true
+      - attribute: nginx.server.endpoint
+        regex: "^https?://(localhost|127\\.0\\.0\\.1)(:|/|$)"
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: HOST
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - attribute: host.id
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: NGINXSERVER
+  
+  # Remote scenario: NGINX server is running on a host and it is being monitored by OpenTelemetry collector running on another host
+  - name: hostMeasuresRemoteNginxServer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: nginx.
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+      - attribute: nginx.server.endpoint
+        regex: "^https?://(?!(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|/|$))"
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: NGINXSERVER
+  - name: hostMeasuresRemoteNginxPlusServer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: nginxplus_
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+      - attribute: nginx.server.endpoint
+        regex: "^https?://(?!(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|/|$))"
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
       target:
         extractGuid:
           attribute: entity.guid
