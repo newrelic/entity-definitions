@@ -143,8 +143,9 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KAFKABROKER
-    # Local scenario: Kafka broker running on the same host with OpenTelemetry
-  - name: hostHostsOtelKafkaBroker
+
+  # Local scenario: Kafka broker running on the same host with OpenTelemetry
+  - name: hostMonitorsOtelKafkaBrokerStgOverride1
     version: "1"
     origins:
       - OpenTelemetry
@@ -174,8 +175,8 @@ relationships:
           entityType:
             value: KAFKABROKER
 
-# Remote scenario: Host monitors remote Kafka broker with OpenTelemetry when broker.endpoint is present
-  - name: hostMonitorsOtelKafkaBroker1
+  # Remote scenario: Host monitors remote Kafka broker with OpenTelemetry when broker.endpoint is present
+  - name: hostMonitorsOtelKafkaBrokerStgOverride2
     version: "1"
     origins:
       - OpenTelemetry
@@ -205,3 +206,31 @@ relationships:
           entityType:
             value: KAFKABROKER
 
+  # Host measures Kafka broker with OpenTelemetry when broker.endpoint is not present
+  - name: hostMonitorsOtelKafkaBrokerStgOverride3
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+      - attribute: broker.endpoint
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KAFKABROKER

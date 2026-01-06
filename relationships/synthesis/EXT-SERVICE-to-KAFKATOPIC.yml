@@ -189,3 +189,80 @@ relationships:
           fields:
             - field: cloudResourceId
               attribute: newrelic.aws_metric_streams.arn
+
+  - name: apmProducesOtelKafkaTopic
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.producer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: ":"
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+
+  - name: apmConsumesOtelKafkaTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.consumer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: ":"
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
