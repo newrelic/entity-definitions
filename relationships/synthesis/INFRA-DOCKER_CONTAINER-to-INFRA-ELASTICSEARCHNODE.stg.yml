@@ -1,5 +1,5 @@
 relationships:
-  - name: hostHostsOtelElasticSearchNode
+  - name: containerHostsOtelElasticSearchNode
     version: "1"
     origins:
       - OpenTelemetry
@@ -7,15 +7,13 @@ relationships:
       - attribute: eventType
         anyOf: [ "Metric" ]
       - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]  
+        anyOf: [ "opentelemetry" ]
       - attribute: elasticsearch.node.name
         present: true
       - attribute: entity.type
-        anyOf: ["ELASTICSEARCHNODE"]
-      - attribute: host.id
-        present: true
+        anyOf: ["ELASTICSEARCHNODE"]  
       - attribute: container.id
-        present: false  
+        present: true
     relationship:
       expires: PT75M
       relationshipType: HOSTS
@@ -26,11 +24,10 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: HOST
-            valueInGuid: NA
+            value: CONTAINER
           identifier:
             fragments:
-              - attribute: host.id
+              - attribute: container.id
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
