@@ -1,17 +1,146 @@
 domain: INFRA
 type: KAFKABROKER
-goldenTags:
-- kafka.clusterName
-- kafka.brokerId
-configuration:
-  entityExpirationTime: DAILY
-  alertable: true
+
+synthesis:
+  rules:
+  # This rule is for OTEL receivers metrics starts with kafka prefix
+  - ruleName: infra_kafkabroker_otel_kafka_metrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - broker.id
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - value: "BrokerId:"
+      - attribute: broker.id
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: broker.id
+      present: true
+    - attribute: kafka.cluster.name
+      present: true
+    - attribute: topic
+      present: false
+    - attribute: metricName
+      prefix: kafka
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      broker.id:
+      k8s.pod.name:
+      k8s.node.name:
+      k8s.pod.uid:
+      k8s.namespace.name:
+
+  # This rule is for OTEL kafka receivers metrics starts with jvm prefix
+  - ruleName: infra_kafkabroker_otel_jvm_metrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - broker.id
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - value: "BrokerId:"
+      - attribute: broker.id
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: broker.id
+      present: true
+    - attribute: kafka.cluster.name
+      present: true
+    - attribute: topic
+      present: false
+    - attribute: metricName
+      prefix: jvm
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      broker.id:
+      k8s.pod.name:
+      k8s.node.name:
+      k8s.pod.uid:
+      k8s.namespace.name:
+
+        # This rule is for OTEL kafka broker logs
+  - ruleName: infra_kafkabroker_otel_logs
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - broker.id
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - value: "BrokerId: "
+      - attribute: broker.id
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Log
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: topic
+      present: false
+    - attribute: broker.id
+      present: true
+    - attribute: kafka.cluster.name
+      present: true
+    tags:
+      instrumentation.provider:
+      kafka.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      broker.id:
+      k8s.pod.name:
+      k8s.node.name:
+      k8s.pod.uid:
+      k8s.namespace.name:
+
 
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+  # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+
+goldenTags:
+- clusterName
+- broker.id
+- brokerId
+- kafka.cluster.name
+- kafka.clusterName
+- kafka.brokerId
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "OnHost Agent and Integrations"

@@ -1,0 +1,36 @@
+relationships:
+  - name: otelKafkaBrokerServesOtelKafkaTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "KAFKATOPIC" ]
+      - attribute: broker.id
+        present: true
+      - attribute: kafka.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKABROKER
+          identifier:
+            fragments:
+              - attribute: broker.id
+              - value: ":"
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type

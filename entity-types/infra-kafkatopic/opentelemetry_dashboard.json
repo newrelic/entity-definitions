@@ -1,0 +1,205 @@
+{
+  "name": "OTEL Kafka Topic",
+  "description": "Health and performance metrics for Kafka Topics",
+  "pages": [
+    {
+      "name": "Topic overview",
+      "widgets": [
+        {
+          "title": "Topic partitions",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 2,
+            "width": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.topic.partitions) AS `Topic partitions` FROM Metric WHERE metricName = 'kafka.topic.partitions'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Replication factor",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "height": 2,
+            "width": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.topic.replication_factor) AS `Replication factor` FROM Metric WHERE metricName = 'kafka.topic.replication_factor'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Under-replicated partitions",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "select (latest(kafka.topic.partitions)*latest(kafka.topic.replication_factor) - latest(kafka.partition.replicas_in_sync.total)) AS 'Under-replicated partitions' from Metric where metricName in ('kafka.partition.replicas_in_sync.total', 'kafka.topic.partitions', 'kafka.topic.replication_factor') TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Min in-sync replicas",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "height": 1,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(kafka.topic.min_insync_replicas) AS 'Min in-sync replicas' FROM Metric WHERE metricName = 'kafka.topic.min_insync_replicas'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Messages in per second",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.prod.msg.count), 1 second) AS `Messages in per second` FROM Metric WHERE metricName = 'kafka.prod.msg.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Data throughput (bytes/sec)",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(rate(sum(kafka.topic.io), 1 second), WHERE (state = 'in' or direction = 'in')) AS `Bytes in`, filter(rate(sum(kafka.topic.io), 1 second), WHERE (state = 'out' or direction = 'out')) AS `Bytes out` FROM Metric WHERE metricName = 'kafka.topic.io' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Consumer group lag (total messages)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.consumer_group.lag_sum) AS `Consumer lag` FROM Metric WHERE metricName = 'kafka.consumer_group.lag_sum' TIMESERIES AUTO FACET group"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Partition lag (messages)",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "initialSorting": {
+              "direction": "desc",
+              "name": "Max lag"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.consumer_group.lag) AS `Max lag` FROM Metric WHERE metricName = 'kafka.consumer_group.lag' FACET group, partition"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
