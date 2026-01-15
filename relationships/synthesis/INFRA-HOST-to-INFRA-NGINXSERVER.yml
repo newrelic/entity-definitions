@@ -1,48 +1,20 @@
 relationships:
-  - name: kafkaClusterContainsKafkaBrokerStgOverride1
-    version: "1"
-    origins:
-      - Infrastructure Agent
-    conditions:
-      - attribute: event_type
-        anyOf: [ "KafkaBrokerSample" ]
-      - attribute: nr.entityType
-        anyOf: [ "KafkaBroker" ]
-    relationship:
-      expires: PT75M
-      relationshipType: CONTAINS
-      source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: KAFKACLUSTER
-          identifier:
-            fragments:
-              - attribute: clusterName
-            hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            attribute: nr.entityType
-
-  - name: otelKafkaClusterContainsKafkaBrokerStgOverride1
+  - name: oTelHostHostsNginxServer
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: kafka.cluster.name
+      - attribute: metricName
+        startsWith: nginx.
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
         present: true
-      - attribute: entity.type
-        anyOf: ["KAFKABROKER"]
     relationship:
       expires: PT75M
-      relationshipType: CONTAINS
+      relationshipType: HOSTS
       source:
         buildGuid:
           account:
@@ -50,13 +22,48 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KAFKACLUSTER
+            value: HOST
+            valueInGuid: NA
           identifier:
             fragments:
-              - attribute: kafka.cluster.name
+              - attribute: host.id
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            attribute: entity.type
+            value: NGINXSERVER
+  - name: oTelHostHostsNginxPlusServer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: nginxplus_
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: NGINXSERVER
