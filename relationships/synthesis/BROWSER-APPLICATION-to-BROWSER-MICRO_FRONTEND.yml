@@ -1,0 +1,23 @@
+relationships:
+  - name: MicrofrontendIsContainedByBrowserApplication
+    version: "1"
+    origins:
+      - Browser Monitoring
+    conditions:
+      - attribute: source.type
+        anyOf: [ "MFE" ]
+      - attribute: parent.id
+        present: true
+      - attribute: parent.type
+        anyOf: [ "BA" ]
+    relationship:
+      expires: PT72H
+      relationshipType: CONTAINS 
+      source:
+        extractGuid:
+          attribute: parent.id
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: MICRO_FRONTEND
