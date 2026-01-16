@@ -1,21 +1,5 @@
 category: ORACLEDBINSTANCE
 lookups:
-  # Primary lookup: Match by service.name and host.port (for OTEL Oracle instances with service name)
-  - entityTypes:
-    - domain: INFRA
-      type: ORACLEDBINSTANCE
-    tags:
-      matchingMode: ALL
-      predicates:
-        - tagKeys: ["service.name"]
-          field: serviceName
-        - tagKeys: ["host.port"]
-          field: hostPort
-    onMatch:
-     onMultipleMatches: RELATE_ALL
-    onMiss:
-      action: NO_OP
-  # Secondary lookup: Match by host.address and host.port (for OTEL Oracle instances without service name)
   - entityTypes:
     - domain: INFRA
       type: ORACLEDBINSTANCE
@@ -24,6 +8,21 @@ lookups:
       predicates:
         - tagKeys: ["host.address"]
           field: hostAddress
+        - tagKeys: ["host.port"]
+          field: hostPort
+    onMatch:
+     onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  - entityTypes:
+    - domain: INFRA
+      type: ORACLEDBINSTANCE
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["db.hostname"]
+          field: dbHostname
         - tagKeys: ["host.port"]
           field: hostPort
     onMatch:
