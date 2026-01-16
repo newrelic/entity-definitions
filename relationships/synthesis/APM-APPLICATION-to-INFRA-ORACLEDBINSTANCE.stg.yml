@@ -1,15 +1,11 @@
 relationships:
-  # Primary relationship: Match by service.name and host.port
-  - name: apmApplicationCallsInfraOracleDbInstance
+  - name: apmApplicationCallsInfraOracleDbInstanceTimeslice
     version: "1"
     origins:
       - APM Metrics
     conditions:
-      - attribute: metricName
-        # APM reports: "datastore/instance/Oracle/$service_name/$port"
-        # Example: "Datastore/instance/Oracle/orcl-db.privatesubnet.oracledb.oraclevcn.com/1521"
-        # The service name in APM metric should match the OTEL Oracle entity's service.name tag
-        startsWith: "datastore/instance/Oracle/"
+      - attribute: metricTimesliceName
+        startsWith: "Datastore/instance/Oracle/"
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -20,23 +16,18 @@ relationships:
         lookupGuid:
           candidateCategory: ORACLEDBINSTANCE
           fields:
-            # Matches against the OTEL Oracle entity's service.name tag
-            # This is the Oracle service name from the connection string
-            - field: serviceName
-              attribute: metricName__4 # service name from APM metric
+            - field: dbHostname
+              attribute: metricTimesliceName__4
             - field: hostPort
-              attribute: metricName__5 # port from APM metric
+              attribute: metricTimesliceName__5
 
-  # Fallback relationship: Match by host and port when service name doesn't match
   - name: apmApplicationCallsInfraOracleDbInstanceByHost
     version: "1"
     origins:
       - APM Metrics
     conditions:
       - attribute: metricName
-        # APM reports: "datastore/instance/Oracle/$host/$port"
-        # This is a fallback when service.name doesn't match but host does
-        startsWith: "datastore/instance/Oracle/"
+        regex: "^[Dd]atastore/instance/Oracle/[^/]+/[0-9]+"
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -47,8 +38,7 @@ relationships:
         lookupGuid:
           candidateCategory: ORACLEDBINSTANCE
           fields:
-            # Matches against the OTEL Oracle entity's host.address tag
             - field: hostAddress
-              attribute: metricName__4 # host from APM metric
+              attribute: metricName__4
             - field: hostPort
-              attribute: metricName__5 # port from APM metric
+              attribute: metricName__5
