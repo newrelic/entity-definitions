@@ -1,24 +1,18 @@
 relationships:
-  - name: hostHostsOtelElasticSearchNode
+  - name: otelelasticsearchClusterContainsNode
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]  
       - attribute: elasticsearch.node.name
         present: true
       - attribute: entity.type
         anyOf: ["ELASTICSEARCHNODE"]
-      - attribute: host.id
-        present: true
-      - attribute: container.id
-        present: false  
     relationship:
       expires: PT75M
-      relationshipType: HOSTS
+      relationshipType: CONTAINS
       source:
         buildGuid:
           account:
@@ -26,14 +20,14 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: HOST
-            valueInGuid: NA
+            value: ELASTICSEARCHCLUSTER
           identifier:
             fragments:
-              - attribute: host.id
+              - attribute: elasticsearch.cluster.name
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
             attribute: entity.type
+

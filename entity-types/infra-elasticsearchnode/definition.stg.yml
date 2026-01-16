@@ -20,7 +20,12 @@ synthesis:
         - elasticsearch.node.name
         - elasticsearch.cluster.name
         - host.id
-    name: elasticsearch.node.name
+    compositeName:
+      fragments:
+        - value: "es-node="
+        - attribute: elasticsearch.node.name
+        - value: ":es-cluster="
+        - attribute: elasticsearch.cluster.name
     encodeIdentifierInGUID: true
     conditions:
     - attribute: eventType
@@ -35,12 +40,49 @@ synthesis:
       present: true
     - attribute: elasticsearch.cluster.name
       present: true
+    - attribute: host.id
+      present: true
     tags:
       elasticsearch.node.name:
       elasticsearch.cluster.name:
       host.name:
       otel.library.name:
         entityTagName: instrumentation.name
+  - ruleName: infra_elasticsearchnode_composite_1
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - elasticsearch.node.name
+        - elasticsearch.cluster.name
+        - host.id
+    compositeName:
+      fragments:
+        - value: "es-node="
+        - attribute: elasticsearch.node.name
+        - value: ":es-cluster="
+        - attribute: elasticsearch.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    # This filters only metrics coming from elasticsearch receiver, given that metrics
+    # could differ between different runtime receivers.
+    - attribute: otel.library.name
+      value: "otelcol/elasticsearchreceiver"
+    - attribute: elasticsearch.node.name
+      present: true
+    - attribute: elasticsearch.cluster.name
+      present: true
+    - attribute: host.id
+      present: true  
+    tags:
+      elasticsearch.node.name:
+      elasticsearch.cluster.name:
+      host.name:
+      otel.library.name:
+        entityTagName: instrumentation.name      
   tags:
     # For OpenTelemetry
     telemetry.sdk.name:

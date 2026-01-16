@@ -1,17 +1,102 @@
 domain: INFRA
 type: ELASTICSEARCHNODE
+
 goldenTags:
+- elasticsearch.node.name
+- elasticsearch.cluster.name
+- host.name
 - elasticsearch.clusterName
 - elasticsearch.nodeHostname
 - elasticsearch.nodeIpAddress
+
 configuration:
   entityExpirationTime: DAILY
   alertable: true
+
+synthesis:
+  # Apart from this rule ELASTICSEARCHNODE entities are also created from infra pipeline.
+  rules:
+  - ruleName: infra_elasticsearchnode_composite
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - elasticsearch.node.name
+        - elasticsearch.cluster.name
+        - host.id
+    compositeName:
+      fragments:
+        - value: "es-node="
+        - attribute: elasticsearch.node.name
+        - value: ":es-cluster="
+        - attribute: elasticsearch.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    # This filters only metrics coming from elasticsearch receiver, given that metrics
+    # could differ between different runtime receivers.
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/elasticsearchreceiver"
+    - attribute: elasticsearch.node.name
+      present: true
+    - attribute: elasticsearch.cluster.name
+      present: true
+    - attribute: host.id
+      present: true
+    tags:
+      elasticsearch.node.name:
+      elasticsearch.cluster.name:
+      host.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - ruleName: infra_elasticsearchnode_composite_1
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - elasticsearch.node.name
+        - elasticsearch.cluster.name
+        - host.id
+    compositeName:
+      fragments:
+        - value: "es-node="
+        - attribute: elasticsearch.node.name
+        - value: ":es-cluster="
+        - attribute: elasticsearch.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    # This filters only metrics coming from elasticsearch receiver, given that metrics
+    # could differ between different runtime receivers.
+    - attribute: otel.library.name
+      value: "otelcol/elasticsearchreceiver"
+    - attribute: elasticsearch.node.name
+      present: true
+    - attribute: elasticsearch.cluster.name
+      present: true
+    - attribute: host.id
+      present: true  
+    tags:
+      elasticsearch.node.name:
+      elasticsearch.cluster.name:
+      host.name:
+      otel.library.name:
+        entityTagName: instrumentation.name      
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
 
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
 
 ownership:
   primaryOwner:
