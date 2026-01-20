@@ -7,10 +7,90 @@
       "description": null,
       "widgets": [
         {
-          "title": "Cluster Status",
+          "title": "Data Nodes",
           "layout": {
             "column": 1,
             "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.data_nodes) AS 'Data Nodes'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Total Nodes",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.nodes) AS 'Total Nodes'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "In-Flight Fetches",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.in_flight_fetch) AS 'In-Flight Fetches'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Pending Tasks",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.pending_tasks) AS 'Pending Tasks'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster Health",
+          "layout": {
+            "column": 1,
+            "row": 2,
             "width": 4,
             "height": 3
           },
@@ -21,47 +101,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(status)"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Node Count",
-          "layout": {
-            "column": 5,
-            "row": 1,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.table"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT \n  latest(elasticsearch.cluster.nodes) AS 'Total Nodes', \n  latest(elasticsearch.cluster.data_nodes) AS 'Data Nodes' \nFROM Metric"
-              }
-            ]
-          }
-        },
-        {
-          "title": "Pending Task",
-          "layout": {
-            "column": 9,
-            "row": 1,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT latest(elasticsearch.cluster.pending_tasks) \nFROM Metric\nTIMESERIES"
+                "query": "FROM Metric SELECT \n    IF(latest(status) = 'green', '🟢 GREEN',\n    IF(latest(status) = 'yellow', '🟡 YELLOW',\n    '🔴 RED'\n)) AS 'Cluster Health'"
               }
             ]
           }
@@ -69,8 +109,8 @@
         {
           "title": "Shards",
           "layout": {
-            "column": 1,
-            "row": 4,
+            "column": 5,
+            "row": 2,
             "width": 4,
             "height": 3
           },
@@ -89,28 +129,8 @@
         {
           "title": "Document count",
           "layout": {
-            "column": 5,
-            "row": 4,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT latest(elasticsearch.index.documents) AS 'Total Documents in cluster'\nFROM Metric \nWHERE elasticsearch.index.name = '_all' AND aggregation = 'primary_shards' TIMESERIES "
-              }
-            ]
-          }
-        },
-        {
-          "title": "Indexing & Search Rate(op/sec)",
-          "layout": {
             "column": 9,
-            "row": 4,
+            "row": 2,
             "width": 4,
             "height": 3
           },
@@ -121,67 +141,83 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(elasticsearch.node.operations.completed), 1 second) FROM Metric WHERE operation IN ('index', 'query') FACET operation  TIMESERIES 1 minute SLIDE BY 5 minute"
+                "query": "SELECT latest(elasticsearch.index.documents) AS 'Total Documents in cluster'\nFROM Metric \nWHERE elasticsearch.index.name = '_all' AND aggregation = 'primary_shards' TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Total Size on Disk (GB)",
+          "title": "Pending Tasks",
           "layout": {
             "column": 1,
-            "row": 7,
+            "row": 5,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(elasticsearch.node.shards.size) / 1073741824 as 'Disk Used(GB)' FROM Metric"
+                "query": "SELECT latest(elasticsearch.cluster.pending_tasks) \nFROM Metric\nTIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Avg OS CPU Used (%)",
+          "title": "Cluster State Update Time",
           "layout": {
             "column": 5,
-            "row": 7,
+            "row": 5,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(elasticsearch.os.cpu.usage) as 'Avg OS CPU Used (%)' FROM Metric"
+                "query": "SELECT rate(sum(elasticsearch.cluster.state_update.time), 1 minute) / 1000 AS 'Cluster State Update Time (s/min)' FROM Metric TIMESERIES AUTO"
               }
             ]
           }
         },
         {
-          "title": "Total JVM Heap Used (GB)",
+          "title": "Cluster Health Status",
           "layout": {
             "column": 9,
-            "row": 7,
+            "row": 5,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.line"
           },
           "rawConfiguration": {
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#FF0000",
+                  "seriesName": "red"
+                },
+                {
+                  "color": "#008000",
+                  "seriesName": "green"
+                },
+                {
+                  "color": "#FFFF00",
+                  "seriesName": "yellow"
+                }
+              ]
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(jvm.memory.heap.used) / 1073741824 as 'Total JVM Heap Used (GB)' FROM Metric"
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.health) FACET status TIMESERIES AUTO"
               }
             ]
           }
