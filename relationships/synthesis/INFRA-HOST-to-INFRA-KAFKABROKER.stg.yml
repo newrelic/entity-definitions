@@ -234,3 +234,94 @@ relationships:
           attribute: entity.guid
           entityType:
             value: KAFKABROKER
+
+  # Remote scenario: Host monitors remote Kafka broker with OpenTelemetry when broker.endpoint is present
+  - name: hostMonitorsOtelKafkaBrokerRemote
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+      - attribute: broker.endpoint
+        present: true
+      - attribute: broker.endpoint
+        regex: "^(?!.*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)).*$"
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KAFKABROKER
+
+  # Host measures Kafka broker with OpenTelemetry when broker.endpoint is not present
+  - name: hostMonitorsOtelKafkaBrokerNoEndpoint
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+      - attribute: broker.endpoint
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KAFKABROKER
+
+  # Local scenario: Kafka broker running on the same host with OpenTelemetry
+  - name: hostHostsOtelKafkaBrokerLocalhost
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+      - attribute: broker.endpoint
+        present: true
+      - attribute: broker.endpoint
+        regex: ".*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KAFKABROKER
