@@ -117,7 +117,42 @@ synthesis:
         # if service.name is present, handle as one
         - attribute: service.name
           present: false
-          
+
+    # newrelic integration data via nri-bundle
+    - ruleName: infra_kubernetes_replicaset_entityId
+      identifier: entityId
+      name: displayName
+      legacyFeatures:
+        overrideGuidType: true
+        useNonStandardAttributes: true
+      conditions:
+        - attribute: eventType
+          value: K8sReplicasetSample
+        - attribute: replicasetName
+          present: true
+      tags:
+        clusterName:
+          entityTagName: k8s.clusterName
+        replicasetName:
+          entityTagName: k8s.replicasetName
+        namespaceName:
+          entityTagName: k8s.namespaceName
+        instanceType:
+          entityTagName: host.instanceType
+        integrationName:
+          entityTagName: newrelic.integrationName
+        integrationVersion:
+          entityTagName: newrelic.integrationVersion
+        agentVersion:
+          entityTagName: newrelic.agentVersion
+        awsRegion:
+          entityTagName: aws.region
+        provider.awsRegion:
+          entityTagName: aws.region
+      prefixedTags:
+        label.:
+
+
 ownership:
   primaryOwner:
     teamName: "K8s Agents"
