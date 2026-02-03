@@ -2,6 +2,80 @@ domain: INFRA
 type: ORACLEDBINSTANCE
 synthesis:
   rules:
+    - ruleName: infra_oracledbinstance_execution_plan
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.address
+          - host.port
+      compositeName:
+        fragments:
+          - attribute: host.address
+          - value: ":"
+          - attribute: host.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: OracleExecutionPlan
+        - attribute: metric.name
+          prefix: newrelicoracledb.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This handles both library name formats for backward compatibility
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        db.version.full:
+          entityTagName: database.version
+        db.role:
+          entityTagName: database.role
+        host.address:
+          entityTagName: host.address
+        host.port:
+          entityTagName: host.port
+        db.hostname:
+          entityTagName: db.hostname
+    - ruleName: infra_oracledbinstance_query_details
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.address
+          - host.port
+      compositeName:
+        fragments:
+          - attribute: host.address
+          - value: ":"
+          - attribute: host.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: OracleQueryDetails
+        - attribute: metric.name
+          prefix: newrelicoracledb.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # This handles both library name formats for backward compatibility
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        db.version.full:
+          entityTagName: database.version
+        db.role:
+          entityTagName: database.role
+        host.address:
+          entityTagName: host.address
+        host.port:
+          entityTagName: host.port
+        db.hostname:
+          entityTagName: db.hostname
     - ruleName: infra_oracledbinstance_host_name
       compositeIdentifier:
         separator: ":"
