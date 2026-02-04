@@ -418,8 +418,10 @@ These features are defined under the rule using the `legacyFeatures` key.
 ```
     legacyFeatures:
       overrideGuidType: true
+      useNonStandardAttributes: true
 ```
 
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
 | overrideGuidType | Boolean  | No | If set to `true`, it will replace the entityType in the guid for the `NA` value. Defaults to `false`. |
+| useNonStandardAttributes | Boolean  | No | If set to `true`, Will use `entityGuid` as the identifier attribute instead of the standard `entity.guid`. Defaults to `false`. |
