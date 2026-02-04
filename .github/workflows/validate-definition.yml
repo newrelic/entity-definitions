@@ -19,34 +19,40 @@ jobs:
       RELATIONSHIPS_SYNTHESIS_DIR: ../prcode/relationships/synthesis/
       DEFINITIONS_DIR: ../prcode/entity-types/
     steps:
-      - name: Checkout code from base branch
+      # Checkout main branch. Validators will run from main so only
+      # approved code is run. This ensures no bad actor can run custom code.
+      - name: Checkout TRUSTED code from base branch
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
-      - name: Checkout PR code (merged version with base branch)
-        uses: actions/checkout@v4
-        with:
-          ref: "${{ github.event.pull_request.merge_commit_sha }}"
-          path: "prcode"
-          persist-credentials: false
-        if: ${{ github.event.pull_request.mergeable == true }}
-      - name: Checkout PR code (latest PR commit if merged version is not available)
+
+      # Checkout only the DEFINITIONS from the PR
+      # so we avoid running untrusted code.
+      - name: Checkout PR definitions
         uses: actions/checkout@v4
         with:
           ref: "${{ github.event.pull_request.head.sha }}"
+          sparse-checkout: |
+            entity-types
+            relationships
+          sparse-checkout-cone-mode: false
           path: "prcode"
           persist-credentials: false
-        if: ${{ github.event.pull_request.mergeable != true }} # If the PR is not mergeable, or it's mergeability it's yet not calculated
+
       - uses: actions/setup-node@v3
         with:
           node-version: "22"
+
       - name: Install dependencies
         run: npm --prefix validator install
+
       - name: Validate definition
         run: npm --prefix validator run check
         env:
           PR_NUMBER: ${{ github.event.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Ensure sanitize was run
         # Runs the sanitize script and checks errors if the dashboards were not sanitized.
         # If the dashboards were sanitized, the git command will return 0 and the step will pass.
