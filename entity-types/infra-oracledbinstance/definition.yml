@@ -2,9 +2,39 @@ domain: INFRA
 type: ORACLEDBINSTANCE
 synthesis:
   rules:
+    - ruleName: infra_oracle_db_instance_entityId
+      identifier: entityId
+      name: entityKey
+      legacyFeatures:
+        useNonStandardAttributes: true
+        overrideGuidType: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      conditions:
+        - attribute: eventType
+          value: 'OracleDatabaseSample'
+      tags:
+        integrationName:
+          ttl: P1D
+        integrationVersion:
+          ttl: P1D
+        reportingAgent:
+          ttl: P1D
+        reportingEndpoint:
+          ttl: P1D
+
     - ruleName: infra_oracledbinstance_host_name
-      identifier: host.name
-      name: host.name
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.address
+          - host.port
+      compositeName:
+        fragments:
+          - attribute: host.address
+          - value: ":"
+          - attribute: host.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
