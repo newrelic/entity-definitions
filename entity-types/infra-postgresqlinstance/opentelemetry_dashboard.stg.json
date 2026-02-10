@@ -1,0 +1,200 @@
+{
+  "name": "PostgreSQLOtel",
+  "pages": [
+    {
+      "name": "PostgreSQL OTEL",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Scheduled checkpoints",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(postgresql.bgwriter.checkpoint.count) FROM Metric WHERE type = 'scheduled' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Requested checkpoints",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(postgresql.bgwriter.checkpoint.count) FROM Metric WHERE type = 'requested' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffers written for checkpoint",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.writes) FROM Metric WHERE source = 'checkpoints' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffers written by background writer",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.writes) FROM Metric WHERE source = 'bgwriter' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Background writer stops",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.maxwritten) FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffers written per backend",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.writes) FROM Metric WHERE source='backend' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Buffers allocated",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.allocated) FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Backend fsync Calls",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.bgwriter.buffers.writes) FROM Metric WHERE source='backend_fsync' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Checkpoint write Time",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.bgwriter.duration), 1 second) AS `Checkpoint Write Time (ms/sec)` FROM Metric WHERE metricName = 'postgresql.bgwriter.duration' AND type = 'write' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Checkpoint sync Time",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.bgwriter.duration), 1 second) AS `Checkpoint Sync Time (ms/sec)` FROM Metric WHERE metricName = 'postgresql.bgwriter.duration' AND type = 'sync' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

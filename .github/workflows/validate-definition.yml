@@ -1,48 +1,49 @@
 name: validate entity synthesis definitions
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
 
 permissions:
-  pull-requests: write
+  contents: read
 
 jobs:
   validate:
     name: Validation
     runs-on: ubuntu-latest
     env:
+      # Path to use for definitions location
+      DEFINITIONS_PATH: '../prcode'
+
+      # Used on scripts to validate specific definitions
       RELATIONSHIPS_SYNTHESIS_DIR: ../prcode/relationships/synthesis/
       DEFINITIONS_DIR: ../prcode/entity-types/
     steps:
-      - name: Checkout code from base branch
+      # Checkout base branch for validation scripts
+      - name: Checkout base branch
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
-      - name: Checkout PR code (merged version with base branch)
+
+      # Checkout PR code in unprivileged context
+      - name: Checkout PR code
         uses: actions/checkout@v4
         with:
-          ref: "${{ github.event.pull_request.merge_commit_sha }}"
+          ref: ${{ github.event.pull_request.head.sha }}
           path: "prcode"
           persist-credentials: false
-        if: ${{ github.event.pull_request.mergeable == true }}
-      - name: Checkout PR code (latest PR commit if merged version is not available)
-        uses: actions/checkout@v4
-        with:
-          ref: "${{ github.event.pull_request.head.sha }}"
-          path: "prcode"
-          persist-credentials: false
-        if: ${{ github.event.pull_request.mergeable != true }} # If the PR is not mergeable, or it's mergeability it's yet not calculated
+
       - uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "22"
+
       - name: Install dependencies
         run: npm --prefix validator install
+
       - name: Validate definition
-        run: npm --prefix validator run check-pr
-        env:
-          PR_NUMBER: ${{ github.event.number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm --prefix validator run check
+
       - name: Ensure sanitize was run
         # Runs the sanitize script and checks errors if the dashboards were not sanitized.
         # If the dashboards were sanitized, the git command will return 0 and the step will pass.

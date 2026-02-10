@@ -1,0 +1,450 @@
+{
+  "name": "OTEL kafka broker",
+  "description": "Performance and health metrics for a single kafka broker",
+  "pages": [
+    {
+      "name": "Broker overview",
+      "widgets": [
+        {
+          "title": "Broker details",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 1,
+            "width": 12
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(latest(kafka.partition.count), WHERE metricName='kafka.partition.count') AS 'Partition replicas on this broker', IF(filter(latest(kafka.controller.active.count), WHERE metricName='kafka.controller.active.count') = 1, 'True', 'False') AS 'Is active controller' FROM Metric FACET kafka.cluster.name AS 'Kafka cluster name', broker.id AS 'Broker ID' LIMIT 1"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Broker uptime",
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(`kafka.broker.uptime`) AS 'Broker uptime' WHERE metricName='kafka.broker.uptime' TIMESERIES AUTO"
+              }
+            ],
+            "units": {
+              "unit": "MS"
+            }
+          }
+        },
+        {
+          "title": "System CPU usage %",
+          "layout": {
+            "column": 7,
+            "row": 2,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(jvm.system.cpu.utilization) AS 'System CPU usage' WHERE metricName = 'jvm.system.cpu.utilization' TIMESERIES AUTO"
+              }
+            ],
+            "units": {
+              "unit": "PERCENTAGE"
+            }
+          }
+        },
+        {
+          "title": "Incoming messages per second",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(kafka.message.count) / sum((endTimestamp - timestamp) / 1000) AS `Messages in per second` FROM Metric WHERE metricName = 'kafka.message.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Bytes in and out",
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "height": 3,
+            "width": 6
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": false
+              }
+            },
+            "colors": {
+              "colorPalette": "dynamic"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT  filter(sum(kafka.network.io) /sum((endTimestamp - timestamp) / 1000), WHERE (state = 'in' or direction = 'in')) AS `Bytes in`, filter(sum(kafka.network.io) / sum((endTimestamp - timestamp) / 1000), WHERE (state = 'out' or direction = 'out')) AS `Bytes out` FROM Metric WHERE metricName = 'kafka.network.io' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Max replica lag (messages)",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.max.lag) as 'Messages' FROM Metric WHERE metricName = 'kafka.max.lag' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Under-replicated partitions",
+          "layout": {
+            "column": 5,
+            "row": 8,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.partition.under_replicated) AS 'Under-replicated partitions' FROM Metric WHERE metricName='kafka.partition.under_replicated' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Under min ISR partitions",
+          "layout": {
+            "column": 9,
+            "row": 8,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(kafka.partition.under_min_isr) AS 'Under min ISR partitions' FROM Metric WHERE metricName = 'kafka.partition.under_min_isr' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Request latency (99th percentile) (ms)",
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(average(`kafka.request.time.99p`), WHERE type='Produce') AS `Produce`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchConsumer') AS `Consumer fetch`, filter(average(`kafka.request.time.99p`), WHERE type = 'FetchFollower') AS `Follower fetch` FROM Metric WHERE metricName = 'kafka.request.time.99p' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "In-sync replica operations per minute",
+          "layout": {
+            "column": 5,
+            "row": 11,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.isr.operation.count), 1 minute) AS 'ISR operations' FROM Metric WHERE metricName = 'kafka.isr.operation.count' TIMESERIES AUTO FACET operation"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Leader partitions vs follower partitions on broker",
+          "layout": {
+            "column": 9,
+            "row": 11,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(kafka.broker.leader.count) AS 'Leader partitions', average(kafka.partition.count) - latest(kafka.broker.leader.count) AS 'Follower partitions' WHERE metricName IN ('kafka.broker.leader.count', 'kafka.partition.count') TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Requests per second",
+          "layout": {
+            "column": 1,
+            "row": 14,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(kafka.request.count), 1 second) AS `Requests per second` FROM Metric WHERE metricName = 'kafka.request.count' AND type IN ('fetch', 'produce') TIMESERIES AUTO FACET type"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Request failures per second",
+          "layout": {
+            "column": 5,
+            "row": 14,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(kafka.request.failed) / sum((endTimestamp - timestamp) / 1000) AS `Failed requests` FROM Metric WHERE metricName = 'kafka.request.failed' TIMESERIES AUTO FACET type"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Requests waiting in purgatory",
+           "layout": {
+            "column": 9,
+            "row": 14,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(kafka.purgatory.size) AS `Requests waiting in purgatory` FROM Metric WHERE metricName = 'kafka.purgatory.size' facet type TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM garbage collections count",
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`jvm.gc.collections.count`) AS 'Garbage collections count' FROM Metric WHERE metricName = 'jvm.gc.collections.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM heap memory usage",
+          "layout": {
+            "column": 5,
+            "row": 17,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "smooth"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`jvm.memory.heap.used`) AS `Heap used in bytes`, average(`jvm.memory.heap.max`) AS `Heap max in bytes` FROM Metric WHERE metricName IN ('jvm.memory.heap.used', 'jvm.memory.heap.max') TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM threads count",
+          "layout": {
+            "column": 9,
+            "row": 17,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "gradient": {
+                "enabled": true
+              },
+              "lineInterpolation": "smooth",
+              "stacked": {
+                "enabled": true
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`jvm.thread.count`) AS `Thread count` FROM Metric WHERE metricName = 'jvm.thread.count' TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

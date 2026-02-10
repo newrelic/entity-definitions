@@ -1,5 +1,5 @@
 relationships:
-  - name: k8sDaemonSetContainsPod
+  - name: k8sDaemonSetManagesPod
     version: "1"
     origins: 
       - Kubernetes Integration
@@ -9,8 +9,8 @@ relationships:
       - attribute: createdKind
         anyOf: [ "DaemonSet" ]
     relationship:
-      expires: P75M
-      relationshipType: CONTAINS
+      expires: PT75M
+      relationshipType: MANAGES
       source:
         buildGuid:
           account:
@@ -34,7 +34,7 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_POD
-  - name: otelKsmK8sDaemonSetContainsPod
+  - name: otelKsmK8sDaemonSetManagesPod
     # use kube-state-metrics kube_pod_owner metric
     version: "1"
     origins: 
@@ -45,8 +45,8 @@ relationships:
       - attribute: owner_kind
         anyOf: [ "DaemonSet" ]
     relationship:
-      expires: P75M
-      relationshipType: CONTAINS
+      expires: PT75M
+      relationshipType: MANAGES
       source:
         buildGuid:
           account:
@@ -60,42 +60,6 @@ relationships:
               - attribute: k8s.cluster.name
               - value: ":"
               - attribute: k8s.namespace.name
-              - value: ":"
-              - attribute: owner_name
-            hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
-            value: KUBERNETES_POD
-  - name: otelKsmK8sDaemonSetContainsPodPreview
-    # use kube-state-metrics kube_pod_owner metric
-    version: "1"
-    origins: 
-      - OpenTelemetry
-    conditions:
-      - attribute: metricName
-        anyOf: [ "kube_pod_owner" ]
-      - attribute: owner_kind
-        anyOf: [ "DaemonSet" ]
-      - attribute: newrelicOnly
-        anyOf: [ "true" ]
-    relationship:
-      expires: P75M
-      relationshipType: CONTAINS
-      source:
-        buildGuid:
-          account:
-            lookup: true  
-          domain:
-            value: INFRA
-          type:
-            value: KUBERNETES_DAEMONSET
-          identifier:
-            fragments:
-              - attribute: k8s.cluster.name
-              - value: ":"
-              - attribute: namespace
               - value: ":"
               - attribute: owner_name
             hashAlgorithm: FARM_HASH

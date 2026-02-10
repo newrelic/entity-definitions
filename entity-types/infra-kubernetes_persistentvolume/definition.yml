@@ -13,7 +13,8 @@ goldenTags:
 synthesis:
   rules:
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_persistentvolume_composite
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -52,34 +53,36 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+    - ruleName: infra_kubernetes_persistentvolume_composite_2
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
-          - persistentvolume
+          - k8s.volume.name
       encodeIdentifierInGUID: true
-      name: persistentvolume
+      name: k8s.volume.name
       conditions:
         # kube-state-metrics persistentvolume prefix
         - attribute: metricName
           prefix: kube_persistentvolume_
         # identifier attributes
-        - attribute: persistentvolume
+        - attribute: k8s.volume.name
           present: true
         - attribute: k8s.cluster.name
           present: true
         # open telemetry
         - attribute: newrelic.source
           value: "api.metrics.otlp"
-        # if service.name is present, it's a service
+        # if newrelic.entity.type is present, it's not a service
         - attribute: service.name
-          present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
       tags:
-        persistentvolume:
+        k8s.volume.name:
           entityTagNames: [k8s.volumeName]
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
@@ -92,6 +95,13 @@ synthesis:
           entityTagNames: [k8s.pvcName]
         storageclass:
           entityTagNames: [k8s.persistentvolume.storageClass]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
     # Infrastructure event data via opentelemetry
     # - compositeIdentifier:
     #     separator: ":"
@@ -113,8 +123,11 @@ synthesis:
     #     # if service.name is present, handle as one
     #     - attribute: service.name
     #       present: false
-    - identifier: entityId
-      name: volumeName
+
+    # newrelic integration data via nri-bundle
+    - ruleName: infra_kubernetes_persistentvolume_entityId
+      identifier: entityId
+      name: displayName
       legacyFeatures:
         overrideGuidType: true
         useNonStandardAttributes: true
@@ -192,3 +205,7 @@ synthesis:
           entityTagName: aws.region
       prefixedTags:
         label.:
+
+ownership:
+  primaryOwner:
+    teamName: "K8s Agents"

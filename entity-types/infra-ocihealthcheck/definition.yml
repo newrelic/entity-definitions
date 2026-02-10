@@ -2,14 +2,11 @@ domain: INFRA
 type: OCIHEALTHCHECK
 goldenTags:
 - oci.availabilityDomain
-- oci.resultsUrl
 - oci.compartmentId
 - oci.region
 - oci.lifecycleState
 - oci.homeRegion
 - oci.displayName
-- oci.timeCreated
-- oci.isEnabled
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -17,8 +14,10 @@ synthesis:
   tags:
     newrelic.cloudIntegrations.providerAccountName:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
   rules:
-  - identifier: oci.resourceId
+  - ruleName: infra_ocihealthcheck_oci_resourceId
+    identifier: oci.resourceId
     name: oci.resourceDisplayName
     legacyFeatures:
       overrideGuidType: true
@@ -28,3 +27,18 @@ synthesis:
       prefix: "ocid1.httpmonitor"
     - attribute: oci.namespace
       value: "oci_healthchecks"
+  - ruleName: infra_ocihealthcheck_oci_resourceId_2
+    identifier: oci.resourceId
+    name: oci.resourceDisplayName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.pingmonitor"
+    - attribute: oci.namespace
+      value: "oci_healthchecks"
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"

@@ -1,0 +1,31 @@
+relationships:
+  - name: browserAppContainsMediaStreamingApp
+    version: "1"
+    origins:
+      - Browser Monitoring
+    conditions:
+      - attribute: parentAppId
+        present: true
+      - attribute: eventType
+        startsWith: Video
+        caseSensitive: true
+      - attribute: src
+        anyOf: [ "Browser" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONNECTS_TO
+      source:
+        buildGuid:
+          account:
+            attribute: mediaAccountId
+          domain:
+            value: BROWSER
+          type:
+            value: APPLICATION
+          identifier:
+            fragments:
+              - attribute: parentAppId
+            hashAlgorithm: IDENTITY
+      target:
+        extractGuid:
+          attribute: entity.guid

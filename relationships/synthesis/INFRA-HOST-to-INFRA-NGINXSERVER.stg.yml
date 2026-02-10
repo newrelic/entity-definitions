@@ -1,0 +1,76 @@
+relationships:
+  - name: infrahostHostsNginxServer
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "NginxSample" ]
+      - attribute: nr.entityType
+        anyOf: ["NGINXServer","NGINXSERVER"]
+      - attribute: reportingAgent
+        present: true
+      - attribute: clusterName # condition to exclude k8s hosts
+        present: false
+      - attribute: podName
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent # cloudproviderID
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: NGINXServer
+
+  - name: infrahostHostsNginxServerrule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "NginxSample" ]
+      - attribute: nr.entityType
+        anyOf: ["NGINXServer","NGINXSERVER"]
+      - attribute: fullHostname
+        present: true
+      - attribute: reportingAgent
+        present: false
+      - attribute: clusterName # condition to exclude k8s hosts
+        present: false
+      - attribute: podName
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: NGINXServer

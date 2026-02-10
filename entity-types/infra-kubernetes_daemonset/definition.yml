@@ -11,7 +11,8 @@ synthesis:
   rules:
 
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_daemonset_composite
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -45,10 +46,14 @@ synthesis:
           entityTagNames: [k8s.clusterName]
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+      prefixedTags:
+        tags.:
           ttl: P1D
 
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_daemonset_composite_2
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -85,86 +90,13 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
-
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - daemonset
-      encodeIdentifierInGUID: true
-      name: daemonset
-      conditions:
-        # kube-state-metrics daemonset prefix
-        - attribute: metricName
-          prefix: kube_daemonset_
-        # identifier attributes
-        - attribute: daemonset
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # open telemetry
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
-        # if service.name is present, it's a service
-        - attribute: service.name
-          present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
-      tags:
-        daemonset:
-          entityTagNames: [k8s.daemonsetName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
-
-
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview
-    - compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - namespace
-          - daemonset
-      encodeIdentifierInGUID: true
-      name: daemonset
-      conditions:
-        # kube-state-metrics daemonset prefix
-        - attribute: metricName
-          prefix: kube_daemonset_
-        # identifier attributes
-        - attribute: daemonset
-          present: true
-        - attribute: namespace
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # open telemetry
-        - attribute: newrelic.source
-          value: 'api.metrics.otlp'
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
-        # if newrelic.entity.type is present, it's not a service
-        - attribute: service.name
-          present: true
-        - attribute: newrelic.entity.type
-          present: true
-      tags:
-        daemonset:
-          entityTagNames: [k8s.daemonsetName]
-        namespace:
-          entityTagNames: [k8s.namespaceName]
-        k8s.cluster.name:
-          entityTagNames: [k8s.clusterName]
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # Infrastructure event data via opentelemetry
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_daemonset_composite_3
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -187,10 +119,14 @@ synthesis:
         # if service.name is present, handle as one
         - attribute: service.name
           present: false
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
 
     # Infrastructure event data via opentelemetry
-    - compositeIdentifier:
+    - ruleName: infra_kubernetes_daemonset_composite_4
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -215,9 +151,14 @@ synthesis:
           present: true
         - attribute: newrelic.entity.type
           present: true
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
-    - identifier: entityId
-      name: daemonsetName
+    # newrelic integration data via nri-bundle
+    - ruleName: infra_kubernetes_daemonset_entityId
+      identifier: entityId
+      name: displayName
       legacyFeatures:
         overrideGuidType: true
         useNonStandardAttributes: true
@@ -251,3 +192,7 @@ synthesis:
           entityTagName: aws.region
       prefixedTags:
         label.:
+
+ownership:
+  primaryOwner:
+    teamName: "K8s Agents"

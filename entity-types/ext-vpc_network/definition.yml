@@ -4,7 +4,8 @@ type: VPC_NETWORK
 synthesis:
   rules:
   # ktranslate
-  - identifier: device_name
+  - ruleName: ext_vpc_network_device_name
+    identifier: device_name
     name: device_name
     encodeIdentifierInGUID: true
     conditions:
@@ -15,14 +16,16 @@ synthesis:
       tags.:
         ttl: PT4H
   # aws kinesis firehose
-  - identifier: vpc_id
+  - ruleName: ext_vpc_network_vpc_id
+    identifier: vpc_id
     name: vpc_id
     encodeIdentifierInGUID: true
     conditions:
     - attribute: provider
       value: firehose-vpc
   # gcp pubsub -> dataflow (DEST)
-  - compositeIdentifier:
+  - ruleName: ext_vpc_network_composite
+    compositeIdentifier:
       separator: "/"
       attributes:
         - jsonPayload.dest_vpc.project_id
@@ -33,7 +36,8 @@ synthesis:
     - attribute: jsonPayload.reporter
       value: "DEST"
   # gcp pubsub -> dataflow (SRC)
-  - compositeIdentifier:
+  - ruleName: ext_vpc_network_composite_2
+    compositeIdentifier:
       separator: "/"
       attributes:
         - jsonPayload.src_vpc.project_id
@@ -58,3 +62,7 @@ dashboardTemplates:
     template: aws-kinesis-firehose-vpc-flow-logs-dashboard.json
   gcp-pubsub-dataflow/vpc-flow-logs-gcp:
     template: gcp-pubsub-dataflow-vpc-flow-logs-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"

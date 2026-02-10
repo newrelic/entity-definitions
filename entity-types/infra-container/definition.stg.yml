@@ -1,0 +1,651 @@
+domain: INFRA
+type: CONTAINER
+
+synthesis:
+  rules:
+  # Dockerstats receiver from otel collector.
+  - ruleName: infra_container_container_id
+    identifier: container.id
+    name: container.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # All metrics from the receiver starts with the 'container.' prefix.
+      - attribute: metricName
+        prefix: container.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # This filters only metrics comming from docker receiver, given that metrics
+      # could deffer between different runtime receivers.
+      - attribute: otel.library.name
+        value: "otelcol/dockerstatsreceiver"
+    tags:
+      # Default resource attributes
+      container.runtime:
+      container.image.name:
+      container.hostname:
+      # Optional resource attribute
+      container.image.id:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      host.id:
+      host.name:
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+  - ruleName: infra_container_container_id_2
+    identifier: container.id
+    name: container.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # All metrics from the receiver starts with the 'container.' prefix.
+      - attribute: metricName
+        prefix: container.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/dockerstatsreceiver"
+
+    tags:
+      # Default resource attributes
+      container.runtime:
+      container.image.name:
+      container.hostname:
+      # Optional resource attribute
+      container.image.id:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      host.id:
+      host.name:
+      # The library name contains the name of the receiver that is used to identify the source
+      # and select the dashboard.
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  - ruleName: infra_container_container_id_stg3
+    identifier: container.id
+    name: container.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: newrelic.source
+        value: 'api.logs.otlp'
+      - attribute: nr.entity_type
+        value: "CONTAINER"
+    tags:
+      # Default resource attributes
+      container.runtime:
+      container.image.name:
+      container.hostname:
+      # Optional resource attribute
+      container.image.id:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      host.id:
+      host.name:
+
+  # kube-state-metrics data via opentelemetry prometheusReceiver
+  - ruleName: infra_container_composite
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - k8s.cluster.name
+        - k8s.namespace.name
+        - k8s.pod.name
+        - k8s.container.name
+    encodeIdentifierInGUID: true
+    name: k8s.container.name
+    conditions:
+      # kube-state-metrics container prefix
+      - attribute: metricName
+        prefix: kube_pod_container_
+      # identifier attributes
+      - attribute: k8s.container.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.cluster.name
+        present: true
+      # open telemetry
+      - attribute: newrelic.source
+        value: 'api.metrics.otlp'
+      # if service.name is present, handle as one
+      - attribute: service.name
+        present: false
+    tags:
+      container_id:
+        entityTagNames: [k8s.containerId]
+        multiValue: false
+      image:
+        entityTagNames: [k8s.containerImage]
+      k8s.container.name:
+        entityTagNames: [k8s.containerName]
+      k8s.pod.name:
+        entityTagNames: [k8s.podName]
+      k8s.namespace.name:
+        entityTagNames: [k8s.namespaceName]
+      k8s.cluster.name:
+        entityTagNames: [k8s.clusterName]
+      k8s.deployment.name:
+        entityTagNames: [k8s.deploymentName]
+      k8s.daemonset.name:
+        entityTagNames: [k8s.daemonsetName]
+      newrelic.chart.version:
+        entityTagNames: [newrelic.chartVersion]
+        ttl: P1D
+
+  # kube-state-metrics data via opentelemetry prometheusReceiver  
+  - ruleName: infra_container_composite_stg_2
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - k8s.cluster.name
+        - k8s.namespace.name
+        - k8s.pod.name
+        - k8s.container.name
+    encodeIdentifierInGUID: true
+    name: k8s.container.name
+    conditions:
+      # kube-state-metrics container prefix
+      - attribute: metricName
+        prefix: kube_pod_container_
+      # identifier attributes
+      - attribute: k8s.container.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.cluster.name
+        present: true
+      # open telemetry
+      - attribute: newrelic.source
+        value: 'api.metrics.otlp'
+      # if newrelic.entity.type is present, it's not a service
+      - attribute: service.name
+        present: true
+      - attribute: newrelic.entity.type
+        present: true
+    tags:
+      container_id:
+        entityTagNames: [k8s.containerId]
+        multiValue: false
+      image:
+        entityTagNames: [k8s.containerImage]
+      k8s.container.name:
+        entityTagNames: [k8s.containerName]
+      k8s.pod.name:
+        entityTagNames: [k8s.podName]
+      k8s.namespace.name:
+        entityTagNames: [k8s.namespaceName]
+      k8s.cluster.name:
+        entityTagNames: [k8s.clusterName]
+      k8s.deployment.name:
+        entityTagNames: [k8s.deploymentName]
+      k8s.daemonset.name:
+        entityTagNames: [k8s.daemonsetName]
+      newrelic.chart.version:
+        entityTagNames: [newrelic.chartVersion]
+        ttl: P1D
+
+  # cAdvisor data via opentelemetry prometheusReceiver
+  - ruleName: infra_container_composite_stg_3
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - k8s.cluster.name
+        - k8s.namespace.name
+        - k8s.pod.name
+        - k8s.container.name
+    encodeIdentifierInGUID: true
+    name: k8s.container.name
+    conditions:
+      # cadvisor container prefix
+      - attribute: metricName
+        prefix: container_
+      # identifier attributes
+      - attribute: k8s.container.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.cluster.name
+        present: true
+      # if image is present, it's a container, else a pod
+      - attribute: image
+        present: true
+      # open telemetry
+      - attribute: newrelic.source
+        value: 'api.metrics.otlp'
+      # if service.name is present, handle as one
+      - attribute: service.name
+        present: false
+    tags:
+      k8s.container.name:
+        entityTagNames: [k8s.containerName]
+      k8s.pod.name:
+        entityTagNames: [k8s.podName]
+      k8s.namespace.name:
+        entityTagNames: [k8s.namespaceName]
+      k8s.cluster.name:
+        entityTagNames: [k8s.clusterName]
+      k8s.node.name:
+        entityTagNames: [k8s.nodeName]
+      k8s.deployment.name:
+        entityTagNames: [k8s.deploymentName]
+      k8s.daemonset.name:
+        entityTagNames: [k8s.daemonsetName]
+      newrelic.chart.version:
+        entityTagNames: [newrelic.chartVersion]
+        ttl: P1D
+
+  # cAdvisor data via opentelemetry prometheusReceiver
+  - ruleName: infra_container_composite_stg_4
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - k8s.cluster.name
+        - k8s.namespace.name
+        - k8s.pod.name
+        - k8s.container.name
+    encodeIdentifierInGUID: true
+    name: k8s.container.name
+    conditions:
+      # cadvisor container prefix
+      - attribute: metricName
+        prefix: container_
+      # identifier attributes
+      - attribute: k8s.container.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.cluster.name
+        present: true
+      # if image is present, it's a container, else a pod
+      - attribute: image
+        present: true
+      # open telemetry
+      - attribute: newrelic.source
+        value: 'api.metrics.otlp'
+      # if newrelic.entity.type is present, it's not a service
+      - attribute: service.name
+        present: true
+      - attribute: newrelic.entity.type
+        present: true
+    tags:
+      k8s.container.name:
+        entityTagNames: [k8s.containerName]
+      k8s.pod.name:
+        entityTagNames: [k8s.podName]
+      k8s.namespace.name:
+        entityTagNames: [k8s.namespaceName]
+      k8s.cluster.name:
+        entityTagNames: [k8s.clusterName]
+      k8s.node.name:
+        entityTagNames: [k8s.nodeName]
+      k8s.deployment.name:
+        entityTagNames: [k8s.deploymentName]
+      k8s.daemonset.name:
+        entityTagNames: [k8s.daemonsetName]
+      newrelic.chart.version:
+        entityTagNames: [newrelic.chartVersion]
+        ttl: P1D
+
+  # kubeletstatsreceiver data via opentelemetry
+  - ruleName: infra_container_composite_stg_5
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - k8s.cluster.name
+        - k8s.namespace.name
+        - k8s.pod.name
+        - k8s.container.name
+    encodeIdentifierInGUID: true
+    name: k8s.container.name
+    conditions:
+      # kubeletstats container prefix
+      - attribute: metricName
+        prefix: container.
+      # identifier attributes
+      - attribute: k8s.container.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.cluster.name
+        present: true
+      # open telemetry
+      - attribute: newrelic.source
+        value: 'api.metrics.otlp'
+      # if service.name is present, handle as one
+      - attribute: service.name
+        present: false
+    tags:
+      k8s.container.name:
+        entityTagNames: [k8s.containerName]
+      k8s.pod.name:
+        entityTagNames: [k8s.podName]
+      k8s.namespace.name:
+        entityTagNames: [k8s.namespaceName]
+      k8s.cluster.name:
+        entityTagNames: [k8s.clusterName]
+      k8s.deployment.name:
+        entityTagNames: [k8s.deploymentName]
+      k8s.node.name:
+        entityTagNames: [k8s.nodeName]
+
+  # kubeletstatsreceiver data via opentelemetry
+  - ruleName: infra_container_composite_stg_6
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - k8s.cluster.name
+        - k8s.namespace.name
+        - k8s.pod.name
+        - k8s.container.name
+    encodeIdentifierInGUID: true
+    name: k8s.container.name
+    conditions:
+      # kubeletstats container prefix
+      - attribute: metricName
+        prefix: container.
+      # identifier attributes
+      - attribute: k8s.container.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.cluster.name
+        present: true
+      # open telemetry
+      - attribute: newrelic.source
+        value: 'api.metrics.otlp'
+      # if newrelic.entity.type is present, it's not a service
+      - attribute: service.name
+        present: true
+      - attribute: newrelic.entity.type
+        present: true
+    tags:
+      k8s.container.name:
+        entityTagNames: [k8s.containerName]
+      k8s.pod.name:
+        entityTagNames: [k8s.podName]
+      k8s.namespace.name:
+        entityTagNames: [k8s.namespaceName]
+      k8s.cluster.name:
+        entityTagNames: [k8s.clusterName]
+      k8s.deployment.name:
+        entityTagNames: [k8s.deploymentName]
+      k8s.node.name:
+        entityTagNames: [k8s.nodeName]
+
+  # Docker Container from Samples - NOT in use yet - see FF EntitySynthesis/ExtractEntityFromInfraTelemetry
+  - ruleName: infra_container_entityId
+    identifier: entityId
+    name: name
+    legacyFeatures:
+      overrideGuidType: true
+      useNonStandardAttributes: true
+    conditions:
+      - attribute: eventType
+        value: ContainerSample
+      - attribute: name
+        present: true
+      - attribute: containerId
+        present: true
+    tags:
+      state:
+        entityTagName: container.state
+      commandLine:
+        entityTagName: docker.commandLine
+      containerId:
+        entityTagName: docker.containerId
+      ecsLaunchType:
+        entityTagName: docker.ecsLaunchType
+      ecsClusterName:
+        entityTagName: docker.ecsClusterName
+      ecsClusterArn:
+        entityTagName: docker.ecsClusterArn
+      ecsContainerName:
+        entityTagName: docker.ecsContainerName
+      ecsTaskArn:
+        entityTagName: docker.ecsTaskArn
+      ecsTaskDefinitionFamily:
+        entityTagName: docker.ecsTaskDefinitionFamily
+      ecsTaskDefinitionVersion:
+        entityTagName: docker.ecsTaskDefinitionVersion
+      health:
+        entityTagName: docker.health
+      shortContainerId:
+        entityTagName: docker.shortContainerId
+      imag:
+        entityTagName: docker.image
+      imageName:
+        entityTagName: docker.imageName
+      host:
+        entityTagName: docker.host
+      status:
+        entityTagName: docker.status
+        multiValue: false
+      instanceType:
+        entityTagName: host.instanceType
+      integrationName:
+        entityTagName: newrelic.integrationName
+      integrationVersion:
+        entityTagName: newrelic.integrationVersion
+      agentVersion:
+        entityTagName: newrelic.agentVersion
+      awsRegion:
+        entityTagName: aws.region
+      provider.awsRegion:
+        entityTagName: aws.region
+    prefixedTags:
+      label.:
+  # K8s Container from Samples - NOT in use yet - see FF EntitySynthesis/ExtractEntityFromInfraTelemetry
+  - ruleName: infra_container_entityId_2
+    identifier: entityId
+    name: containerName
+    legacyFeatures:
+      overrideGuidType: true
+      useNonStandardAttributes: true
+    conditions:
+      - attribute: eventType
+        value: K8sContainerSample
+      - attribute: containerName
+        present: true
+    tags:
+      clusterName:
+        entityTagName: k8s.clusterName
+      containerID:
+        entityTagName: k8s.containerId
+        multiValue: false
+      containerImage:
+        entityTagName: k8s.containerImage
+      containerImageId:
+        entityTagName: k8s.containerImageId
+      containerName:
+        entityTagName: k8s.containerName
+      deploymentName:
+        entityTagName: k8s.deploymentName
+      daemonsetName:
+        entityTagName: k8s.daemonsetName
+      jobName:
+        entityTagName: k8s.jobName
+      replicasetName:
+        entityTagName: k8s.replicasetName
+      statefulsetName:
+        entityTagName: k8s.statefulsetName
+      namespaceName:
+        entityTagName: k8s.namespaceName
+      namespace:
+        entityTagName: k8s.namespaceName
+      nodeIp:
+        entityTagName: k8s.nodeIp
+      nodeName:
+        entityTagName: k8s.nodeName
+      podName:
+        entityTagName: k8s.podName
+      reason:
+        entityTagName: k8s.reason
+      status:
+        entityTagNames: [k8s.status, container.state]
+        multiValue: false
+      instanceType:
+        entityTagName: host.instanceType
+      integrationName:
+        entityTagName: newrelic.integrationName
+      integrationVersion:
+        entityTagName: newrelic.integrationVersion
+      agentVersion:
+        entityTagName: newrelic.agentVersion
+      awsRegion:
+        entityTagName: aws.region
+      provider.awsRegion:
+        entityTagName: aws.region
+    prefixedTags:
+      label.:
+    # K8s container logs shipped via newrelic-logging Helm chart
+  - ruleName: infra_container_logging_k8s_container_identifier
+    identifier: logging.k8s.container.identifier
+    name: container_name
+    encodeIdentifierInGUID: true
+    legacyFeatures:
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        prefix: Log
+      - attribute: logging.k8s.container.identifier
+        present: true
+      - attribute: logging.k8s.container.legacyIdentifier
+        present: false
+      - attribute: logging.testing.synthesize.k8s.container
+        value: "true"
+        # We don't want to materialize as an Infra Container if the log contains attributes that would result in an
+        # EXT|SERVICE entity
+      - attribute: service.name
+        present: false
+      - attribute: serviceName
+        present: false
+      - attribute: service_name
+        present: false
+    # Disabled tags as a prevention: we currently want to prevent materialization/tagging to happen for these entities out of logs
+    # Nevertheless, the tags block below is based on real attribute names present in these logs, so to enable it simply
+    # uncomment the lines below
+    # tags:
+    #   cluster_name:
+    #     entityTagName: k8s.clusterName
+    #   container_image:
+    #     entityTagName: k8s.containerImage
+    #   container_name:
+    #     entityTagName: k8s.containerName
+    #   # The newrelic-logging Helm chart uses Fluent Bit internally with the K8s plugin (https://docs.fluentbit.io/manual/pipeline/filters/kubernetes),
+    #   # which reports the container ID as the "docker_id" attribute (independently of the underlying container runtime)
+    #   # due to this regex: https://github.com/fluent/fluent-bit/blob/master/conf/parsers.conf#L130
+    #   docker_id:
+    #     entityTagName: k8s.containerId
+    #     multiValue: false
+    #   host:
+    #     entityTagName: k8s.nodeName
+    #   namespace_name:
+    #     entityTagName: k8s.namespaceName
+    #   pod_name:
+    #     entityTagName: k8s.podName
+    # prefixedTags:
+    #   label.:
+
+    # K8s container logs shipped via newrelic-logging Helm chart. These are logs from legacy K8s containers that use
+    # a different format in their ID.
+  - ruleName: infra_container_logging_k8s_container_legacyIdentifier
+    identifier: logging.k8s.container.legacyIdentifier
+    name: container_name
+    # The legacyIdentifier is already hashed, no need to hash it again
+    encodeIdentifierInGUID: false
+    legacyFeatures:
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        prefix: Log
+      - attribute: logging.k8s.container.identifier
+        present: false
+      - attribute: logging.k8s.container.legacyIdentifier
+        present: true
+      - attribute: logging.testing.synthesize.k8s.container
+        value: "true"
+        # We don't want to materialize as an Infra Container if the log contains attributes that would result in an
+        # EXT|SERVICE entity
+      - attribute: service.name
+        present: false
+      - attribute: serviceName
+        present: false
+      - attribute: service_name
+        present: false
+    # Disabled tags as a prevention: we currently want to prevent materialization/tagging to happen for these entities out of logs
+    # Nevertheless, the tags block below is based on real attribute names present in these logs, so to enable it simply
+    # uncomment the lines below
+    # tags:
+    #   cluster_name:
+    #     entityTagName: k8s.clusterName
+    #   container_image:
+    #     entityTagName: k8s.containerImage
+    #   container_name:
+    #     entityTagName: k8s.containerName
+    #   # The newrelic-logging Helm chart uses Fluent Bit internally with the K8s plugin (https://docs.fluentbit.io/manual/pipeline/filters/kubernetes),
+    #   # which reports the container ID as the "docker_id" attribute (independently of the underlying container runtime)
+    #   # due to this regex: https://github.com/fluent/fluent-bit/blob/master/conf/parsers.conf#L130
+    #   docker_id:
+    #     entityTagName: k8s.containerId
+    #     multiValue: false
+    #   host:
+    #     entityTagName: k8s.nodeName
+    #   namespace_name:
+    #     entityTagName: k8s.namespaceName
+    #   pod_name:
+    #     entityTagName: k8s.podName
+    # prefixedTags:
+    #   label.:
+
+  tags:
+    newrelic.integrationName:
+    newrelic.integrationVersion:
+    newrelic.agentVersion:
+    host.instanceType:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+    telemetry.sdk.language:
+      entityTagName: language
+    # AWS tags
+    aws.region:
+
+goldenTags:
+- environment
+- container.state
+
+configuration:
+  entityExpirationTime: FOUR_HOURS
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"

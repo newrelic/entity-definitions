@@ -1,0 +1,84 @@
+relationships:
+  - name: vsphereClusterContainsVsphereHost
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "VSphereHostSample" ]
+      - attribute: nr.entityType
+        anyOf: ["VSphereHost", "VSPHEREHOST"]
+      - attribute: datacenterLocation
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: VSPHERECLUSTER
+            valueInGuid: NA
+          # vsphere-cluster:canary:dc0:dc0_c0
+          identifier:
+            fragments:
+              - value: "vsphere-cluster:"
+              - attribute: datacenterLocation
+              - value: ":"
+              - attribute: datacenterName
+                operations:
+                  - operation: toLowercase
+              - value: ":"
+              - attribute: clusterName
+                operations:
+                  - operation: toLowercase
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: VSPHEREHOST
+
+  - name: vsphereClusterContainsVsphereHostRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "VSphereHostSample" ]
+      - attribute: nr.entityType
+        anyOf: ["VSphereHost", "VSPHEREHOST"]
+      - attribute: datacenterLocation
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: VSPHERECLUSTER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "vsphere-cluster:"
+              - attribute: datacenterName
+                operations:
+                  - operation: toLowercase
+              - value: ":"
+              - attribute: clusterName
+                operations:
+                  - operation: toLowercase
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: VSPHEREHOST
+

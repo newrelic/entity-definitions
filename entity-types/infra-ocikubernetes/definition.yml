@@ -8,7 +8,7 @@ goldenTags:
 - oci.lifecycleState
 - oci.shape
 - oci.name
-- oci.vcnId
+- oci.type
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -16,14 +16,20 @@ synthesis:
   tags:
     newrelic.cloudIntegrations.providerAccountName:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
   rules:
-  - identifier: oci.resourceId
+  - ruleName: infra_ocikubernetes_oci_clusterId
+    identifier: oci.clusterId
     name: oci.resourceDisplayName
     legacyFeatures:
       overrideGuidType: true
     encodeIdentifierInGUID: true
     conditions:
-    - attribute: oci.resourceId
+    - attribute: oci.clusterId
       prefix: "ocid1.cluster"
     - attribute: oci.namespace
       value: "oci_oke"
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"

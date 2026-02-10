@@ -5,25 +5,81 @@ Synthesis is the process of creating entities from telemetry. Given some rules, 
 Synthesis rules should be defined in the `definition.yaml` file, under a `synthesis.rules` section.
 
 A rule should define an `identifier` that will be a unique value for that domainType in one user account.
-It should also provide the attribute that defines the `name` of the entity.
+It should also provide the attribute that defines the `name` (or alternatively a `compositeName`) of the entity.
+Finally a unique `ruleName` should be provided to identify the rule around our telemetry.
 
-These two attributes **must be always present** on the telemetry in order to create an entity.
+These three attributes **must be always present** on the telemetry in order to create an entity.
 
 ```yaml
 synthesis:
   rules:
-  - identifier: hostname
+  - ruleName: hostFromInfra
+    identifier: hostname
     name: hostname
 ```
 
-| **Name** | **Type** | **Required** | **Description**  |
-| -------- | -------- | ------------ | ---------------- |
-| name    | String | Yes | The attribute to use for the entity name. |
-| identifier| String| Yes | Telemetry attribute to use as the entity identifier.|
-| compositeIdentifier| String| No | Set of attributes that will identify the telemetry. When this one is used identifier is not required.|
-| encodeIdentifierInGUID | Boolean | No | If true, the identifier value will be hashed to respect the [GUID limits][guid_spec]. Defaults to `false`. |
-| conditions | List | No | The list of conditions to apply in the data point to match the rule. Defaults to an empty list. |
-| tags     | List   | No | The list of attributes to copy as entity tags if the rule matches. Defaults to an empty list. |
+It can also be explicitly defined that synthesis is not allowed for a specific type.
+
+```yaml
+synthesis:
+  disabled: true
+```
+
+| **Name** | **Type** | **Required** | **Description**                                                                                                               |
+| -------- | -------- | ------------ |-------------------------------------------------------------------------------------------------------------------------------|
+| ruleName | String | Yes | A unique identifier for this rule.
+| name    | String | Yes | The attribute to use for the entity name.                                                                                     |
+| compositeName | Object | No | Set of attributes and literals that will be concatenated to form the entity name. When this one is used name is not required. |
+| identifier| String| Yes | Telemetry attribute to use as the entity identifier.                                                                          |
+| compositeIdentifier| String| No | Set of attributes that will identify the telemetry. When this one is used identifier is not required.                         |
+| encodeIdentifierInGUID | Boolean | No | If true, the identifier value will be hashed to respect the [GUID limits][guid_spec]. Defaults to `false`.                    |
+| conditions | List | No | The list of conditions to apply in the data point to match the rule. Defaults to an empty list.                               |
+| tags     | List   | No | The list of attributes to copy as entity tags if the rule matches. Defaults to an empty list.                                 |
+
+### RuleName
+
+The ruleName property serves as a unique identifier for the rule and must be distinct from all other rules.
+
+### Name
+
+The attribute from the telemetry to be used as the name of the entity. Either this or `compositeName` must be defined.
+The name does not need to be unique, different entities with the same entityType in the same account can have the same name, as long as their identifiers are different, they will be different entities.
+
+#### Composite name
+
+In some cases the name of the entity is not defined by a single attribute, but rather a combination of multiple attributes and literals.
+In these cases, `compositeName` can be used to define how these attributes and literals are combined to form the name.
+
+The `compositeName` is formed from `fragments`, which is a non-empty list of objects, containing only one of the following properties:
+- `attribute`, which represents an attribute name that must be always present in the telemetry. The value of the given attribute in the telemetry data point will be added to the name.
+- `value`, that is a literal value to be concatenated to the name. It has to be delimited by double quotes.
+
+The `attribute`s and `value`s will be concatenated in the order they are defined in the list to conform the final entity name.
+
+```yaml
+synthesis:
+    rules:
+    - identifier: hostname
+      compositeName:
+        fragments:
+          - value: "ks-broker: "
+          - attribute: kafka.broker.name
+          - value: " ("
+          - attribute: kafka.cluster.name
+          - value: ")"
+      # Other rule properties...    
+```
+
+If we take as an example the following data point, and apply the above synthesis rule:
+
+```json
+{
+  "kafka.broker.name": "broker-1",
+  "kafka.cluster.name": "my-cluster"
+}
+```
+
+The `name` of the entity will be synthesized as: `ks-broker: broker-1 (my-cluster)`
 
 ### Identifier
 
@@ -362,8 +418,10 @@ These features are defined under the rule using the `legacyFeatures` key.
 ```
     legacyFeatures:
       overrideGuidType: true
+      useNonStandardAttributes: true
 ```
 
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
 | overrideGuidType | Boolean  | No | If set to `true`, it will replace the entityType in the guid for the `NA` value. Defaults to `false`. |
+| useNonStandardAttributes | Boolean  | No | If set to `true`, Will use `entityGuid` as the identifier attribute instead of the standard `entity.guid`. Defaults to `false`. |

@@ -3,8 +3,9 @@ type: POSTGRESQLINSTANCE
 
 synthesis:
   rules:
-    - identifier: entityId
-      name: entityName
+    - ruleName: infra_postgresqlinstance_entityId
+      identifier: entityId
+      name: entityKey
       legacyFeatures:
         useNonStandardAttributes: true
         overrideGuidType: true
@@ -12,7 +13,7 @@ synthesis:
         label.:
           ttl: PT4H
       conditions:
-        - attribute: event_type
+        - attribute: eventType
           value: 'PostgresqlInstanceSample'
       tags:
         integrationName:
@@ -20,6 +21,8 @@ synthesis:
         integrationVersion:
           ttl: P1D
         reportingAgent:
+          ttl: P1D
+        reportingEndpoint:
           ttl: P1D
 
 goldenTags:
@@ -32,3 +35,7 @@ dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"

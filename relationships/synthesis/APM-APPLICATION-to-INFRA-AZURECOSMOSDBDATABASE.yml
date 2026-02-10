@@ -1,0 +1,37 @@
+relationships:
+  - name: apmApplicationCallsAzureCosmosDbDatabase
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
+    origins:
+      - Distributed Tracing 
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system 
+        anyOf: [ "cosmosdb" ]
+      - attribute: db.instance
+        present: true
+      - attribute: server.address 
+        regex: '^[a-z0-9\-]+\.documents\.azure\.com$'
+    relationship:
+      expires: PT75M 
+      relationshipType: CALLS 
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURECOSMOSDBDATABASE
+          fields:
+            - field: accountName
+              capture:
+                attribute: server.address
+                regex: '^([a-z0-9\-]+)\.documents\.azure\.com$'
+            - field: databaseName
+              attribute: db.instance

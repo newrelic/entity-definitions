@@ -7,7 +7,8 @@ goldenTags:
 synthesis:
   rules:
     # telemetry with service_name attribute
-  - identifier: service_name
+  - ruleName: ext_service_service_name
+    identifier: service_name
     name: service_name
     encodeIdentifierInGUID: true
     conditions:
@@ -29,7 +30,8 @@ synthesis:
       telemetry.sdk.version:
 
     # telemetry with serviceName attribute
-  - identifier: serviceName
+  - ruleName: ext_service_serviceName
+    identifier: serviceName
     name: serviceName
     encodeIdentifierInGUID: true
     conditions:
@@ -44,7 +46,8 @@ synthesis:
       telemetry.sdk.version:
 
     # telemetry from opentelemetry provider without instrumentation.provider
-  - identifier: service.name
+  - ruleName: ext_service_service_name_2
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
@@ -69,7 +72,8 @@ synthesis:
       service.namespace:
 
     # telemetry from opentelemetry provider
-  - identifier: service.name
+  - ruleName: ext_service_service_name_3
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
@@ -92,9 +96,12 @@ synthesis:
       service.namespace:
       faas.name:
       faas.id:
+      newrelic.service.type:
+        ttl: P1D
 
     # telemetry from kamon-agent provider
-  - identifier: service.name
+  - ruleName: ext_service_service_name_4
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
@@ -108,7 +115,8 @@ synthesis:
       telemetry.sdk.version:
 
     # telemetry from micrometer provider
-  - identifier: service.name
+  - ruleName: ext_service_service_name_5
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
@@ -122,7 +130,8 @@ synthesis:
       telemetry.sdk.version:
 
     # telemetry from JFR-Uploader provider
-  - identifier: service.name
+  - ruleName: ext_service_service_name_6
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
@@ -134,7 +143,8 @@ synthesis:
       telemetry.sdk.version:
 
     # telemetry from pixie provider
-  - identifier: service.name
+  - ruleName: ext_service_service_name_7
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
@@ -152,17 +162,19 @@ synthesis:
         ttl: P1D
     
     # telemetry from NR eBPF agent client
-  - identifier: service.name
+  - ruleName: ext_service_service_name_8
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
     - attribute: instrumentation.name
       value: nr_ebpf
+    - attribute: instrumentation.provider
+      value: opentelemetry
     - attribute: trace_role
       value: client
     - attribute: service.name
-    - attribute: ebpf_entity
-      present: false
+      present: true
     tags:
       k8s.cluster.name:
         entityTagName: k8s.clusterName
@@ -173,21 +185,25 @@ synthesis:
       deployment.name:
         entityTagName: k8s.deploymentName
         ttl: P1D
+      telemetry.sdk.language:
+        entityTagName: language
       host.name:
       local_addr:
 
     # telemetry from NR eBPF agent server
-  - identifier: service.name
+  - ruleName: ext_service_service_name_9
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
     - attribute: instrumentation.name
       value: nr_ebpf
+    - attribute: instrumentation.provider
+      value: opentelemetry
     - attribute: trace_role
       value: server
     - attribute: service.name
-    - attribute: ebpf_entity
-      present: false
+      present: true
     tags:
       k8s.cluster.name:
         entityTagName: k8s.clusterName
@@ -198,9 +214,42 @@ synthesis:
       deployment.name:
         entityTagName: k8s.deploymentName
         ttl: P1D
+      telemetry.sdk.language:
+        entityTagName: language
       host.name:
       local_addr:
       local_port:
+
+    # telemetry from NR eBPF agent with instrumentation.provider newrelic-ebpf
+  - ruleName: ext_service_composite
+    compositeIdentifier:
+        separator: ":"
+        attributes:
+          - service.name
+          - instrumentation.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.provider
+      value: newrelic-ebpf
+    - attribute: instrumentation.name
+      value: nr_ebpf
+    - attribute: service.name
+      present: true
+    tags:
+      k8s.cluster.name:
+        entityTagName: k8s.clusterName
+        ttl: P1D
+      k8s.namespace.name:
+        entityTagName: k8s.namespaceName
+        ttl: P1D
+      deployment.name:
+        entityTagName: k8s.deploymentName
+        ttl: P1D
+      telemetry.sdk.language:
+        entityTagName: language
+      host.name:
+      service.name:
 
     # IMPORTANT:
     # This rule matches on any telemetry with service.name
@@ -210,14 +259,13 @@ synthesis:
     # is being ignored in some internal services while we add
     # a configuration option to choose the relevant ingestion
     # sources for each rule.
-  - identifier: service.name
+  - ruleName: ext_service_service_name_10
+    identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
     - attribute: service.name
     - attribute: newrelic.entity.type
-      present: false
-    - attribute: ebpf_entity
       present: false
     tags:
       k8s.cluster.name:
@@ -237,3 +285,9 @@ synthesis:
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"
+  secondaryOwners:
+    - teamName: "eBPF"

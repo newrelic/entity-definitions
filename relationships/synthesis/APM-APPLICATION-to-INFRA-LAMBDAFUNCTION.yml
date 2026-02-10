@@ -1,6 +1,11 @@
 relationships:
   - name: apmCallsLambdafunction
     version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
     origins:
       - Distributed Tracing
     conditions:
@@ -11,7 +16,7 @@ relationships:
       - attribute: cloud.resource_id
         regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         extractGuid:
@@ -22,3 +27,25 @@ relationships:
           fields:
             - field: awsLambdaArn
               attribute: cloud.resource_id
+
+  - name: awsLambdaFunctionIsAPM
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: aws.lambda.arn
+        regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
+    relationship:
+      expires: PT75M
+      relationshipType: IS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSLAMBDAFUNCTION
+          fields:
+            - field: awsLambdaArn
+              attribute: aws.lambda.arn

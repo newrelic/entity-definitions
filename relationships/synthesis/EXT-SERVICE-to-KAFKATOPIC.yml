@@ -20,7 +20,7 @@ relationships:
       - attribute: newrelic.aws_metric_streams.arn
         present: false
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: PRODUCES
       source:
         extractGuid:
@@ -61,7 +61,7 @@ relationships:
       - attribute: newrelic.aws_metric_streams.arn
         present: false
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CONSUMES
       source:
         extractGuid:
@@ -102,7 +102,7 @@ relationships:
       - attribute: newrelic.aws_metric_streams.arn
         present: false
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: PRODUCES
       source:
         extractGuid:
@@ -143,7 +143,7 @@ relationships:
       - attribute: newrelic.aws_metric_streams.arn
         present: false
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CONSUMES
       source:
         extractGuid:
@@ -178,7 +178,7 @@ relationships:
       - attribute: newrelic.aws_metric_streams.arn
         regex: "^arn:aws:kafka:[^:]*:[^:]*:cluster/[^:]*"
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         extractGuid:
@@ -190,3 +190,79 @@ relationships:
             - field: cloudResourceId
               attribute: newrelic.aws_metric_streams.arn
 
+  - name: extServiceProducesOtelKafkaTopic
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.producer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: ":"
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+
+  - name: extServiceConsumesOtelKafkaTopic
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.consumer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: ":"
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+      source:
+        extractGuid:
+          attribute: entity.guid

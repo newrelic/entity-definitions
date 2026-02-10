@@ -9,8 +9,9 @@ goldenTags:
 - k8s.namespaceName
 synthesis:
   rules:
-    # kube-state-metrics data via opentelemetry prometheusReceiver 
-    - compositeIdentifier:
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - ruleName: infra_kubernetes_statefulset_composite
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -45,44 +46,55 @@ synthesis:
         newrelic.chart.version:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
-    # kube-state-metrics data via opentelemetry prometheusReceiver preview 
-    - compositeIdentifier:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - ruleName: infra_kubernetes_statefulset_composite_2
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
-          - namespace
-          - statefulset
+          - k8s.namespace.name
+          - k8s.statefulset.name
       encodeIdentifierInGUID: true
-      name: statefulset
+      name: k8s.statefulset.name
       conditions:
         # kube-state-metrics statefulset prefix
         - attribute: metricName
           prefix: kube_statefulset_
         # identifier attributes
-        - attribute: statefulset
+        - attribute: k8s.statefulset.name
           present: true
-        - attribute: namespace
+        - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
           present: true
         # open telemetry
         - attribute: newrelic.source
           value: 'api.metrics.otlp'
-        # if service.name is present, it's a service
+        # if newrelic.entity.type is present, it's not a service
         - attribute: service.name
-          present: false
-        # value added for test entities only
-        - attribute: newrelicOnly
-          value: "true"
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
       tags:
-        statefulset:
+        k8s.statefulset.name:
           entityTagNames: [k8s.statefulsetName]
-        namespace:
+        k8s.namespace.name:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
           entityTagNames: [k8s.clusterName]
-    # Infrastructure event data via opentelemetry 
-    - compositeIdentifier:
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # Infrastructure event data via opentelemetry
+    - ruleName: infra_kubernetes_statefulset_composite_3
+      compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
@@ -105,9 +117,45 @@ synthesis:
         # if service.name is present, handle as one
         - attribute: service.name
           present: false
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
-    - identifier: entityId
-      name: statefulsetName
+    # Infrastructure event data via opentelemetry
+    - ruleName: infra_kubernetes_statefulset_composite_4
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: StatefulSet
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # newrelic integration data via nri-bundle
+    - ruleName: infra_kubernetes_statefulset_entityId
+      identifier: entityId
+      name: displayName
       legacyFeatures:
         overrideGuidType: true
         useNonStandardAttributes: true
@@ -141,3 +189,7 @@ synthesis:
           entityTagName: aws.region
       prefixedTags:
         label.:
+
+ownership:
+  primaryOwner:
+    teamName: "K8s Agents"

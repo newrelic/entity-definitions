@@ -1,0 +1,228 @@
+{
+  "name": "OTEL ElasticSearch Cluster",
+  "description": "ElasticSearch cluster Metrics",
+  "pages": [
+    {
+      "name": "Cluster Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Data Nodes",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.data_nodes) AS 'Data Nodes'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Total Nodes",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.nodes) AS 'Total Nodes'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "In-Flight Fetches",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.in_flight_fetch) AS 'In-Flight Fetches'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Pending Tasks",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 1
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.pending_tasks) AS 'Pending Tasks'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster Health",
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT \n    IF(latest(status) = 'green', '🟢 GREEN',\n    IF(latest(status) = 'yellow', '🟡 YELLOW',\n    '🔴 RED'\n)) AS 'Cluster Health'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Shards",
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(elasticsearch.cluster.shards) \nFROM Metric\nFACET state"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Document count",
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(elasticsearch.index.documents) AS 'Total Documents in cluster'\nFROM Metric \nWHERE elasticsearch.index.name = '_all' AND aggregation = 'primary_shards' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Pending Tasks",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(elasticsearch.cluster.pending_tasks) \nFROM Metric\nTIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster State Update Time",
+          "layout": {
+            "column": 5,
+            "row": 5,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(elasticsearch.cluster.state_update.time), 1 minute) / 1000 AS 'Cluster State Update Time (s/min)' FROM Metric TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster Health Status",
+          "layout": {
+            "column": 9,
+            "row": 5,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#FF0000",
+                  "seriesName": "red"
+                },
+                {
+                  "color": "#008000",
+                  "seriesName": "green"
+                },
+                {
+                  "color": "#FFFF00",
+                  "seriesName": "yellow"
+                }
+              ]
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(elasticsearch.cluster.health) FACET status TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
