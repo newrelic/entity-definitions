@@ -390,6 +390,106 @@ synthesis:
         k8s.namespace.name:
           ttl: P1D
 
+    # opentelemetry kubernetes node host data from opentelemetry-collector
+    - ruleName: infra_host_k8s_node
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # must be a kubernetes node
+        - attribute: k8s.node.name
+          present: true
+        - attribute: newrelic.integrationName
+          value: 'com.newrelic.kubernetes'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        newrelic.integrationName:
+          entityTagName: newrelic.integrationName
+        k8s.node.name:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry kubernetes node host data from opentelemetry-collector
+    - ruleName: infra_host_k8s_node_2
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # must be a kubernetes node
+        - attribute: k8s.node.name
+          present: true
+        - attribute: newrelic.integrationName
+          value: 'com.newrelic.kubernetes'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        newrelic.integrationName:
+          entityTagName: newrelic.integrationName
+        k8s.node.name:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
     # opentelemetry host data from New Relic sap solutions
     - ruleName: infra_host_host_id_10
       identifier: host.id
