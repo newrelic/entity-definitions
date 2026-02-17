@@ -1,0 +1,545 @@
+domain: INFRA
+type: HOST
+goldenTags:
+- account
+- windowsPlatform
+- linuxDistribution
+- aws.awsRegion
+- aws.region
+- aws.availabilityZone
+- aws.accountId
+- azure.regionName
+- azure.subscriptionId
+- azure.resourceGroup
+- gcp.zone
+- gcp.projectId
+- oci.compartmentId
+- oci.region
+- oci.availabilityDomain
+# uniquely identify if ATP processor is being used
+- process.atp.enabled
+# opentelemetry semantic conventions for cloud instances
+- cloud.provider
+- cloud.account.id
+- cloud.region
+- cloud.availability_zone
+- cloud.platform
+synthesis:
+  rules:
+    # opentelemetry host data from opentelemetry-collector
+    - ruleName: infra_host_host_id
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry host data from opentelemetry-collector
+    - ruleName: infra_host_host_id_2
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry host data from opentelemetry-collector
+    - ruleName: infra_host_host_id_3
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry host data from opentelemetry-collector
+    - ruleName: infra_host_host_id_4
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry host data from opentelemetry-collector
+    - ruleName: infra_host_host_id_5
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry host data from opentelemetry-collector
+    - ruleName: infra_host_host_id_6
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - ruleName: infra_host_host_id_7
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: system.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        service.name:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - ruleName: infra_host_host_id_8
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: process.
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        service.name:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # opentelemetry host data from opentelemetry-collector (explicit type)
+    - ruleName: infra_host_host_id_9
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: newrelic.source
+          value: 'api.logs.otlp'
+        - attribute: newrelic.entity.type
+          value: 'host'
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        service.name:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+
+    # opentelemetry host data from New Relic sap solutions
+    - ruleName: infra_host_host_id_10
+      identifier: host.id
+      name: host.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: SAP_ETYPE
+          value: HOST
+      tags:
+        host.id:
+        host.name:
+        instrumentation.provider:
+        process.atp.enabled:
+
+    # Infrastructure event data via opentelemetry
+    - ruleName: infra_host_composite
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.node.name
+          - k8s.event.name
+      encodeIdentifierInGUID: true
+      name: k8s.event.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Node
+        # identifier attributes
+        - attribute: k8s.event.name
+          present: true
+        - attribute: k8s.node.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+
+    # Infrastructure event data via opentelemetry
+    - ruleName: infra_host_composite_2
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.node.name
+          - k8s.event.name
+      encodeIdentifierInGUID: true
+      name: k8s.event.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: Node
+        # identifier attributes
+        - attribute: k8s.event.name
+          present: true
+        - attribute: k8s.node.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+
+    # Prometheus node exporter entities
+    # AWS by taskArn
+    - ruleName: infra_host_taskarn
+      identifier: taskarn
+      name: taskarn
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: instanceid
+        present: false
+      - attribute: instance
+        present: false
+      - attribute: metricName
+        prefix: "node_"
+      - attribute: instrumentation.provider
+        value: "prometheus"
+      tags:
+        taskArn:
+        nodename:
+          entityTagNames: [hostname]
+        instrumentation.provider:
+
+    # AWS EC2 or On a host
+    - ruleName: infra_host_instance
+      identifier: instance
+      name: instance
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: metricName
+        prefix: "node_"
+      - attribute: instrumentation.provider
+        value: "prometheus"
+      tags:
+        instance:
+        instanceid:
+          entityTagNames: [host.id, instanceid]
+        nodename:
+          entityTagNames: [hostname]
+        instrumentation.provider:
+        process.atp.enabled:
+    # Logs received via Lambda/Firehose log forwarder and enriched by the Logs Pipeline. See: https://docs.newrelic.com/docs/logs/logs-context/aws-logs-in-context/
+    # AWS EC2 host synthesized via ElasticBeanstalk logs. Metrics Streams and API Polling entities use the instanceId to compute the entity.guid
+    - ruleName: infra_host_aws_ec2_InstanceId
+      identifier: aws.ec2.InstanceId
+      name: aws.ec2.InstanceId
+      encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          prefix: Log
+        - attribute: aws.Arn
+          present: true
+        - attribute: aws.ec2.InstanceId
+          present: true
+      tags:
+        aws.Arn:
+        # Used in AWSEC2.yml for entity relationship candidates
+        aws.ec2.InstanceId:
+        process.atp.enabled:
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
+  secondaryOwners:
+    - teamName: "K8s Agents"
+    #IDP should be secondary owner 
