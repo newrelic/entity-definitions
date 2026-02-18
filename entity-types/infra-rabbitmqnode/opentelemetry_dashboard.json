@@ -1,0 +1,145 @@
+{
+    "name": "RabbitMQ Node Metrics (OpenTelemetry)",
+    "pages": [
+        {
+            "name": "RabbitMQ Node Metrics",
+            "widgets": [
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 1,
+                        "row": 1,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Memory Usage",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.mem_used) OR latest(rabbitmq_process_resident_memory_bytes) AS 'Memory Used', latest(rabbitmq.node.mem_limit) OR latest(rabbitmq_resident_memory_limit_bytes) AS 'Memory Limit' WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 5,
+                        "row": 1,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Disk Space",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.disk_free) OR latest(rabbitmq_disk_space_available_bytes) AS 'Disk Free', latest(rabbitmq.node.disk_free_limit) OR latest(rabbitmq_disk_space_available_limit_bytes) AS 'Disk Free Limit' WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 9,
+                        "row": 1,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "File Descriptors",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.fd_used) OR latest(rabbitmq_process_open_fds) AS 'FD Used', latest(rabbitmq.node.fd_total) OR latest(rabbitmq_process_max_fds) AS 'FD Total' WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.billboard"
+                    },
+                    "layout": {
+                        "column": 1,
+                        "row": 4,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Alarms Status",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.mem_alarm) OR latest(rabbitmq_alarms_memory_used_watermark) AS 'Memory Alarm', latest(rabbitmq.node.disk_free_alarm) OR latest(rabbitmq_alarms_free_disk_space_watermark) AS 'Disk Alarm' WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "thresholds": [
+                            {
+                                "alertSeverity": "CRITICAL",
+                                "value": 1
+                            }
+                        ]
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 5,
+                        "row": 4,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Erlang Processes",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.proc_used) OR latest(rabbitmq_erlang_processes_used) AS 'Processes Used', latest(rabbitmq.node.proc_total) OR latest(rabbitmq_erlang_processes_limit) AS 'Processes Total' WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                },
+                {
+                    "visualization": {
+                        "id": "viz.line"
+                    },
+                    "layout": {
+                        "column": 9,
+                        "row": 4,
+                        "height": 3,
+                        "width": 4
+                    },
+                    "title": "Sockets",
+                    "rawConfiguration": {
+                        "nrqlQueries": [
+                            {
+                                "query": "FROM Metric SELECT latest(rabbitmq.node.sockets_used) OR latest(rabbitmq_process_open_tcp_sockets) AS 'Sockets Used', latest(rabbitmq.node.sockets_total) OR latest(rabbitmq_process_max_tcp_sockets) AS 'Sockets Total' WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                                "accountId": 0}
+                        ],
+                        "yAxisLeft": {
+                            "zero": true
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
