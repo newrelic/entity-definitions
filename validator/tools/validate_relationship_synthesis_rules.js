@@ -19,7 +19,7 @@ const maxRelationshipTtl = 72n * hoursInMillis; // 72 hours
  * NOTE: regexes can be used
  */
 const VALID_CONDITIONS = new Map([
-  ['APM Metrics', ['metricName', /metricName__.*/]],
+  ['APM Metrics', ['metricName', /metricName__.*/, 'metricTimesliceName', /metricTimesliceName__.*/]],
   ['Infrastructure Agent', []],
   ['Kubernetes Integration', []],
   ['AWS Integration', []],

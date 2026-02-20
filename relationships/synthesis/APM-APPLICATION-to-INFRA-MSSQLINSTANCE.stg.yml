@@ -50,7 +50,29 @@ relationships:
         lookupGuid:
           candidateCategory: MSSQLINSTANCE
           fields:
-            - field: dbHostname
+            - field: serverAddress
               attribute: metricName__4
             - field: serverPort
               attribute: metricName__5
+
+  - name: apmApplicationCallsInfraMSSQLInstanceTimesliceNameStaging
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricTimesliceName
+        regex: "^[Dd]atastore/instance/MSSQL/[^/]+/[0-9]+"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MSSQLINSTANCE
+          fields:
+            - field: serverAddress
+              attribute: metricTimesliceName__4
+            - field: serverPort
+              attribute: metricTimesliceName__5
