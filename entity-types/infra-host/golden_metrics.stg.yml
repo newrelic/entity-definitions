@@ -1,0 +1,239 @@
+agentVersion:
+  title: Agent Version
+  unit: STRING
+  queries:
+    newRelic:
+      select: latest(agentVersion)
+      from: SystemSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(otel.library.version)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    # prometheus:
+    #   select: latest(node_exporter_build_info{job="node"})
+    #   from: Metric
+    #   eventId: entity.guid
+    #   eventName: entity.name
+    # aws:
+    #   select: latest(agent.version)
+    #   from: ComputeSample
+    #   eventId: entityGuid
+    #   eventName: entityName
+    # azure:
+    #   select: latest(agent.version)
+    #   from: AzureVirtualMachineSample
+    #   eventId: entityGuid
+    #   eventName: entityName
+    # gcp:
+    #   select: latest(agent.version)
+    #   from: GcpVirtualMachineSample
+    #   eventId: entityGuid
+    #   eventName: entityName
+cpuUsage:
+  title: CPU usage (%)
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(cpuPercent)
+      from: SystemSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(1 - system.cpu.utilization) * 100
+      where: state = 'idle'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: (filter(sum(node_cpu_seconds_total), where mode != 'idle') * 100) / sum(node_cpu_seconds_total)
+      where: node_cpu_seconds_total != 0
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    aws:
+      select: average(aws.ec2.CPUUtilization)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.cpuUtilization.Average)
+      where: provider = 'Ec2Instance'
+      from: ComputeSample
+      eventId: entityGuid
+      eventName: entityName      
+    azure:
+      select: average(azure.compute.virtualmachines.PercentageCPU)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    azureSample:
+      select: average(cpuUsagePercent.Average)
+      from: AzureVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName
+    gcpSample:
+      select: average(instance.cpu.Utilization)
+      from: GcpVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName          
+    oci:
+      select: average(`oci.computeagent.cpu.utilization`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name 
+memoryUsage:
+  title: Memory usage (%)
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(memoryUsedPercent)
+      from: SystemSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(system.memory.utilization) * 100
+      where: state = 'used'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: (sum(node_memory_MemTotal_bytes) - sum(node_memory_MemAvailable_bytes)) * 100 / sum(node_memory_MemTotal_bytes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    oci:
+      select: average(`oci.computeagent.memory.utilization`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+storageUsage:
+  title: Storage usage (%)
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(diskUsedPercent)
+      from: StorageSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(system.filesystem.utilization) * 100
+      # squashfs will always have a utilization of 100%
+      where: type != 'squashfs'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: (sum(node_filesystem_size_bytes * 100) - sum(node_filesystem_avail_bytes * 100)) / sum(node_filesystem_size_bytes)
+      from: Metric
+      where: fstype != 'tmpfs'
+      eventId: entity.guid
+      eventName: entity.name
+networkTrafficTx:
+  title: Network transmit traffic (bytes/s)
+  unit: BYTES_PER_SECOND
+  queries:
+    newRelic:
+      select: average(transmitBytesPerSecond)
+      from: NetworkSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      # emulate a rate of 1 second in order to get bytes/second
+      select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND direction='transmit'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: sum(node_network_transmit_bytes_total) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND metricName='node_network_transmit_bytes_total'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    aws:
+      select: average(aws.ec2.NetworkOut)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.networkOutBytes.Average)
+      where: provider = 'Ec2Instance'
+      from: ComputeSample
+      eventId: entityGuid
+      eventName: entityName         
+    azure:
+      select: average(azure.compute.virtualmachines.NetworkOutTotal)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    azureSample:
+      select: average(networkOutBytes.Average)
+      from: AzureVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName
+    gcpSample:
+      select: average(instance.network.SentBytes)
+      from: GcpVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName        
+    oci:
+      select: average(`oci.computeagent.network.bytes.out`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name   
+networkTrafficRx:
+  title: Network receive traffic (bytes/s)
+  unit: BYTES_PER_SECOND
+  queries:
+    newRelic:
+      select: average(receiveBytesPerSecond)
+      from: NetworkSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      # emulate a rate of 1 second in order to get bytes/second
+      select: sum(system.network.io) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND direction='receive'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: sum(node_network_receive_bytes_total) / sum((endTimestamp - timestamp) / 1000)
+      where: device != 'lo' AND metricName='node_network_receive_bytes_total'
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    aws:
+      select: average(aws.ec2.NetworkIn)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.networkInBytes.Average)
+      where: provider = 'Ec2Instance'
+      from: ComputeSample
+      eventId: entityGuid
+      eventName: entityName       
+    azure:
+      select: average(azure.compute.virtualmachines.NetworkInTotal)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    azureSample:
+      select: average(networkInBytes.Average)
+      from: AzureVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName
+    gcpSample:
+      select: average(instance.network.ReceivedBytes)
+      from: GcpVirtualMachineSample
+      eventId: entityGuid
+      eventName: entityName      
+    oci:
+      select: average(`oci.computeagent.network.bytes.in`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
