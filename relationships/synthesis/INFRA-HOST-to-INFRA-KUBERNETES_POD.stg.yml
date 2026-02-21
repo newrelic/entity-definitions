@@ -10,10 +10,13 @@ relationships:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: host.guid
-          entityType:
-            value: HOST
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: host.name
+              attribute: nodeName
+            - field: k8s.clusterName
+              attribute: clusterName
       target:
         extractGuid:
           attribute: entityGuid
@@ -43,17 +46,24 @@ relationships:
       expires: PT2H
       relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: host.guid
-          entityType:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
             value: HOST
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: KUBERNETES_POD
           fields:
-            - field: k8s.node.name # node name of host
-              attribute: host.name # node name of pod
-            - field: k8s.namespace.name # namespace of host
-              attribute: k8s.namespace.name # namespace of pod
-            - field: k8s.cluster.name # cluster of host
-              attribute: k8s.cluster.name # cluster of pod
+            - field: k8s.nodeName # pod's node tag
+              attribute: host.name # host's name matches the node name
+            - field: k8s.namespaceName # pod's namespace tag
+              attribute: k8s.namespace.name # host's namespace
+            - field: k8s.clusterName # pod's cluster tag  
+              attribute: k8s.cluster.name # host's cluster name

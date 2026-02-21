@@ -5,24 +5,18 @@ relationships:
       - Kubernetes Integration
     conditions: 
       - attribute: eventType
-        anyOf: [ "K8sNamespaceSample" ]
+        anyOf: [ "K8sStatefulsetSample" ]
     relationship:
       expires: PT75M
       relationshipType: CONTAINS
       source:
-        buildGuid:
-          account:
-            lookup: true  
-          domain:
-            value: INFRA
-          type:
-            value: KUBERNETESCLUSTER
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - value: "k8s:cluster:"
-              - attribute: clusterName
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: KUBERNETES_NAMESPACE
+          fields:
+            - field: k8s.clusterName
+              attribute: clusterName
+            - field: k8s.namespaceName
+              attribute: namespaceName
       target:
         extractGuid:
           attribute: entityGuid
@@ -46,14 +40,15 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETESCLUSTER
+            value: KUBERNETES_NAMESPACE
           identifier:
             fragments:
               - attribute: k8s.cluster.name
+              - value: ":"
               - attribute: k8s.namespace.name       
             hashAlgorithm: FARM_HASH
       target:  
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: KUBERNETES_DAEMONSET
+            value: KUBERNETES_STATEFULSET
