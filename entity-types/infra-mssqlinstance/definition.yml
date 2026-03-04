@@ -25,6 +25,52 @@ synthesis:
         entityKey:
           ttl: P1D
 
+    - ruleName: infra_mssqlinstance_execution_plan
+      identifier: server.address
+      name: server.address
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: newrelic.event.type
+          value: SqlServerExecutionPlan
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicsqlserverreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+        sql.version:
+          entityTagName: database.version
+
+    - ruleName: infra_mssqlinstance_query_details
+      identifier: server.address
+      name: server.address
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: newrelic.event.type
+          value: SqlServerQueryDetails
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicsqlserverreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+        sql.version:
+          entityTagName: database.version
+
     - ruleName: infra_mssqlinstance_server_address
       identifier: server.address
       name: server.address
@@ -44,11 +90,12 @@ synthesis:
         telemetry.sdk.name:
           entityTagName: instrumentation.provider
         server.address:
-          entityTagName: server.address
+          entityTagNames: [server.address, endpoint]
         server.port:
           entityTagName: server.port
         sql.version:
           entityTagName: database.version
+
 goldenTags:
   - mssql.host
   - mssql.instance
