@@ -43,7 +43,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log SELECT uniqueCount(concat(host.name, Name, Node)) as 'Unique Plugins/Host/Node' WHERE source = 'newposHeartbeat' AND State='Zombie' AND store.number = '{{tags.store.number}}' FACET hostname, Name as 'Plugin name' LIMIT MAX "
+                "query": "FROM Log SELECT filter(uniqueCount(concat(host.name, Name, Node)), WHERE State = 'Zombie') as 'Unique Plugins/Host/Node' WHERE source = 'newposHeartbeat' AND store.number = '{{tags.store.number}}' FACET Name as 'Plugin name' LIMIT MAX "
               }
             ]
           }
@@ -123,7 +123,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(*) as 'Application Restarts' FROM appRestart where store.number = '{{tags.store.number}}' FACET cases(WHERE restartCase = 'rfmPackage' AS 'RFM/Binary update', WHERE restartCase = 'logOnOff' AS 'Windows logoff', WHERE restartCase = 'automatedReboot' AS 'Automated Reboot', WHERE restartCase = 'remoteReboot' as 'Remote restart command', WHERE restartCase = 'unknown' as 'Unknown', WHERE restartCase = 'deviceReboot' as 'Device Reboot'), host.name LIMIT MAX "
+                "query": "SELECT count(*) as 'Application Restarts' FROM appRestart where store.number = '{{tags.store.number}}' FACET cases(WHERE restartCase = 'rfmPackage' AS 'RFM/Binary update', WHERE restartCase = 'logOnOff' AS 'Windows logoff', WHERE restartCase = 'automatedReboot' AS 'Automated Reboot', WHERE restartCase = 'remoteReboot' as 'Remote restart command', WHERE restartCase = 'unknown' as 'Unknown', WHERE restartCase = 'deviceReboot' as 'Device Reboot'), capture(host.name, r'.{7}(?P<dt>.{3}).*') as 'Device Type' LIMIT MAX "
               }
             ]
           }
