@@ -45,17 +45,29 @@ synthesis:
         entityTagName: language
       telemetry.sdk.version:
 
-    # telemetry with user opt-in for otel collector internal telemetry
+    # Test: override instrumentation.name with user input value
   - ruleName: ext_service_otel_collector
     identifier: service.name
     name: service.name
     encodeIdentifierInGUID: true
     conditions:
     - attribute: newrelic.service.type # User Opt-In Tag
-      value: opentelemetry-collector
+      value: otel-collector
     tags:
-       newrelic.service.type:
-        entityTagName: instrumentation.provider
+      newrelic.service.type:
+        entityTagName: instrumentation.name
+
+    # Test: auto-tag
+  - ruleName: ext_service_otel_collector_2
+    identifier: service.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: metricName
+      prefix: otelcol_
+    tags:
+      service.name:
+        entityTagName: otelCollector
 
     # telemetry from opentelemetry provider without instrumentation.provider
   - ruleName: ext_service_service_name_2
