@@ -1,0 +1,169 @@
+{
+  "name": "RedPanda Broker (Infrastructure Agent)",
+  "description": "Performance and health metrics for a single RedPanda broker, collected via New Relic Infrastructure Agent with nri-prometheus.",
+  "pages": [
+    {
+      "name": "Broker Overview",
+      "widgets": [
+        {
+          "title": "Broker details",
+          "layout": { "column": 1, "row": 1, "height": 1, "width": 12 },
+          "visualization": { "id": "viz.table" },
+          "rawConfiguration": {
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT latest(redpanda_cluster_brokers) AS 'Brokers', latest(redpanda_cluster_topics) AS 'Topics', latest(redpanda_cluster_partitions) AS 'Partitions', latest(redpanda_cluster_unavailable_partitions) AS 'Unavailable partitions' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_cluster_brokers' FACET targetName AS 'Target', host.hostname AS 'Host' LIMIT 1"
+            }]
+          }
+        },
+        {
+          "title": "Bytes received per second (Kafka API)",
+          "layout": { "column": 1, "row": 2, "height": 3, "width": 6 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "chartStyles": { "gradient": { "enabled": true }, "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT rate(sum(redpanda_rpc_received_bytes), 1 second) AS 'Bytes received/sec' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_rpc_received_bytes' AND redpanda_server = 'kafka' TIMESERIES AUTO"
+            }],
+            "units": { "unit": "BYTES_PER_SECOND" }
+          }
+        },
+        {
+          "title": "Bytes sent per second (Kafka API)",
+          "layout": { "column": 7, "row": 2, "height": 3, "width": 6 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "chartStyles": { "gradient": { "enabled": true }, "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT rate(sum(redpanda_rpc_sent_bytes), 1 second) AS 'Bytes sent/sec' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_rpc_sent_bytes' AND redpanda_server = 'kafka' TIMESERIES AUTO"
+            }],
+            "units": { "unit": "BYTES_PER_SECOND" }
+          }
+        },
+        {
+          "title": "Unavailable partitions",
+          "layout": { "column": 1, "row": 5, "height": 3, "width": 4 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "chartStyles": { "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT latest(redpanda_cluster_unavailable_partitions) AS 'Unavailable partitions' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_cluster_unavailable_partitions' TIMESERIES AUTO"
+            }]
+          }
+        },
+        {
+          "title": "Partitions moving to / from node",
+          "layout": { "column": 5, "row": 5, "height": 3, "width": 4 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "chartStyles": { "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT latest(redpanda_cluster_partition_moving_to_node) AS 'Moving to node', latest(redpanda_cluster_partition_moving_from_node) AS 'Moving from node' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName IN ('redpanda_cluster_partition_moving_to_node', 'redpanda_cluster_partition_moving_from_node') TIMESERIES AUTO"
+            }]
+          }
+        },
+        {
+          "title": "Topics & partitions",
+          "layout": { "column": 9, "row": 5, "height": 3, "width": 4 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "chartStyles": { "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT latest(redpanda_cluster_topics) AS 'Topics', latest(redpanda_cluster_partitions) AS 'Partitions' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName IN ('redpanda_cluster_topics', 'redpanda_cluster_partitions') TIMESERIES AUTO"
+            }]
+          }
+        },
+        {
+          "title": "Active connections (Kafka API)",
+          "layout": { "column": 1, "row": 8, "height": 3, "width": 4 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "chartStyles": { "gradient": { "enabled": true }, "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT sum(redpanda_rpc_active_connections) AS 'Active connections' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_rpc_active_connections' AND redpanda_server = 'kafka' TIMESERIES AUTO"
+            }]
+          }
+        },
+        {
+          "title": "RPC request errors per second",
+          "layout": { "column": 5, "row": 8, "height": 3, "width": 4 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "chartStyles": { "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT rate(sum(redpanda_rpc_request_errors_total), 1 second) AS 'RPC errors/sec' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_rpc_request_errors_total' TIMESERIES AUTO FACET redpanda_server"
+            }]
+          }
+        },
+        {
+          "title": "Broker count in cluster",
+          "layout": { "column": 9, "row": 8, "height": 3, "width": 4 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "chartStyles": { "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT latest(redpanda_cluster_brokers) AS 'Brokers' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_cluster_brokers' TIMESERIES AUTO"
+            }]
+          }
+        },
+        {
+          "title": "CPU busy time rate (per second)",
+          "layout": { "column": 1, "row": 11, "height": 3, "width": 6 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "chartStyles": { "gradient": { "enabled": true }, "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT rate(sum(redpanda_cpu_busy_seconds_total), 1 second) AS 'CPU busy (s/s)' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_cpu_busy_seconds_total' TIMESERIES AUTO FACET shard"
+            }]
+          }
+        },
+        {
+          "title": "Memory available per shard (bytes)",
+          "layout": { "column": 7, "row": 11, "height": 3, "width": 6 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "chartStyles": { "gradient": { "enabled": true }, "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT latest(redpanda_memory_available_memory) AS 'Available memory' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_memory_available_memory' TIMESERIES AUTO FACET shard"
+            }],
+            "units": { "unit": "BYTES" }
+          }
+        },
+        {
+          "title": "I/O read operations per second",
+          "layout": { "column": 1, "row": 14, "height": 3, "width": 6 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "chartStyles": { "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT rate(sum(redpanda_io_queue_total_read_ops), 1 second) AS 'Read ops/sec' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_io_queue_total_read_ops' TIMESERIES AUTO FACET class"
+            }]
+          }
+        },
+        {
+          "title": "I/O write operations per second",
+          "layout": { "column": 7, "row": 14, "height": 3, "width": 6 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "chartStyles": { "lineInterpolation": "smooth" },
+            "nrqlQueries": [{
+              "accountId": 0,
+              "query": "SELECT rate(sum(redpanda_io_queue_total_write_ops), 1 second) AS 'Write ops/sec' FROM Metric WHERE instrumentation.name = 'nri-prometheus' AND metricName = 'redpanda_io_queue_total_write_ops' TIMESERIES AUTO FACET class"
+            }]
+          }
+        }
+      ]
+    }
+  ]
+}
