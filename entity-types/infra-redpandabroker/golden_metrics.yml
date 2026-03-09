@@ -1,0 +1,103 @@
+# Golden metrics for RedPanda Broker entity
+# Source: RedPanda /public_metrics endpoint (redpanda_ prefix)
+# Collection: OTel Collector with Prometheus receiver → OTLP → New Relic
+
+unavailablePartitions:
+  title: Unavailable partitions
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(redpanda_cluster_unavailable_partitions)
+      from: Metric
+      where: metricName = 'redpanda_cluster_unavailable_partitions'
+      eventId: entity.guid
+
+brokerCount:
+  title: Brokers in cluster
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(redpanda_cluster_brokers)
+      from: Metric
+      where: metricName = 'redpanda_cluster_brokers'
+      eventId: entity.guid
+
+partitionCount:
+  title: Total partitions
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(redpanda_cluster_partitions)
+      from: Metric
+      where: metricName = 'redpanda_cluster_partitions'
+      eventId: entity.guid
+
+topicCount:
+  title: Total topics
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(redpanda_cluster_topics)
+      from: Metric
+      where: metricName = 'redpanda_cluster_topics'
+      eventId: entity.guid
+
+bytesReceivedPerSecond:
+  title: Bytes received per second (Kafka API)
+  unit: BYTES_PER_SECOND
+  queries:
+    opentelemetry:
+      select: rate(sum(redpanda_rpc_received_bytes), 1 second)
+      from: Metric
+      where: metricName = 'redpanda_rpc_received_bytes' AND redpanda_server = 'kafka'
+      eventId: entity.guid
+
+bytesSentPerSecond:
+  title: Bytes sent per second (Kafka API)
+  unit: BYTES_PER_SECOND
+  queries:
+    opentelemetry:
+      select: rate(sum(redpanda_rpc_sent_bytes), 1 second)
+      from: Metric
+      where: metricName = 'redpanda_rpc_sent_bytes' AND redpanda_server = 'kafka'
+      eventId: entity.guid
+
+activeConnections:
+  title: Active connections (Kafka API)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(redpanda_rpc_active_connections)
+      from: Metric
+      where: metricName = 'redpanda_rpc_active_connections' AND redpanda_server = 'kafka'
+      eventId: entity.guid
+
+requestErrorsPerSecond:
+  title: RPC request errors per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: rate(sum(redpanda_rpc_request_errors_total), 1 second)
+      from: Metric
+      where: metricName = 'redpanda_rpc_request_errors_total'
+      eventId: entity.guid
+
+cpuBusySeconds:
+  title: CPU busy time (seconds/s)
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: rate(sum(redpanda_cpu_busy_seconds_total), 1 second)
+      from: Metric
+      where: metricName = 'redpanda_cpu_busy_seconds_total'
+      eventId: entity.guid
+
+memoryAvailable:
+  title: Available memory (bytes)
+  unit: BYTES
+  queries:
+    opentelemetry:
+      select: sum(redpanda_memory_available_memory)
+      from: Metric
+      where: metricName = 'redpanda_memory_available_memory'
+      eventId: entity.guid

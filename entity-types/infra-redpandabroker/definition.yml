@@ -1,0 +1,60 @@
+domain: INFRA
+type: REDPANDABROKER
+
+synthesis:
+  rules:
+  # Matches metrics scraped from RedPanda /public_metrics via OTel Prometheus receiver
+  # server.address is set from the Prometheus scrape target (instance label)
+  # redpanda.cluster.name must be set as a resource attribute in the OTel collector config
+  - ruleName: infra_redpandabroker_otel_metrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - server.address
+      - redpanda.cluster.name
+    compositeName:
+      fragments:
+      - attribute: server.address
+      - value: " ("
+      - attribute: redpanda.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: server.address
+      present: true
+    - attribute: redpanda.cluster.name
+      present: true
+    tags:
+      instrumentation.provider:
+      redpanda.cluster.name:
+      server.address:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      k8s.pod.name:
+        ttl: P1D
+      k8s.node.name:
+        ttl: P1D
+      k8s.pod.uid:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+
+goldenTags:
+- redpanda.cluster.name
+- server.address
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "Community"
