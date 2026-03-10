@@ -1,0 +1,51 @@
+relationships:
+  - name: k8sPodContainsExtNginxIngressController
+    version: "1"
+    origins:
+      - Prometheus
+    conditions:
+      - attribute: metricName
+        startsWith: nginx_
+      - attribute: cluster_name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: KUBERNETES_POD
+          fields:
+            - field: k8s.clusterName
+              attribute: cluster_name
+            - field: k8s.namespaceName
+              attribute: namespace
+            - field: k8s.podName
+              attribute: pod
+      target:
+        extractGuid:
+          attribute: entity.guid
+  - name: k8sPodContainsExtNginxIngressControllerOtel
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        startsWith: nginx_
+      - attribute: k8s.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: KUBERNETES_POD
+          fields:
+            - field: k8s.clusterName
+              attribute: k8s.cluster.name
+            - field: k8s.namespaceName
+              attribute: k8s.namespace.name
+            - field: k8s.podName
+              attribute: k8s.pod.name
+      target:
+        extractGuid:
+          attribute: entity.guid
