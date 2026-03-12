@@ -5,7 +5,7 @@ relationships:
       - Kubernetes Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "K8sPodSample" ]
+        anyOf: ["K8sPodSample"]
     relationship:
       expires: PT75M
       relationshipType: HOSTS
@@ -16,25 +16,22 @@ relationships:
             - field: hostName # hostname of host
               attribute: nodeName # node hostname from pod
       target:
-        lookupGuid:
-          candidateCategory: KUBERNETES_POD
-          fields:
-            - field: k8s.cluster.name # cluster of pod
-              attribute: clusterName # cluster from K8sPodSample
-            - field: k8s.node.name # node of pod
-              attribute: nodeName # node from K8sPodSample
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD
   - name: otelKsmK8sHostHostsPod
     # use kube-state-metrics system metric
     version: "1"
-    origins: 
+    origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
         startsWith: system.
       - attribute: eventType
-        anyOf: [ "Metric" ]
+        anyOf: ["Metric"]
       - attribute: newrelic.source
-        anyOf: [ "api.metrics.otlp" ]
+        anyOf: ["api.metrics.otlp"]
       # if service.name is present, it's a service, not a host
       - attribute: service.name
         present: false
@@ -50,10 +47,7 @@ relationships:
         extractGuid:
           attribute: entity.guid
       target:
-        lookupGuid:
-          candidateCategory: KUBERNETES_POD
-          fields:
-            - field: k8s.node.name # node name of host
-              attribute: host.name # hostname of pod
-            - field: k8s.cluster.name # cluster of host
-              attribute: k8s.cluster.name # cluster of pod
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD
