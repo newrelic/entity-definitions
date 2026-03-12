@@ -415,6 +415,50 @@ synthesis:
         instrumentation.provider:
         process.atp.enabled:
 
+    # AWS ECS EC2 host via OpenTelemetry awsecscontainermetricsreceiver
+    - ruleName: infra_host_otel_ecs_ec2
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: newrelic.source
+          value: api.metrics.otlp
+        - attribute: cloud.platform
+          value: aws_ecs
+        - attribute: aws.ecs.launchtype
+          value: ec2
+        - attribute: host.id
+          present: true
+        - attribute: host.name
+          present: true
+      tags:
+        # Host attributes
+        host.id:
+        host.name:
+        host.type:
+        host.image.id:
+        # Cloud attributes
+        cloud.provider:
+        cloud.platform:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        # ECS attributes
+        aws.ecs.cluster.name:
+          entityTagName: aws.ecs.clusterName
+        aws.ecs.cluster.arn:
+          entityTagName: aws.ecs.clusterArn
+        aws.ecs.launchtype:
+          entityTagName: aws.ecs.launchType
+        # Instrumentation
+        instrumentation.provider:
+
     # Infrastructure event data via opentelemetry
     - ruleName: infra_host_composite
       compositeIdentifier:
