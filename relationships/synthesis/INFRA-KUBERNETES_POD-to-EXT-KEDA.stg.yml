@@ -1,0 +1,55 @@
+relationships:
+  - name: k8sPodContainsExtKeda
+    version: "1"
+    origins:
+      - Prometheus
+    conditions:
+      - attribute: metricName
+        startsWith: keda_
+      - attribute: app_kubernetes_io_name
+        anyOf: ["keda-operator"]
+      - attribute: cluster_name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: KUBERNETES_POD
+          fields:
+            - field: k8s.clusterName
+              attribute: cluster_name
+            - field: k8s.namespaceName
+              attribute: namespace
+            - field: k8s.podName
+              attribute: pod
+      target:
+        extractGuid:
+          attribute: entity.guid
+  - name: k8sPodContainsExtKedaOtel
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        startsWith: keda_
+      - attribute: k8s.pod.label.app.kubernetes.io/name
+        anyOf: ["keda-operator"]
+      - attribute: k8s.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: KUBERNETES_POD
+          fields:
+            - field: k8s.clusterName
+              attribute: k8s.cluster.name
+            - field: k8s.namespaceName
+              attribute: k8s.namespace.name
+            - field: k8s.podName
+              attribute: k8s.pod.name
+      target:
+        extractGuid:
+          attribute: entity.guid
