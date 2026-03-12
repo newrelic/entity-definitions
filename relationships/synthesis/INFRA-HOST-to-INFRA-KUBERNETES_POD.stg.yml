@@ -5,15 +5,16 @@ relationships:
       - Kubernetes Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "K8sPodSample" ]
+        anyOf: ["K8sPodSample"]
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: host.guid
-          entityType:
-            value: HOST
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostName # hostname of host
+              attribute: nodeName # node hostname from pod
       target:
         extractGuid:
           attribute: entityGuid
@@ -22,15 +23,15 @@ relationships:
   - name: otelKsmK8sHostHostsPod
     # use kube-state-metrics system metric
     version: "1"
-    origins: 
+    origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
         startsWith: system.
       - attribute: eventType
-        anyOf: [ "Metric" ]
+        anyOf: ["Metric"]
       - attribute: newrelic.source
-        anyOf: [ "api.metrics.otlp" ]
+        anyOf: ["api.metrics.otlp"]
       # if service.name is present, it's a service, not a host
       - attribute: service.name
         present: false
@@ -40,20 +41,13 @@ relationships:
       - attribute: k8s.cluster.name
         present: true
     relationship:
-      expires: PT2H
+      expires: PT75M
       relationshipType: HOSTS
       source:
         extractGuid:
-          attribute: host.guid
-          entityType:
-            value: HOST
+          attribute: entity.guid
       target:
-        lookupGuid:
-          candidateCategory: KUBERNETES_POD
-          fields:
-            - field: k8s.node.name # node name of host
-              attribute: host.name # node name of pod
-            - field: k8s.namespace.name # namespace of host
-              attribute: k8s.namespace.name # namespace of pod
-            - field: k8s.cluster.name # cluster of host
-              attribute: k8s.cluster.name # cluster of pod
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD
