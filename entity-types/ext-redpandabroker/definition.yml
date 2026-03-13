@@ -1,0 +1,101 @@
+domain: EXT
+type: REDPANDABROKER
+
+synthesis:
+  rules:
+
+  # Rule 1: OTel Collector + Prometheus receiver
+  # server.address is auto-set from the Prometheus scrape target
+  # redpanda.cluster.name must be set as a resource attribute in the OTel collector config
+  - ruleName: ext_redpandabroker_otel_metrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - server.address
+      - redpanda.cluster.name
+    compositeName:
+      fragments:
+      - attribute: server.address
+      - value: " ("
+      - attribute: redpanda.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: server.address
+      present: true
+    - attribute: redpanda.cluster.name
+      present: true
+    tags:
+      instrumentation.provider:
+      redpanda.cluster.name:
+      server.address:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      k8s.pod.name:
+        ttl: P1D
+      k8s.node.name:
+        ttl: P1D
+      k8s.pod.uid:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+
+  # Rule 2: New Relic Infrastructure Agent + nri-prometheus
+  # targetName = host:port of the scrape target (set automatically by nri-prometheus)
+  # host.hostname = hostname reported by the infrastructure agent
+  - ruleName: ext_redpandabroker_nri_prometheus_metrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - targetName
+      - host.hostname
+    compositeName:
+      fragments:
+      - attribute: targetName
+      - value: " ("
+      - attribute: host.hostname
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: newRelic
+    - attribute: instrumentation.name
+      value: nri-prometheus
+    - attribute: targetName
+      present: true
+    - attribute: metricName
+      prefix: redpanda_
+    tags:
+      instrumentation.provider:
+      instrumentation.name:
+      targetName:
+      host.hostname:
+      scrapedTargetURL:
+      host.linuxDistribution:
+        ttl: P1D
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+  newRelic:
+    template: newrelic_dashboard.json
+
+goldenTags:
+- redpanda.cluster.name
+- server.address
+- targetName
+- host.hostname
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"
