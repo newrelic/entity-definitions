@@ -1,13 +1,11 @@
 relationships:
-  - name: k8sPodContainsExtKeda
+  - name: k8sPodContainsExtNginxIngressController
     version: "1"
     origins:
       - Prometheus
     conditions:
       - attribute: metricName
-        startsWith: keda_
-      - attribute: app_kubernetes_io_name
-        anyOf: ["keda-operator"]
+        startsWith: nginx_
       - attribute: cluster_name
         present: true
     relationship:
@@ -26,15 +24,13 @@ relationships:
       target:
         extractGuid:
           attribute: entity.guid
-  - name: k8sPodContainsExtKedaOtel
+  - name: k8sPodContainsExtNginxIngressControllerOtel
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        startsWith: keda_
-      - attribute: k8s.pod.label.app.kubernetes.io/name
-        anyOf: ["keda-operator"]
+        startsWith: nginx_
       - attribute: k8s.cluster.name
         present: true
     relationship:
