@@ -98,6 +98,55 @@ synthesis:
       host.id:
       host.name:
 
+  # AWS ECS container metrics via OpenTelemetry awsecscontainermetricsreceiver
+  - ruleName: infra_container_otel_ecs
+    identifier: container.id
+    name: container.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # All metrics from the receiver starts with the 'container.' prefix.
+      - attribute: metricName
+        prefix: container.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: cloud.platform
+        value: aws_ecs
+    tags:
+      # Container attributes
+      container.image.name:
+      container.image.tag:
+      container.name:
+        entityTagName: docker.name
+      # AWS ECS attributes
+      aws.ecs.cluster.name:
+        entityTagName: docker.ecsClusterName
+      aws.ecs.cluster.arn:
+        entityTagName: docker.ecsClusterArn
+      aws.ecs.service.name:
+        entityTagName: docker.ecsServiceName
+      aws.ecs.task.id:
+        entityTagName: docker.ecsTaskId
+      aws.ecs.task.arn:
+        entityTagName: docker.ecsTaskArn
+      aws.ecs.task.family:
+        entityTagName: docker.ecsTaskDefinitionFamily
+      aws.ecs.task.revision:
+        entityTagName: docker.ecsTaskDefinitionVersion
+      aws.ecs.launchtype:
+        entityTagName: docker.ecsLaunchType
+      aws.ecs.docker.name:
+        entityTagName: docker.dockerName
+      aws.ecs.container.know_status:
+        entityTagName: container.state
+      # Cloud attributes
+      cloud.provider:
+      cloud.platform:
+      cloud.account.id:
+      cloud.region:
+      cloud.availability_zone:
+
   # kube-state-metrics data via opentelemetry prometheusReceiver
   - ruleName: infra_container_composite
     compositeIdentifier:
