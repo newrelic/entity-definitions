@@ -23,31 +23,26 @@ relationships:
           entityType:
             value: KUBERNETES_POD
   - name: otelKsmK8sHostHostsPod
-    # use kube-state-metrics system metric
+    # use kube-state-metrics kube_pod_info metric
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        startsWith: system.
-      - attribute: eventType
-        anyOf: ["Metric"]
-      - attribute: newrelic.source
-        anyOf: ["api.metrics.otlp"]
-      # if service.name is present, it's a service, not a host
-      - attribute: service.name
-        present: false
-      # if container.id is present, it's a container, not a host
-      - attribute: container.id
-        present: false
-      - attribute: k8s.cluster.name
+        anyOf: ["kube_pod_info"]
+      - attribute: k8s.node.name
         present: true
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: entity.guid
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: host.name
+              attribute: k8s.node.name
+            - field: k8s.clusterName
+              attribute: k8s.cluster.name
       target:
         extractGuid:
           attribute: entityGuid
