@@ -160,15 +160,26 @@ relationships:
         present: true
       - attribute: broker.endpoint
         regex: ".*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+      - attribute: entity.type
+        anyOf: [ "KAFKABROKER" ]
+      - attribute: k8s.pod.name # condition to exclude k8s pod based hosts
+        present: false
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        lookupGuid:
-          candidateCategory: HOST
-          fields:
-            - field: hostId
-              attribute: host.id
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
@@ -191,15 +202,26 @@ relationships:
         present: true
       - attribute: broker.endpoint
         regex: "^(?!.*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)).*$"
+      - attribute: entity.type
+        anyOf: [ "KAFKABROKER" ]
+      - attribute: k8s.pod.name # condition to exclude k8s pod based hosts
+        present: false
     relationship:
       expires: PT75M
       relationshipType: MEASURES
       source:
-        lookupGuid:
-          candidateCategory: HOST
-          fields:
-            - field: hostId
-              attribute: host.id
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
@@ -220,15 +242,26 @@ relationships:
         present: true
       - attribute: broker.endpoint
         present: false
+      - attribute: entity.type
+        anyOf: [ "KAFKABROKER" ]
+      - attribute: k8s.pod.name # condition to exclude k8s pod based hosts
+        present: false
     relationship:
       expires: PT75M
       relationshipType: MEASURES
       source:
-        lookupGuid:
-          candidateCategory: HOST
-          fields:
-            - field: hostId
-              attribute: host.id
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
