@@ -1,0 +1,38 @@
+throughput:
+  title: Throughput (invocations per minute)
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    opentelemetry:
+      select: rate(count(*), 1 minute) AS 'Throughput'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: rate(count(apm.service.transaction.duration), 1 minute) AS 'Throughput'
+      eventName: appName
+
+responseTimeMs:
+  title: Latency
+  unit: MS
+  queries:
+    opentelemetry:
+      select: average(duration.ms) AS 'Latency (ms)'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: average(apm.service.transaction.duration) * 1000 AS 'Response time (ms)'
+      eventName: appName
+
+errorRate:
+  title: Error rate
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: percentage(count(*), WHERE otel.status_code = 'ERROR') AS 'Error %'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: (count(apm.service.error.count) / count(apm.service.transaction.duration)) * 100 AS 'Error %'
+      eventName: appName
