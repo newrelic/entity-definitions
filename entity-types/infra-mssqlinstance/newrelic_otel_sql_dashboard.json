@@ -316,37 +316,9 @@
           }
         },
         {
-          "title": "Buffer Pool Distribution",
-          "layout": {
-            "column": 1,
-            "row": 18,
-            "width": 6,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.pie"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": true
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT latest(sqlserver.database.bufferpool.size_per_database_bytes) / 1024 / 1024 AS 'Buffer Pool (MB)' FROM Metric FACET database_name SINCE 1 hour ago",
-                "accountId": 0}
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
           "title": "Database Capacity Planning",
           "layout": {
-            "column": 7,
+            "column": 1,
             "row": 18,
             "width": 6,
             "height": 3
@@ -367,49 +339,6 @@
             "nrqlQueries": [
               {
                 "query": "SELECT latest(sqlserver.database.size.total_mb) AS 'Current Size (MB)', (latest(sqlserver.database.max_disk_size_bytes) / 1024 / 1024) AS 'Max Size (MB)', latest(sqlserver.database.log.transaction_growth) AS 'Growth Events' FROM Metric FACET database_name SINCE 24 hours ago TIMESERIES 1 hour",
-                "accountId": 0}
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "layout": {
-            "column": 1,
-            "row": 21,
-            "width": 12,
-            "height": 1
-          },
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "rawConfiguration": {
-            "text": "# Queries"
-          },
-          "title": ""
-        },
-        {
-          "title": "Top N slow queries",
-          "layout": {
-            "column": 1,
-            "row": 22,
-            "width": 12,
-            "height": 5
-          },
-          "visualization": {
-            "id": "viz.table"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "initialSorting": {
-              "direction": "desc"
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT  latest(last_execution_timestamp) as 'lastActiveTime',\n    latest(query_id) AS 'queryId',\n    latest(database_name) AS 'databaseName',\n    latest(query_text) AS 'queryText',\n    latest(sqlserver.slowquery.historical_execution_count) as 'historicalTotalCalls',\n    if (sum(sqlserver.slowquery.interval_execution_count) < latest(sqlserver.slowquery.historical_execution_count), sum(sqlserver.slowquery.interval_execution_count), latest(sqlserver.slowquery.historical_execution_count)) as 'intervalTotalCalls', \n    average(sqlserver.slowquery.interval_avg_elapsed_time_ms) as 'intervalAvgElapsedTime',\n    latest(sqlserver.slowquery.historical_avg_elapsed_time_ms) as 'historicalAvgElapsedTime'\n  FROM Metric\n  WHERE metricName in ('sqlserver.slowquery.historical_avg_elapsed_time_ms', 'sqlserver.slowquery.interval_avg_elapsed_time_ms', \n'sqlserver.slowquery.interval_execution_count', 'sqlserver.slowquery.historical_execution_count', 'sqlserver.slowquery.avg_rows_processed')\n  FACET query_id",
                 "accountId": 0}
             ],
             "platformOptions": {
