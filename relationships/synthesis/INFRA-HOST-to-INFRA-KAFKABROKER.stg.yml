@@ -14,6 +14,8 @@ relationships:
       # Local detection - broker address is localhost
       - attribute: displayName
         regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
     relationship:
       expires: PT75M
       relationshipType: HOSTS
@@ -49,6 +51,8 @@ relationships:
       # Local detection - broker address is localhost
       - attribute: displayName
         regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:.*)$"
+      - attribute: podName # condition to exclude k8s hosts
+        present: false
     relationship:
       expires: PT75M
       relationshipType: HOSTS
@@ -86,7 +90,7 @@ relationships:
         regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
     relationship:
       expires: PT75M
-      relationshipType: MANAGES
+      relationshipType: MEASURES
       source:
         buildGuid:
           account:
@@ -120,7 +124,7 @@ relationships:
         regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
     relationship:
       expires: PT75M
-      relationshipType: MANAGES
+      relationshipType: MEASURES
       source:
         buildGuid:
           account:
@@ -139,8 +143,9 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KAFKABROKER
-    # Local scenario: Kafka broker running on the same host with OpenTelemetry
-  - name: hostHostsOtelKafkaBroker
+
+  # Local scenario: Kafka broker running on the same host with OpenTelemetry
+  - name: hostMonitorsOtelKafkaBrokerStgOverride1
     version: "1"
     origins:
       - OpenTelemetry
@@ -149,14 +154,16 @@ relationships:
         anyOf: [ "Metric" ]
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
-      - attribute: kafka.broker.name
-        present: true
       - attribute: host.id
         present: true
       - attribute: broker.endpoint
         present: true
       - attribute: broker.endpoint
-        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)(:|$)"
+        regex: ".*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+      - attribute: entity.type
+        anyOf: [ "KAFKABROKER" ]
+      - attribute: k8s.pod.name # condition to exclude k8s pod based hosts
+        present: false
     relationship:
       expires: PT75M
       relationshipType: HOSTS
@@ -179,16 +186,14 @@ relationships:
           entityType:
             value: KAFKABROKER
 
-# Remote scenario: Host monitors remote Kafka broker with OpenTelemetry when broker.endpoint is present
-  - name: hostMonitorsOtelKafkaBroker1
+  # Remote scenario: Host monitors remote Kafka broker with OpenTelemetry when broker.endpoint is present
+  - name: hostMonitorsOtelKafkaBrokerStgOverride2
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: kafka.broker.name
-        present: true
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
       - attribute: host.id
@@ -196,10 +201,14 @@ relationships:
       - attribute: broker.endpoint
         present: true
       - attribute: broker.endpoint
-        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+        regex: "^(?!.*(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)).*$"
+      - attribute: entity.type
+        anyOf: [ "KAFKABROKER" ]
+      - attribute: k8s.pod.name # condition to exclude k8s pod based hosts
+        present: false
     relationship:
       expires: PT75M
-      relationshipType: MANAGES
+      relationshipType: MEASURES
       source:
         buildGuid:
           account:
@@ -219,27 +228,27 @@ relationships:
           entityType:
             value: KAFKABROKER
 
-  # When broker.endpoint is not present: Host monitors Kafka broker with OpenTelemetry
-  - name: hostMonitorsOtelKafkaBroker2
+  # Host measures Kafka broker with OpenTelemetry when broker.endpoint is not present
+  - name: hostMonitorsOtelKafkaBrokerStgOverride3
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: kafka.broker.name
-        present: true
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
       - attribute: host.id
         present: true
       - attribute: broker.endpoint
         present: false
-      - attribute: broker.id
-        present: true
+      - attribute: entity.type
+        anyOf: [ "KAFKABROKER" ]
+      - attribute: k8s.pod.name # condition to exclude k8s pod based hosts
+        present: false
     relationship:
       expires: PT75M
-      relationshipType: HOSTS
+      relationshipType: MEASURES
       source:
         buildGuid:
           account:
@@ -258,4 +267,3 @@ relationships:
           attribute: entity.guid
           entityType:
             value: KAFKABROKER
-

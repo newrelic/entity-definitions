@@ -64,23 +64,23 @@ fileDescriptorsTotalUsed:
       eventId: entity.guid
       eventName: entity.name
 
-erlangProcessesUsed:
-  title: Erlang processes used
+averageErlangProcessesWaiting:
+  title: Average Erlang processes waiting
   unit: COUNT
   queries:
     newRelic:
-      select: latest(node.averageErlangProcessesWaiting)
+      select: average(node.averageErlangProcessesWaiting)
       from: RabbitmqNodeSample
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(rabbitmq.node.proc_used)
+      select: average(rabbitmq.node.run_queue)
       from: Metric
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
       eventName: entity.name
     prometheus:
-      select: latest(rabbitmq_erlang_processes_used)
+      select: average(rabbitmq_erlang_scheduler_run_queue)
       from: Metric
       where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
       eventId: entity.guid

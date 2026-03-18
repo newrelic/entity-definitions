@@ -1,0 +1,32 @@
+relationships:
+  - name: otelKafkaClusterContainsKafkaBroker
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKACLUSTER
+          identifier:
+            fragments:
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type

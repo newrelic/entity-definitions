@@ -34,7 +34,8 @@ const VALID_CONDITIONS = new Map([
   ['Event API', []],
   ['AIOPS', []],
   ['Browser Monitoring', []],
-  ['Mobile Monitoring', []]
+  ['Mobile Monitoring', []],
+  ['Network Monitoring', []]
 ]);
 
 let ALL_RELATIONSHIP_SYNTHESIS;
