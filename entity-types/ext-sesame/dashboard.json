@@ -1,47 +1,192 @@
 {
-  "name": "Sesame Monitoring",
+  "name": "Sesame Entity",
   "description": null,
   "pages": [
     {
-      "name": "Sesame Monitoring",
+      "name": "Sesame Entity",
       "description": null,
       "widgets": [
+      {
+        "title": "Count of Devices",
+        "layout": {
+          "column": 1,
+          "row": 1,
+          "width": 4,
+          "height": 3
+        },
+        "visualization": {
+          "id": "viz.billboard"
+        },
+        "rawConfiguration": {
+          "nrqlQueries": [
+            {
+              "accountId": 0,
+              "query": "FROM Log SELECT uniqueCount(host.name) as 'Devices' WHERE substring(host.name,7,3) IN ('GSC', 'POS', 'CSO') and store.number = '{{tags.store.number}}' "
+            }
+          ]
+        },
         {
-          "title": "Zombies",
+          "title": "Unique Plugins/Host/Node in Zombie State",
           "layout": {
-            "column": 1,
+            "column": 5,
             "row": 1,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.table"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log SELECT count(*) as count  where source = 'newposHeartbeat' and  State = 'Zombie' "
+                "query": "FROM Log SELECT filter(uniqueCount(concat(host.name, Name, Node)), WHERE State = 'Zombie') as 'Unique Plugins/Host/Node' WHERE source = 'newposHeartbeat' AND store.number = '{{tags.store.number}}' FACET Name as 'Plugin name' LIMIT MAX "
               }
             ]
           }
         },
         {
-          "title": "Restarts",
+          "title": "Count of Sesame Status",
           "layout": {
-            "column": 1,
+            "column": 9,
             "row": 1,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.billboard"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(*) as 'Application Restart' FROM appRestart"
+                "query": "SELECT count(*) FROM InfrastructureEvent WHERE changedPath = 'services/windows_services/NpSharp' AND store.number = '{{tags.store.number}}' FACET cases(WHERE summary = 'Service started: NpSharp' as 'Started', WHERE summary = 'Service stopped: NpSharp' as 'Stopped') "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Number of Application Restarts",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) as 'Application Restarts' FROM appRestart WHERE store.number = '{{tags.store.number}}' "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Percentage of Application Restarts by Reason",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM appRestart WHERE store.number = '{{tags.store.number}}' FACET cases(WHERE restartCase = 'rfmPackage' AS 'RFM/Binary update', WHERE restartCase = 'logOnOff' AS 'Windows logoff', WHERE restartCase = 'automatedReboot' AS 'Automated Reboot', WHERE restartCase = 'remoteReboot' as 'Remote restart command', WHERE restartCase = 'unknown' as 'Unknown', WHERE restartCase = 'deviceReboot' as 'Device Reboot') as 'Reason' "
+              }
+            ]
+          }
+		},
+        {
+          "title": "Number of Application Restarts by Reason + Device Type",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) as 'Application Restarts' FROM appRestart where store.number = '{{tags.store.number}}' FACET cases(WHERE restartCase = 'rfmPackage' AS 'RFM/Binary update', WHERE restartCase = 'logOnOff' AS 'Windows logoff', WHERE restartCase = 'automatedReboot' AS 'Automated Reboot', WHERE restartCase = 'remoteReboot' as 'Remote restart command', WHERE restartCase = 'unknown' as 'Unknown', WHERE restartCase = 'deviceReboot' as 'Device Reboot'), capture(host.name, r'.{7}(?P<dt>.{3}).*') as 'Device Type' LIMIT MAX "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Top 10 Devices with multiple Application Started",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM InfrastructureEvent WHERE changedPath = 'services/windows_services/NpSharp' AND summary = 'Service started: NpSharp' AND store.number = '{{tags.store.number}}' FACET hostname, summary  as 'Status' LIMIT 10 "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Top 10 Devices with multiple Application Stopped",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM InfrastructureEvent WHERE changedPath = 'services/windows_services/NpSharp' AND summary = 'Service stopped: NpSharp' AND store.number = '{{tags.store.number}}' FACET hostname, summary as 'Status' LIMIT 10 "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Details",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT timestamp, NRConfigRelease, agentVersion, changedPath, summary, country, deltaId, format, hostname, instanceType, newValue, oldValue, store.number FROM InfrastructureEvent WHERE changedPath='services/windows_services/NpSharp' AND store.number = '{{tags.store.number}}' LIMIT MAX "
               }
             ]
           }
