@@ -53,11 +53,9 @@ synthesis:
         db.role:
           entityTagName: database.role
         host.address:
-          entityTagName: host.address
+          entityTagNames: [host.address, endpoint]
         host.port:
           entityTagName: host.port
-        db.hostname:
-          entityTagName: db.hostname
 
     - ruleName: infra_oracledbinstance_query_details
       compositeIdentifier:
@@ -88,11 +86,9 @@ synthesis:
         db.role:
           entityTagName: database.role
         host.address:
-          entityTagName: host.address
+          entityTagNames: [host.address, endpoint]
         host.port:
           entityTagName: host.port
-        db.hostname:
-          entityTagName: db.hostname
 
     - ruleName: infra_oracledbinstance_host_name
       compositeIdentifier:
@@ -125,11 +121,110 @@ synthesis:
         db.role:
           entityTagName: database.role
         host.address:
-          entityTagName: host.address
+          entityTagNames: [host.address, endpoint]
         host.port:
           entityTagName: host.port
-        db.hostname:
-          entityTagName: db.hostname
+  #new rules
+    - ruleName: infra_oracledbinstance_execution_plan_nrdot
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.address
+          - host.port
+      compositeName:
+        fragments:
+          - attribute: host.address
+          - value: ":"
+          - attribute: host.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: newrelic.event.type
+          value: OracleExecutionPlan
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/newrelic/nrdot-collector-components/receiver/oracledbreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        db.version.full:
+          entityTagName: database.version
+        db.role:
+          entityTagName: database.role
+        host.address:
+          entityTagNames: [host.address, endpoint]
+        host.port:
+          entityTagName: host.port
+
+    - ruleName: infra_oracledbinstance_query_details_nrdot
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.address
+          - host.port
+      compositeName:
+        fragments:
+          - attribute: host.address
+          - value: ":"
+          - attribute: host.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: newrelic.event.type
+          value: OracleQueryDetails
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/newrelic/nrdot-collector-components/receiver/oracledbreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        db.version.full:
+          entityTagName: database.version
+        db.role:
+          entityTagName: database.role
+        host.address:
+          entityTagNames: [host.address, endpoint]
+        host.port:
+          entityTagName: host.port
+
+    - ruleName: infra_oracledbinstance_host_name_nrdot
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.address
+          - host.port
+      compositeName:
+        fragments:
+          - attribute: host.address
+          - value: ":"
+          - attribute: host.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: oracledb.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/newrelic/nrdot-collector-components/receiver/oracledbreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        db.version.full:
+          entityTagName: database.version
+        db.role:
+          entityTagName: database.role
+        host.address:
+          entityTagNames: [host.address, endpoint]
+        host.port:
+          entityTagName: host.port
         
         
 goldenTags: []
