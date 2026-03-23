@@ -19,7 +19,9 @@
 
 Any pull request with changes to this repository has to be linked with an ARB ticket, which has to be approved before merging.
 
-Jira ticket:
+If you are an external contributor please contact New Relic Support.
+
+ARB Jira ticket:
 https://new-relic.atlassian.net/browse/NR-XXXX
 
 ### Checklist
