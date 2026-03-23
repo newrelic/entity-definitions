@@ -478,14 +478,14 @@ synthesis:
         overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
-      - attribute: instanceid
-        present: false
-      - attribute: instance
-        present: false
-      - attribute: metricName
-        prefix: "node_"
-      - attribute: instrumentation.provider
-        value: "prometheus"
+        - attribute: instanceid
+          present: false
+        - attribute: instance
+          present: false
+        - attribute: metricName
+          prefix: "node_"
+        - attribute: instrumentation.provider
+          value: "prometheus"
       tags:
         taskArn:
         nodename:
@@ -500,10 +500,10 @@ synthesis:
         overrideGuidType: true
       encodeIdentifierInGUID: true
       conditions:
-      - attribute: metricName
-        prefix: "node_"
-      - attribute: instrumentation.provider
-        value: "prometheus"
+        - attribute: metricName
+          prefix: "node_"
+        - attribute: instrumentation.provider
+          value: "prometheus"
       tags:
         instance:
         instanceid:
@@ -511,6 +511,7 @@ synthesis:
         nodename:
           entityTagNames: [hostname]
         instrumentation.provider:
+        process.atp.enabled:
     # Logs received via Lambda/Firehose log forwarder and enriched by the Logs Pipeline. See: https://docs.newrelic.com/docs/logs/logs-context/aws-logs-in-context/
     # AWS EC2 host synthesized via ElasticBeanstalk logs. Metrics Streams and API Polling entities use the instanceId to compute the entity.guid
     - ruleName: infra_host_aws_ec2_InstanceId
@@ -530,6 +531,7 @@ synthesis:
         aws.Arn:
         # Used in AWSEC2.yml for entity relationship candidates
         aws.ec2.InstanceId:
+        process.atp.enabled:
 
 configuration:
   entityExpirationTime: EIGHT_DAYS
@@ -540,4 +542,4 @@ ownership:
     teamName: "OnHost Agent and Integrations"
   secondaryOwners:
     - teamName: "K8s Agents"
-    #IDP should be secondary owner 
+    #IDP should be secondary owner
