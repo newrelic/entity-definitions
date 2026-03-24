@@ -62,7 +62,7 @@ toolCallsPerExecution:
       where: gen_ai.agent.name IS NOT NULL AND gen_ai.tool.name IS NOT NULL
       eventId: entity.guid
     apm:
-      select: average(apm.service.ai.tool_calls) AS 'Tool Calls'
+      select: count(apm.service.ai.tool_calls) AS 'Tool Calls'
       eventName: appName
 
 llmCallsPerExecution:
@@ -75,7 +75,7 @@ llmCallsPerExecution:
       where: gen_ai.agent.name IS NOT NULL AND gen_ai.request.model IS NOT NULL
       eventId: entity.guid
     apm:
-      select: average(apm.service.ai.requests) AS 'LLM Calls'
+      select: count(apm.service.ai.requests) AS 'LLM Calls'
       eventName: appName
       facet: apm.service.ai.model
 
@@ -90,7 +90,7 @@ totalTokensPerExecution:
       where: gen_ai.agent.name IS NOT NULL
       eventId: entity.guid
     apm:
-      select: average(apm.service.ai.total_tokens) AS 'Total Tokens'
+      select: count(apm.service.ai.total_tokens) AS 'Total Tokens'
       eventName: appName
 
 uniqueToolsUsed:
@@ -129,7 +129,7 @@ childAgentCalls:
       where: gen_ai.agent.name IS NOT NULL
       eventId: entity.guid
     apm:
-      select: sum(apm.service.transaction.duration) AS 'Child Agent Calls'
+      select: count(apm.service.transaction.duration) AS 'Child Agent Calls'
       # Standard APM attribute for child agent relationships
       where: apm.service.ai.is_child = true
       eventName: appName
