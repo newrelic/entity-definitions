@@ -3,9 +3,8 @@ throughput:
   unit: REQUESTS_PER_MINUTE
   queries:
     opentelemetry:
-      select: rate(count(%.server%duration), 1 minute)
+      select: rate(count(apm.service.transaction.duration), 1 minute)
       from: Metric
-      where: http.server.duration IS NOT NULL OR http.server.request.duration IS NOT NULL OR rpc.server.duration IS NOT NULL
     kamon-agent:
       select: rate(count(http.server.requests), 1 minute) as 'count'
       from: Metric
@@ -24,9 +23,8 @@ errorRate:
   unit: PERCENTAGE
   queries:
     opentelemetry:
-      select: filter(count(%.server%duration), WHERE numeric(http.status_code) >= 500 OR numeric(http.response.status_code) >= 500) * 100 / count(%.server%duration)
+      select: sum(apm.service.error.count) * 100 / count(apm.service.transaction.duration)
       from: Metric
-      where: http.server.duration IS NOT NULL OR http.server.request.duration IS NOT NULL
     kamon-agent:
       select: (filter(count(http.server.requests), where http.status_code = '5xx') * 100) / count(http.server.requests)
       from: Metric
@@ -45,9 +43,8 @@ responseTimeMs:
   unit: MS
   queries:
     opentelemetry:
-      select: average(convert(%.server%duration, unit OR 's', 'ms'))
+      select: average(convert(apm.service.transaction.duration, unit OR 's', 'ms'))
       from: Metric
-      where: http.server.duration IS NOT NULL OR http.server.request.duration IS NOT NULL OR rpc.server.duration IS NOT NULL
     kamon-agent:
       select: average(http.server.requests)
       from: Metric
