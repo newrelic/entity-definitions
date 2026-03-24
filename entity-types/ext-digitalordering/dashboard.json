@@ -117,7 +117,8 @@
           "visualization": {
             "id": "viz.billboard"
           },
-          "nrqlQueries": [
+          "rawConfiguration": {
+            "nrqlQueries": [
               {
                 "accountId": 0,
                 "query": "WITH (SELECT aggregationendtime() from NrAiIncident since 1 hour ago) as duration\nFROM NrAiIncident SELECT (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)'\nWHERE incidentId NOT IN (SELECT uniques(incidentId,10000) FROM NrAiIncident WHERE conditionName like 'rps offline' AND event = 'close' AND tags.Store = '{{tags.store.number}}' SINCE 1 day ago) AND conditionName like 'rps offline' AND event = 'open' AND ((duration - openTime) / 1000 / 60) > 30 AND tags.Store = '{{tags.store.number}}'\nSINCE 1 day ago FACET incidentLink, tags.Store as 'Store Number', tags.ID as 'RPS ID' LIMIT MAX"
