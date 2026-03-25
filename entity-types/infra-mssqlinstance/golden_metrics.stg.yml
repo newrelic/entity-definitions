@@ -1,0 +1,104 @@
+connections:
+  title: Connections
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(stats.connections)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.stats.connections)
+      from: Metric
+      where: metricName = 'sqlserver.stats.connections'
+blockedProcesses:
+  title: Blocked processes
+  unit: COUNT
+  queries:
+    newRelic:
+      select: max(instance.blockedProcessesCount)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: max(sqlserver.instance.blocked_processes_count)
+      from: Metric
+      where: metricName = 'sqlserver.instance.blocked_processes_count'
+waitTimeMs:
+  title: Wait time (ms)
+  unit: MS
+  queries:
+    newRelic:
+      select: average(system.waitTimeInMillisecondsPerSecond)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.wait_stats.wait_time_ms)
+      from: Metric
+      where: metricName = 'sqlserver.wait_stats.wait_time_ms'
+availability:
+  queries:
+    newRelic:
+      select: average(activeConnections)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.instance.connections_active)
+      from: Metric
+      where: metricName = 'sqlserver.instance.connections_active'
+  unit: COUNT
+  title: Connections
+monitorStatus:
+  queries:
+    newRelic:
+      select: average(`instance.transactionsPerSecond`)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.instance.transactions_per_sec)
+      from: Metric
+      where: metricName = 'sqlserver.instance.transactions_per_sec'
+  unit: OPERATIONS_PER_SECOND
+  title: Transactions
+sessionStatus:
+  queries:
+    newRelic:
+      select: average(`stats.sqlCompilations`)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.stats.sql_compilations_per_sec)
+      from: Metric
+      where: metricName = 'sqlserver.stats.sql_compilations_per_sec'
+  unit: COUNT
+  title: SQL (re-)compilations
+bufferCacheHitRatio:
+  title: Buffer Cache Hit Ratio
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(system.bufferPoolHitPercent)
+      from: MssqlInstanceSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.instance.buffer_pool_hit_percent)
+      from: Metric
+      where: metricName = 'sqlserver.instance.buffer_pool_hit_percent'
+logBytesFlushedPerSec:
+  title: I/O Throughput
+  unit: BYTES_PER_SECOND
+  queries:
+    newrelic:
+      select: average(log.transactionGrowth)
+      from: MssqlDatabaseSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(sqlserver.database.log.flushes_per_sec)
+      from: Metric
+      where: metricName = 'sqlserver.database.log.flushes_per_sec'
