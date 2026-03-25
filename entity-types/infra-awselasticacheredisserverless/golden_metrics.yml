@@ -1,0 +1,63 @@
+ecpuUtilization:
+  title: ECPU utilization
+  unit: COUNT
+  queries:
+    aws:
+      select: sum(aws.elasticache.ElastiCacheProcessingUnits.byRedisServerless)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+bytesUsedForCache:
+  title: Cache storage used (bytes)
+  unit: BYTES
+  queries:
+    aws:
+      select: average(aws.elasticache.BytesUsedForCache.byRedisServerless)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+cacheHitRate:
+  title: Cache hit rate (%)
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: sum(aws.elasticache.CacheHits.byRedisServerless) / (sum(aws.elasticache.CacheHits.byRedisServerless) + sum(aws.elasticache.CacheMisses.byRedisServerless)) * 100
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+successfulReadRequestLatency:
+  title: Read latency (microseconds)
+  unit: MS
+  queries:
+    aws:
+      select: average(aws.elasticache.SuccessfulReadRequestLatency.byRedisServerless)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+successfulWriteRequestLatency:
+  title: Write latency (microseconds)
+  unit: MS
+  queries:
+    aws:
+      select: average(aws.elasticache.SuccessfulWriteRequestLatency.byRedisServerless)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+networkBytesIn:
+  title: Bytes in per sec
+  unit: BYTES_PER_SECOND
+  queries:
+    aws:
+      select: rate(sum(aws.elasticache.NetworkBytesIn.byRedisServerless), 1 second)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+networkBytesOut:
+  title: Bytes out per sec
+  unit: BYTES_PER_SECOND
+  queries:
+    aws:
+      select: rate(sum(aws.elasticache.NetworkBytesOut.byRedisServerless), 1 second)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
