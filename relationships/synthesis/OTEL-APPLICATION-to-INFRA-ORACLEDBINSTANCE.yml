@@ -54,3 +54,32 @@ relationships:
           fields:
             - field: hostId
               attribute: host.id
+
+  - name: OtelOracledbCallsNrdotInfraLib
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [Metric]
+      - attribute: metricName
+        startsWith: oracledb.
+      - attribute: instrumentation.provider
+        anyOf: [opentelemetry]
+      # This handles both library name formats for backward compatibility
+      - attribute: otel.library.name
+        anyOf: [github.com/newrelic/nrdot-collector-components/receiver/oracledbreceiver]
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      target:
+        extractGuid:
+          attribute: entity.guid
+      source:
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: hostId
+              attribute: host.id
