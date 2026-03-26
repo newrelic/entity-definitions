@@ -55,6 +55,50 @@ relationships:
             - field: topic
               attribute: metricName__6
 
+  - name: apmProducesRoute53KafkaTopic
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/(?!.*\\.amazonaws\\.com)(?!.*\\.confluent\\.cloud)[^/]+:9[0-9]+/Produce/.*"
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: endpoint
+              attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+
+  - name: apmConsumesRoute53KafkaTopic
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/(?!.*\\.amazonaws\\.com)(?!.*\\.confluent\\.cloud)[^/]+:9[0-9]+/Consume/.*"
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: endpoint
+              attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+
   - name: apmProducesConfluentCloudKafkaTopic
     version: "1"
     origins:
