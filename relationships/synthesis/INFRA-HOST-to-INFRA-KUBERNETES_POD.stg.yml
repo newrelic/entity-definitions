@@ -5,55 +5,46 @@ relationships:
       - Kubernetes Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "K8sPodSample" ]
+        anyOf: ["K8sPodSample"]
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: host.guid
-          entityType:
-            value: HOST
+        lookupGuid:
+          candidateCategory: HOST
+          fields:
+            - field: host.name # hostname of host candidate
+              attribute: nodeName # node hostname from pod
+            - field: k8s.clusterName # cluster name of host candidate
+              attribute: clusterName # cluster name from pod
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_POD
   - name: otelKsmK8sHostHostsPod
-    # use kube-state-metrics system metric
+    # use kube-state-metrics kube_pod_info metric
     version: "1"
-    origins: 
+    origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        startsWith: system.
-      - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: newrelic.source
-        anyOf: [ "api.metrics.otlp" ]
-      # if service.name is present, it's a service, not a host
-      - attribute: service.name
-        present: false
-      # if container.id is present, it's a container, not a host
-      - attribute: container.id
-        present: false
-      - attribute: k8s.cluster.name
+        anyOf: ["kube_pod_info"]
+      - attribute: k8s.node.name
         present: true
     relationship:
-      expires: PT2H
+      expires: PT75M
       relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: host.guid
-          entityType:
-            value: HOST
-      target:
         lookupGuid:
-          candidateCategory: KUBERNETES_POD
+          candidateCategory: HOST
           fields:
-            - field: k8s.node.name # node name of host
-              attribute: host.name # node name of pod
-            - field: k8s.namespace.name # namespace of host
-              attribute: k8s.namespace.name # namespace of pod
-            - field: k8s.cluster.name # cluster of host
-              attribute: k8s.cluster.name # cluster of pod
+            - field: host.name
+              attribute: k8s.node.name
+            - field: k8s.clusterName
+              attribute: k8s.cluster.name
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD
