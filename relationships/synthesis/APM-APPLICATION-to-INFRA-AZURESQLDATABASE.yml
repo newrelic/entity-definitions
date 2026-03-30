@@ -13,12 +13,12 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
-      - attribute: db.system 
+      - attribute: db.system
         anyOf: [ "mssql" ]
       - attribute: db.instance
         present: true
       - attribute: server.address
-        regex: '^(?:tcp:)?([a-zA-Z0-9\-]+\.database\.windows\.net)$'
+        regex: '^(?:tcp:)?([a-zA-Z0-9\-]+(?:\.secondary)?\.database\.windows\.net)$'
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -30,8 +30,8 @@ relationships:
           candidateCategory: AZURESQLDATABASE
           fields:
             - field: endpoint
-              capture: 
+              capture:
                 attribute: server.address
-                regex: '^(?:tcp:)?([a-zA-Z0-9\-]+)\.database\.windows\.net$'
-            - field: dbname 
+                regex: '^(?:tcp:)?([a-zA-Z0-9\-]+)(?:\.secondary)?\.database\.windows\.net$'
+            - field: dbname
               attribute: db.instance
