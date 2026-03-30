@@ -1,67 +1,247 @@
 {
-  "name": "Store Monitoring",
+  "name": "Digital Ordering Entity",
   "description": null,
   "pages": [
     {
-      "name": "Store Monitoring",
+      "name": "Digital Ordering Entity",
       "description": null,
       "widgets": [
         {
-          "title": "Front Counter Online",
+          "title": "RPS Offline",
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 4,
-            "height": 3
+            "width": 3,
+            "height": 2
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.billboard"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT uniqueCount(id) as availability FROM XMLRPC WHERE WayState = 'OPEN' AND device.type = 'FC' AND WayBusinessDay = WaySystemDate AND online = '1' AND store.number = '{{tags.store.number}}' TIMESERIES AUTO"
+                "query": "SELECT count(*) as 'Devices'FROM (FROM XMLRPC SELECT count(*) as 'RPS Offline Count' where id like 'RPS%' and online='0' FACET store.number, id limit max) WHERE store.number = '{{tags.store.number}}' SINCE 1 day ago"
               }
             ]
           }
         },
         {
-          "title": "Drive Thru Online",
+          "title": "FOE Offline ",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XMLRPC SELECT uniqueCount(id) as 'Devices' WHERE node = 'FOE' AND online = '0' AND store.number = '{{tags.store.number}}' SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Not Logged-In",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XMLRPC SELECT uniqueCount(id) as 'Devices' WHERE node = 'FOE' AND string(businessDate) = string(WayBusinessDay) AND WayState = 'OPEN' AND state != 'Logged' AND store.number = '{{tags.store.number}}' SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Business Date Differs",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM (SELECT count(*) > 1 as 'count' from XMLRPC where string(WayBusinessDay) != string(businessDate) and node='FOE' facet  toDateTime(timestamp,'MM-dd-yyyy HH:mm') as 'Date', store.number as 'Store', node as 'Node', id as 'ID', ip as 'IP', type as 'Type', WayBusinessDay as 'Way Business Day', businessDate AS 'Business Date' limit max) SELECT count(*) as 'Devices' WHERE count is true AND store.number = '{{tags.store.number}}' SINCE 1 day ago limit max \n "
+              }
+            ]
+          }
+        },
+        {
+          "title": "RPS Device State",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XMLRPC SELECT latest(toDateTime(timestamp, 'MM-dd-yyyy HH:mm')) as 'Date'\nWHERE id like 'RPS%' AND store.number = '{{tags.store.number}}'\nFACET cases(where online = 1 as 'ONLINE', online = 0 as 'OFFLINE') as 'State', id as 'RPS ID'\nSINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "RPS Offline Open Incidents",
           "layout": {
             "column": 5,
-            "row": 1,
-            "width": 4,
+            "row": 3,
+            "width": 8,
             "height": 3
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.billboard"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT uniqueCount(id) as availability FROM XMLRPC WHERE WayState = 'OPEN' AND device.type = 'DT' AND WayBusinessDay = WaySystemDate AND online = '1' AND store.number = '{{tags.store.number}}' TIMESERIES AUTO"
+                "query": "WITH (SELECT aggregationendtime() from NrAiIncident since 1 hour ago) as duration\nFROM NrAiIncident SELECT (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)'\nWHERE incidentId NOT IN (SELECT uniques(incidentId,10000) FROM NrAiIncident WHERE conditionName like 'rps offline' AND event = 'close' AND tags.Store = '{{tags.store.number}}' SINCE 1 day ago) AND conditionName like 'rps offline' AND event = 'open' AND ((duration - openTime) / 1000 / 60) > 30 AND tags.Store = '{{tags.store.number}}'\nSINCE 1 day ago FACET incidentLink, tags.Store as 'Store Number', tags.ID as 'RPS ID' LIMIT MAX"
               }
             ]
           }
         },
         {
-          "title": "Delivery Online",
+          "title": "FOE Device Status",
           "layout": {
-            "column": 9,
-            "row": 1,
+            "column": 1,
+            "row": 6,
             "width": 4,
             "height": 3
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.table"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT uniqueCount(id) as availability FROM XMLRPC WHERE WayState = 'OPEN' AND device.type = 'DLV' AND WayBusinessDay = WaySystemDate AND online = '1' AND store.number = '{{tags.store.number}}' TIMESERIES AUTO"
+                "query": "FROM XMLRPC SELECT latest(toDateTime(timestamp, 'MM-dd-yyyy HH:mm')) as 'Date'\nWHERE node = 'FOE' AND store.number = '{{tags.store.number}}'\nFACET cases(where online = 1 as 'ONLINE', online = 0 as 'OFFLINE') as 'State', id as 'FOE ID'\nSINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Offline Open Incidents",
+          "layout": {
+            "column": 5,
+            "row": 6,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "WITH (SELECT aggregationendtime() from NrAiIncident since 1 hour ago) as duration\nFROM NrAiIncident select (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)'\nWHERE incidentId NOT IN (SELECT uniques(incidentId,10000) FROM NrAiIncident WHERE conditionName like 'foe offline' AND event = 'close' AND tags.Store = '{{tags.store.number}}' SINCE 1 day ago) AND conditionName like 'foe offline' AND event = 'open' AND ((duration - openTime) / 1000 / 60) > 30 AND tags.Store = '{{tags.store.number}}'\nSINCE 1 day ago FACET incidentLink, tags.Store as 'Store Number', tags.ID as 'FOE ID' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Device State",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XMLRPC SELECT latest(toDateTime(timestamp, 'MM-dd-yyyy HH:mm')) as 'Date'\nWHERE node = 'FOE' AND store.number = '{{tags.store.number}}'\nFACET state as 'State', id as 'FOE ID'\nSINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Not Logged-In Open Incidents",
+          "layout": {
+            "column": 5,
+            "row": 9,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "WITH (SELECT aggregationendtime() from NrAiIncident since 1 hour ago) as duration\nFROM NrAiIncident SELECT (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)'\nWHERE incidentId NOT IN (SELECT uniques(incidentId,10000) FROM NrAiIncident WHERE conditionName like 'foe not with logged in state' AND event = 'close' AND tags.Store = '{{tags.store.number}}' SINCE 1 day ago) AND conditionName like 'foe not with logged in state' AND event = 'open' AND ((duration - openTime) / 1000 / 60) > 30 AND tags.Store = '{{tags.store.number}}'\nSINCE 1 day ago FACET incidentLink, tags.Store as 'Store Number', tags.ID as 'FOE ID' LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Devices Business Date Differs from Way Station",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM (SELECT count(*) > 1 as 'count' from XMLRPC where string(WayBusinessDay) != string(businessDate) and node='FOE' facet  toDateTime(timestamp,'MM-dd-yyyy HH:mm') as 'Date', store.number as 'Store', id as 'ID', ip as 'IP', type as 'Type', WayBusinessDay as 'Way Business Day', businessDate AS 'Business Date') SELECT Date as 'Date (UTC)', Store, ID as 'FOE ID', `Way Business Day`, `Business Date`, timestamp WHERE count is true AND store.number = '{{tags.store.number}}' SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Business Date Differs from Way Station Open Incidents",
+          "layout": {
+            "column": 5,
+            "row": 12,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "WITH (SELECT aggregationendtime() from NrAiIncident since 1 hour ago) as duration\nFROM NrAiIncident SELECT (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)'\nWHERE incidentId NOT IN (SELECT uniques(incidentId,10000) FROM NrAiIncident WHERE conditionName like 'foe with different business date than way station' AND event = 'close' AND tags.Store = '{{tags.store.number}}' SINCE 1 day ago) AND conditionName like 'foe with different business date than way station' AND event = 'open' AND ((duration - openTime) / 1000 / 60) > 30 AND tags.Store = '{{tags.store.number}}'\nSINCE 1 day ago FACET incidentLink, tags.Store as 'Store Number', tags.ID as 'FOE ID' LIMIT MAX"
               }
             ]
           }
