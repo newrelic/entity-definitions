@@ -1,0 +1,564 @@
+{
+  "name": "Databricks Workspace",
+  "description": null,
+  "pages": [
+    {
+      "guid": "NDMxNDg5NHxWSVp8REFTSEJPQVJEfDQ1NTg4NDUx",
+      "name": "Databricks Workspace",
+      "description": null,
+      "widgets": [
+        {
+          "id": "507190161",
+          "title": "Jobs running",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksJobRunSummary\nSELECT latest(runningJobRunCount) AS 'Job runs'\nWHERE databricksWorkspaceName = {{entity.id}}"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "id": "507190164",
+          "title": "Job runs succeeded",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksJobRun\nSELECT count(*) AS 'Job runs'\nWHERE databricksWorkspaceName = {{entity.id}} AND event = 'complete' AND terminationType = 'SUCCESS'\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "id": "507190209",
+          "title": "Job runs failed",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksJobRun \nSELECT count(*) AS 'Job runs'\nWHERE databricksWorkspaceName = {{entity.id}} AND event = 'complete' AND terminationType != 'SUCCESS'\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "id": "507191206",
+          "title": "Job run throughput",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksJobRun\nSELECT rate(count(*), 1 minute) AS 'Job runs'\nWHERE databricksWorkspaceName = {{entity.id}} AND event = 'complete'\nTIMESERIES\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "id": "507191208",
+          "title": "Job run latency (95th percentile)",
+          "layout": {
+            "column": 7,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksJobRun\nSELECT percentile(duration, 95)\nWHERE databricksWorkspaceName = {{entity.id}} AND event = 'complete'\nTIMESERIES\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "id": "507190210",
+          "title": "Pipelines running",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 4,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksPipelineSummary \nSELECT latest(runningPipelineCount) AS Pipelines\nWHERE databricksWorkspaceName = {{entity.id}}"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "id": "507190212",
+          "title": "Pipelines failed",
+          "layout": {
+            "column": 5,
+            "row": 6,
+            "width": 4,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksPipelineSummary \nSELECT latest(failedPipelineCount) AS Pipelines\nWHERE databricksWorkspaceName = {{entity.id}}"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "id": "507190213",
+          "title": "Pipelines idle",
+          "layout": {
+            "column": 9,
+            "row": 6,
+            "width": 4,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksPipelineSummary \nSELECT latest(idlePipelineCount) AS Pipelines\nWHERE databricksWorkspaceName = {{entity.id}}"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "id": "507191198",
+          "title": "Pipeline update throughput",
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksPipelineUpdate\nSELECT rate(count(*), 1 minute) AS 'Pipeline updates'\nWHERE databricksWorkspaceName = {{entity.id}} AND event = 'complete' \nTIMESERIES\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "id": "507191199",
+          "title": "Pipeline update latency (95th percentile)",
+          "layout": {
+            "column": 7,
+            "row": 8,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksPipelineUpdate\nSELECT percentile(duration, 95)\nWHERE databricksWorkspaceName = {{entity.id}} AND event = 'complete' \nTIMESERIES\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "id": "507191210",
+          "title": "Completed queries",
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "dataFormatters": [
+              {
+                "name": "Queries",
+                "precision": 3,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksQuery\nSELECT count(*) AS Queries\nWHERE databricksWorkspaceName = {{entity.id}} AND status = 'FINISHED'\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "id": "507191211",
+          "title": "Failed queries",
+          "layout": {
+            "column": 3,
+            "row": 11,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "dataFormatters": [
+              {
+                "name": "Queries",
+                "precision": 3,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksQuery\nSELECT count(*) AS Queries\nWHERE databricksWorkspaceName = {{entity.id}} AND status = 'FAILED'\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "id": "507191212",
+          "title": "Query throughput",
+          "layout": {
+            "column": 5,
+            "row": 11,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksQuery\nSELECT rate(count(*), 1 minute) AS Queries\nWHERE databricksWorkspaceName = {{entity.id}} AND status = 'FINISHED'\nTIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "id": "507191213",
+          "title": "Query latency (95th percentile)",
+          "layout": {
+            "column": 9,
+            "row": 11,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM DatabricksQuery\nSELECT percentile(duration, 95)\nWHERE databricksWorkspaceName = {{entity.id}}\nTIMESERIES\nLIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [],
+            "units": {
+              "unit": "MS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

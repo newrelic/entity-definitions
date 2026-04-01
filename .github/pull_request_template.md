@@ -21,6 +21,8 @@ Any pull request with changes to this repository has to be linked with an ARB ti
 
 If you are an external contributor please contact New Relic Support.
 
+If you don't know about the ARB process check [this](https://newrelic.enterprise.slack.com/docs/T02D34WJD/F08AW240NSV)
+
 ARB Jira ticket:
 https://new-relic.atlassian.net/browse/NR-XXXX
 
