@@ -8,61 +8,9 @@ connections:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(sqlserver.stats.connections)
+      select: average(sqlserver.stats.connections,'sqlserver.user.connection.count')
       from: Metric
-      where: metricName = 'sqlserver.stats.connections'
-blockedProcesses:
-  title: Blocked processes
-  unit: COUNT
-  queries:
-    newRelic:
-      select: max(instance.blockedProcessesCount)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: max(sqlserver.instance.blocked_processes_count)
-      from: Metric
-      where: metricName = 'sqlserver.instance.blocked_processes_count'
-waitTimeMs:
-  title: Wait time (ms)
-  unit: MS
-  queries:
-    newRelic:
-      select: average(system.waitTimeInMillisecondsPerSecond)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(sqlserver.wait_stats.wait_time_ms)
-      from: Metric
-      where: metricName = 'sqlserver.wait_stats.wait_time_ms'
-availability:
-  queries:
-    newRelic:
-      select: average(activeConnections)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(sqlserver.instance.connections_active)
-      from: Metric
-      where: metricName = 'sqlserver.instance.connections_active'
-  unit: COUNT
-  title: Connections
-monitorStatus:
-  queries:
-    newRelic:
-      select: average(`instance.transactionsPerSecond`)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(sqlserver.instance.transactions_per_sec)
-      from: Metric
-      where: metricName = 'sqlserver.instance.transactions_per_sec'
-  unit: OPERATIONS_PER_SECOND
-  title: Transactions
+      where: metricName IN ('sqlserver.stats.connections', 'sqlserver.user.connection.count')
 sessionStatus:
   queries:
     newRelic:
@@ -71,9 +19,9 @@ sessionStatus:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(sqlserver.stats.sql_compilations_per_sec)
+      select: average(sqlserver.stats.sql_compilations_per_sec,'sqlserver.batch.sql_compilation.rate')
       from: Metric
-      where: metricName = 'sqlserver.stats.sql_compilations_per_sec'
+      where: metricName IN ('sqlserver.stats.sql_compilations_per_sec', 'sqlserver.batch.sql_compilation.rate')
   unit: COUNT
   title: SQL (re-)compilations
 bufferCacheHitRatio:
@@ -86,19 +34,6 @@ bufferCacheHitRatio:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(sqlserver.instance.buffer_pool_hit_percent)
+      select: average(sqlserver.instance.buffer_pool_hit_percent,'sqlserver.page.buffer_cache.hit_ratio')
       from: Metric
-      where: metricName = 'sqlserver.instance.buffer_pool_hit_percent'
-logBytesFlushedPerSec:
-  title: I/O Throughput
-  unit: BYTES_PER_SECOND
-  queries:
-    newrelic:
-      select: average(log.transactionGrowth)
-      from: MssqlDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(sqlserver.database.log.flushes_per_sec)
-      from: Metric
-      where: metricName = 'sqlserver.database.log.flushes_per_sec'
+      where: metricName IN ('sqlserver.instance.buffer_pool_hit_percent', 'sqlserver.page.buffer_cache.hit_ratio')
