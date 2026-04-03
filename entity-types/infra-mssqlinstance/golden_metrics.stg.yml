@@ -8,22 +8,9 @@ connections:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(sqlserver.stats.connections,'sqlserver.user.connection.count')
+      select: latest(sqlserver.stats.connections or sqlserver.user.connection.count)
       from: Metric
       where: metricName IN ('sqlserver.stats.connections', 'sqlserver.user.connection.count')
-sessionStatus:
-  queries:
-    newRelic:
-      select: average(`stats.sqlCompilations`)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(sqlserver.stats.sql_compilations_per_sec,'sqlserver.batch.sql_compilation.rate')
-      from: Metric
-      where: metricName IN ('sqlserver.stats.sql_compilations_per_sec', 'sqlserver.batch.sql_compilation.rate')
-  unit: COUNT
-  title: SQL (re-)compilations
 bufferCacheHitRatio:
   title: Buffer Cache Hit Ratio
   unit: PERCENTAGE
@@ -34,6 +21,6 @@ bufferCacheHitRatio:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(sqlserver.instance.buffer_pool_hit_percent,'sqlserver.page.buffer_cache.hit_ratio')
+      select: average(sqlserver.instance.buffer_pool_hit_percent or sqlserver.page.buffer_cache.hit_ratio)
       from: Metric
       where: metricName IN ('sqlserver.instance.buffer_pool_hit_percent', 'sqlserver.page.buffer_cache.hit_ratio')
