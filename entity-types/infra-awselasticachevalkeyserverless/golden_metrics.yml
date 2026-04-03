@@ -1,9 +1,27 @@
-ecpuUtilization:
-  title: ECPU utilization
+cacheHitRate:
+  title: Cache hit rate (%)
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.elasticache.CacheHitRate)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+cacheHits:
+  title: Cache hits
   unit: COUNT
   queries:
     aws:
-      select: sum(aws.elasticache.ElastiCacheProcessingUnits)
+      select: sum(aws.elasticache.CacheHits)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+cacheMisses:
+  title: Cache misses
+  unit: COUNT
+  queries:
+    aws:
+      select: sum(aws.elasticache.CacheMisses)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -16,48 +34,30 @@ bytesUsedForCache:
       from: Metric
       eventId: entity.guid
       eventName: entity.name
-cacheHitRate:
-  title: Cache hit rate (%)
-  unit: PERCENTAGE
+evictions:
+  title: Evictions per second
+  unit: REQUESTS_PER_SECOND
   queries:
     aws:
-      select: sum(aws.elasticache.CacheHits) / (sum(aws.elasticache.CacheHits) + sum(aws.elasticache.CacheMisses)) * 100
+      select: rate(sum(aws.elasticache.Evictions), 1 second)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
-successfulReadRequestLatency:
-  title: Read latency (microseconds)
-  unit: MS
+throttledCmds:
+  title: Throttled commands
+  unit: COUNT
   queries:
     aws:
-      select: average(aws.elasticache.SuccessfulReadRequestLatency)
+      select: sum(aws.elasticache.ThrottledCmds)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
-successfulWriteRequestLatency:
-  title: Write latency (microseconds)
-  unit: MS
+currItems:
+  title: Current items in cache
+  unit: COUNT
   queries:
     aws:
-      select: average(aws.elasticache.SuccessfulWriteRequestLatency)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-networkBytesIn:
-  title: Bytes in per sec
-  unit: BYTES_PER_SECOND
-  queries:
-    aws:
-      select: rate(sum(aws.elasticache.NetworkBytesIn), 1 second)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-networkBytesOut:
-  title: Bytes out per sec
-  unit: BYTES_PER_SECOND
-  queries:
-    aws:
-      select: rate(sum(aws.elasticache.NetworkBytesOut), 1 second)
+      select: average(aws.elasticache.CurrItems)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
