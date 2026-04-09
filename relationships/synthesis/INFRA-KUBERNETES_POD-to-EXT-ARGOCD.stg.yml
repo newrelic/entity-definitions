@@ -1,0 +1,65 @@
+relationships:
+  - name: k8sPodContainsExtArgocdStg
+    version: "1"
+    origins:
+      - Prometheus
+    conditions:
+      - attribute: metricName
+        startsWith: argocd_
+      - attribute: cluster_name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: cluster_name
+              - value: ":"
+              - attribute: namespace
+              - value: ":pod:"
+              - attribute: pod
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+  - name: k8sPodContainsExtArgocdOtelStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        startsWith: argocd_
+      - attribute: k8s.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
