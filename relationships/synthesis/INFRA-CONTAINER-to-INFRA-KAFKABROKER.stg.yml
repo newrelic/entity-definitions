@@ -1,0 +1,223 @@
+relationships:
+  # Rule 1: NR OnHost Integration K8s container HOSTS Kafka broker (KafkaBrokerSample)
+  - name: ContainerContainsKafkaBrokerStg
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["KafkaBrokerSample"]
+      - attribute: nr.entityType
+        anyOf: ["KafkaBroker", "KAFKABROKER"]
+      - attribute: clusterName
+        present: true
+      - attribute: namespace
+        present: true
+      - attribute: podName
+        present: true
+      - attribute: name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespace
+              - value: ":"
+              - attribute: podName
+              - value: ":container:"
+              - attribute: name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KAFKABROKER
+
+  # Rule 2: OTel Kafka broker (plain Docker) → OTel Container (dockerstats receiver)
+  # Matches infra_container_container_id synthesis: identifier = container.id
+  - name: OtelKafkaBrokerToOtelDockerContainerStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric", "Log"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+      - attribute: container.id
+        present: true
+      - attribute: k8s.pod.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: container.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # Rule 3: OTel Kafka broker (plain Docker) → NR native Container (ContainerSample)
+  # Matches NR infra-agent docker container GUID: "docker:{container.id}" with valueInGuid: NA
+  - name: OtelKafkaBrokerToNrDockerContainerStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric", "Log"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+      - attribute: container.id
+        present: true
+      - attribute: k8s.pod.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "docker:"
+              - attribute: container.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # Rule 4: OTel Kafka broker (K8s) → OTel K8s Container (kube-state-metrics / cAdvisor / kubeletstats)
+  # Matches infra_container_composite* synthesis: identifier = k8s.cluster.name:k8s.namespace.name:k8s.pod.name:k8s.container.name
+  - name: OtelKafkaBrokerToOtelK8sContainerStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric", "Log"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+      - attribute: k8s.cluster.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.container.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+              - value: ":"
+              - attribute: k8s.container.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # Rule 5: OTel Kafka broker (K8s) → NR native K8s Container (K8sContainerSample)
+  # Matches NR infra-agent k8s container GUID: "k8s:{cluster}:{namespace}:{pod}:container:{name}" with valueInGuid: NA
+  - name: OtelKafkaBrokerToNrK8sContainerStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric", "Log"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+      - attribute: k8s.cluster.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.container.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+              - value: ":container:"
+              - attribute: k8s.container.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
