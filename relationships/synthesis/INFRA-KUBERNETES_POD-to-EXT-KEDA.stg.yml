@@ -1,0 +1,69 @@
+relationships:
+  - name: k8sPodContainsExtKedaStg
+    version: "1"
+    origins:
+      - Prometheus
+    conditions:
+      - attribute: metricName
+        startsWith: keda_
+      - attribute: app_kubernetes_io_name
+        anyOf: ["keda-operator"]
+      - attribute: cluster_name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: cluster_name
+              - value: ":"
+              - attribute: namespace
+              - value: ":pod:"
+              - attribute: pod
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+  - name: k8sPodContainsExtKedaOtelStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        startsWith: keda_
+      - attribute: k8s.pod.label.app.kubernetes.io/name
+        anyOf: ["keda-operator"]
+      - attribute: k8s.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
