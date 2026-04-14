@@ -1,0 +1,28 @@
+domain: INFRA
+type: AZUREELASTICSAN
+goldenTags:
+- azure.regionName
+- azure.subscriptionId
+- azure.type
+- azure.resourceGroupName
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - ruleName: infra_azureelasticsan_azure_resourceId
+    identifier: azure.resourceId
+    name: displayName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: azure.resourceType
+      value: microsoft.elasticsan/elasticsans
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
