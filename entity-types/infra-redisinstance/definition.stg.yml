@@ -51,9 +51,7 @@ synthesis:
         value: Metric
       # Support both redis. and redis_ prefix metrics
       - attribute: metricName
-        anyOf:
-          - prefix: redis.
-          - prefix: redis_
+        prefix: redis.
       - attribute: instrumentation.provider
         value: opentelemetry
       # Only trigger when service.instance.id pattern is used (not server.address pattern)
@@ -61,12 +59,9 @@ synthesis:
         present: true
       - attribute: server.address
         present: false
-      # Entity creation triggered by redis.role OR service.name containing redis
-      - anyOf:
-          - attribute: redis.role
-            present: true
-          - attribute: service.name
-            contains: redis
+      # Entity creation triggered by redis.role present OR service.name containing redis
+      - attribute: redis.role
+        present: true
     tags:
       # Required resource attributes
       service.name:
