@@ -110,6 +110,50 @@ synthesis:
         tags.:
           ttl: P1D
 
+    # eBPF host data from New Relic eBPF infrastructure agent
+    - ruleName: ebpf_infra_host_host_id
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: instrumentation.provider
+          value: newrelic-ebpf
+        - attribute: instrumentation.name
+          value: nr_ebpf_infra
+        # if service.name is present, it's a service, not a host
+        - attribute: service.name
+          present: false
+        # if container.id is present, it's a container, not a host
+        - attribute: container.id
+          present: false
+      tags:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        cloud.platform:
+        host.id:
+        host.name:
+        host.type:
+        host.arch:
+        host.image.name:
+        host.image.id:
+        host.image.version:
+        instrumentation.provider:
+        instrumentation.name:
+        k8s.cluster.name:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+        process.atp.enabled:
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
     # opentelemetry host data from opentelemetry-collector
     - ruleName: infra_host_host_id_2
       identifier: host.id
