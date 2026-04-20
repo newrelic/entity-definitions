@@ -10,14 +10,14 @@ synthesis:
   rules:
     # AWS ECS Cluster via OpenTelemetry ECS task metrics
     - ruleName: infra_awsecscluster_otel_stg
-      identifier: aws.ecs.cluster.name
+      identifier: aws.arn
       name: aws.ecs.cluster.name
       encodeIdentifierInGUID: true
+      legacyFeatures:
+        overrideGuidType: true
       conditions:
         - attribute: eventType
           value: Metric
-        - attribute: metricName
-          prefix: ecs.task.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: newrelic.source
@@ -26,7 +26,10 @@ synthesis:
           value: aws_ecs
         - attribute: aws.ecs.cluster.name
           present: true
+        - attribute: aws.arn
+          present: true
       tags:
+        aws.arn:
         # ECS Cluster attributes
         aws.ecs.cluster.name:
           entityTagName: aws.clusterName
