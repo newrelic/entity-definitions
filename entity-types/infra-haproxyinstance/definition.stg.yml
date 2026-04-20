@@ -1,0 +1,143 @@
+domain: INFRA
+type: HAPROXYINSTANCE
+
+synthesis:
+  rules:
+  # OpenTelemetry synthesis rule - service.instance.id pattern (new collector format)
+  - ruleName: infra_haproxyinstance_otel_new
+    identifier: service.instance.id
+    name: service.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # Support both haproxy. and haproxy_ prefix metrics
+      - attribute: metricName
+        prefix: haproxy.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Only trigger when service.instance.id pattern is used
+      - attribute: service.instance.id
+        present: true
+      # Entity creation triggered by haproxy.version present
+      - attribute: haproxy.version
+        present: true
+      # New collector format
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/haproxyreceiver"
+    tags:
+      # Required resource attributes
+      service.instance.id:
+      haproxy.version:
+      haproxy.addr:
+      haproxy.proxy_name:
+      host.name:
+      host.id:
+      # Optional resource attributes
+      haproxy.service_name:
+      haproxy.backend:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.cluster.name:
+      k8s.namespace.name:
+      k8s.pod.name:
+      k8s.pod.uid:
+      k8s.deployment.name:
+      k8s.replicaset.name:
+      k8s.daemonset.name:
+      k8s.statefulset.name:
+      k8s.job.name:
+      k8s.cronjob.name:
+      k8s.node.name:
+      k8s.container.name:
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # OpenTelemetry synthesis rule - service.instance.id pattern (old collector format)
+  - ruleName: infra_haproxyinstance_otel_old
+    identifier: service.instance.id
+    name: service.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # Support both haproxy. and haproxy_ prefix metrics
+      - attribute: metricName
+        prefix: haproxy.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Only trigger when service.instance.id pattern is used
+      - attribute: service.instance.id
+        present: true
+      # Entity creation triggered by haproxy.version present
+      - attribute: haproxy.version
+        present: true
+      # Old collector format
+      - attribute: otel.library.name
+        value: "otelcol/haproxyreceiver"
+    tags:
+      # Required resource attributes
+      service.instance.id:
+      haproxy.version:
+      haproxy.addr:
+      haproxy.proxy_name:
+      host.name:
+      host.id:
+      # Optional resource attributes
+      haproxy.service_name:
+      haproxy.backend:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.cluster.name:
+      k8s.namespace.name:
+      k8s.pod.name:
+      k8s.pod.uid:
+      k8s.deployment.name:
+      k8s.replicaset.name:
+      k8s.daemonset.name:
+      k8s.statefulset.name:
+      k8s.job.name:
+      k8s.cronjob.name:
+      k8s.node.name:
+      k8s.container.name:
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+    # AWS tags
+    aws.region:
+
+goldenTags:
+# OpenTelemetry - service.instance.id pattern
+- service.instance.id
+- host.name
+- host.id
+- haproxy.version
+- haproxy.addr
+- haproxy.proxy_name
+- haproxy.backend
+# Kubernetes attributes
+- k8s.cluster.name
+- k8s.namespace.name
+- k8s.pod.name
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
