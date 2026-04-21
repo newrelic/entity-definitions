@@ -1,11 +1,10 @@
 domain: INFRA
-type: MSSQLINSTANCE
-
+type: ORACLEDBINSTANCE
 synthesis:
   rules:
-    - ruleName: infra_mssqlinstance_entityId
+    - ruleName: infra_oracle_db_instance_entityId
       identifier: entityId
-      name: entityName
+      name: entityKey
       legacyFeatures:
         useNonStandardAttributes: true
         overrideGuidType: true
@@ -13,8 +12,8 @@ synthesis:
         label.:
           ttl: PT4H
       conditions:
-        - attribute: event_type
-          value: "MssqlInstanceSample"
+        - attribute: eventType
+          value: 'OracleDatabaseSample'
       tags:
         integrationName:
           ttl: P1D
@@ -22,10 +21,10 @@ synthesis:
           ttl: P1D
         reportingAgent:
           ttl: P1D
-        entityKey:
+        reportingEndpoint:
           ttl: P1D
 
-    - ruleName: infra_mssqlinstance_host_name
+    - ruleName: infra_oracledbinstance_host_name
       identifier: host.name
       name: host.name
       encodeIdentifierInGUID: true
@@ -33,117 +32,124 @@ synthesis:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: sqlserver.
+          prefix: oracledb.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlserverreceiver
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/oracledbreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
-        instrumentation.provider:
-          entityTagName: instrumentation.provider
-        host.name:
-          entityTagNames: [server.address, endpoint]
-
-    - ruleName: infra_mssqlinstance_execution_plan_nrdot
+        otel.library.version:
+          entityTagName: instrumentation.version
+        host.address:
+          entityTagNames: [host.address, endpoint]
+        host.port:
+          entityTagName: host.port
+  #new rules
+    - ruleName: infra_oracledbinstance_execution_plan_nrdot
       compositeIdentifier:
         separator: ":"
         attributes:
-          - server.address
-          - server.port
+          - host.address
+          - host.port
       compositeName:
         fragments:
-          - attribute: server.address
+          - attribute: host.address
           - value: ":"
-          - attribute: server.port
+          - attribute: host.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: newrelic.event.type
-          value: SqlServerExecutionPlan
+          value: OracleExecutionPlan
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: github.com/newrelic/nrdot-collector-components/receiver/sqlserverreceiver
+          value: github.com/newrelic/nrdot-collector-components/receiver/oracledbreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
-        telemetry.sdk.name:
-          entityTagName: instrumentation.provider
-        server.address:
-          entityTagNames: [server.address, endpoint]
-        server.port:
-          entityTagName: server.port
-        sql.version:
+        otel.library.version:
+          entityTagName: instrumentation.version
+        db.version.full:
           entityTagName: database.version
+        db.role:
+          entityTagName: database.role
+        host.address:
+          entityTagNames: [host.address, endpoint]
+        host.port:
+          entityTagName: host.port
 
-    - ruleName: infra_mssqlinstance_query_details_nrdot
+    - ruleName: infra_oracledbinstance_query_details_nrdot
       compositeIdentifier:
         separator: ":"
         attributes:
-          - server.address
-          - server.port
+          - host.address
+          - host.port
       compositeName:
         fragments:
-          - attribute: server.address
+          - attribute: host.address
           - value: ":"
-          - attribute: server.port
+          - attribute: host.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: newrelic.event.type
-          value: SqlServerQueryDetails
+          value: OracleQueryDetails
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: github.com/newrelic/nrdot-collector-components/receiver/sqlserverreceiver
+          value: github.com/newrelic/nrdot-collector-components/receiver/oracledbreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
-        telemetry.sdk.name:
-          entityTagName: instrumentation.provider
-        server.address:
-          entityTagNames: [server.address, endpoint]
-        server.port:
-          entityTagName: server.port
-        sql.version:
+        otel.library.version:
+          entityTagName: instrumentation.version
+        db.version.full:
           entityTagName: database.version
+        db.role:
+          entityTagName: database.role
+        host.address:
+          entityTagNames: [host.address, endpoint]
+        host.port:
+          entityTagName: host.port
 
-    - ruleName: infra_mssqlinstance_server_address_nrdot
+    - ruleName: infra_oracledbinstance_host_name_nrdot
       compositeIdentifier:
         separator: ":"
         attributes:
-          - server.address
-          - server.port
+          - host.address
+          - host.port
       compositeName:
         fragments:
-          - attribute: server.address
+          - attribute: host.address
           - value: ":"
-          - attribute: server.port
+          - attribute: host.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: sqlserver.
+          prefix: oracledb.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: github.com/newrelic/nrdot-collector-components/receiver/sqlserverreceiver
+          value: github.com/newrelic/nrdot-collector-components/receiver/oracledbreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
-        telemetry.sdk.name:
-          entityTagName: instrumentation.provider
-        server.address:
-          entityTagNames: [server.address, endpoint]
-        server.port:
-          entityTagName: server.port
-        sql.version:
+        otel.library.version:
+          entityTagName: instrumentation.version
+        db.version.full:
           entityTagName: database.version
-
-goldenTags:
-  - mssql.host
-  - mssql.instance
+        db.role:
+          entityTagName: database.role
+        host.address:
+          entityTagNames: [host.address, endpoint]
+        host.port:
+          entityTagName: host.port
+        
+        
+goldenTags: []
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -153,7 +159,7 @@ dashboardTemplates:
   newRelic:
     template: newrelic_dashboard.json
   opentelemetry:
-    template: newrelic_otel_sql_dashboard.stg.json
+    template: opentelemetry_dashboard.stg.json
 
 ownership:
   primaryOwner:
