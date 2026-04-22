@@ -41,6 +41,57 @@ synthesis:
         entityTagName: instrumentation.name
       server.address:
       server.port:
+  # OpenTelemetry synthesis rule - service.instance.id pattern
+  - ruleName: infra_redisinstance_otel
+    identifier: service.instance.id
+    name: service.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      # Support both redis. and redis_ prefix metrics
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Only trigger when service.instance.id pattern is used (not server.address pattern)
+      - attribute: service.instance.id
+        present: true
+      - attribute: server.address
+        present: false
+      # Entity creation triggered by redis.role present 
+      - attribute: redis.role
+        present: true
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
+    tags:
+      # Required resource attributes
+      service.instance.id:
+      redis.version:
+      redis.role:
+      redis.port:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Optional resource attributes
+      redis.cluster.name:
+      redis.cluster.enabled:
+      redis.maxmemory:
+      redis.persistence.enabled:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
 
   tags:
     # For OpenTelemetry
@@ -63,9 +114,15 @@ goldenTags:
 - redis.hostname
 - redis.version
 - redis.clusterRole
-# Open Telemetry
+# OpenTelemetry - server.address pattern
 - server.address
 - server.port
+# OpenTelemetry - service.instance.id pattern
+- service.name
+- service.instance.id
+- host.name
+- host.id
+- redis.cluster.name
 
 configuration:
   entityExpirationTime: DAILY

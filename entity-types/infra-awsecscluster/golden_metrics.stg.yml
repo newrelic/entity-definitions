@@ -1,0 +1,57 @@
+cpuUsage:
+  title: CPU usage (%)
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.ecs.CPUUtilization.byCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.cpuUtilization.Average)
+      from: ComputeSample
+      where: provider='EcsCluster'
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(`ecs.task.cpu.utilized`)
+      from: Metric
+      where: instrumentation.provider='opentelemetry' AND cloud.platform='aws_ecs'
+      eventId: entity.guid
+      eventName: entity.name
+memoryUsage:
+  title: Memory usage (%)
+  unit: PERCENTAGE
+  queries:
+    aws:
+      select: average(aws.ecs.MemoryUtilization.byCluster)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.memoryUtilization.Average)
+      from: ComputeSample
+      where: provider='EcsCluster'
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: (sum(`ecs.task.memory.usage`) / sum(`ecs.task.memory.usage.limit`)) * 100
+      from: Metric
+      where: instrumentation.provider='opentelemetry' AND cloud.platform='aws_ecs'
+      eventId: entity.guid
+      eventName: entity.name
+runningTasksCount:
+  title: Running tasks
+  unit: COUNT
+  queries:
+    aws:
+      select: latest(`aws.ecs.runningTasksCount.byCluster`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    opentelemetry:
+      select: latest(`aws.ecs.cluster.tasks.count`)
+      from: Metric
+      where: instrumentation.provider='opentelemetry' AND cloud.platform='aws_ecs'
+      eventId: entity.guid
+      eventName: entity.name
