@@ -1,0 +1,46 @@
+relationships:
+  # Pattern 1: APM legacy timeslice metrics - Datastore/instance/MongoDB/{docdb-hostname}/{port}
+  # Matches when NR Java agent instruments MongoDB driver calls against a DocumentDB endpoint
+  - name: apmApplicationCallsAwsDocDbInstance
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "Datastore/instance/MongoDB/<host>.docdb.amazonaws.com/<port>"
+        regex: "^[Dd]atastore/instance/[Mm]ongo[Dd][Bb]/[a-zA-Z0-9-]+\\.[a-z0-9]+\\.[a-zA-Z0-9-]+\\.docdb\\.amazonaws\\.com/[0-9]+"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDOCDBINSTANCE
+          fields:
+            - field: endpoint
+              attribute: metricName__4 # hostname: <instance>.<cluster>.<region>.docdb.amazonaws.com
+
+  # Pattern 2: Distributed Tracing - Span with peer.hostname pointing to DocumentDB
+  - name: apmApplicationCallsAwsDocDbInstanceFromSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: peer.hostname
+        regex: '^[a-zA-Z0-9-]+\.[a-z0-9]+\.[a-zA-Z0-9-]+\.docdb\.amazonaws\.com$'
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDOCDBINSTANCE
+          fields:
+            - field: endpoint
+              attribute: peer.hostname
