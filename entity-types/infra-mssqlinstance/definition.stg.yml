@@ -25,7 +25,7 @@ synthesis:
         entityKey:
           ttl: P1D
 
-    - ruleName: infra_mssqlinstance_host_name
+    - ruleName: infra_mssqlinstance_host_name_metrics
       identifier: host.name
       name: host.name
       encodeIdentifierInGUID: true
@@ -45,6 +45,48 @@ synthesis:
           entityTagName: instrumentation.provider
         host.name:
           entityTagNames: [server.address, endpoint]
+
+    - ruleName: infra_mssqlinstance_query_sample
+      identifier: host.name
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: event.name
+          value: db.server.query_sample
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlserverreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        host.name:
+          entityTagNames: [server.address, endpoint]
+        db.namespace:
+          entityTagName: database.name
+
+    - ruleName: infra_mssqlinstance_top_query
+      identifier: host.name
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: event.name
+          value: db.server.top_query
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlserverreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        host.name:
+          entityTagNames: [server.address, endpoint]
+        db.namespace:
+          entityTagName: database.name
 
     - ruleName: infra_mssqlinstance_execution_plan_nrdot
       compositeIdentifier:
