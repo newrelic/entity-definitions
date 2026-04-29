@@ -1,0 +1,58 @@
+
+domain: INFRA
+type: JUNIPER_MIST_SITE
+synthesis:
+  rules:
+    - ruleName: infra_juniper_mist_site_id
+      name: site_name
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - vendor
+          - org_id
+          - site_id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: instrumentation.source
+          value: juniper_mist
+        - attribute: mist.site
+          present: true
+      tags:
+        site_id:
+          entityTagName: site_id
+          multiValue: false
+        site_name:
+          entityTagName: site_name
+          multiValue: false
+        org_name:
+          entityTagName: org_name
+          multiValue: false
+        org_id:
+          entityTagName: org_id
+          multiValue: false
+        vendor:
+          entityTagName: vendor
+          multiValue: false
+        region:
+          entityTagName: region
+          multiValue: false
+        latlng.lat:
+          entityTagName: latitude
+          multiValue: false
+        latlng.lng:
+          entityTagName: longitude
+          multiValue: false
+        country_code:
+          entityTagName: country_code
+          multiValue: false
+        timezone:
+          entityTagName: timezone
+          multiValue: false
+      # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+      prefixedTags:
+        tags.:
+          ttl: PT4H
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"
