@@ -1,0 +1,28 @@
+relationships:
+  - name: awsEcsClusterContainsEcsTask
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: cloud.platform
+        anyOf: ["aws_ecs"]
+      - attribute: entity.type
+        anyOf: ["AWSECSTASK"]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSECSCLUSTER
+          fields:
+            - field: awsEcsClusterArn
+              attribute: aws.arn
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: AWSECSTASK
