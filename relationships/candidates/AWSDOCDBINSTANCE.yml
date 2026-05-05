@@ -6,8 +6,17 @@ lookups:
     tags:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.endpoint"]
+        # Primary matching by instance identifier (always present)
+        - tagKeys: ["aws.rds.dbInstanceIdentifier"]
+          field: instanceId
+        # Optional port matching (when available and correct)
+        - tagKeys: ["aws.rds.dbInstancePort", "aws.rds.port"]
+          field: port
+          optional: true
+        # Optional endpoint matching (when available)
+        - tagKeys: ["aws.rds.endpoint", "aws.endpoint"]
           field: endpoint
+          optional: true
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
