@@ -19,8 +19,14 @@ relationships:
         lookupGuid:
           candidateCategory: AWSDOCDBINSTANCE
           fields:
-            - field: endpoint
-              attribute: metricName__4 # hostname: <instance>.<cluster>.<region>.docdb.amazonaws.com
+            # Extract instance identifier from hostname (e.g., rpaliwal-docdb-instance-1.coubraw8zuju.us-east-1.docdb.amazonaws.com -> rpaliwal-docdb-instance-1)
+            - field: instanceId
+              attribute: metricName__4
+              regex: '^([^.]+)\..*\.docdb\.amazonaws\.com$'
+              regexCaptureGroup: 1
+            # Extract port from metric name for additional matching when available
+            - field: port
+              attribute: metricName__5
 
   # Pattern 2: Distributed Tracing - Span with peer.hostname pointing to DocumentDB
   - name: apmApplicationCallsAwsDocDbInstanceFromSpan
@@ -42,5 +48,11 @@ relationships:
         lookupGuid:
           candidateCategory: AWSDOCDBINSTANCE
           fields:
-            - field: endpoint
+            # Extract instance identifier from hostname (e.g., rpaliwal-docdb-instance-1.coubraw8zuju.us-east-1.docdb.amazonaws.com -> rpaliwal-docdb-instance-1)
+            - field: instanceId
               attribute: peer.hostname
+              regex: '^([^.]+)\..*\.docdb\.amazonaws\.com$'
+              regexCaptureGroup: 1
+            # Also pass port for additional matching when available
+            - field: port
+              attribute: server.port
