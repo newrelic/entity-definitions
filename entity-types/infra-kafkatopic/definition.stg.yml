@@ -1,0 +1,165 @@
+domain: INFRA
+type: KAFKATOPIC
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+  # This rule is for OTEL contrib jmx kafka receivers metrics
+  - ruleName: infra_kafkatopic_otel_jmxmetrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: topic
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "io.opentelemetry.contrib.jmxmetrics"
+    tags:
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+
+  - ruleName: infra_kafkatopic_otel_jmxscraper
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: topic
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "io.opentelemetry.jmx"
+    tags:
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+
+  - ruleName: infra_kafkatopic_otel_kafkametrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: topic
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver"
+    tags:
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+
+  - ruleName: infra_kafkatopic_otel_prometheus
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: topic
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+
+  # Log-based rule: OTel kafkareceiver logs carry topic, kafka.cluster.name, and producer.service.name.
+  - ruleName: infra_kafkatopic_otel_kafkareceiver_log
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Log
+    - attribute: topic
+      present: true
+    - attribute: kafka.cluster.name
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: service.name
+      present: false
+    tags:
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+      producer.service.name:
+        ttl: PT75M
+
+
+goldenTags:
+- clusterName
+- topic
+- kafka.cluster.name
+- producer.service.name
+
+dashboardTemplates:
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
