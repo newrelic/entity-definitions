@@ -1,0 +1,36 @@
+domain: INFRA
+type: GCPAPIGATEWAY
+goldenTags:
+- gcp.projectId
+- gcp.location
+- gcp.gatewayId
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  rules:
+  - ruleName: infra_gcpapigateway_composite
+    compositeIdentifier:
+      separator: "/"
+      attributes:
+      - project_id
+      - location
+      - gateway_id
+    name: displayName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: metricName
+      prefix: gcp.apigateway.
+    tags:
+      project_id:
+        entityTagName: gcp.projectId
+      location:
+        entityTagName: gcp.location
+      gateway_id:
+        entityTagName: gcp.gatewayId
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
