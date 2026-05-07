@@ -1,59 +1,65 @@
 relationships:
-  - name: k8sNamespaceContainsDeployment
+  - name: k8sPodContainsExtCalicoStg
     version: "1"
     origins:
-      - Kubernetes Integration
-    conditions: 
-      - attribute: eventType
-        anyOf: [ "K8sNamespaceSample" ]
+      - Prometheus
+    conditions:
+      - attribute: metricName
+        startsWith: felix_
+      - attribute: cluster_name
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONTAINS
       source:
         buildGuid:
           account:
-            lookup: true  
+            lookup: true
           domain:
             value: INFRA
           type:
-            value: KUBERNETES_NAMESPACE
+            value: KUBERNETES_POD
             valueInGuid: NA
           identifier:
             fragments:
-              - value: "k8s:namespace:"
-              - attribute: namespaceName
+              - value: "k8s:"
+              - attribute: cluster_name
+              - value: ":"
+              - attribute: namespace
+              - value: ":pod:"
+              - attribute: pod
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entityGuid
-          entityType:
-            value: KUBERNETES_DEPLOYMENT  
-  - name: otelKsmK8sNamespaceContainsDeployment
-    # use kube-state-metrics kube_deployment_created
+          attribute: entity.guid
+  - name: k8sPodContainsExtCalicoOtelStg
     version: "1"
-    origins: 
+    origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        anyOf: [ "kube_deployment_created" ]
+        startsWith: felix_
+      - attribute: k8s.cluster.name
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONTAINS
       source:
         buildGuid:
           account:
-            lookup: true  
+            lookup: true
           domain:
             value: INFRA
           type:
-            value: KUBERNETES_NAMESPACE
+            value: KUBERNETES_POD
           identifier:
             fragments:
               - attribute: k8s.cluster.name
+              - value: ":"
               - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
             hashAlgorithm: FARM_HASH
-      target:  
+      target:
         extractGuid:
           attribute: entity.guid
-          entityType:
-            value: KUBERNETES_DEPLOYMENT
