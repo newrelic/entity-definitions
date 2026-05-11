@@ -39,6 +39,31 @@ synthesis:
         otel.library.name:
           entityTagName: instrumentation.name
     
+    # OpenTelemetry with Prometheus Receiver (RabbitMQ dot-notation attributes)
+    - ruleName: infra_rabbitmqnode_rabbitmq_node_name_prom
+      identifier: rabbitmq.node.name
+      name: rabbitmq.node.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: rabbitmq.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+        - attribute: rabbitmq.node.name
+          present: true
+        - attribute: rabbitmq.vhost.name
+          present: false
+        - attribute: rabbitmq.queue.name
+          present: false
+      tags:
+        rabbitmq.node.name:
+        otel.library.name:
+          entityTagName: instrumentation.name
+
     # OpenTelemetry with Prometheus Receiver (RabbitMQ Prometheus Exporter)
     - ruleName: infra_rabbitmqnode_rabbitmq_node
       identifier: rabbitmq_node

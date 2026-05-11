@@ -1,0 +1,28 @@
+domain: INFRA
+type: AZURESYNAPSEWORKSPACESQLPOOL
+goldenTags:
+- azure.regionName
+- azure.subscriptionId
+- azure.type
+- azure.resourceGroupName
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - ruleName: infra_azuresynapseworkspacesqlpool_azure_resourceId
+    identifier: azure.resourceId
+    name: displayName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: azure.resourceType
+      value: microsoft.synapse/workspaces/sqlpools
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
