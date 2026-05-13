@@ -8,8 +8,8 @@ podsDesired:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(kube_replicaset_pod_desired)
-      where: metricName = 'kube_replicaset_pod_desired'
+      select: latest(kube_replicaset_spec_replicas)
+      where: metricName = 'kube_replicaset_spec_replicas'
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -23,8 +23,8 @@ podsAvailable:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: latest(kube_replicaset_pod_available)
-      where: metricName = 'kube_replicaset_pod_available'
+      select: latest(kube_replicaset_status_ready_replicas)
+      where: metricName = 'kube_replicaset_status_ready_replicas'
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -37,10 +37,10 @@ podsMissing:
       from: K8sReplicasetSample
       eventId: entityGuid
       eventName: entityName
-    # opentelemetry:
-    #   select:  latest(kube_replicaset_pods_missing)
-    #   from: Metric
-    #   where: metricName = 'kube_replicaset_pods_missing'
-    #   eventId: entity.guid
-    #   eventName: entity.name
+    opentelemetry:
+      select: latest(kube_replicaset_spec_replicas - kube_replicaset_status_ready_replicas)
+      where: metricName in ('kube_replicaset_spec_replicas', 'kube_replicaset_status_ready_replicas')
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 
