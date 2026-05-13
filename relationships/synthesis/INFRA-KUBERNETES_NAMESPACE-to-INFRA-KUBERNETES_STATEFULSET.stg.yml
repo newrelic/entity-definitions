@@ -16,13 +16,19 @@ relationships:
       expires: PT75M
       relationshipType: CONTAINS
       source:
-        lookupGuid:
-          candidateCategory: KUBERNETES_NAMESPACE
-          fields:
-            - field: k8s.clusterName
-              attribute: clusterName
-            - field: k8s.namespaceName
-              attribute: namespaceName
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETESCLUSTER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:cluster:"
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
@@ -46,15 +52,14 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETES_NAMESPACE
+            value: KUBERNETESCLUSTER
           identifier:
             fragments:
               - attribute: k8s.cluster.name
-              - value: ":"
-              - attribute: k8s.namespace.name
+              - attribute: k8s.namespace.name       
             hashAlgorithm: FARM_HASH
       target:  
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: KUBERNETES_STATEFULSET
+            value: KUBERNETES_DAEMONSET
