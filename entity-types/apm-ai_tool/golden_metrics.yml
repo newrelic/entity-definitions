@@ -1,0 +1,140 @@
+throughput:
+  title: Throughput (invocations per minute)
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    opentelemetry:
+      select: rate(count(*), 1 minute) AS 'Throughput'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: rate(count(apm.service.transaction.duration), 1 minute) AS 'Throughput'
+      eventName: appName
+
+responseTimeMs:
+  title: Latency (Average execution time)
+  unit: MS
+  queries:
+    opentelemetry:
+      select: average(duration.ms) AS 'Latency (ms)'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      # Multiply by 1000 to convert APM seconds to MS
+      select: average(apm.service.transaction.duration) * 1000 AS 'Response time (ms)'
+      eventName: appName
+
+errorRate:
+  title: Error Rate (% of failed invocations)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: filter(count(*), WHERE otel.status_code = 'ERROR') / count(*) * 100 AS 'Error %'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: (count(apm.service.error.count) / count(apm.service.transaction.duration)) * 100 AS 'Error %'
+      eventName: appName
+
+successRate:
+  title: Success Rate (% of successful invocations)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: filter(count(*), WHERE otel.status_code != 'ERROR') / count(*) * 100 AS 'Success Rate %'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      # Calculates the inverse of the error rate
+      select: (1 - (count(apm.service.error.count) / count(apm.service.transaction.duration))) * 100 AS 'Success Rate %'
+      eventName: appName
+
+p95Latency:
+  title: P95 Latency (95th percentile execution time)
+  unit: MS
+  queries:
+    opentelemetry:
+      select: percentile(duration.ms, 95) AS 'P95 Latency (ms)'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: percentile(apm.service.transaction.duration, 95) * 1000 AS 'P95 Latency (ms)'
+      eventName: appName
+
+timeoutRate:
+  title: Timeout Rate (% of calls that timed out)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: filter(count(*), WHERE error.message LIKE '%timeout%') / count(*) * 100 AS 'Timeout Rate %'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: (count(apm.service.error.count) / count(apm.service.transaction.duration)) * 100 AS 'Timeout Rate %'
+      where: error.class LIKE '%Timeout%' OR error.class LIKE '%timeout%'
+      eventName: appName
+
+
+invocationsPerRun:
+  title: Invocations / Run (Avg calls per agent session)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: count(*) AS 'Tool Invocations'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      facet: trace.id
+      eventId: entity.guid
+    apm:
+      select: count(apm.service.transaction.duration) AS 'Tool Invocations'
+      facet: transactionName
+      eventName: appName
+
+errorType:
+  title: Error Type (Breakdown of error classes)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: count(*) AS 'Error Count'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL AND otel.status_code = 'ERROR'
+      facet: error.class
+      eventId: entity.guid
+    apm:
+      select: count(apm.service.error.count) AS 'Error Count'
+      facet: error.class
+      eventName: appName
+
+usageByAgent:
+  title: Usage by Agent (Agents invoking this tool)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: count(*) AS 'Invocations'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      facet: gen_ai.agent.name
+      eventId: entity.guid
+    apm:
+      select: count(apm.service.transaction.duration) AS 'Invocations'
+      facet: gen_ai.agent.name
+      eventName: appName
+
+concurrency:
+  title: Concurrency (Active traces per minute)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: uniqueCount(trace.id) AS 'Concurrent Invocations'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: uniqueCount(traceId) AS 'Concurrent Invocations'
+      eventName: appName
+

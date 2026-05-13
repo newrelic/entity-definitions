@@ -1,0 +1,31 @@
+domain: INFRA
+type: AZUREAIFOUNDRY
+goldenTags:
+  - azure.regionName
+  - azure.subscriptionId
+  - azure.type
+  - azure.resourceGroupName
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  rules:
+    # AI Services kind
+    - ruleName: azureaifoundry_aiservices
+      identifier: azure.resourceId
+      name: displayName
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      tags:
+        newrelic.cloudIntegrations.providerAccountName:
+          entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.cognitiveservices/accounts
+        - attribute: azure.resourceKind
+          value: aiservices
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
