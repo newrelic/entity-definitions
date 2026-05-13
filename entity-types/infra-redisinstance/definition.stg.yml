@@ -210,6 +210,64 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
 
+  # OpenTelemetry log synthesis rule - server.address:server.port pattern
+  - ruleName: infra_redisinstance_otel_logs
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - server.address
+        - server.port
+    name: server.address
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: newrelic.source
+        value: "api.logs.otlp"
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    tags:
+      server.address:
+      server.port:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      cloud.provider:
+      cloud.region:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # OpenTelemetry log synthesis rule - service.instance.id pattern
+  - ruleName: infra_redisinstance_otel_logs_service_instance
+    identifier: service.instance.id
+    name: service.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: newrelic.source
+        value: "api.logs.otlp"
+      - attribute: service.instance.id
+        present: true
+      - attribute: server.address
+        present: false
+    tags:
+      service.instance.id:
+      redis.role:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      cloud.provider:
+      cloud.region:
+
   tags:
     # For OpenTelemetry
     telemetry.sdk.name:
