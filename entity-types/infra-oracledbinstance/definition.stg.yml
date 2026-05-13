@@ -24,106 +24,52 @@ synthesis:
         reportingEndpoint:
           ttl: P1D
 
-    - ruleName: infra_oracledbinstance_execution_plan
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - host.address
-          - host.port
-      compositeName:
-        fragments:
-          - attribute: host.address
-          - value: ":"
-          - attribute: host.port
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: newrelic.event.type
-          value: OracleExecutionPlan
-        - attribute: instrumentation.provider
-          value: opentelemetry
-        - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-        otel.library.version:
-          entityTagName: instrumentation.version
-        db.version.full:
-          entityTagName: database.version
-        db.role:
-          entityTagName: database.role
-        host.address:
-          entityTagNames: [host.address, endpoint]
-        host.port:
-          entityTagName: host.port
-
-    - ruleName: infra_oracledbinstance_query_details
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - host.address
-          - host.port
-      compositeName:
-        fragments:
-          - attribute: host.address
-          - value: ":"
-          - attribute: host.port
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: newrelic.event.type
-          value: OracleQueryDetails
-        - attribute: instrumentation.provider
-          value: opentelemetry
-        - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-        otel.library.version:
-          entityTagName: instrumentation.version
-        db.version.full:
-          entityTagName: database.version
-        db.role:
-          entityTagName: database.role
-        host.address:
-          entityTagNames: [host.address, endpoint]
-        host.port:
-          entityTagName: host.port
-
     - ruleName: infra_oracledbinstance_host_name
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - host.address
-          - host.port
-      compositeName:
-        fragments:
-          - attribute: host.address
-          - value: ":"
-          - attribute: host.port
+      identifier: host.name
+      name: host.name
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: newrelicoracledb.
+          prefix: oracledb.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/newrelicoraclereceiver
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/oracledbreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
         otel.library.version:
           entityTagName: instrumentation.version
-        db.version.full:
-          entityTagName: database.version
-        db.role:
-          entityTagName: database.role
         host.address:
           entityTagNames: [host.address, endpoint]
         host.port:
           entityTagName: host.port
+
+    - ruleName: infra_oracledbinstance_query_sample
+      identifier: host.name
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: event.name
+          prefix: db.server.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/oracledbreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        host.address:
+          entityTagNames: [host.address, endpoint]
+        host.port:
+          entityTagName: host.port
+
   #new rules
     - ruleName: infra_oracledbinstance_execution_plan_nrdot
       compositeIdentifier:
@@ -237,7 +183,7 @@ dashboardTemplates:
   newRelic:
     template: newrelic_dashboard.json
   opentelemetry:
-    template: opentelemetry_dashboard.json
+    template: opentelemetry_dashboard.stg.json
 
 ownership:
   primaryOwner:
