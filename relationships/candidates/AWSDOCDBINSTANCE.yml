@@ -1,22 +1,49 @@
 category: AWSDOCDBINSTANCE
 lookups:
+  # Tier 1: Most specific match - instanceId + endpoint + port
+  # Pattern based on MSSQLDBINSTANCE.yml (server.address + server.port)
   - entityTypes:
       - domain: INFRA
         type: AWSDOCDBINSTANCE
     tags:
       matchingMode: ALL
       predicates:
-        # Primary matching by instance identifier (always present)
         - tagKeys: ["aws.rds.dbInstanceIdentifier"]
           field: instanceId
-        # Optional port matching (when available and correct)
-        - tagKeys: ["aws.rds.dbInstancePort", "aws.rds.port"]
-          field: port
-          optional: true
-        # Optional endpoint matching (when available)
-        - tagKeys: ["aws.rds.endpoint", "aws.endpoint"]
+        - tagKeys: ["aws.rds.endpoint"]
           field: endpoint
-          optional: true
+        - tagKeys: ["aws.rds.dbInstancePort"]
+          field: port
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+  # Tier 2: Fallback match - instanceId + endpoint
+  # Pattern based on MSSQLDBINSTANCE.yml (host.name fallback)
+  - entityTypes:
+      - domain: INFRA
+        type: AWSDOCDBINSTANCE
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.rds.dbInstanceIdentifier"]
+          field: instanceId
+        - tagKeys: ["aws.rds.endpoint"]
+          field: endpoint
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+  # Tier 3: Guaranteed match - instanceId only (always exists on DocumentDB instances)
+  # Final fallback with uninstrumented entity creation
+  - entityTypes:
+      - domain: INFRA
+        type: AWSDOCDBINSTANCE
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.rds.dbInstanceIdentifier"]
+          field: instanceId
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
