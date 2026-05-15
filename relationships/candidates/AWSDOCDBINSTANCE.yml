@@ -1,6 +1,6 @@
 category: AWSDOCDBINSTANCE
 lookups:
-  # Tier 1: Most specific match - instanceId + endpoint + port
+  # Tier 1: Maximum precision - endpoint + port (exact connection match)
   # Pattern based on MSSQLDBINSTANCE.yml (server.address + server.port)
   - entityTypes:
       - domain: INFRA
@@ -8,41 +8,37 @@ lookups:
     tags:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.rds.dbInstanceIdentifier"]
-          field: instanceId
-        - tagKeys: ["aws.rds.endpoint"]
+        - tagKeys: ["aws.rds.endpoint", "aws.endpoint"]
           field: endpoint
-        - tagKeys: ["aws.rds.dbInstancePort"]
+        - tagKeys: ["aws.rds.dbInstancePort", "aws.dbInstancePort"]
           field: port
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
       action: NO_OP
-  # Tier 2: Fallback match - instanceId + endpoint
-  # Pattern based on MSSQLDBINSTANCE.yml (host.name fallback)
+  # Tier 2: High precision - endpoint only (port-agnostic host match)
+  # Fallback when port mismatch but endpoint is correct
   - entityTypes:
       - domain: INFRA
         type: AWSDOCDBINSTANCE
     tags:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.rds.dbInstanceIdentifier"]
-          field: instanceId
-        - tagKeys: ["aws.rds.endpoint"]
+        - tagKeys: ["aws.rds.endpoint", "aws.endpoint"]
           field: endpoint
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
       action: NO_OP
-  # Tier 3: Guaranteed match - instanceId only (always exists on DocumentDB instances)
-  # Final fallback with uninstrumented entity creation
+  # Tier 3: Guaranteed match - instanceId only (always present across all collection methods)
+  # Final fallback ensuring APM relationships never miss and entities show as instrumented
   - entityTypes:
       - domain: INFRA
         type: AWSDOCDBINSTANCE
     tags:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.rds.dbInstanceIdentifier"]
+        - tagKeys: ["aws.rds.DBInstanceIdentifier", "aws.dbInstanceIdentifier"]
           field: instanceId
     onMatch:
       onMultipleMatches: RELATE_ALL
