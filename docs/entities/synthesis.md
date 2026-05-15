@@ -268,7 +268,7 @@ synthesis:
 
 #### TTL tags
 
-By default, unique `key:value` tuples for tags are stored on the entity object indefinitely. You can override this behavior using the `ttl` configuration option, which accepts any [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) duration of 24 hours (`P1D`) or longer.
+By default, unique `key:value` tuples for tags are stored on the entity object indefinitely. You can override this behavior using the `ttl` configuration option, which accepts any [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) duration of 4 hours (`P4H`) or longer.
 
 For example, given this configuration:
 
@@ -290,7 +290,7 @@ environment: testing
 owner_group: devops
 ```
 
-Updating the configuration to add a 1 day TTL on each tag key like this:
+Updating the configuration to add a 4 hour TTL on each tag key like this:
 
 ```yaml
 synthesis:
@@ -299,12 +299,12 @@ synthesis:
       name: device_name
       tags:
         environment:
-          ttl: P1D
+          ttl: P4H
         owner_group:
-          ttl: P1D
+          ttl: P4H
 ```
 
-Would result in the original `environment: production` value being purged after 1 day of telemetry on this entity, where this tuple is absent. In addition, the lack of telemetry using the tag key `owner_group` would also capture that any tuples using this key are absent, and thus expired.
+Would result in the original `environment: production` value being purged after 4 hours of telemetry on this entity, where this tuple is absent. In addition, the lack of telemetry using the tag key `owner_group` would also capture that any tuples using this key are absent, and thus expired.
 
 The final result for the entity UI is a tags component with only the unique tuple that is currently being sent with this entity's telemetry.
 
@@ -317,7 +317,7 @@ environment: testing
 | -------- | -------- | ------------ | ---------------- |
 | multiValue | Boolean  | No | If set to `false`, any update will replace all existing values in the tag, making it a tag with only one value. Defaults to `true`. |
 | entityTagNames | List<String> | No | If provided, the attribute value will be copied into a tag using each value of the list as the key. Defaults to list with the attribute name. |
-| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). Minimum value is 24 hours (`P1D`). |
+| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). Minimum value is 4 hours (`P4H`). |
 
 #### Default tags
 
