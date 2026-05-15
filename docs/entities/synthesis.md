@@ -394,7 +394,7 @@ Every attribute name including any of the provided prefixes will get indexed as 
 
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
-| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). |
+| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). Minimum value is 4 hours (`PT4H`). |
 
 Finally, notice the `prefixedTags` structure is not a nested child hanging from `tags`, but directly from `rules`.
 
