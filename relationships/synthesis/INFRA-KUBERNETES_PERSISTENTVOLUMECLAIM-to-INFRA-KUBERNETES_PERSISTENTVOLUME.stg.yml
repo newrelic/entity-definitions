@@ -1,0 +1,77 @@
+relationships:
+  - name: k8sPersistentVolumeClaimManagesPersistentVolume
+    version: "1"
+    origins:
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "K8sPersistentVolumeClaimSample" ]
+      - attribute: volumeName
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_PERSISTENTVOLUMECLAIM
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_PERSISTENTVOLUME
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":PersistentVolume:"
+              - attribute: volumeName
+            hashAlgorithm: FARM_HASH
+  - name: otelKsmK8sPersistentVolumeClaimManagesPersistentVolume
+    # use kube-state-metrics kube_persistentvolumeclaim_info metric
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_persistentvolumeclaim_info" ]
+      - attribute: volumename
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_PERSISTENTVOLUMECLAIM
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pvc.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_PERSISTENTVOLUME
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: volumename
+            hashAlgorithm: FARM_HASH
