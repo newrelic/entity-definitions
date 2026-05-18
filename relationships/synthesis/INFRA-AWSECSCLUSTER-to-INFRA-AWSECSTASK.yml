@@ -1,5 +1,5 @@
 relationships:
-  - name: awsEcsTaskContainsContainer
+  - name: awsEcsClusterContainsEcsTaskByNameProd
     version: "1"
     origins:
       - OpenTelemetry
@@ -11,18 +11,18 @@ relationships:
       - attribute: cloud.platform
         anyOf: ["aws_ecs"]
       - attribute: entity.type
-        anyOf: ["CONTAINER"]
+        anyOf: ["AWSECSTASK"]
     relationship:
       expires: PT75M
       relationshipType: CONTAINS
       source:
         lookupGuid:
-          candidateCategory: AWSECSTASK
+          candidateCategory: AWSECSCLUSTER
           fields:
-            - field: awsEcsTaskArn
-              attribute: aws.ecs.task.arn
+            - field: awsEcsClusterName
+              attribute: aws.clusterName
       target:
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: CONTAINER
+            value: AWSECSTASK
