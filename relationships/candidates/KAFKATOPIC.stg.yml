@@ -37,8 +37,8 @@ lookups:
         type: KAFKATOPIC
 
   - entityTypes:
-    - domain: INFRA
-      type: KAFKATOPIC
+      - domain: INFRA
+        type: KAFKATOPIC
     tags:
       matchingMode: ALL
       predicates:
@@ -52,3 +52,17 @@ lookups:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
         type: KAFKATOPIC
+
+  # Match KAFKATOPIC by producer.service.name tag — for consumers that don't carry kafka.cluster.name.
+  - entityTypes:
+      - domain: INFRA
+        type: KAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["producer.service.name"]
+          field: producerServiceName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
