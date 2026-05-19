@@ -1,0 +1,38 @@
+relationships:
+  - name: apmCallsOtelNginxServer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.display.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: NGINXSERVER
+          identifier:
+            fragments:
+              - attribute: nginx.deployment.name
+              - value: ":"
+              - attribute: nginx.server.endpoint
+            hashAlgorithm: FARM_HASH
