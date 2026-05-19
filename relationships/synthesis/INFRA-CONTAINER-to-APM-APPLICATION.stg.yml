@@ -1,0 +1,140 @@
+relationships:
+  # Rule 1: OTel ECS container (INFRA-CONTAINER) HOSTS native NR APM application (APM-APPLICATION).
+  # Fires on Span events (Distributed Tracing). Canonical pattern for APM relationships.
+  # NR APM agents set containerId from /proc/self/cgroup and entity.guid on every span.
+  - name: otelEcsContainerHostsNrApmApplicationViaSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: containerId
+        present: true
+      - attribute: entity.guid
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: containerId
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: APPLICATION
+
+  # Rule 2: Same via Transaction events (APM Metrics origin).
+  # Fallback for agents/scenarios that don't produce spans but do produce Transaction events.
+  # Uses entityGuid (camelCase) which is the attribute name in Transaction events.
+  - name: otelEcsContainerHostsNrApmApplicationViaTransaction
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        anyOf: ["Transaction"]
+      - attribute: containerId
+        present: true
+      - attribute: entityGuid
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: containerId
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: APPLICATION
+
+  # Rule 3: Legacy NR infra-agent Docker container (INFRA-NA) HOSTS APM application via Span.
+  - name: nrDockerContainerHostsNrApmApplicationViaSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: containerId
+        present: true
+      - attribute: entity.guid
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "docker:"
+              - attribute: containerId
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: APPLICATION
+
+  # Rule 4: Legacy NR infra-agent Docker container (INFRA-NA) HOSTS APM application via Transaction.
+  - name: nrDockerContainerHostsNrApmApplicationViaTransaction
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        anyOf: ["Transaction"]
+      - attribute: containerId
+        present: true
+      - attribute: entityGuid
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "docker:"
+              - attribute: containerId
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: APPLICATION
