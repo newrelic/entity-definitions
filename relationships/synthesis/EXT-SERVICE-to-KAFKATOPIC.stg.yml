@@ -190,71 +190,6 @@ relationships:
             - field: cloudResourceId
               attribute: newrelic.aws_metric_streams.arn
 
-#  - name: apmProducesOtelKafkaTopicStgOverride
-#    version: "1"
-#    origins:
-#      - Distributed Tracing
-#      - OpenTelemetry
-#    conditions:
-#      - attribute: eventType
-#        anyOf: [ "Metric" ]
-#      - attribute: instrumentation.provider
-#        anyOf: [ "opentelemetry" ]
-#      - attribute: metricName
-#        startsWith: "kafka.producer"
-#      - attribute: entity.type
-#        anyOf: [ "SERVICE" ]
-#      - attribute: kafka.cluster.name
-#        present: true
-#      - attribute: topic
-#        present: true
-#    relationship:
-#      expires: PT75M
-#      relationshipType: PRODUCES
-#      source:
-#        extractGuid:
-#          attribute: entity.guid
-#      target:
-#        lookupGuid:
-#          candidateCategory: KAFKATOPIC
-#          fields:
-#            - field: clusterName
-#              attribute: kafka.cluster.name
-#            - field: topic
-#              attribute: topic
-
-#  - name: apmConsumesOtelKafkaTopicStgOverride
-#    version: "1"
-#    origins:
-#      - OpenTelemetry
-#    conditions:
-#      - attribute: eventType
-#        anyOf: [ "Metric" ]
-#      - attribute: instrumentation.provider
-#        anyOf: [ "opentelemetry" ]
-#      - attribute: metricName
-#        startsWith: "kafka.consumer"
-#      - attribute: entity.type
-#        anyOf: [ "SERVICE" ]
-#      - attribute: kafka.cluster.name
-#        present: true
-#      - attribute: topic
-#        present: true
-#    relationship:
-#      expires: PT75M
-#      relationshipType: CONSUMES
-#      source:
-#        lookupGuid:
-#          candidateCategory: KAFKATOPIC
-#          fields:
-#            - field: clusterName
-#              attribute: kafka.cluster.name
-#            - field: topic
-#              attribute: topic
-#      target:
-#        extractGuid:
-#          attribute: entity.guid
-
   - name: apmProducesOtelKafkaTopicStgOverrideExp
     version: "1"
     origins:
@@ -331,3 +266,161 @@ relationships:
       source:
         extractGuid:
           attribute: entity.guid
+
+  # Self-hosted Kafka producer span → KAFKATOPIC via messaging.destination.name + kafka.cluster.name
+  - name: extServiceProducesSelfHostKafkaTopicSpanStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "producer", "client" ]
+      - attribute: messaging.destination.name
+        present: true
+      - attribute: kafka.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: messaging.destination.name
+              - value: ":"
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+
+  # Self-hosted Kafka consumer span → KAFKATOPIC via messaging.destination.name + kafka.cluster.name
+  - name: extServiceConsumesSelfHostKafkaTopicSpanStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+      - attribute: messaging.destination.name
+        present: true
+      - attribute: kafka.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: messaging.destination.name
+              - value: ":"
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+
+  # kafkareceiver log → producer EXT-SERVICE PRODUCES KAFKATOPIC via producer.service.name header
+  - name: extServiceProducesSelfHostKafkaTopicLogStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.logs.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: topic
+        present: true
+      - attribute: kafka.cluster.name
+        present: true
+      - attribute: producer.service.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: producer.service.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: ":"
+              - attribute: kafka.cluster.name
+            hashAlgorithm: FARM_HASH
+
+  # Consumer span → KAFKATOPIC via producer.service.name tag lookup (no kafka.cluster.name needed)
+  - name: extServiceConsumesSelfHostKafkaTopicByProducerSvcStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+      - attribute: producer.service.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: producerServiceName
+              attribute: producer.service.name
