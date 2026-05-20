@@ -1,15 +1,18 @@
 relationships:
-  # infra metrics from OTel dockerstats receiver
-  - name: extInfraDockerContainerEXTService
+  # OTel container (INFRA-CONTAINER) HOSTS native NR APM application.
+  - name: otelContainerHostsNrApmApplication
     version: "1"
     origins:
-      - OpenTelemetry
+      - Distributed Tracing
+      - APM Metrics
     conditions:
       - attribute: eventType
-        anyOf: [ "Log", "Metric", "Span" ]
-      - attribute: entity.type
-        anyOf: [ "SERVICE" ]
-      - attribute: container.id
+        anyOf: ["Span", "Transaction"]
+      - attribute: containerId
+        present: true
+      - attribute: entityGuid
+        present: true
+      - attribute: appId
         present: true
     relationship:
       expires: PT75M
@@ -24,22 +27,29 @@ relationships:
             value: CONTAINER
           identifier:
             fragments:
-              - attribute: container.id
+              - attribute: containerId
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entity.guid
-  # infra metrics from NR infra agent
-  - name: nrInfraDockerContainerEXTService
+          attribute: entityGuid
+          entityType:
+            value: APPLICATION
+
+
+  # NR native infra-agent Docker container HOSTS native NR APM application.
+  - name: nrDockerContainerHostsNrApmApplication
     version: "1"
     origins:
-      - OpenTelemetry
+      - Distributed Tracing
+      - APM Metrics
     conditions:
       - attribute: eventType
-        anyOf: [ "Log", "Metric", "Span" ]
-      - attribute: entity.type
-        anyOf: [ "SERVICE" ]
-      - attribute: container.id
+        anyOf: ["Span", "Transaction"]
+      - attribute: containerId
+        present: true
+      - attribute: entityGuid
+        present: true
+      - attribute: appId
         present: true
     relationship:
       expires: PT75M
@@ -56,8 +66,10 @@ relationships:
           identifier:
             fragments:
               - value: "docker:"
-              - attribute: container.id
+              - attribute: containerId
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
+          entityType:
+            value: APPLICATION
