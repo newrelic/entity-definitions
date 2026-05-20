@@ -1,0 +1,75 @@
+relationships:
+  # Existing nri-mq rule (kept for backwards compatibility with PROD).
+  # Source manager GUID is built from targetName + qmgr because that is how
+  # the nri-mq pipeline identifies the IBMMQ_MANAGER entity.
+  - name: ibmMqManagerManagesIbmMqQueueStgOverride
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
+      - attribute: instrumentation.provider
+        present: false
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "targetName"
+              - value: ":"
+              - attribute: "qmgr"
+            hashAlgorithm: IDENTITY
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # OpenTelemetry rule. Source manager GUID is built from host.name + qmgr,
+  # matching the OTel synthesis identifier in infra-ibmmq_manager.
+  - name: ibmMqManagerManagesIbmMqQueueOtel
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: otel.library.name
+        anyOf: [ "ibmmq" ]
+    relationship:
+      expires: P75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "host.name"
+              - value: ":"
+              - attribute: "qmgr"
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type

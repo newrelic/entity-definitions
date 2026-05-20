@@ -1,0 +1,79 @@
+domain: INFRA
+type: IBMMQ_QUEUE
+
+goldenTags:
+  - qmgr
+  - queue
+  - host.name
+  - cluster
+
+synthesis:
+  rules:
+    # Existing nri-mq pipeline rule (kept for backwards compatibility with PROD)
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      name: queue
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq_queue
+      tags:
+        qmgr:
+
+    # OpenTelemetry pipeline rule. Metrics from IBM's mq_otel exporter use
+    # the "ibmmq.queue." prefix and tag each datapoint with qmgr and queue.
+    # The queue is identified by host.name + qmgr + queue to keep GUIDs
+    # unique across hosts and queue managers.
+    - compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.name
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      name: queue
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq.queue.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: ibmmq
+        - attribute: qmgr
+          present: true
+        - attribute: queue
+          present: true
+      tags:
+        qmgr:
+        queue:
+        host.name:
+        platform:
+        usage:
+        cluster:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+
+  tags:
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
