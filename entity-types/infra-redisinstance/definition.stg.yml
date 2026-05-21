@@ -10,7 +10,11 @@ synthesis:
       attributes:
         - server.address
         - server.port
-    name: server.address
+    compositeName:
+      fragments:
+        - attribute: server.address
+        - value: ":"
+        - attribute: server.port
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -64,7 +68,11 @@ synthesis:
       attributes:
         - server.address
         - server.port
-    name: server.address
+    compositeName:
+      fragments:
+        - attribute: server.address
+        - value: ":"
+        - attribute: server.port
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -107,10 +115,10 @@ synthesis:
       server.address:
       server.port:
 
-  # OpenTelemetry synthesis rule - service.instance.id pattern
+  # OpenTelemetry synthesis rule - redis.instance.id pattern
   - ruleName: infra_redisinstance_otel
-    identifier: service.instance.id
-    name: service.instance.id
+    identifier: redis.instance.id
+    name: redis.instance.id
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -120,8 +128,8 @@ synthesis:
         prefix: redis.
       - attribute: instrumentation.provider
         value: opentelemetry
-      # Only trigger when service.instance.id pattern is used (not server.address pattern)
-      - attribute: service.instance.id
+      # Only trigger when redis.instance.id pattern is used (not server.address pattern)
+      - attribute: redis.instance.id
         present: true
       - attribute: server.address
         present: false
@@ -132,7 +140,7 @@ synthesis:
         value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
     tags:
       # Required resource attributes
-      service.instance.id:
+      redis.instance.id:
       redis.version:
       redis.role:
       redis.port:
@@ -159,10 +167,10 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
 
-  # OpenTelemetry synthesis rule - service.instance.id pattern (standard collector)
+  # OpenTelemetry synthesis rule - redis.instance.id pattern (standard collector)
   - ruleName: infra_redisinstance_otel_1
-    identifier: service.instance.id
-    name: service.instance.id
+    identifier: redis.instance.id
+    name: redis.instance.id
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -171,8 +179,8 @@ synthesis:
         prefix: redis.
       - attribute: instrumentation.provider
         value: opentelemetry
-      # Only trigger when service.instance.id pattern is used (not server.address pattern)
-      - attribute: service.instance.id
+      # Only trigger when redis.instance.id pattern is used (not server.address pattern)
+      - attribute: redis.instance.id
         present: true
       - attribute: server.address
         present: false
@@ -183,7 +191,7 @@ synthesis:
         value: otelcol/redisreceiver
     tags:
       # Required resource attributes
-      service.instance.id:
+      redis.instance.id:
       redis.version:
       redis.role:
       redis.port:
@@ -217,7 +225,11 @@ synthesis:
       attributes:
         - server.address
         - server.port
-    name: server.address
+    compositeName:
+      fragments:
+        - attribute: server.address
+        - value: ":"
+        - attribute: server.port
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -242,10 +254,10 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
 
-  # OpenTelemetry log synthesis rule - service.instance.id pattern
+  # OpenTelemetry log synthesis rule - redis.instance.id pattern
   - ruleName: infra_redisinstance_otel_logs_service_instance
-    identifier: service.instance.id
-    name: service.instance.id
+    identifier: redis.instance.id
+    name: redis.instance.id
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -254,12 +266,12 @@ synthesis:
         value: opentelemetry
       - attribute: newrelic.source
         value: "api.logs.otlp"
-      - attribute: service.instance.id
+      - attribute: redis.instance.id
         present: true
       - attribute: server.address
         present: false
     tags:
-      service.instance.id:
+      redis.instance.id:
       redis.role:
       host.name:
         ttl: P1D
@@ -292,9 +304,9 @@ goldenTags:
 # OpenTelemetry - server.address pattern
 - server.address
 - server.port
-# OpenTelemetry - service.instance.id pattern
+# OpenTelemetry - redis.instance.id pattern
 - service.name
-- service.instance.id
+- redis.instance.id
 - host.name
 - host.id
 - redis.cluster.name
