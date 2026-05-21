@@ -1,11 +1,11 @@
 relationships:
-  - name: k8sNamespaceContainsDaemonSet
+  - name: k8sNamespaceContainsReplicaSet
     version: "1"
     origins:
       - Kubernetes Integration
     conditions:
       - attribute: eventType
-        anyOf: [ "K8sDaemonsetSample" ]
+        anyOf: [ "K8sReplicasetSample" ]
       - attribute: entityGuid
         present: true
       - attribute: namespaceName
@@ -27,15 +27,15 @@ relationships:
         extractGuid:
           attribute: entityGuid
           entityType:
-            value: KUBERNETES_DAEMONSET
-  - name: otelKsmK8sNamespaceContainsDaemonSet
-    # use kube-state-metrics kube_daemonset_created
+            value: KUBERNETES_REPLICASET
+  - name: otelKsmK8sNamespaceContainsReplicaSet
+    # use kube-state-metrics kube_replicaset_owner
     version: "1"
-    origins: 
+    origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        anyOf: [ "kube_daemonset_created" ]
+        anyOf: [ "kube_replicaset_owner" ]
     relationship:
       expires: PT75M
       relationshipType: CONTAINS
@@ -51,4 +51,4 @@ relationships:
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: KUBERNETES_DAEMONSET
+            value: KUBERNETES_REPLICASET

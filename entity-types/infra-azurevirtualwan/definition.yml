@@ -1,5 +1,5 @@
 domain: INFRA
-type: AZUREAIFOUNDRY
+type: AZUREVIRTUALWAN
 goldenTags:
   - azure.regionName
   - azure.subscriptionId
@@ -9,20 +9,19 @@ configuration:
   entityExpirationTime: DAILY
   alertable: true
 synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
   rules:
-    # AI Services kind
-    - ruleName: azureaifoundry_aiservices
+    - ruleName: infra_azurevirtualwan_azure_resourceId
       identifier: azure.resourceId
       name: displayName
+      legacyFeatures:
+        overrideGuidType: true
       encodeIdentifierInGUID: true
-      tags:
-        newrelic.cloudIntegrations.providerAccountName:
-          entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
       conditions:
         - attribute: azure.resourceType
-          value: microsoft.cognitiveservices/accounts
-        - attribute: azure.resourceKind
-          value: aiservices
+          value: microsoft.network/virtualwans
 
 ownership:
   primaryOwner:
