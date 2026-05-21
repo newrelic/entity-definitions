@@ -1,7 +1,42 @@
+# ---------------------------------------------------------------------------
+# Staging-only override of INFRA-IBMMQ_MANAGER-to-INFRA-IBMMQ_QUEUE.yml.
+#
+# Per the repo's deployment model (see top-level README.md > "Deploying to
+# Staging"), this .stg.yml REPLACES the original .yml in STG while PROD
+# continues to use the original unchanged. Because it is a full replacement,
+# every relationship rule that should be active in STG must be present here
+# -- not only the new ones.
+#
+# Relationship rule names must be globally unique across all files (the
+# validate_relationship_synthesis_rules check enforces this), so the nri-mq
+# rule below is renamed with the "StgOverride" suffix per the README's
+# guidance ("Verify override rule identifiers are different from originals").
+#
+# This file therefore contains TWO rules:
+#
+#   1. ibmMqManagerManagesIbmMqQueueStgOverride (nri-mq pipeline)
+#      - Mirrors the original ibmMqManagerManagesIbmMqQueue rule.
+#      - Source GUID is built from targetName + qmgr (matches the nri-mq
+#        synthesis identifier in definition.stg.yml > "Pipeline 1").
+#      - Adds a `instrumentation.provider: present: false` condition so OTel
+#        telemetry does not trigger this rule.
+#      - Status: carried over from the original .yml so STG keeps forming
+#        the manager->queue link for nri-mq data.
+#
+#   2. ibmMqManagerManagesIbmMqQueueOtel (OpenTelemetry pipeline)
+#      - Source GUID is built from host.name + qmgr with FARM_HASH (matches
+#        the OTel synthesis identifier and `encodeIdentifierInGUID: true`
+#        flag in definition.stg.yml > "Pipeline 2").
+#      - Filters on instrumentation.provider=opentelemetry and
+#        otel.library.name=ibmmq so it only fires for IBM mq_otel telemetry.
+#      - Status: new in this .stg.yml.
+# ---------------------------------------------------------------------------
+
 relationships:
-  # Existing nri-mq rule (kept for backwards compatibility with PROD).
+  # --- Rule 1: nri-mq pipeline (carried over, renamed for STG uniqueness) ---
   # Source manager GUID is built from targetName + qmgr because that is how
-  # the nri-mq pipeline identifies the IBMMQ_MANAGER entity.
+  # the nri-mq pipeline identifies the IBMMQ_MANAGER entity. The
+  # `instrumentation.provider: present: false` condition keeps OTel data out.
   - name: ibmMqManagerManagesIbmMqQueueStgOverride
     version: "1"
     origins:
@@ -14,7 +49,7 @@ relationships:
       - attribute: instrumentation.provider
         present: false
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: MANAGES
       source:
         buildGuid:
@@ -36,8 +71,10 @@ relationships:
           entityType:
             attribute: entity.type
 
-  # OpenTelemetry rule. Source manager GUID is built from host.name + qmgr,
-  # matching the OTel synthesis identifier in infra-ibmmq_manager.
+  # --- Rule 2: OpenTelemetry pipeline (new in STG) ---
+  # Source manager GUID is built from host.name + qmgr with FARM_HASH,
+  # matching the OTel synthesis rule in infra-ibmmq_manager/definition.stg.yml
+  # which uses `encodeIdentifierInGUID: true`.
   - name: ibmMqManagerManagesIbmMqQueueOtel
     version: "1"
     origins:
@@ -52,7 +89,7 @@ relationships:
       - attribute: otel.library.name
         anyOf: [ "ibmmq" ]
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: MANAGES
       source:
         buildGuid:
