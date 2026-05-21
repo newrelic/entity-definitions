@@ -4,12 +4,12 @@ type: HAPROXYINSTANCE
 synthesis:
   rules:
   # OpenTelemetry synthesis rule (new collector format)
-  # Requires: resourcedetection processor (adds host.name) + haproxyreceiver (adds haproxy.addr)
+  # Requires: resourcedetection processor (adds host.id) + haproxyreceiver (adds haproxy.addr)
   - ruleName: infra_haproxyinstance_otel_new
     compositeIdentifier:
       separator: ":"
       attributes:
-        - host.name
+        - host.id
         - haproxy.addr
     name: host.name
     encodeIdentifierInGUID: true
@@ -20,7 +20,7 @@ synthesis:
         prefix: haproxy.
       - attribute: instrumentation.provider
         value: opentelemetry
-      - attribute: host.name
+      - attribute: host.id
         present: true
       - attribute: haproxy.addr
         present: true
@@ -61,7 +61,7 @@ synthesis:
     compositeIdentifier:
       separator: ":"
       attributes:
-        - host.name
+        - host.id
         - haproxy.addr
     name: host.name
     encodeIdentifierInGUID: true
@@ -72,7 +72,7 @@ synthesis:
         prefix: haproxy.
       - attribute: instrumentation.provider
         value: opentelemetry
-      - attribute: host.name
+      - attribute: host.id
         present: true
       - attribute: haproxy.addr
         present: true
@@ -108,12 +108,12 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
 
-  # Fallback: service.instance.id pattern (new collector format)
-  # For users who explicitly set service.instance.id and haproxy.version via resource processors.
-  # This provides a fallback if the resourcedetection-based rules above don't match.
-  - ruleName: infra_haproxyinstance_otel_service_id_new
-    identifier: service.instance.id
-    name: service.instance.id
+  # Fallback: haproxy.instance.id pattern (new collector format)
+  # For users who explicitly set haproxy.instance.id via a resource processor when host.id is unavailable.
+  # This is a customer-chosen, stable identifier (e.g., "prod-haproxy-east-1").
+  - ruleName: infra_haproxyinstance_otel_custom_id_new
+    identifier: haproxy.instance.id
+    name: haproxy.instance.id
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -122,15 +122,14 @@ synthesis:
         prefix: haproxy.
       - attribute: instrumentation.provider
         value: opentelemetry
-      - attribute: service.instance.id
+      - attribute: haproxy.instance.id
         present: true
-      - attribute: haproxy.version
+      - attribute: haproxy.addr
         present: true
       - attribute: otel.library.name
         value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/haproxyreceiver"
     tags:
-      service.instance.id:
-      haproxy.version:
+      haproxy.instance.id:
       haproxy.addr:
       haproxy.proxy_name:
       host.name:
@@ -151,10 +150,10 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
 
-  # Fallback: service.instance.id pattern (old collector format)
-  - ruleName: infra_haproxyinstance_otel_service_id_old
-    identifier: service.instance.id
-    name: service.instance.id
+  # Fallback: haproxy.instance.id pattern (old collector format)
+  - ruleName: infra_haproxyinstance_otel_custom_id_old
+    identifier: haproxy.instance.id
+    name: haproxy.instance.id
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
@@ -163,15 +162,14 @@ synthesis:
         prefix: haproxy.
       - attribute: instrumentation.provider
         value: opentelemetry
-      - attribute: service.instance.id
+      - attribute: haproxy.instance.id
         present: true
-      - attribute: haproxy.version
+      - attribute: haproxy.addr
         present: true
       - attribute: otel.library.name
         value: "otelcol/haproxyreceiver"
     tags:
-      service.instance.id:
-      haproxy.version:
+      haproxy.instance.id:
       haproxy.addr:
       haproxy.proxy_name:
       host.name:
@@ -198,6 +196,7 @@ synthesis:
       entityTagName: instrumentation.provider
 
 goldenTags:
+- host.id
 - host.name
 - haproxy.addr
 - os.type
