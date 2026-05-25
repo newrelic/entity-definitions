@@ -10,10 +10,8 @@ relationships:
         anyOf: [ "opentelemetry" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
-      - attribute: service.instance.id
+      - attribute: redis.instance.id
         present: true
-      - attribute: server.address
-        present: false
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -31,4 +29,40 @@ relationships:
           identifier:
             fragments:
               - attribute: redis.instance.id
+            hashAlgorithm: FARM_HASH
+
+  - name: apmCallsOtelRedisInstance2
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+          identifier:
+            fragments:
+              - attribute: server.address
+              - value: ":"
+              - attribute: server.port
             hashAlgorithm: FARM_HASH
