@@ -2,23 +2,34 @@ sendMessageRequests:
   queries:
     gcp:
       eventId: entity.guid
-      select: (rate(sum(`gcp.pubsub.topic.send_message_operation_count`), 1 minute)) / 60
-      from: Metric 
-    gcpSample: 
+      eventName: entity.name
+      select: sum(`gcp.pubsub.topic.send_request_count`)
+      from: Metric
+    gcpSample:
       eventId: entityGuid
       select: (rate(sum(`topic.SendMessageOperation`), 1 minute)) / 60
       from: GcpPubSubTopicSample
-  unit: MESSAGES_PER_SECOND
-  title: Send rate
+  unit: COUNT
+  title: Publish requests
 unackedMessages:
   queries:
     gcp:
       eventId: entity.guid
-      select: sum(`gcp.pubsub.subscription.num_unacked_messages_by_region`)
-      from: Metric 
-    gcpSample: 
+      eventName: entity.name
+      select: sum(`gcp.pubsub.topic.num_unacked_messages_by_region`)
+      from: Metric
+    gcpSample:
       eventId: entityGuid
       select: sum(`topic.NumUnackedMessagesByRegion`)
       from: GcpPubSubTopicSample
   unit: COUNT
   title: Unacknowledged messages
+retainedMessages:
+  queries:
+    gcp:
+      eventId: entity.guid
+      eventName: entity.name
+      select: sum(`gcp.pubsub.topic.num_retained_messages`)
+      from: Metric
+  unit: COUNT
+  title: Retained messages
