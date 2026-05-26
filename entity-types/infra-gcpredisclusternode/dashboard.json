@@ -1,0 +1,246 @@
+{
+  "name": "GCP Redis Cluster Node",
+  "description": null,
+  "pages": [
+    {
+      "name": "GCP Redis Cluster Node",
+      "description": null,
+      "widgets": [
+        {
+          "title": "CPU Utilization",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`gcp.redis.cluster.node.cpu.utilization`) * 100 AS 'CPU %' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' FACET `metric.state` TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Memory Utilization",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`gcp.redis.cluster.node.memory.utilization`) * 100 AS 'Memory %' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Memory Usage (Bytes)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`gcp.redis.cluster.node.memory.usage`) AS 'Memory Bytes' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Connected Clients",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`gcp.redis.cluster.node.clients.connected_clients`) AS 'Connected' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' FACET `metric.role` TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Total Keys",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`gcp.redis.cluster.node.keyspace.total_keys`) AS 'Keys' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' FACET `metric.role` TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Keyspace Hits vs Misses",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`gcp.redis.cluster.node.stats.keyspace_hits_count`) AS 'Hits', sum(`gcp.redis.cluster.node.stats.keyspace_misses_count`) AS 'Misses' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Evicted Keys",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`gcp.redis.cluster.node.stats.evicted_keys_count`) AS 'Evicted' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Commands Executed",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`gcp.redis.cluster.node.commandstats.calls_count`) AS 'Commands' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' FACET `metric.command` TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Network Throughput (Bytes)",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`gcp.redis.cluster.node.stats.net_input_bytes_count`) AS 'Bytes In', sum(`gcp.redis.cluster.node.stats.net_output_bytes_count`) AS 'Bytes Out' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' AND collector.name = 'gcp-polling-v2' TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
