@@ -21,6 +21,8 @@ dashboardTemplates:
 
 synthesis:
   rules:
+  # Legacy short-form library name. Older OHI-bundled / wrapped collectors
+  # emit `otelcol/apachereceiver` as the InstrumentationScope name.
   - ruleName: infra_apacheserver_composite
     compositeIdentifier:
       separator: ":"
@@ -37,7 +39,7 @@ synthesis:
       - attribute: instrumentation.provider
         value: opentelemetry
       # This filters only metrics coming from apache receiver, given that metrics
-      # could deffer between different runtime receivers. 
+      # could deffer between different runtime receivers.
       - attribute: otel.library.name
         value: otelcol/apachereceiver
     tags:
@@ -47,6 +49,37 @@ synthesis:
       cloud.account.id:
       cloud.region:
       # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      apache.server.name:
+      apache.server.port:
+
+  # Modern full GitHub-URL library name. Standalone
+  # opentelemetry-collector-contrib emits the full URL form as the
+  # InstrumentationScope name. Same identifier/name as the legacy rule, so
+  # both sources produce the same APACHESERVER entity.
+  - ruleName: infra_apacheserver_otel_contrib
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - apache.server.name
+        - apache.server.port
+    name: apache.server.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: apache.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/apachereceiver"
+    tags:
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
       otel.library.name:
         entityTagName: instrumentation.name
       apache.server.name:
