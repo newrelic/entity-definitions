@@ -1,0 +1,43 @@
+relationships:
+  # APM SERVICE calls HAProxy instance (OpenTelemetry)
+  # This relationship fires when a SERVICE entity's metrics carry haproxy.deployment.name,
+  # haproxy.server.endpoint, and haproxy.display.name — injected via the resource/haproxy
+  # processor in the OTel Collector config (applied to both haproxy and app pipelines).
+  # Follows the same pattern as EXT-SERVICE-to-INFRA-NGINXSERVER.stg.yml.
+  - name: apmCallsOtelHaproxyInstance
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: haproxy.server.endpoint
+        present: true
+      - attribute: haproxy.deployment.name
+        present: true
+      - attribute: haproxy.display.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HAPROXYINSTANCE
+          identifier:
+            fragments:
+              - attribute: haproxy.deployment.name
+              - value: ":"
+              - attribute: haproxy.server.endpoint
+            hashAlgorithm: FARM_HASH
