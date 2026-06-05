@@ -1,0 +1,268 @@
+{
+  "name": "IBMMQ Manager",
+  "pages": [
+    {
+      "name": "Queue Manager",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Queue Manager Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 6
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric select latest(qmgr)  as 'Name', latest(host.hostname) as 'Host', latest(host.operatingSystem) as 'Operating System', latest(hostStatus), latest(timestamp) as 'Last Update' where entity.type = 'IBMMQ_MANAGER' limit max"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(ibmmq_qmgr_connection_count) as Connections FROM Metric COMPARE WITH 1 hour ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Connections",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(ibmmq_qmgr_connection_count) as Connections FROM Metric TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Errors",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 6
+          },
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_qmgr_failed_browse_count) AS 'Failed browse' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqcb_count) AS 'Failed MQCB' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqclose_count) AS 'Failed MQCLOSE' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqconn_mqconnx_count) AS 'Failed MQCONN/MQCONNX' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqget_count) AS 'Failed MQGET' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqinq_count) AS 'Failed MQINQ' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqopen_count) AS 'Failed MQOPEN' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqput1_count) AS 'Failed MQPUT1' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqput_count) AS 'Failed MQPUT' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqset_count) AS 'Failed MQSET' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_mqsubrq_count) AS 'Failed MQSUBRQ' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_subscription_create_alter_resume_count) AS 'Failed create/alter/resume subscription' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_subscription_delete_count) AS 'Failed delete subscription' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_failed_topic_mqput_mqput1_count) AS 'Failed topic MQPUT/MQPUT1' TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_qmgr_published_to_subscribers_message_count) + average(ibmmq_qmgr_interval_mqput_mqput1_total_count)  + average(ibmmq_qmgr_interval_destructive_get_total_count)  AS 'Messages' compare with 1 hour ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Messages",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_interval_mqput_mqput1_total_count) AS 'Put' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_interval_destructive_get_total_count) AS 'Get' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_qmgr_published_to_subscribers_message_count) AS 'Publish' TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT  average(ibmmq_qmgr_queue_manager_file_system_in_use_bytes) as 'Queue Manager FS usage', average(ibmmq_qmgr_log_file_system_in_use_bytes) as 'Log FS usage'   compare with 1 hour ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "FileSystem Usage",
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "width": 10,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM  Metric SELECT average(ibmmq_qmgr_queue_manager_file_system_in_use_bytes) as 'Queue Manager' TIMESERIES AUTO "
+              },
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_qmgr_log_file_system_in_use_bytes) as ' Log' TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+# Staging-only override of definition.yml. Replaces the original in STG.
+# Carries the existing nri-mq rule plus a new OpenTelemetry rule (IBM mq_otel exporter).
+
+domain: INFRA
+type: IBMMQQUEUE
+
+goldenTags:
+  - qmgr
+  - queue
+  - host.name
+  - cluster
+
+synthesis:
+  rules:
+    # nri-mq pipeline (Prometheus exporter).
+    - ruleName: infra_ibmmq_queue_composite_stg
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      name: queue
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq_queue
+      tags:
+        qmgr:
+
+    # OpenTelemetry pipeline (IBM mq_otel exporter, dotted metric names).
+    # Name is qmgr:queue so two queue managers can share a queue name without collision.
+    - ruleName: infra_ibmmq_queue_otel_stg
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.name
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      compositeName:
+        fragments:
+          - attribute: qmgr
+          - value: ":"
+          - attribute: queue
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq.queue.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: ibmmq
+        - attribute: qmgr
+          present: true
+        - attribute: queue
+          present: true
+      tags:
+        qmgr:
+        queue:
+        host.name:
+        platform:
+        usage:
+        cluster:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+
+  tags:
+    instrumentation.provider:
+
+dashboardTemplates:
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"

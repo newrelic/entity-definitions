@@ -1,0 +1,75 @@
+# Staging-only override of INFRA-IBMMQ_MANAGER-to-INFRA-IBMMQ_QUEUE.yml.
+# Replaces the original in STG. nri-mq rule is renamed with "StgOverride" suffix
+# to keep relationship rule names globally unique.
+
+relationships:
+  # nri-mq pipeline. instrumentation.provider absent so OTel data does not match.
+  - name: ibmMqManagerManagesIbmMqQueueStgOverride
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQQUEUE" ]
+      - attribute: instrumentation.provider
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "targetName"
+              - value: ":"
+              - attribute: "qmgr"
+            hashAlgorithm: IDENTITY
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: IBMMQQUEUE
+
+  # OpenTelemetry pipeline. Source GUID built from host.name + qmgr with FARM_HASH
+  # to match the OTel synthesis rule's encodeIdentifierInGUID: true.
+  - name: ibmMqManagerManagesIbmMqQueueOtel
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQQUEUE" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "host.name"
+              - value: ":"
+              - attribute: "qmgr"
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: IBMMQQUEUE
