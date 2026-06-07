@@ -52,39 +52,38 @@ synthesis:
       tags:
         clusterName:
 
-    # OpenTelemetry pipeline (IBM mq_otel exporter, dotted metric names).
+    # OpenTelemetry pipeline. Verified attributes from live NRDot collector data:
+    # ibmmq.queue_manager.name (qmgr name), targetName (host running the collector).
+    # otel.library.name is the prometheus receiver since IBM's mq_prometheus
+    # exporter is scraped by the collector's prometheus receiver.
     - ruleName: infra_ibmmq_manager_otel_stg
       compositeIdentifier:
         separator: ":"
         attributes:
-          - host.name
-          - qmgr
-      name: qmgr
+          - targetName
+          - ibmmq.queue_manager.name
+      name: ibmmq.queue_manager.name
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: ibmmq.
+          prefix: ibmmq.qmgr.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: ibmmq
-        - attribute: qmgr
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+        - attribute: ibmmq.queue_manager.name
           present: true
-        - attribute: queue
-          present: false
-        - attribute: channel
-          present: false
-        - attribute: topic
-          present: false
       tags:
-        qmgr:
-        host.name:
+        ibmmq.queue_manager.name:
+          entityTagName: qmgr
+        targetName:
         platform:
-        hostname:
         cluster:
           entityTagName: clusterName
+        deployment.environment:
+        service.version:
         otel.library.name:
           entityTagName: instrumentation.name
         instrumentation.provider:
@@ -94,8 +93,8 @@ synthesis:
 
 goldenTags:
   - qmgr
-  - host.name
-  - cluster
+  - targetName
+  - clusterName
 
 dashboardTemplates:
   newRelic:

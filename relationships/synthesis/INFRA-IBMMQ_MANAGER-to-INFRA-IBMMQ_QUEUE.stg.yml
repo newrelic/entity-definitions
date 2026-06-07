@@ -38,8 +38,8 @@ relationships:
           entityType:
             value: IBMMQQUEUE
 
-  # OpenTelemetry pipeline. Source GUID built from host.name + qmgr with FARM_HASH
-  # to match the OTel synthesis rule's encodeIdentifierInGUID: true.
+  # OpenTelemetry pipeline. Source GUID built from targetName + ibmmq.queue_manager.name
+  # with FARM_HASH to match the OTel manager synthesis rule's encodeIdentifierInGUID: true.
   - name: ibmMqManagerManagesIbmMqQueueOtel
     version: "1"
     origins:
@@ -64,9 +64,9 @@ relationships:
             value: IBMMQ_MANAGER
           identifier:
             fragments:
-              - attribute: "host.name"
+              - attribute: "targetName"
               - value: ":"
-              - attribute: "qmgr"
+              - attribute: "ibmmq.queue_manager.name"
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
