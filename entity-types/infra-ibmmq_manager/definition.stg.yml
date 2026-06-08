@@ -1,44 +1,10 @@
-# ---------------------------------------------------------------------------
-# Staging-only override of definition.yml.
-#
-# Per the repo's deployment model (see top-level README.md > "Deploying to
-# Staging"), this .stg.yml REPLACES the original definition.yml in STG while
-# PROD continues to use definition.yml unchanged. Because it is a full
-# replacement, every synthesis rule that should be active in STG must be
-# present here -- not only the new ones.
-#
-# This file therefore contains TWO pipelines:
-#
-#   1. nri-mq (Prometheus-style metric names, underscore-separated)
-#      - Source:   New Relic Infra integration scraping the IBM MQ
-#                  Prometheus exporter (mq-metric-samples/cmd/mq_prometheus).
-#      - Filter:   metricName prefix "ibmmq_qmgr" / "ibmmq_channel" /
-#                  "ibmmq_subscription".
-#      - Identity: targetName + qmgr.
-#      - Status:   Carried over verbatim from definition.yml so STG behaves
-#                  the same as PROD for this pipeline.
-#
-#   2. OpenTelemetry (dimensional metric names, dot-separated)
-#      - Source:   IBM's official mq_otel exporter
-#                  (https://github.com/ibm-messaging/mq-metric-samples/tree/master/cmd/mq_otel)
-#                  which sets resource service.name=ibmmq, instrumentation
-#                  scope name "ibmmq", and emits metrics named
-#                  "ibmmq.<series>.<name>" (e.g. ibmmq.qmgr.connection_count).
-#      - Filter:   instrumentation.provider=opentelemetry,
-#                  otel.library.name=ibmmq, metricName prefix "ibmmq.",
-#                  qmgr present, queue/channel/topic absent.
-#      - Identity: host.name + qmgr.
-#      - Status:   New in this .stg.yml; not yet present in definition.yml.
-# ---------------------------------------------------------------------------
-
+# Staging override: holds nri-mq rules (carried over from definition.yml) and the new OTel rule.
 domain: INFRA
 type: IBMMQ_MANAGER
 
 synthesis:
   rules:
-    # --- Pipeline 1: nri-mq (Prometheus exporter, underscore metric names) ---
-    # Carried over from definition.yml. Required so STG keeps synthesizing
-    # IBMMQ_MANAGER entities from nri-mq data while this override is active.
+    # nri-mq (Prometheus exporter): carried over from definition.yml.
     - ruleName: infra_ibmmq_manager_composite_stg
       compositeIdentifier:
         separator: ":"
@@ -86,11 +52,7 @@ synthesis:
       tags:
         clusterName:
 
-    # --- Pipeline 2: OpenTelemetry (IBM mq_otel exporter, dotted names) ---
-    # Identifier is host.name + qmgr (mirrors how nri-mq composes targetName +
-    # qmgr but uses the OTel resource attribute available from this exporter).
-    # The "queue/channel/topic absent" conditions ensure object-level metrics
-    # don't accidentally synthesize a manager entity.
+    # OpenTelemetry (IBM mq_otel exporter): identifier is host.name + qmgr; queue/channel/topic must be absent so object-level metrics don't synthesize a manager.
     - ruleName: infra_ibmmq_manager_otel_stg
       compositeIdentifier:
         separator: ":"
@@ -139,7 +101,7 @@ goldenTags:
 
 dashboardTemplates:
   newRelic:
-    template: dashboard.json
+    template: newrelic_dashboard.json
   opentelemetry:
     template: opentelemetry_dashboard.stg.json
 
