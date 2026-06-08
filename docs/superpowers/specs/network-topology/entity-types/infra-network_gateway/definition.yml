@@ -1,0 +1,67 @@
+domain: INFRA
+type: NETWORK_GATEWAY
+synthesis:
+  rules:
+    # Source 1 — custom `Networking` event
+    - ruleName: networkGatewayFromNetworkingEvent
+      identifier: mac
+      name: deviceName
+      encodeIdentifierInGUID: false
+      conditions:
+        - attribute: eventType
+          value: Networking
+        - attribute: deviceType
+          value: gateway
+        - attribute: mac
+          present: true
+      tags:
+        mac:
+          entityTagName: mac
+        vendor:
+          entityTagName: vendor
+        vendorOrgId:
+          entityTagName: vendorOrgId
+        networkId:
+          entityTagName: networkId
+        deviceId:
+          entityTagName: deviceId
+        model:
+          entityTagName: model
+        deviceType:
+          entityTagName: deviceType
+
+    # Source 2 — LLDP over SNMP (Kentik ktranslate). Routers map to gateway (deviceType=gateway).
+    - ruleName: networkGatewayFromLldp
+      identifier: lldpLocChassisId
+      name: device_name
+      encodeIdentifierInGUID: false
+      conditions:
+        - attribute: metricName
+          value: kentik.snmp.lldpLocChassisId
+        - attribute: deviceType
+          value: gateway
+        - attribute: lldpLocChassisId
+          present: true
+      tags:
+        lldpLocChassisId:
+          entityTagName: mac
+        device_name:
+          entityTagName: hostname
+        src_addr:
+          entityTagName: ipAddress
+        deviceType:
+          entityTagName: deviceType
+        vendor:
+          entityTagName: vendor
+        model:
+          entityTagName: model
+
+goldenTags:
+  - vendor
+  - model
+  - deviceType
+  - networkId
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"

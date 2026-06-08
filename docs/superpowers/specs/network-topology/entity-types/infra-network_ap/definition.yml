@@ -1,0 +1,67 @@
+domain: INFRA
+type: NETWORK_AP
+synthesis:
+  rules:
+    # Source 1 — custom `Networking` event
+    - ruleName: networkApFromNetworkingEvent
+      identifier: mac
+      name: deviceName
+      encodeIdentifierInGUID: false
+      conditions:
+        - attribute: eventType
+          value: Networking
+        - attribute: deviceType
+          value: ap
+        - attribute: mac
+          present: true
+      tags:
+        mac:
+          entityTagName: mac
+        vendor:
+          entityTagName: vendor
+        vendorOrgId:
+          entityTagName: vendorOrgId
+        networkId:
+          entityTagName: networkId
+        deviceId:
+          entityTagName: deviceId
+        model:
+          entityTagName: model
+        deviceType:
+          entityTagName: deviceType
+
+    # Source 2 — LLDP over SNMP (Kentik ktranslate)
+    - ruleName: networkApFromLldp
+      identifier: lldpLocChassisId
+      name: device_name
+      encodeIdentifierInGUID: false
+      conditions:
+        - attribute: metricName
+          value: kentik.snmp.lldpLocChassisId
+        - attribute: deviceType
+          value: ap
+        - attribute: lldpLocChassisId
+          present: true
+      tags:
+        lldpLocChassisId:
+          entityTagName: mac
+        device_name:
+          entityTagName: hostname
+        src_addr:
+          entityTagName: ipAddress
+        deviceType:
+          entityTagName: deviceType
+        vendor:
+          entityTagName: vendor
+        model:
+          entityTagName: model
+
+goldenTags:
+  - vendor
+  - model
+  - deviceType
+  - networkId
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"
