@@ -1,0 +1,172 @@
+{
+  "name": "GCP Memorystore Instance",
+  "description": null,
+  "pages": [
+    {
+      "name": "GCP Memorystore Instance",
+      "description": null,
+      "widgets": [
+        {
+          "title": "CPU Utilization (%)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(`gcp.memorystore.instance.cpu.maximum_utilization`) * 100 AS 'CPU %' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Memory Utilization (%)",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(`gcp.memorystore.instance.memory.maximum_utilization`) * 100 AS 'Memory %' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Connected Clients",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`gcp.memorystore.instance.clients.total_connected_clients`) AS 'Clients' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' FACET `metric.role` TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Total Keys",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`gcp.memorystore.instance.keyspace.total_keys`) AS 'Keys' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Memory Used (Bytes)",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(`gcp.memorystore.instance.memory.total_used_memory`) AS 'Used Memory' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cache Hit Ratio (%)",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`gcp.memorystore.instance.stats.average_keyspace_hits`) / (average(`gcp.memorystore.instance.stats.average_keyspace_hits`) + average(`gcp.memorystore.instance.stats.average_keyspace_misses`)) * 100 AS 'Cache Hit %' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Evicted Keys",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`gcp.memorystore.instance.stats.average_evicted_keys`) AS 'Evicted Keys' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Network Input/Output (Bytes/s)",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(`gcp.memorystore.instance.stats.total_net_input_bytes_count`), 1 minute) AS 'Net In', rate(sum(`gcp.memorystore.instance.stats.total_net_output_bytes_count`), 1 minute) AS 'Net Out' FROM Metric WHERE `entity.guid` = '{{entity.guid}}' FACET `metric.role` TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
