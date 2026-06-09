@@ -1,0 +1,83 @@
+{
+  "name": "GCP AI Platform Index",
+  "description": null,
+  "pages": [
+    {
+      "name": "GCP AI Platform Index",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Stream Update Requests",
+          "layout": {"column": 1, "row": 1, "width": 4, "height": 3},
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "legend": {"enabled": true},
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.matching_engine.stream_update.request_count`) AS 'Requests' WHERE entity.guid IN ({{entity.guid}}) FACET `metric.request_type` TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Stream Update Latency (ms)",
+          "layout": {"column": 5, "row": 1, "width": 4, "height": 3},
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "legend": {"enabled": true},
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(`gcp.aiplatform.matching_engine.stream_update.latencies`) AS 'Latency (ms)' WHERE entity.guid IN ({{entity.guid}}) FACET `metric.request_type` TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Stream Update Datapoint Count",
+          "layout": {"column": 9, "row": 1, "width": 4, "height": 3},
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "legend": {"enabled": true},
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.matching_engine.stream_update.datapoint_count`) AS 'Datapoints' WHERE entity.guid IN ({{entity.guid}}) FACET `metric.request_type` TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Requests by Deployed Index",
+          "layout": {"column": 1, "row": 4, "width": 6, "height": 3},
+          "visualization": {"id": "viz.bar"},
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.matching_engine.stream_update.request_count`) AS 'Requests' WHERE entity.guid IN ({{entity.guid}}) FACET `metric.deployed_index_id` SINCE 1 hour ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Datapoints by Request Type",
+          "layout": {"column": 7, "row": 4, "width": 6, "height": 3},
+          "visualization": {"id": "viz.bar"},
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.matching_engine.stream_update.datapoint_count`) AS 'Datapoints' WHERE entity.guid IN ({{entity.guid}}) FACET `metric.request_type` SINCE 1 hour ago"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
