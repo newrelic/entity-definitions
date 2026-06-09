@@ -1,0 +1,32 @@
+sessionsRate:
+  title: Sessions per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: average(haproxy.sessions.rate)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND haproxy.service_name IN ('FRONTEND', 'BACKEND')
+      eventId: entity.guid
+      eventName: entity.name
+
+requestsRate:
+  title: Requests per second
+  unit: REQUESTS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: average(haproxy.requests.rate)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND haproxy.service_name = 'FRONTEND'
+      eventId: entity.guid
+      eventName: entity.name
+
+connectionErrors:
+  title: Connection errors
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(haproxy.connections.errors)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
