@@ -1,6 +1,4 @@
-# Staging-only override of definition.yml. Replaces the original in STG.
-# Carries the existing nri-mq rule plus a new OpenTelemetry rule (IBM mq_otel exporter).
-
+# Staging override of definition.yml. OTel-only synthesis (native nri-mq deprecated).
 domain: INFRA
 type: IBMMQQUEUE
 
@@ -12,27 +10,9 @@ goldenTags:
 
 synthesis:
   rules:
-    # nri-mq pipeline (Prometheus exporter).
-    - ruleName: infra_ibmmq_queue_composite_stg
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - targetName
-          - qmgr
-          - queue
-      encodeIdentifierInGUID: true
-      name: queue
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: ibmmq_queue
-      tags:
-        qmgr:
-
-    # OpenTelemetry pipeline. Verified attributes from live NRDot collector data:
-    # ibmmq.queue_manager.name, ibmmq.queue, targetName. Composite name is
-    # qmgr:queue so two managers can share a queue name without collision.
+    # OpenTelemetry pipeline. Identifier is targetName + ibmmq.queue_manager.name + ibmmq.queue
+    # (Stage 5 attribute rename). Composite name is qmgr:queue so two managers can share
+    # a queue name without collision.
     - ruleName: infra_ibmmq_queue_otel_stg
       compositeIdentifier:
         separator: ":"
@@ -79,8 +59,6 @@ synthesis:
     instrumentation.provider:
 
 dashboardTemplates:
-  newRelic:
-    template: newrelic_dashboard.json
   opentelemetry:
     template: opentelemetry_dashboard.stg.json
 

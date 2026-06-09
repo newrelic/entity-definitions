@@ -3,56 +3,51 @@ type: IBMMQ_MANAGER
 
 synthesis:
   rules:
-    - ruleName: infra_ibmmq_manager_composite
+    # OpenTelemetry pipeline (IBM mq_prometheus exporter scraped by NRDot collector).
+    # Identifier is targetName + ibmmq.queue_manager.name (Stage 5 attribute rename).
+    - ruleName: infra_ibmmq_manager_otel
       compositeIdentifier:
         separator: ":"
         attributes:
           - targetName
-          - qmgr
-      name: qmgr
+          - ibmmq.queue_manager.name
+      name: ibmmq.queue_manager.name
+      encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: ibmmq_qmgr
+          prefix: ibmmq.qmgr.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+        - attribute: ibmmq.queue_manager.name
+          present: true
       tags:
-        clusterName:
+        ibmmq.queue_manager.name:
+          entityTagName: qmgr
+        targetName:
+        platform:
+        cluster:
+          entityTagName: clusterName
+        deployment.environment:
+        service.version:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
 
-    - ruleName: infra_ibmmq_manager_composite_2
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - targetName
-          - qmgr
-      name: qmgr
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: ibmmq_channel
+  tags:
+    instrumentation.provider:
 
-      tags:
-        clusterName:
-
-    - ruleName: infra_ibmmq_manager_composite_3
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - targetName
-          - qmgr
-      name: qmgr
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: ibmmq_subscription
-
-      tags:
-        clusterName:
+goldenTags:
+  - qmgr
+  - targetName
+  - clusterName
 
 dashboardTemplates:
-  newRelic:
-    template: dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
 
 configuration:
   entityExpirationTime: DAILY

@@ -1,30 +1,65 @@
 domain: INFRA
-type: IBMMQ_QUEUE
+type: IBMMQQUEUE
+
 goldenTags:
   - qmgr
+  - queue
+  - targetName
+  - clusterName
 
 synthesis:
   rules:
-    - ruleName: infra_ibmmq_queue_composite
+    # OpenTelemetry pipeline. Identifier is targetName + ibmmq.queue_manager.name + ibmmq.queue
+    # (Stage 5 attribute rename). Composite name is qmgr:queue so two managers can share
+    # a queue name without collision.
+    - ruleName: infra_ibmmq_queue_otel
       compositeIdentifier:
         separator: ":"
         attributes:
           - targetName
-          - qmgr
-          - queue
+          - ibmmq.queue_manager.name
+          - ibmmq.queue
       encodeIdentifierInGUID: true
-      name: queue
+      compositeName:
+        fragments:
+          - attribute: ibmmq.queue_manager.name
+          - value: ":"
+          - attribute: ibmmq.queue
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: ibmmq_queue
+          prefix: ibmmq.queue.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+        - attribute: ibmmq.queue_manager.name
+          present: true
+        - attribute: ibmmq.queue
+          present: true
       tags:
-        qmgr:
+        ibmmq.queue_manager.name:
+          entityTagName: qmgr
+        ibmmq.queue:
+          entityTagName: queue
+        targetName:
+        platform:
+        usage:
+        cluster:
+          entityTagName: clusterName
+        deployment.environment:
+        service.version:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+
+  tags:
+    instrumentation.provider:
 
 dashboardTemplates:
-  newRelic:
-    template: dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
 
 configuration:
   entityExpirationTime: DAILY

@@ -1,61 +1,11 @@
-# Staging-only override of definition.yml. Replaces the original in STG.
-# Carries the existing nri-mq rules plus a new OpenTelemetry rule (IBM mq_otel exporter).
-
+# Staging override of definition.yml. OTel-only synthesis (native nri-mq deprecated).
 domain: INFRA
 type: IBMMQ_MANAGER
 
 synthesis:
   rules:
-    # nri-mq pipeline (Prometheus exporter).
-    - ruleName: infra_ibmmq_manager_composite_stg
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - targetName
-          - qmgr
-      name: qmgr
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: ibmmq_qmgr
-      tags:
-        clusterName:
-
-    - ruleName: infra_ibmmq_manager_composite_2_stg
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - targetName
-          - qmgr
-      name: qmgr
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: ibmmq_channel
-      tags:
-        clusterName:
-
-    - ruleName: infra_ibmmq_manager_composite_3_stg
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - targetName
-          - qmgr
-      name: qmgr
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: ibmmq_subscription
-      tags:
-        clusterName:
-
-    # OpenTelemetry pipeline. Verified attributes from live NRDot collector data:
-    # ibmmq.queue_manager.name (qmgr name), targetName (host running the collector).
-    # otel.library.name is the prometheus receiver since IBM's mq_prometheus
-    # exporter is scraped by the collector's prometheus receiver.
+    # OpenTelemetry pipeline (IBM mq_prometheus exporter scraped by NRDot collector).
+    # Identifier is targetName + ibmmq.queue_manager.name (Stage 5 attribute rename).
     - ruleName: infra_ibmmq_manager_otel_stg
       compositeIdentifier:
         separator: ":"
@@ -97,8 +47,6 @@ goldenTags:
   - clusterName
 
 dashboardTemplates:
-  newRelic:
-    template: newrelic_dashboard.json
   opentelemetry:
     template: opentelemetry_dashboard.stg.json
 
