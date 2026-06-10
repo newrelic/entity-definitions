@@ -1,0 +1,46 @@
+domain: INFRA
+type: AZUREALARM
+goldenTags:
+  - azure.regionName
+  - azure.subscriptionId
+  - azure.resourceGroupName
+  - azure.type
+  - alarm_type
+configuration:
+  entityExpirationTime: DAILY
+  alertable: false
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+    alarm_type:
+    enabled:
+      multiValue: false
+    severity:
+      multiValue: false
+  rules:
+    - ruleName: infra_azurealarm_metricalert_azure_resourceId
+      identifier: azure.resourceId
+      name: displayName
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.insights/metricalerts
+    - ruleName: infra_azurealarm_scheduledqueryrule_azure_resourceId
+      identifier: azure.resourceId
+      name: displayName
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.insights/scheduledqueryrules
+    - ruleName: infra_azurealarm_activitylogalert_azure_resourceId
+      identifier: azure.resourceId
+      name: displayName
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.insights/activitylogalerts
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
