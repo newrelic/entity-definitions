@@ -1,0 +1,30 @@
+domain: INFRA
+type: OCIVPN
+goldenTags:
+  - oci.compartmentId
+  - oci.region
+  - oci.displayName
+  - oci.lifecycleState
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  - ruleName: infra_ocivpn_oci_resourceId
+    identifier: oci.resourceId
+    name: oci.displayName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "OCID1.IPSECCONNECTION"
+    - attribute: oci.namespace
+      value: "oci_vpn"
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
