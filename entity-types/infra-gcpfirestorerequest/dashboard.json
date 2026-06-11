@@ -1,0 +1,100 @@
+{
+  "name": "GCP Firestore Request",
+  "description": null,
+  "pages": [
+    {
+      "name": "GCP Firestore Request",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Request Count",
+          "layout": {"column": 1, "row": 1, "width": 4, "height": 3},
+          "linkedEntityGuids": null,
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "facet": {"showOtherSeries": false}, "legend": {"enabled": true},
+            "nrqlQueries": [{"accountId": 0, "query": "FROM Metric SELECT sum(`gcp.firestore.api.request_count`) AS 'Requests' WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"}],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Error Requests",
+          "layout": {"column": 5, "row": 1, "width": 4, "height": 3},
+          "linkedEntityGuids": null,
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "facet": {"showOtherSeries": false}, "legend": {"enabled": true},
+            "nrqlQueries": [{"accountId": 0, "query": "FROM Metric SELECT sum(`gcp.firestore.api.request_count`) AS 'Errors' WHERE `entity.guid` = '{{entity.guid}}' AND `metric.response_code` NOT IN ('OK') TIMESERIES AUTO"}],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Requests by API Method",
+          "layout": {"column": 9, "row": 1, "width": 4, "height": 3},
+          "linkedEntityGuids": null,
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "facet": {"showOtherSeries": false}, "legend": {"enabled": true},
+            "nrqlQueries": [{"accountId": 0, "query": "FROM Metric SELECT sum(`gcp.firestore.api.request_count`) AS 'Requests' WHERE `entity.guid` = '{{entity.guid}}' FACET `metric.api_method` TIMESERIES AUTO"}],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Request Latency (ms, p95)",
+          "layout": {"column": 1, "row": 4, "width": 4, "height": 3},
+          "linkedEntityGuids": null,
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "facet": {"showOtherSeries": false}, "legend": {"enabled": true},
+            "nrqlQueries": [{"accountId": 0, "query": "FROM Metric SELECT percentile(`gcp.firestore.api.request_latencies`, 95) * 1000 AS 'Latency p95 (ms)' WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"}],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Document Reads by Type",
+          "layout": {"column": 5, "row": 4, "width": 4, "height": 3},
+          "linkedEntityGuids": null,
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "facet": {"showOtherSeries": false}, "legend": {"enabled": true},
+            "nrqlQueries": [{"accountId": 0, "query": "FROM Metric SELECT sum(`gcp.firestore.document.read_ops_count`) AS 'Reads' WHERE `entity.guid` = '{{entity.guid}}' FACET `metric.type` TIMESERIES AUTO"}],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Document Writes by Operation",
+          "layout": {"column": 9, "row": 4, "width": 4, "height": 3},
+          "linkedEntityGuids": null,
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "facet": {"showOtherSeries": false}, "legend": {"enabled": true},
+            "nrqlQueries": [{"accountId": 0, "query": "FROM Metric SELECT sum(`gcp.firestore.document.write_ops_count`) AS 'Writes' WHERE `entity.guid` = '{{entity.guid}}' FACET `metric.op` TIMESERIES AUTO"}],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "Storage: Data + Index (bytes)",
+          "layout": {"column": 1, "row": 7, "width": 4, "height": 3},
+          "linkedEntityGuids": null,
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "facet": {"showOtherSeries": false}, "legend": {"enabled": true},
+            "nrqlQueries": [{"accountId": 0, "query": "FROM Metric SELECT average(`gcp.firestore.storage.data_and_index_storage_bytes`) AS 'Data + Index Storage' WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"}],
+            "yAxisLeft": {"zero": true}
+          }
+        },
+        {
+          "title": "TTL Deletions",
+          "layout": {"column": 5, "row": 7, "width": 4, "height": 3},
+          "linkedEntityGuids": null,
+          "visualization": {"id": "viz.line"},
+          "rawConfiguration": {
+            "facet": {"showOtherSeries": false}, "legend": {"enabled": true},
+            "nrqlQueries": [{"accountId": 0, "query": "FROM Metric SELECT sum(`gcp.firestore.document.ttl_deletion_count`) AS 'TTL Deletions' WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"}],
+            "yAxisLeft": {"zero": true}
+          }
+        }
+      ]
+    }
+  ]
+}
