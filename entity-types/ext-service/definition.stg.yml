@@ -386,6 +386,42 @@ synthesis:
       service.namespace:
 
 
+    # Detects OTel Java agent 1.x — fires when process.runtime.jvm.* metrics arrive
+  - ruleName: ext_service_otel_jvm_agent_1x
+    identifier: service.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: service.name
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: metricName
+      prefix: process.runtime.jvm
+    tags:
+      otel.library.version:
+        entityTagName: jvmInstrumentationVersion
+        multiValue: false
+        ttl: P1D
+
+    # Detects OTel Java agent 2.x — fires when jvm.* metrics arrive (renamed in 2.x)
+  - ruleName: ext_service_otel_jvm_agent_2x
+    identifier: service.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: service.name
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: metricName
+      prefix: jvm.
+    tags:
+      otel.library.version:
+        entityTagName: jvmInstrumentationVersion
+        multiValue: false
+        ttl: P1D
+
 configuration:
   entityExpirationTime: EIGHT_DAYS
   alertable: true
