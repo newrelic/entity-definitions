@@ -1,34 +1,52 @@
+# Staging override of definition.yml. OTel-only synthesis (native nri-mq deprecated).
 domain: INFRA
-type: IBMMQ_MANAGER
+type: IBMMQQUEUE
+
+goldenTags:
+  - qmgr
+  - queue
+  - targetName
+  - clusterName
 
 synthesis:
   rules:
-    # OpenTelemetry pipeline (IBM mq_prometheus exporter scraped by NRDot collector).
-    # Identifier is targetName + ibmmq.queue_manager.name (Stage 5 attribute rename).
-    - ruleName: infra_ibmmq_manager_otel
+    # OpenTelemetry pipeline. Identifier is targetName + ibmmq.queue_manager.name + ibmmq.queue
+    # (Stage 5 attribute rename). Composite name is qmgr:queue so two managers can share
+    # a queue name without collision.
+    - ruleName: infra_ibmmq_queue_otel_stg
       compositeIdentifier:
         separator: ":"
         attributes:
           - targetName
           - ibmmq.queue_manager.name
-      name: ibmmq.queue_manager.name
+          - ibmmq.queue
       encodeIdentifierInGUID: true
+      compositeName:
+        fragments:
+          - attribute: ibmmq.queue_manager.name
+          - value: ":"
+          - attribute: ibmmq.queue
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: ibmmq.qmgr.
+          prefix: ibmmq.queue.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
           value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
         - attribute: ibmmq.queue_manager.name
           present: true
+        - attribute: ibmmq.queue
+          present: true
       tags:
         ibmmq.queue_manager.name:
           entityTagName: qmgr
+        ibmmq.queue:
+          entityTagName: queue
         targetName:
         platform:
+        usage:
         cluster:
           entityTagName: clusterName
         deployment.environment:
@@ -40,14 +58,9 @@ synthesis:
   tags:
     instrumentation.provider:
 
-goldenTags:
-  - qmgr
-  - targetName
-  - clusterName
-
 dashboardTemplates:
   opentelemetry:
-    template: opentelemetry_dashboard.json
+    template: opentelemetry_dashboard.stg.json
 
 configuration:
   entityExpirationTime: DAILY

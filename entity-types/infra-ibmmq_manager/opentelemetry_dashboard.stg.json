@@ -1,0 +1,222 @@
+{
+  "name": "IBMMQ Manager (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "Queue Manager",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Queue Manager Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(`ibmmq.queue_manager.name`) AS 'Name', latest(targetName) AS 'Host', latest(platform) AS 'Platform' WHERE entity.type = 'IBMMQ_MANAGER' AND instrumentation.provider = 'opentelemetry' LIMIT MAX"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Connections",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(`ibmmq.qmgr.connection_count`) AS 'Connections' WHERE metricName = 'ibmmq.qmgr.connection_count' TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Status",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(`ibmmq.qmgr.status`) AS 'Status' WHERE metricName = 'ibmmq.qmgr.status'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Put Messages",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(`ibmmq.qmgr.interval.mqput.mqput1.total.count`), 1 minute) AS 'Put / min' WHERE metricName = 'ibmmq.qmgr.interval.mqput.mqput1.total.count' TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            }
+          }
+        },
+        {
+          "title": "Get Messages",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(`ibmmq.qmgr.interval.destructive.get.total.count`), 1 minute) AS 'Get / min' WHERE metricName = 'ibmmq.qmgr.interval.destructive.get.total.count' TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            }
+          }
+        },
+        {
+          "title": "Published Messages",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`ibmmq.qmgr.published.to.subscribers.message.count`) AS 'Published Messages' WHERE metricName = 'ibmmq.qmgr.published.to.subscribers.message.count' TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            }
+          }
+        },
+        {
+          "title": "Channel Messages",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`ibmmq.channel.messages`) AS 'Messages' WHERE metricName = 'ibmmq.channel.messages' FACET `ibmmq.channel` TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "units": {
+              "unit": "COUNT"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
