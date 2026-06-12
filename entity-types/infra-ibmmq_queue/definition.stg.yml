@@ -1,0 +1,85 @@
+# Staging override: holds the nri-mq rule (carried over from definition.yml) and the new OTel rule.
+domain: INFRA
+type: IBMMQQUEUE
+
+goldenTags:
+  - qmgr
+  - queue
+  - host.name
+  - cluster
+
+synthesis:
+  rules:
+    # nri-mq (Prometheus exporter): carried over from definition.yml.
+    - ruleName: infra_ibmmq_queue_composite_stg
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      name: queue
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq_queue
+      tags:
+        qmgr:
+
+    # OpenTelemetry (IBM mq_otel exporter): identifier is host.name + qmgr + queue; qmgr/queue must both be present so manager-level metrics don't match.
+    - ruleName: infra_ibmmq_queue_otel_stg
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.name
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      compositeName:
+        fragments:
+          - attribute: qmgr
+          - value: ":"
+          - attribute: queue
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq.queue.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: ibmmq
+        - attribute: qmgr
+          present: true
+        - attribute: queue
+          present: true
+      tags:
+        qmgr:
+        queue:
+        host.name:
+        platform:
+        usage:
+        cluster:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+
+  tags:
+    instrumentation.provider:
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"

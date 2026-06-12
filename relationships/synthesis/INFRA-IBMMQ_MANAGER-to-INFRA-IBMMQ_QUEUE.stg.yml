@@ -1,0 +1,67 @@
+# Staging override: nri-mq rule renamed with StgOverride suffix for global uniqueness; OTel rule is new.
+relationships:
+  # nri-mq pipeline: source GUID built from targetName + qmgr; instrumentation.provider absent keeps OTel data out.
+  - name: ibmMqManagerManagesIbmMqQueueStgOverride
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: instrumentation.provider
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "targetName"
+              - value: ":"
+              - attribute: "qmgr"
+            hashAlgorithm: IDENTITY
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: IBMMQQUEUE
+
+  # OpenTelemetry pipeline: source GUID built from host.name + qmgr (FARM_HASH) to match the OTel synthesis rule.
+  - name: ibmMqManagerManagesIbmMqQueueOtel
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: otel.library.name
+        anyOf: [ "ibmmq" ]
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "host.name"
+              - value: ":"
+              - attribute: "qmgr"
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: IBMMQQUEUE

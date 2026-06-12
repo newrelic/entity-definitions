@@ -1,0 +1,114 @@
+# Staging override: holds nri-mq rules (carried over from definition.yml) and the new OTel rule.
+domain: INFRA
+type: IBMMQ_MANAGER
+
+synthesis:
+  rules:
+    # nri-mq (Prometheus exporter): carried over from definition.yml.
+    - ruleName: infra_ibmmq_manager_composite_stg
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - qmgr
+      name: qmgr
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq_qmgr
+      tags:
+        clusterName:
+
+    - ruleName: infra_ibmmq_manager_composite_2_stg
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - qmgr
+      name: qmgr
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq_channel
+
+      tags:
+        clusterName:
+
+    - ruleName: infra_ibmmq_manager_composite_3_stg
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - targetName
+          - qmgr
+      name: qmgr
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq_subscription
+
+      tags:
+        clusterName:
+
+    # OpenTelemetry (IBM mq_otel exporter): identifier is host.name + qmgr; queue/channel/topic must be absent so object-level metrics don't synthesize a manager.
+    - ruleName: infra_ibmmq_manager_otel_stg
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.name
+          - qmgr
+      name: qmgr
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: ibmmq
+        - attribute: qmgr
+          present: true
+        - attribute: queue
+          present: false
+        - attribute: channel
+          present: false
+        - attribute: topic
+          present: false
+      tags:
+        qmgr:
+        host.name:
+        platform:
+        hostname:
+        cluster:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+
+  tags:
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+goldenTags:
+  - qmgr
+  - host.name
+  - cluster
+
+dashboardTemplates:
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
