@@ -1,0 +1,94 @@
+domain: INFRA
+type: SPARKAPPLICATION
+goldenTags:
+  - spark.application.name
+  - spark.application.id
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+    # Modern full GitHub-URL (contrib) library name
+    - ruleName: infra_sparkapplication_otel_contrib
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - spark.application.id
+          - spark.application.name
+      compositeName:
+        fragments:
+          - value: "app="
+          - attribute: spark.application.name
+          - value: " ("
+          - attribute: spark.application.id
+          - value: ")"
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/apachesparkreceiver"
+        - attribute: spark.application.id
+          present: true
+        - attribute: spark.application.name
+          present: true
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        spark.application.id:
+          ttl: P1D
+        spark.application.name:
+          ttl: P1D
+        host.name:
+          ttl: P1D
+        host.id:
+          ttl: P1D
+
+    # Short-form library name (NRDOT / collector-renamed scope)
+    - ruleName: infra_sparkapplication_otel
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - spark.application.id
+          - spark.application.name
+      compositeName:
+        fragments:
+          - value: "app="
+          - attribute: spark.application.name
+          - value: " ("
+          - attribute: spark.application.id
+          - value: ")"
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "otelcol/apache_sparkreceiver"
+        - attribute: spark.application.id
+          present: true
+        - attribute: spark.application.name
+          present: true
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        spark.application.id:
+          ttl: P1D
+        spark.application.name:
+          ttl: P1D
+        host.name:
+          ttl: P1D
+        host.id:
+          ttl: P1D
+  tags:
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
