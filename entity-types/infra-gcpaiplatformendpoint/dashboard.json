@@ -1,0 +1,200 @@
+{
+  "name": "GCP AI Platform Endpoint",
+  "pages": [
+    {
+      "name": "GCP AI Platform Endpoint",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Prediction Count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.prediction.online.prediction_count`) WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Error Count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.prediction.online.error_count`) WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Prediction Latency (ms)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(`gcp.aiplatform.prediction.online.prediction_latencies`) AS 'Latency (ms)' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "CPU Utilization",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(`gcp.aiplatform.prediction.online.cpu.utilization`) AS 'CPU %' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Memory Usage (bytes)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(`gcp.aiplatform.prediction.online.memory.bytes_used`) AS 'Memory (bytes)' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Replicas",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(`gcp.aiplatform.prediction.online.replicas`) AS 'Replicas', latest(`gcp.aiplatform.prediction.online.target_replicas`) AS 'Target Replicas' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Network Bytes Sent",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.prediction.online.network.sent_bytes_count`) AS 'Bytes Sent' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Network Bytes Received",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.prediction.online.network.received_bytes_count`) AS 'Bytes Received' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Errors by Deployed Model",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.prediction.online.error_count`) FACET metric.deployed_model_id WHERE entity.guid = '{{entity.id}}' SINCE 1 hour ago",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Prediction Count by Deployed Model",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.aiplatform.prediction.online.prediction_count`) FACET metric.deployed_model_id WHERE entity.guid = '{{entity.id}}' SINCE 1 hour ago",
+                "accountId": 0}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
