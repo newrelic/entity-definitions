@@ -147,3 +147,41 @@ relationships:
           attribute: entityGuid
           entityType:
             value: MEMCACHEDINSTANCE
+
+  # OTel path: host hosts a memcached instance instrumented via opentelemetry-collector-contrib.
+  # Source HOST GUID is built from host.id (populated by resourcedetection in the collector);
+  # target is the entity already synthesized by the OTel rules in definition.stg.yml.
+  - name: oTelHostHostsMemcachedInstance
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: metricName
+        startsWith: memcached.
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: MEMCACHEDINSTANCE

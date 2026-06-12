@@ -20,6 +20,83 @@ synthesis:
       reportingEndpoint:
         entityTagNames: [memcached.reporting.endpoint]
 
+  # OTel path: metrics from the opentelemetry-collector-contrib memcachedreceiver.
+  # The receiver emits NO native identifier, so the collector upserts memcached.instance.endpoint
+  # (resource/memcached processor) and host.id comes from resourcedetection. Identity is the
+  # composite of the two: a memcached instance at a given endpoint on a given host.
+  # One rule per otel.library.name form (contrib FQN confirmed emitted; short form for NRDOT).
+  - ruleName: MemcachedInstanceFromOTelContrib
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - memcached.instance.endpoint
+        - host.id
+    compositeName:
+      fragments:
+        - attribute: memcached.instance.endpoint
+        - value: " (host:"
+        - attribute: host.id
+        - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/memcachedreceiver
+    - attribute: metricName
+      prefix: memcached.
+    - attribute: memcached.instance.endpoint
+      present: true
+    - attribute: host.id
+      present: true
+    tags:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      memcached.instance.endpoint:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      host.name:
+        ttl: P1D
+
+  - ruleName: MemcachedInstanceFromOTel
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - memcached.instance.endpoint
+        - host.id
+    compositeName:
+      fragments:
+        - attribute: memcached.instance.endpoint
+        - value: " (host:"
+        - attribute: host.id
+        - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: otelcol/memcachedreceiver
+    - attribute: metricName
+      prefix: memcached.
+    - attribute: memcached.instance.endpoint
+      present: true
+    - attribute: host.id
+      present: true
+    tags:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      memcached.instance.endpoint:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      host.name:
+        ttl: P1D
+
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
