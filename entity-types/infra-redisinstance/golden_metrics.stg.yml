@@ -1,0 +1,81 @@
+# Golden metrics for INFRA-REDISINSTANCE entity type
+# Includes OpenTelemetry queries for OHAI OTel Redis integration
+commandsPerSecond:
+  title: Commands per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(db.keyspaceHitsPerSecond) + average(db.keyspaceMissesPerSecond)
+      from: RedisSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: rate(sum(redis.commands.processed), 1 second)
+      from: Metric
+      where: metricName = 'redis.commands.processed'
+      eventId: entity.guid
+      eventName: entity.name
+
+connectionsRejected:
+  title: Connections rejected
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(net.rejectedConnectionsPerSecond)
+      from: RedisSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: rate(sum(redis.connections.rejected), 1 second)
+      from: Metric
+      where: metricName = 'redis.connections.rejected'
+      eventId: entity.guid
+      eventName: entity.name
+
+memoryUsed:
+  title: Memory used
+  unit: BYTES
+  queries:
+    newRelic:
+      select: average(system.usedMemoryBytes)
+      from: RedisSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(redis.memory.used)
+      from: Metric
+      where: metricName = 'redis.memory.used'
+      eventId: entity.guid
+      eventName: entity.name
+
+connectedClients:
+  title: Connected clients
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(net.connectedClients)
+      from: RedisSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(redis.clients.connected)
+      from: Metric
+      where: metricName = 'redis.clients.connected'
+      eventId: entity.guid
+      eventName: entity.name
+
+keyspaceHitRate:
+  title: Keyspace hit rate
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(db.keyspaceHitsPerSecond) / (average(db.keyspaceHitsPerSecond) + average(db.keyspaceMissesPerSecond)) * 100
+      from: RedisSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(redis.keyspace.hits) / (sum(redis.keyspace.hits) + sum(redis.keyspace.misses)) * 100
+      from: Metric
+      where: metricName IN ('redis.keyspace.hits', 'redis.keyspace.misses')
+      eventId: entity.guid
+      eventName: entity.name

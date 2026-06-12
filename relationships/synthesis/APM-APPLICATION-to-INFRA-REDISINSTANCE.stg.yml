@@ -1,0 +1,75 @@
+relationships:
+  # APM Application calls Redis via OTel span attributes
+  # For OHAI OTel Redis integration (ohai.redis.otel_integration feature flag)
+  - name: apmApplicationCallsOtelRedisInstance
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: db.system
+        anyOf: ["redis"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: server.address
+              - value: ":"
+              - attribute: server.port
+            hashAlgorithm: FARM_HASH
+
+  # APM Application calls Redis via OTel span attributes (net.peer.name legacy)
+  - name: apmApplicationCallsOtelRedisInstanceLegacy
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: db.system
+        anyOf: ["redis"]
+      - attribute: net.peer.name
+        present: true
+      - attribute: net.peer.port
+        present: true
+      - attribute: server.address
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: net.peer.name
+              - value: ":"
+              - attribute: net.peer.port
+            hashAlgorithm: FARM_HASH

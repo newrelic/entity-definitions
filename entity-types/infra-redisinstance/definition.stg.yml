@@ -21,7 +21,7 @@ synthesis:
       - attribute: instrumentation.provider
         value: opentelemetry
       # This filters only metrics coming from redis receiver, given that metrics
-      # could deffer between different runtime receivers. 
+      # could deffer between different runtime receivers.
       - attribute: otel.library.name
         value: otelcol/redisreceiver
     tags:
@@ -41,6 +41,7 @@ synthesis:
         entityTagName: instrumentation.name
       server.address:
       server.port:
+
   # OpenTelemetry synthesis rule - service.instance.id pattern
   - ruleName: infra_redisinstance_otel
     identifier: service.instance.id
@@ -59,7 +60,7 @@ synthesis:
         present: true
       - attribute: server.address
         present: false
-      # Entity creation triggered by redis.role present OR service.name containing redis
+      # Entity creation triggered by redis.role present
       - attribute: redis.role
         present: true
       - attribute: otel.library.name
@@ -88,6 +89,64 @@ synthesis:
       k8s.namespace.name:
         ttl: P1D
       k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # OHAI OTel integration rule - NR distribution of OTel collector
+  # Gated behind feature flag: ohai.redis.otel_integration
+  - ruleName: infra_redisinstance_ohai_otel
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - server.address
+        - server.port
+    name: server.address
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+      # NR distribution of OTel collector uses the full module path
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
+    tags:
+      # Required resource attributes
+      redis.version:
+      redis.role:
+      redis.mode:
+      server.address:
+      server.port:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Optional resource attributes
+      redis.cluster.name:
+      redis.cluster.enabled:
+      redis.maxmemory:
+      redis.persistence.enabled:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      k8s.node.name:
         ttl: P1D
       # OTel attributes
       otel.library.name:
@@ -123,6 +182,9 @@ goldenTags:
 - host.name
 - host.id
 - redis.cluster.name
+# OHAI OTel integration
+- redis.role
+- redis.mode
 
 configuration:
   entityExpirationTime: DAILY

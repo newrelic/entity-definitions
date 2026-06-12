@@ -1,0 +1,84 @@
+relationships:
+  # OTel Redis: Host HOSTS Redis instance when running locally (host.id based)
+  # For OHAI OTel Redis integration (ohai.redis.otel_integration feature flag)
+  - name: hostHostsOtelRedisinstance
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: metricName
+        prefix: "redis."
+      - attribute: host.id
+        present: true
+      - attribute: entity.type
+        anyOf: ["REDISINSTANCE"]
+      # Exclude k8s-hosted Redis (handled by pod/container relationships)
+      - attribute: k8s.pod.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: REDISINSTANCE
+
+  # OTel Redis: Host MEASURES Redis instance (host.name fallback)
+  - name: hostMeasuresOtelRedisinstance
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: metricName
+        prefix: "redis."
+      - attribute: host.name
+        present: true
+      - attribute: host.id
+        present: false
+      - attribute: entity.type
+        anyOf: ["REDISINSTANCE"]
+      - attribute: k8s.pod.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: REDISINSTANCE
