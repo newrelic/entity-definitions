@@ -38,10 +38,15 @@ const VALID_CONDITIONS = new Map([
   ['Network Monitoring', []]
 ]);
 
+// Per-environment name registry. Reset between environment passes so that
+// the same rule name can legally appear in both `INFRA_X-to-Y.yml` (prod)
+// and `INFRA_X-to-Y.stg.yml` (staging override) — they never co-exist at
+// runtime in the same environment.
 let ALL_RELATIONSHIP_SYNTHESIS;
+let CURRENT_ENV;
 function validateAndRecord (rule) {
   if (ALL_RELATIONSHIP_SYNTHESIS.has(rule.name)) {
-    throw new Error('There already exists a rule with name ' + rule.name);
+    throw new Error(`There already exists a rule with name ${rule.name} in the ${CURRENT_ENV} environment`);
   }
   ALL_RELATIONSHIP_SYNTHESIS.set(rule.name, rule);
 }
@@ -145,24 +150,33 @@ const RULES = [
 ];
 
 (async () => {
-  ALL_RELATIONSHIP_SYNTHESIS = new Map();
-  const allRelationships = await utils.getAllRelationshipSynthesisDefinitions();
-  allRelationships.forEach(setDefinitionsInFile => {
-    setDefinitionsInFile.relationships.forEach(relationship => {
-      RULES.forEach(rule => {
-        try {
-          rule.apply(relationship);
-        } catch (errorMessage) {
-          const message = `Definition for ${relationship.name} violates rule "${rule.name}":`;
-          console.error(message);
-          console.error(errorMessage);
-          githubHelper.createReviewPR(`${message}\n${errorMessage}`, githubHelper.GH_PR_EVENT_REQUEST_CHANGES)
-            .then(process.exit(1))
-            .catch(error => console.error(error));
-        }
+  const byEnv = await utils.getRelationshipSynthesisDefinitionsByEnvironment();
+  // Validate prod and staging independently. Most checks (resolvers, TTL,
+  // condition/origin) are rule-local and would pass either way; only the
+  // name-uniqueness check is environment-sensitive. Running each pass with
+  // its own ALL_RELATIONSHIP_SYNTHESIS map lets the override mechanic work
+  // (same name in `X.yml` and `X.stg.yml`) without weakening the check
+  // within a single environment.
+  for (const [envName, envFiles] of [['production', byEnv.prod], ['staging', byEnv.staging]]) {
+    ALL_RELATIONSHIP_SYNTHESIS = new Map();
+    CURRENT_ENV = envName;
+    envFiles.forEach(({ filePath, definitions }) => {
+      definitions.relationships.forEach(relationship => {
+        RULES.forEach(rule => {
+          try {
+            rule.apply(relationship);
+          } catch (errorMessage) {
+            const message = `[${envName}] Definition for ${relationship.name} (${filePath.split('/').pop()}) violates rule "${rule.name}":`;
+            console.error(message);
+            console.error(errorMessage);
+            githubHelper.createReviewPR(`${message}\n${errorMessage}`, githubHelper.GH_PR_EVENT_REQUEST_CHANGES)
+              .then(process.exit(1))
+              .catch(error => console.error(error));
+          }
+        });
       });
     });
-  });
+  }
 })().catch(error => {
   console.error(error);
   process.exit(1);
