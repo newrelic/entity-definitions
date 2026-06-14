@@ -4,6 +4,7 @@ type: REDISINSTANCE
 synthesis:
   # Apart from this rule REDISINSTANCE entities are also created from infra pipeline.
   rules:
+  # Composite rule: server.address:server.port with otelcol/redisreceiver
   - ruleName: infra_redisinstance_composite
     compositeIdentifier:
       separator: ":"
@@ -21,7 +22,7 @@ synthesis:
       - attribute: instrumentation.provider
         value: opentelemetry
       # This filters only metrics coming from redis receiver, given that metrics
-      # could deffer between different runtime receivers. 
+      # could deffer between different runtime receivers.
       - attribute: otel.library.name
         value: otelcol/redisreceiver
     tags:
@@ -29,6 +30,18 @@ synthesis:
       redis.version:
       # Attributes
       redis.role:
+      # Host attributes
+      host.id:
+        ttl: P1D
+      host.name:
+        ttl: P1D
+      # Kubernetes attributes (optional)
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # Redis cluster
+      redis.cluster.name:
       # Environment resource attributes
       host.type:
       cloud.provider:
@@ -41,32 +54,75 @@ synthesis:
         entityTagName: instrumentation.name
       server.address:
       server.port:
-  # OpenTelemetry synthesis rule - service.instance.id pattern
-  - ruleName: infra_redisinstance_otel
-    identifier: service.instance.id
-    name: service.instance.id
+
+  # Composite rule: server.address:server.port with github.com receiver
+  - ruleName: infra_redisinstance_composite_1
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - server.address
+        - server.port
+    name: server.address
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
         value: Metric
-      # Support both redis. and redis_ prefix metrics
       - attribute: metricName
         prefix: redis.
       - attribute: instrumentation.provider
         value: opentelemetry
-      # Only trigger when service.instance.id pattern is used (not server.address pattern)
-      - attribute: service.instance.id
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
+    tags:
+      # Default resource attributes
+      redis.version:
+      # Attributes
+      redis.role:
+      # Host attributes
+      host.id:
+        ttl: P1D
+      host.name:
+        ttl: P1D
+      # Kubernetes attributes (optional)
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # Redis cluster
+      redis.cluster.name:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      server.address:
+      server.port:
+
+  # OpenTelemetry synthesis rule - redis.instance.id pattern with github.com receiver
+  - ruleName: infra_redisinstance_otel
+    identifier: redis.instance.id
+    name: redis.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Only trigger when redis.instance.id pattern is used (not server.address pattern)
+      - attribute: redis.instance.id
         present: true
       - attribute: server.address
         present: false
-      # Entity creation triggered by redis.role present OR service.name containing redis
-      - attribute: redis.role
-        present: true
       - attribute: otel.library.name
         value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
     tags:
       # Required resource attributes
-      service.instance.id:
+      redis.instance.id:
       redis.version:
       redis.role:
       redis.port:
@@ -90,6 +146,122 @@ synthesis:
       k8s.pod.name:
         ttl: P1D
       # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # OpenTelemetry synthesis rule - redis.instance.id pattern with otelcol receiver
+  - ruleName: infra_redisinstance_otel_1
+    identifier: redis.instance.id
+    name: redis.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: redis.instance.id
+        present: true
+      - attribute: server.address
+        present: false
+      - attribute: otel.library.name
+        value: otelcol/redisreceiver
+    tags:
+      # Required resource attributes
+      redis.instance.id:
+      redis.version:
+      redis.role:
+      redis.port:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Optional resource attributes
+      redis.cluster.name:
+      redis.cluster.enabled:
+      redis.maxmemory:
+      redis.persistence.enabled:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # Log-based synthesis rule: server.address:server.port from Log event type
+  - ruleName: infra_redisinstance_otel_logs
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - server.address
+        - server.port
+    name: server.address
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: newrelic.source
+        value: 'api.logs.otlp'
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    tags:
+      redis.version:
+      redis.role:
+      host.id:
+        ttl: P1D
+      host.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      redis.cluster.name:
+      server.address:
+      server.port:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # Log-based synthesis rule: redis.instance.id from Log event type
+  - ruleName: infra_redisinstance_otel_logs_service_instance
+    identifier: redis.instance.id
+    name: redis.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: newrelic.source
+        value: 'api.logs.otlp'
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: redis.instance.id
+        present: true
+      - attribute: server.address
+        present: false
+    tags:
+      redis.instance.id:
+      redis.version:
+      redis.role:
+      host.id:
+        ttl: P1D
+      host.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      redis.cluster.name:
       otel.library.name:
         entityTagName: instrumentation.name
 
@@ -117,9 +289,9 @@ goldenTags:
 # OpenTelemetry - server.address pattern
 - server.address
 - server.port
-# OpenTelemetry - service.instance.id pattern
+# OpenTelemetry - redis.instance.id pattern
 - service.name
-- service.instance.id
+- redis.instance.id
 - host.name
 - host.id
 - redis.cluster.name
