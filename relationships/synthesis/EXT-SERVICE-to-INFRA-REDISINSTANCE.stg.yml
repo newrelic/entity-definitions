@@ -1,0 +1,126 @@
+# EPIC: NR-576657 (DEMO clone of NR-576327) — AFA2026 hackathon
+relationships:
+  # OTel APM Service CALLS Redis instance via span (server.address:server.port pattern)
+  - name: extServiceCallsOtelRedisinstanceComposite
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: server.address
+              - value: ":"
+              - attribute: server.port
+            hashAlgorithm: FARM_HASH
+
+  # OTel APM Service CALLS Redis instance via span (net.peer.name:net.peer.port pattern - semconv 1.20)
+  - name: extServiceCallsOtelRedisinstanceComposite120
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+      - attribute: net.peer.name
+        present: true
+      - attribute: net.peer.port
+        present: true
+      - attribute: server.address
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: net.peer.name
+              - value: ":"
+              - attribute: net.peer.port
+            hashAlgorithm: FARM_HASH
+
+  # OTel APM Service CALLS Redis instance via span (redis.instance.id pattern)
+  - name: extServiceCallsOtelRedisinstanceById
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+      - attribute: redis.instance.id
+        present: true
+      - attribute: server.address
+        present: false
+      - attribute: net.peer.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: redis.instance.id
+            hashAlgorithm: FARM_HASH
