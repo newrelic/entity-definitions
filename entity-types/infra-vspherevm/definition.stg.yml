@@ -3,8 +3,8 @@ type: VSPHEREVM
 
 synthesis:
   rules:
-  # OpenTelemetry synthesis rule - new collector format
-  - ruleName: infra_vspherevm_otel_new
+  # OpenTelemetry synthesis rule - covers both old and new collector formats
+  - ruleName: infra_vspherevm_otel
     identifier: vcenter.vm.id
     name: vcenter.vm.name
     encodeIdentifierInGUID: true
@@ -15,32 +15,6 @@ synthesis:
         prefix: vcenter.vm.
       - attribute: instrumentation.provider
         value: opentelemetry
-      # New collector format
-      - attribute: otel.library.name
-        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/vcenterreceiver"
-    tags:
-      vcenter.datacenter.name:
-      vcenter.cluster.name:
-      vcenter.host.name:
-      vcenter.vm.id:
-      vcenter.vm.name:
-      otel.library.name:
-        entityTagName: instrumentation.name
-  # OpenTelemetry synthesis rule - old collector format
-  - ruleName: infra_vspherevm_otel_old
-    identifier: vcenter.vm.id
-    name: vcenter.vm.name
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: eventType
-        value: Metric
-      - attribute: metricName
-        prefix: vcenter.vm.
-      - attribute: instrumentation.provider
-        value: opentelemetry
-      # Old collector format
-      - attribute: otel.library.name
-        value: "otelcol/vcenterreceiver"
     tags:
       vcenter.datacenter.name:
       vcenter.cluster.name:
