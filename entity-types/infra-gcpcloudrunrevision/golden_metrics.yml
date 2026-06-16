@@ -1,0 +1,27 @@
+requestCount:
+  title: Request Count
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.run.request_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+errorRate:
+  title: Error Rate
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: filter(sum(`gcp.run.request_count`), WHERE `metric.response_code_class` IN ('4xx','5xx')) * 100 / sum(`gcp.run.request_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+requestLatency:
+  title: Request Latency
+  unit: MS
+  queries:
+    gcp:
+      select: average(`gcp.run.request_latencies`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
