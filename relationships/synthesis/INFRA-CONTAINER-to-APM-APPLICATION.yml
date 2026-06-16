@@ -1,0 +1,75 @@
+relationships:
+  # OTel container (INFRA-CONTAINER) HOSTS native NR APM application.
+  - name: otelContainerHostsNrApmApplication
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span", "Transaction"]
+      - attribute: containerId
+        present: true
+      - attribute: entityGuid
+        present: true
+      - attribute: appId
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: containerId
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: APPLICATION
+
+
+  # NR native infra-agent Docker container HOSTS native NR APM application.
+  - name: nrDockerContainerHostsNrApmApplication
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span", "Transaction"]
+      - attribute: containerId
+        present: true
+      - attribute: entityGuid
+        present: true
+      - attribute: appId
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "docker:"
+              - attribute: containerId
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: APPLICATION
