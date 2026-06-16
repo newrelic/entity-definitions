@@ -1,0 +1,305 @@
+{
+  "name": "vSphere Cluster (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Host count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.cluster.host.count) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "VM count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.cluster.vm.count) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "VM template count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.cluster.vm_template.count) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "CPU effective (MHz)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.cluster.cpu.effective) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 1,
+            "width": 12
+          },
+          "rawConfiguration": {
+            "text": "## CPU"
+          },
+          "title": ""
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 3,
+            "width": 6
+          },
+          "title": "CPU limit (MHz)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.cluster.cpu.limit) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "height": 3,
+            "width": 6
+          },
+          "title": "CPU effective (MHz)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.cluster.cpu.effective) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "height": 1,
+            "width": 12
+          },
+          "rawConfiguration": {
+            "text": "## Memory"
+          },
+          "title": ""
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Memory limit (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.cluster.memory.limit) / 1e9 WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 9,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Memory effective (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.cluster.memory.effective) / 1e9 WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "height": 1,
+            "width": 12
+          },
+          "rawConfiguration": {
+            "text": "## vSAN"
+          },
+          "title": ""
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 4
+          },
+          "title": "vSAN latency avg (\u00b5s)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(vcenter.cluster.vsan.latency.avg) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name, type TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 13,
+            "height": 3,
+            "width": 4
+          },
+          "title": "vSAN operations (ops/s)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(vcenter.cluster.vsan.operations) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name, type TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 13,
+            "height": 3,
+            "width": 4
+          },
+          "title": "vSAN throughput (By/s)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(vcenter.cluster.vsan.throughput) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name, direction TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "BYTES_PER_SECOND"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "height": 3,
+            "width": 12
+          },
+          "title": "vSAN congestions (congestions/s)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(vcenter.cluster.vsan.congestions) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.cluster.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

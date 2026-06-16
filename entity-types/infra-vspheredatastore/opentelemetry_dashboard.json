@@ -1,0 +1,187 @@
+{
+  "name": "vSphere Datastore (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk utilization (%)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(vcenter.datastore.disk.utilization) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datastore.name",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "PERCENTAGE"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk used (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datastore.disk.usage) / 1e9 WHERE instrumentation.provider = 'opentelemetry' AND disk_state = 'used' FACET vcenter.datastore.name",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk available (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datastore.disk.usage) / 1e9 WHERE instrumentation.provider = 'opentelemetry' AND disk_state = 'available' FACET vcenter.datastore.name",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 1,
+            "width": 12
+          },
+          "rawConfiguration": {
+            "text": "## Storage"
+          },
+          "title": ""
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk used (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datastore.disk.usage) / 1e9 WHERE instrumentation.provider = 'opentelemetry' AND disk_state = 'used' FACET vcenter.datastore.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk available (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datastore.disk.usage) / 1e9 WHERE instrumentation.provider = 'opentelemetry' AND disk_state = 'available' FACET vcenter.datastore.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk utilization (%)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(vcenter.datastore.disk.utilization) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datastore.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "PERCENTAGE"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Disk space breakdown (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datastore.disk.usage) / 1e9 WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datastore.name, disk_state TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
