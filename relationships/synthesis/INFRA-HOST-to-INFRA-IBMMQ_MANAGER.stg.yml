@@ -1,0 +1,46 @@
+# Staging-only relationship: INFRA-HOST MEASURES INFRA-IBMMQ_MANAGER.
+# The IBM MQ queue manager is scraped by an OpenTelemetry collector (prometheusreceiver); the
+# metrics carry host.id from the collector's host. We use MEASURES (not HOSTS) because the metrics
+# only prove this host is the *measurement source* — with a remote/centralized prometheus scrape we
+# cannot assert the queue manager process actually runs on host.id's host. (The Kafka pattern only
+# uses HOSTS when broker.endpoint == localhost; we have no equivalent locality signal here.)
+# Source HOST GUID is resolved from host.id (FARM_HASH, valueInGuid: NA) — the standard INFRA-HOST
+# OTel resolution, mirrored from INFRA-HOST-to-INFRA-KAFKABROKER.
+# Staging-only: there is no prod (.yml) counterpart upstream.
+relationships:
+  - name: hostMeasuresIbmMqManagerStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_MANAGER" ]
+      - attribute: host.id
+        present: true
+      - attribute: k8s.pod.name # exclude k8s pod-based hosts
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: IBMMQ_MANAGER
