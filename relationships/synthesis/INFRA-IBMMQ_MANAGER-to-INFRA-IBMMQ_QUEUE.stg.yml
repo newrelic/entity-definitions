@@ -1,11 +1,6 @@
-# Staging override of INFRA-IBMMQ_MANAGER-to-INFRA-IBMMQ_QUEUE.yml.
-# Carries the production (nri-mq) MANAGES relationship verbatim AND adds the OpenTelemetry one, so
-# the staging environment builds manager->queue relationships from BOTH pipelines. Production
-# (.yml) is left untouched.
+# Staging override: production (nri-mq) MANAGES relationship + the OpenTelemetry one.
 relationships:
-  # --- Production (nri-mq) relationship, carried over from the .yml. Source manager GUID uses the
-  #     IDENTITY hash on targetName:qmgr to match the prod manager synthesis. Renamed with a
-  #     -PrometheusStg suffix because relationship names must be globally unique across prod + stg. ---
+  # Production (nri-mq): IDENTITY hash on targetName:qmgr. Renamed *PrometheusStg (rel names must be globally unique).
   - name: ibmMqManagerManagesIbmMqQueuePrometheusStg
     version: "1"
     origins:
@@ -38,9 +33,7 @@ relationships:
           entityType:
             attribute: entity.type
 
-  # --- OpenTelemetry relationship. Source manager GUID built from ibmmq.queue_manager.name (single
-  #     identifier, targetName dropped) with FARM_HASH to match the OTel manager synthesis rule's
-  #     `identifier: ibmmq.queue_manager.name` + encodeIdentifierInGUID: true. ---
+  # OpenTelemetry: source GUID from ibmmq.queue_manager.name (FARM_HASH) to match the OTel manager rule.
   - name: ibmMqManagerManagesIbmMqQueueStg
     version: "1"
     origins:
