@@ -1,0 +1,45 @@
+keyspaceHitsPerSecond:
+  title: Keyspace hits per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(db.keyspaceHitsPerSecond)
+      from: RedisSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(redis.keyspace.hits) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: metricName = 'redis.keyspace.hits'
+      eventId: entity.guid
+      eventName: entity.name
+keyspaceMissesPerSecond:
+  title: Keyspace misses per second
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    newRelic:
+      select: average(db.keyspaceMissesPerSecond)
+      from: RedisSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(redis.keyspace.misses) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: metricName = 'redis.keyspace.misses'
+      eventId: entity.guid
+      eventName: entity.name
+connectedClients:
+  title: Connected clients
+  unit: COUNT
+  queries:
+    newRelic:
+      select: average(net.connectedClients)
+      from: RedisSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: average(redis.clients.connected)
+      from: Metric
+      where: metricName = 'redis.clients.connected'
+      eventId: entity.guid
+      eventName: entity.name
