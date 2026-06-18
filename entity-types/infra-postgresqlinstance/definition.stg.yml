@@ -3,26 +3,6 @@ type: POSTGRESQLINSTANCE
 
 synthesis:
   rules:
-    - ruleName: infra_postgresqlinstance_postgresql_endpoint
-      identifier: postgresql.endpoint # server.address:server.port
-      name: postgresql.endpoint 
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: postgresql.
-        - attribute: instrumentation.provider
-          value: opentelemetry
-        - attribute: otel.library.name
-          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
-        # This filters only metrics coming from postgresqlreceiver , given that metrics
-        # could differ between different runtime receivers.
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-
-    # Fallback for OTel postgres metrics that lack `postgresql.endpoint`.
     - ruleName: infra_postgresqlinstance_service_instance_id
       identifier: service.instance.id # host:port
       name: service.instance.id
@@ -34,25 +14,6 @@ synthesis:
           prefix: postgresql.
         - attribute: instrumentation.provider
           value: opentelemetry
-        - attribute: postgresql.endpoint
-          present: false
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-
-    - ruleName: infra_postgresqlinstance_postgresql_endpoint_2
-      identifier: postgresql.endpoint # server.address:server.port
-      name: postgresql.endpoint 
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: postgresql.
-        - attribute: instrumentation.provider
-          value: opentelemetry
-        - attribute: otel.library.name
-          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlqueryreceiver"
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
