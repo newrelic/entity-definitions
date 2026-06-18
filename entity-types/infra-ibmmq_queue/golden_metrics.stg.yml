@@ -1,54 +1,63 @@
+# Staging override of golden_metrics.yml.
+# Each metric carries BOTH the production nri-mq query (prometheus exporter metric names) and the
+# new OpenTelemetry query (prometheusreceiver, dotted metric names), so golden metrics resolve in
+# staging regardless of which pipeline produced the data.
 depth_count:
   title: Depth
   unit: COUNT
   queries:
-    newRelic:
+    prometheus:
       select: average(ibmmq_queue_depth) AS 'Depth'
       from: Metric
     opentelemetry:
-      select: average(`ibmmq.queue.depth`) AS 'Depth'
+      select: average(ibmmq_queue_depth) AS 'Depth'
       from: Metric
+      where: instrumentation.provider = 'opentelemetry'
 
 queue_get_messages:
   title: Get messages
   unit: COUNT
   queries:
-    newRelic:
+    prometheus:
       select: average(ibmmq_queue_mqget_count) AS 'Get messages'
       from: Metric
     opentelemetry:
-      select: average(`ibmmq.queue.mqget_count`) AS 'Get messages'
+      select: average(ibmmq_queue_mqget_count) AS 'Get messages'
       from: Metric
+      where: instrumentation.provider = 'opentelemetry'
 
 queue_put_messages:
   title: Put messages
   unit: COUNT
   queries:
-    newRelic:
+    prometheus:
       select: average(ibmmq_queue_mqput_mqput1_count) AS 'Put messages'
       from: Metric
     opentelemetry:
-      select: average(`ibmmq.queue.mqput_mqput1_count`) AS 'Put messages'
+      select: average(ibmmq_queue_mqput_mqput1_count) AS 'Put messages'
       from: Metric
+      where: instrumentation.provider = 'opentelemetry'
 
 queue_uncommitted_messages:
   title: Uncommitted messages
   unit: COUNT
   queries:
-    newRelic:
+    prometheus:
       select: average(ibmmq_queue_uncommitted_messages) AS 'Uncommitted messages'
       from: Metric
     opentelemetry:
-      select: average(`ibmmq.queue.uncommitted_messages`) AS 'Uncommitted messages'
+      select: average(ibmmq_queue_uncommitted_messages) AS 'Uncommitted messages'
       from: Metric
+      where: instrumentation.provider = 'opentelemetry'
 
 queue_expired_messages:
   title: Expired messages
   unit: COUNT
   queries:
-    newRelic:
+    prometheus:
       select: average(ibmmq_queue_expired_messages) AS 'Expired messages'
       from: Metric
     opentelemetry:
-      select: average(`ibmmq.queue.expired_messages`) AS 'Expired messages'
+      select: average(ibmmq_queue_expired_messages) AS 'Expired messages'
       from: Metric
+      where: instrumentation.provider = 'opentelemetry'

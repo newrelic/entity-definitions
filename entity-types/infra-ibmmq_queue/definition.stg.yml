@@ -1,17 +1,12 @@
-# Staging override: holds the nri-mq rule (carried over from definition.yml) and the new OTel rule.
 domain: INFRA
-type: IBMMQQUEUE
-
+type: IBMMQ_QUEUE
 goldenTags:
   - qmgr
-  - queue
-  - host.name
-  - cluster
 
 synthesis:
   rules:
-    # nri-mq (Prometheus exporter): carried over from definition.yml.
-    - ruleName: infra_ibmmq_queue_composite_stg
+    # --- Production nri-mq rule (carried over verbatim from definition.yml) ---
+    - ruleName: infra_ibmmq_queue_nri_stg_1
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -28,20 +23,20 @@ synthesis:
       tags:
         qmgr:
 
-    # OpenTelemetry (IBM mq_otel exporter): identifier is host.name + qmgr + queue; qmgr/queue must both be present so manager-level metrics don't match.
-    - ruleName: infra_ibmmq_queue_otel_stg
+    # --- New OpenTelemetry rule. Identifier is targetName + ibmmq.queue_manager.name + ibmmq.queue.
+    #     Composite name is qmgr:queue so two managers can share a queue name without collision. ---
+    - ruleName: infra_ibmmq_queue_otel_stg_1
       compositeIdentifier:
         separator: ":"
         attributes:
-          - host.name
-          - qmgr
-          - queue
+          - ibmmq.queue_manager.name
+          - ibmmq.queue
       encodeIdentifierInGUID: true
       compositeName:
         fragments:
-          - attribute: qmgr
+          - attribute: ibmmq.queue_manager.name
           - value: ":"
-          - attribute: queue
+          - attribute: ibmmq.queue
       conditions:
         - attribute: eventType
           value: Metric
@@ -50,29 +45,28 @@ synthesis:
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: ibmmq
-        - attribute: qmgr
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+        - attribute: ibmmq.queue_manager.name
           present: true
-        - attribute: queue
+        - attribute: ibmmq.queue
           present: true
       tags:
-        qmgr:
-        queue:
-        host.name:
-        platform:
+        ibmmq.queue_manager.name:
+          entityTagName: qmgr
+        ibmmq.queue:
+          entityTagName: queue
         usage:
         cluster:
           entityTagName: clusterName
+        deployment.environment:
         otel.library.name:
           entityTagName: instrumentation.name
         instrumentation.provider:
 
-  tags:
-    instrumentation.provider:
 
 dashboardTemplates:
   newRelic:
-    template: dashboard.json
+    template: newrelic_dashboard.json
   opentelemetry:
     template: opentelemetry_dashboard.stg.json
 

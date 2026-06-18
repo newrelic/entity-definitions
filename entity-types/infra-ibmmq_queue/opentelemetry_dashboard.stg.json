@@ -1,43 +1,67 @@
 {
-  "name": "IBMMQ Queue (OpenTelemetry)",
+  "name": "IBMMQ Queue",
   "pages": [
     {
-      "name": "Queue",
+      "name": "Queues",
       "description": null,
       "widgets": [
         {
-          "title": "Queue Summary",
+          "visualization": {
+            "id": "viz.bar"
+          },
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 4,
-            "height": 3
+            "height": 3,
+            "width": 4
           },
-          "visualization": {
-            "id": "viz.billboard"
-          },
+          "title": "Queue Depth",
           "rawConfiguration": {
-            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(queue) AS 'Queue', latest(qmgr) AS 'Queue Manager', latest(`host.name`) AS 'Host', latest(usage) AS 'Usage' WHERE entity.type = 'IBMMQQUEUE' AND instrumentation.provider = 'opentelemetry' LIMIT MAX"
+                "query": "FROM Metric SELECT latest(ibmmq_queue_depth) AS 'Queue Depth' FACET queue LIMIT MAX"
               }
-            ],
-            "thresholds": []
+            ]
           }
         },
         {
-          "title": "Depth",
+          "visualization": {
+            "id": "viz.bar"
+          },
           "layout": {
             "column": 5,
             "row": 1,
-            "width": 4,
-            "height": 3
+            "height": 4,
+            "width": 4
           },
+          "title": "Queue Depth %",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(ibmmq_queue_depth)*100/latest(ibmmq_queue_attribute_max_depth) facet queue LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
           "visualization": {
             "id": "viz.line"
           },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Queue Depth",
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
@@ -48,89 +72,73 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(`ibmmq.queue.depth`) AS 'Depth' WHERE metricName = 'ibmmq.queue.depth' TIMESERIES"
+                "query": "FROM Metric SELECT latest(ibmmq_queue_depth) AS 'Queue Depth' FACET queue TIMESERIES AUTO  LIMIT MAX"
               }
             ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "units": {
-              "unit": "COUNT"
-            },
             "yAxisLeft": {
               "zero": true
             }
           }
         },
         {
-          "title": "Max Depth",
-          "layout": {
-            "column": 9,
-            "row": 1,
-            "width": 4,
-            "height": 3
-          },
           "visualization": {
             "id": "viz.billboard"
           },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "FROM Metric SELECT latest(`ibmmq.queue.attribute_max_depth`) AS 'Max Depth' WHERE metricName = 'ibmmq.queue.attribute_max_depth'"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "title": "Put Messages",
           "layout": {
             "column": 1,
             "row": 4,
-            "width": 6,
-            "height": 3
+            "height": 1,
+            "width": 4
           },
-          "visualization": {
-            "id": "viz.area"
-          },
+          "title": "Queue Depth",
           "rawConfiguration": {
+            "dataFormatters": [],
             "facet": {
               "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
             },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(`ibmmq.queue.mqput_mqput1_count`), 1 minute) AS 'Put / min' WHERE metricName = 'ibmmq.queue.mqput_mqput1_count' TIMESERIES"
+                "query": " SELECT sum(depth) from (SELECT latest(ibmmq_queue_depth) AS depth FROM Metric FACET queue ) compare with 1 hour ago"
               }
             ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "units": {
-              "unit": "COUNT"
-            }
+            "thresholds": []
           }
         },
         {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
           "title": "Get Messages",
-          "layout": {
-            "column": 7,
-            "row": 4,
-            "width": 6,
-            "height": 3
-          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_queue_mqget_count) FACET queue  LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
           "visualization": {
             "id": "viz.area"
           },
+          "layout": {
+            "column": 5,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Get Messages Count",
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
@@ -141,28 +149,77 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT rate(sum(`ibmmq.queue.mqget_count`), 1 minute) AS 'Get / min' WHERE metricName = 'ibmmq.queue.mqget_count' TIMESERIES"
+                "query": "FROM Metric SELECT average(ibmmq_queue_mqget_count) FACET queue TIMESERIES AUTO  LIMIT MAX"
               }
             ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "units": {
-              "unit": "COUNT"
+            "yAxisLeft": {
+              "zero": true
             }
           }
         },
         {
-          "title": "Uncommitted Messages",
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Time Since Last GET",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(ibmmq_queue_time_since_get) limit 1000 facet queue TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
           "layout": {
             "column": 1,
-            "row": 7,
-            "width": 6,
-            "height": 3
+            "row": 8,
+            "height": 3,
+            "width": 4
           },
+          "title": "PUT Messages ",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_queue_mqput_mqput1_count) FACET queue"
+              }
+            ]
+          }
+        },
+        {
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.area"
           },
+          "layout": {
+            "column": 5,
+            "row": 8,
+            "height": 3,
+            "width": 4
+          },
+          "title": "PUT Messages Count",
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
@@ -173,28 +230,25 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT latest(`ibmmq.queue.uncommitted_messages`) AS 'Uncommitted' WHERE metricName = 'ibmmq.queue.uncommitted_messages' TIMESERIES"
+                "query": "FROM Metric SELECT average(ibmmq_queue_mqput_mqput1_count) FACET queue TIMESERIES AUTO "
               }
             ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "units": {
-              "unit": "COUNT"
+            "yAxisLeft": {
+              "zero": true
             }
           }
         },
         {
-          "title": "Expired Messages",
-          "layout": {
-            "column": 7,
-            "row": 7,
-            "width": 6,
-            "height": 3
-          },
           "visualization": {
             "id": "viz.line"
           },
+          "layout": {
+            "column": 9,
+            "row": 8,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Time Since Last PUT",
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
@@ -205,14 +259,144 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT sum(`ibmmq.queue.expired_messages`) AS 'Expired' WHERE metricName = 'ibmmq.queue.expired_messages' TIMESERIES"
+                "query": "FROM Metric SELECT latest(ibmmq_queue_time_since_put) facet queue TIMESERIES AUTO  LIMIT MAX"
               }
             ],
-            "platformOptions": {
-              "ignoreTimeRange": false
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Oldest Message Age",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
             },
-            "units": {
-              "unit": "COUNT"
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT max(ibmmq_queue_oldest_message_age) facet queue  LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 11,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Queue Time Short (microseconds)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_queue_qtime_short) FACET queue TIMESERIES AUTO  LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 11,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Queue Time Long (microseconds)",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_queue_qtime_long) FACET queue TIMESERIES AUTO  LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 14,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Expired Messages",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_queue_expired_messages) FACET queue  LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "layout": {
+            "column": 5,
+            "row": 14,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Expired Messages",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(ibmmq_queue_expired_messages) FACET queue TIMESERIES AUTO   LIMIT MAX"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
             }
           }
         }

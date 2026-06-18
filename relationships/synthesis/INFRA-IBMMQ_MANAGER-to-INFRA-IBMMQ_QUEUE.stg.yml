@@ -1,15 +1,20 @@
-# Staging override: nri-mq rule renamed with StgOverride suffix for global uniqueness; OTel rule is new.
+# Staging override of INFRA-IBMMQ_MANAGER-to-INFRA-IBMMQ_QUEUE.yml.
+# Carries the production (nri-mq) MANAGES relationship verbatim AND adds the OpenTelemetry one, so
+# the staging environment builds manager->queue relationships from BOTH pipelines. Production
+# (.yml) is left untouched.
 relationships:
-  # nri-mq pipeline: source GUID built from targetName + qmgr; instrumentation.provider absent keeps OTel data out.
-  - name: ibmMqManagerManagesIbmMqQueueStgOverride
+  # --- Production (nri-mq) relationship, carried over from the .yml. Source manager GUID uses the
+  #     IDENTITY hash on targetName:qmgr to match the prod manager synthesis. Renamed with a
+  #     -PrometheusStg suffix because relationship names must be globally unique across prod + stg. ---
+  - name: ibmMqManagerManagesIbmMqQueuePrometheusStg
     version: "1"
     origins:
       - Metric API
     conditions:
       - attribute: eventType
         anyOf: [ "MetricRaw" ]
-      - attribute: instrumentation.provider
-        present: false
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
     relationship:
       expires: PT75M
       relationshipType: MANAGES
@@ -31,20 +36,21 @@ relationships:
         extractGuid:
           attribute: entity.guid
           entityType:
-            value: IBMMQQUEUE
+            attribute: entity.type
 
-  # OpenTelemetry pipeline: source GUID built from host.name + qmgr (FARM_HASH) to match the OTel synthesis rule.
-  - name: ibmMqManagerManagesIbmMqQueueOtel
+  # --- OpenTelemetry relationship. Source manager GUID built from targetName + ibmmq.queue_manager.name
+  #     with FARM_HASH to match the OTel manager synthesis rule's encodeIdentifierInGUID: true. ---
+  - name: ibmMqManagerManagesIbmMqQueueStg
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
-      - attribute: otel.library.name
-        anyOf: [ "ibmmq" ]
     relationship:
       expires: PT75M
       relationshipType: MANAGES
@@ -58,10 +64,12 @@ relationships:
             value: IBMMQ_MANAGER
           identifier:
             fragments:
-              - attribute: "host.name"
+              - attribute: "targetName"
               - value: ":"
-              - attribute: "qmgr"
+              - attribute: "ibmmq.queue_manager.name"
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: IBMMQQUEUE
+          attribute: entity.guid
+          entityType:
+            value: IBMMQ_QUEUE
