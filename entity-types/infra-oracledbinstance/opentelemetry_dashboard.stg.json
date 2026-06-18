@@ -1,11 +1,11 @@
 {
-  "name": "OracleOtel",
+  "name": "Oracle Database Monitoring (OTel)",
   "pages": [
     {
-      "name": "Oracle OTEL Database Overview",
+      "name": "Oracle Database Overview",
       "widgets": [
         {
-          "title": "Execution count",
+          "title": "Database CPU Time (per sec)",
           "layout": {
             "column": 1,
             "row": 1,
@@ -36,7 +36,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(oracledb.connection.execute_count or oracledb.executions)  as 'Execution count'  from Metric where metricName IN('oracledb.connection.execute_count','oracledb.executions') TIMESERIES Auto"
+                "query": "FROM Metric SELECT rate(sum(oracledb.cpu_time), 1 SECOND) WHERE metricName = 'oracledb.cpu_time' TIMESERIES FACET oracle.db.pdb"
               }
             ],
             "platformOptions": {
@@ -51,7 +51,7 @@
           }
         },
         {
-          "title": "Sessions count",
+          "title": "SQL Execution Rate",
           "layout": {
             "column": 5,
             "row": 1,
@@ -82,7 +82,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(oracledb.sessions.count or oracledb.sessions.usage)  as 'Sessions count'  from Metric where metricName IN('oracledb.sessions.count','oracledb.sessions.usage') TIMESERIES Auto"
+                "query": "FROM Metric SELECT rate(sum(oracledb.executions), 1 SECOND) WHERE metricName = 'oracledb.executions' TIMESERIES FACET oracle.db.pdb"
               }
             ],
             "platformOptions": {
@@ -97,7 +97,7 @@
           }
         },
         {
-          "title": "Parse calls",
+          "title": "Active Session Count",
           "layout": {
             "column": 9,
             "row": 1,
@@ -105,7 +105,7 @@
             "height": 3
           },
           "visualization": {
-            "id": "viz.line"
+            "id": "viz.area"
           },
           "rawConfiguration": {
             "chartStyles": {
@@ -128,7 +128,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(oracledb.connection.parse_count_total or oracledb.parse_calls)  as 'Parse calls'  from Metric where metricName IN('oracledb.connection.parse_count_total','oracledb.parse_calls') TIMESERIES Auto"
+                "query": "FROM Metric SELECT sum(oracledb.sessions.usage) WHERE metricName = 'oracledb.sessions.usage' TIMESERIES FACET oracle.db.pdb"
               }
             ],
             "platformOptions": {
@@ -143,11 +143,11 @@
           }
         },
         {
-          "title": "Connection user commits",
+          "title": "Database CPU Utilization %",
           "layout": {
             "column": 1,
             "row": 4,
-            "width": 4,
+            "width": 6,
             "height": 3
           },
           "visualization": {
@@ -174,7 +174,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(oracledb.connection.user_commits or oracledb.user_commits)  as 'Connection user commits'  from Metric where metricName IN('oracledb.connection.user_commits','oracledb.user_commits') TIMESERIES Auto"
+                "query": "FROM Metric SELECT average(oracledb.database.cpu.utilization) WHERE metricName = 'oracledb.database.cpu.utilization' TIMESERIES FACET oracle.db.pdb"
               }
             ],
             "platformOptions": {
@@ -189,11 +189,11 @@
           }
         },
         {
-          "title": "Physical reads",
+          "title": "Host CPU Utilization %",
           "layout": {
-            "column": 5,
+            "column": 7,
             "row": 4,
-            "width": 4,
+            "width": 6,
             "height": 3
           },
           "visualization": {
@@ -211,6 +211,7 @@
             },
             "markers": {
               "displayedTypes": {
+                "annotations": true,
                 "criticalViolations": false,
                 "deployments": true,
                 "relatedDeployments": true,
@@ -220,11 +221,14 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(oracledb.system.physical_read_io_requests_per_second or oracledb.physical_read_io_requests)  as 'Physical reads'  from Metric where metricName IN('oracledb.system.physical_read_io_requests_per_second','oracledb.physical_read_io_requests') TIMESERIES Auto"
+                "query": "FROM Metric SELECT average(oracledb.host.cpu.utilization) as 'average cpu utilization' WHERE metricName = 'oracledb.host.cpu.utilization' TIMESERIES "
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
             },
             "yAxisLeft": {
               "zero": true
@@ -235,56 +239,148 @@
           }
         },
         {
-          "title": "Physical writes",
-          "layout": {
-            "column": 9,
-            "row": 4,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "chartStyles": {
-              "lineInterpolation": "linear"
-            },
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "markers": {
-              "displayedTypes": {
-                "criticalViolations": false,
-                "deployments": true,
-                "relatedDeployments": true,
-                "warningViolations": false
-              }
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "select latest(oracledb.physical_write_io_requests or oracledb.system.physical_write_io_requests_per_second)  as 'Physical writes'  from Metric where metricName IN('oracledb.system.physical_write_io_requests_per_second','oracledb.physical_write_io_requests') TIMESERIES Auto"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "yAxisLeft": {
-              "zero": true
-            },
-            "yAxisRight": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Connection logons",
+          "title": "SQL Execution Efficiency %",
           "layout": {
             "column": 1,
             "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(oracledb.execution.utilization) WHERE metricName = 'oracledb.execution.utilization' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Database Wait Time %",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(oracledb.database.wait.utilization) WHERE metricName = 'oracledb.database.wait.utilization' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "SQL Service Response Time",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(oracledb.sql_service.response.duration) WHERE metricName = 'oracledb.sql_service.response.duration' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total Parse Rate",
+          "layout": {
+            "column": 1,
+            "row": 13,
             "width": 4,
             "height": 3
           },
@@ -312,7 +408,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(oracledb.connection.logons_cumulative or oracledb.logons)  as 'Connection logons'  from Metric where metricName IN('oracledb.connection.logons_cumulative','oracledb.logons') TIMESERIES Auto"
+                "query": "FROM Metric SELECT rate(sum(oracledb.parse_calls), 1 SECOND) WHERE metricName = 'oracledb.parse_calls' TIMESERIES FACET oracle.db.pdb"
               }
             ],
             "platformOptions": {
@@ -327,10 +423,10 @@
           }
         },
         {
-          "title": "Used tablespace in bytes",
+          "title": "Hard Parse Rate",
           "layout": {
             "column": 5,
-            "row": 7,
+            "row": 13,
             "width": 4,
             "height": 3
           },
@@ -358,7 +454,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(oracledb.tablespace.used_bytes or oracledb.tablespace_size.usage)  as 'Used tablespace in bytes'  from Metric where metricName IN('oracledb.tablespace.used_bytes','oracledb.tablespace_size.usage') TIMESERIES Auto"
+                "query": "FROM Metric SELECT rate(sum(oracledb.hard_parses), 1 SECOND) WHERE metricName = 'oracledb.hard_parses' TIMESERIES FACET oracle.db.pdb"
               }
             ],
             "platformOptions": {
@@ -373,10 +469,10 @@
           }
         },
         {
-          "title": "Hard parses",
+          "title": "Parse Failure Rate",
           "layout": {
             "column": 9,
-            "row": 7,
+            "row": 13,
             "width": 4,
             "height": 3
           },
@@ -404,7 +500,761 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "select latest(oracledb.connection.parse_count_hard or oracledb.hard_parses)  as 'Hard parses'  from Metric where metricName IN('oracledb.connection.parse_count_hard','oracledb.hard_parses') TIMESERIES Auto"
+                "query": "FROM Metric SELECT average(oracledb.parse.rate) WHERE metricName = 'oracledb.parse.rate' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Logical Read Rate",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.logical_reads), 1 SECOND) WHERE metricName = 'oracledb.logical_reads' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Physical Read Rate",
+          "layout": {
+            "column": 5,
+            "row": 16,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.physical_reads), 1 SECOND) WHERE metricName = 'oracledb.physical_reads' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Physical Write Rate",
+          "layout": {
+            "column": 9,
+            "row": 16,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.physical_io.cache_writes), 1 SECOND) WHERE metricName = 'oracledb.physical_io.cache_writes' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Physical I/O by Direction",
+          "layout": {
+            "column": 1,
+            "row": 19,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.physical_io.requests), 1 SECOND) WHERE metricName = 'oracledb.physical_io.requests' TIMESERIES FACET disk.io.direction"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "SQL*Net Traffic",
+          "layout": {
+            "column": 7,
+            "row": 19,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.sqlnet.io.transferred), 1 SECOND) WHERE metricName = 'oracledb.sqlnet.io.transferred' TIMESERIES FACET network.io.direction"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Buffer Cache Activity",
+          "layout": {
+            "column": 1,
+            "row": 22,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.consistent_gets), 1 SECOND) as ConsistentGets, rate(sum(oracledb.db_block_gets), 1 SECOND) as DBBlockGets WHERE metricName IN ('oracledb.consistent_gets', 'oracledb.db_block_gets') TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Buffer Cache Hit Ratio %",
+          "layout": {
+            "column": 5,
+            "row": 22,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(oracledb.buffer_cache.utilization) WHERE metricName = 'oracledb.buffer_cache.utilization' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Library Cache Hit Ratio %",
+          "layout": {
+            "column": 9,
+            "row": 22,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(oracledb.library_cache.utilization) WHERE metricName = 'oracledb.library_cache.utilization' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "PGA Memory Usage",
+          "layout": {
+            "column": 1,
+            "row": 25,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.pga_memory), 1 SECOND) WHERE metricName = 'oracledb.pga_memory' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "SGA Component Allocation",
+          "layout": {
+            "column": 5,
+            "row": 25,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(oracledb.sga.usage) WHERE metricName = 'oracledb.sga.usage' TIMESERIES FACET oracledb.sga.component.name"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Shared Pool Utilization %",
+          "layout": {
+            "column": 9,
+            "row": 25,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "annotations": true,
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(oracledb.shared_pool.utilization) as 'shared pool utilization' WHERE metricName = 'oracledb.shared_pool.utilization' TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Transaction Activity",
+          "layout": {
+            "column": 1,
+            "row": 28,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.user_commits), 1 SECOND) as Commits, rate(sum(oracledb.user_rollbacks), 1 SECOND) as Rollbacks WHERE metricName IN ('oracledb.user_commits', 'oracledb.user_rollbacks') TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Deadlock Rate",
+          "layout": {
+            "column": 7,
+            "row": 28,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.enqueue_deadlocks), 1 SECOND) WHERE metricName = 'oracledb.enqueue_deadlocks' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Process Limit Usage",
+          "layout": {
+            "column": 1,
+            "row": 31,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(oracledb.processes.usage) WHERE metricName = 'oracledb.processes.usage'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Session Limit Usage",
+          "layout": {
+            "column": 5,
+            "row": 31,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(oracledb.sessions.usage) WHERE metricName = 'oracledb.sessions.usage'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Transaction Limit Usage",
+          "layout": {
+            "column": 9,
+            "row": 31,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(oracledb.transactions.usage) WHERE metricName = 'oracledb.transactions.usage'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Logon Rate",
+          "layout": {
+            "column": 1,
+            "row": 34,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(oracledb.logons), 1 SECOND) WHERE metricName = 'oracledb.logons' TIMESERIES FACET oracle.db.pdb"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Tablespace Usage",
+          "layout": {
+            "column": 1,
+            "row": 37,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "markers": {
+              "displayedTypes": {
+                "criticalViolations": false,
+                "deployments": true,
+                "relatedDeployments": true,
+                "warningViolations": false
+              }
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(oracledb.tablespace_size.usage) WHERE metricName = 'oracledb.tablespace_size.usage' FACET tablespace_name LIMIT 20"
               }
             ],
             "platformOptions": {
