@@ -1,0 +1,72 @@
+relationships:
+  - name: apmCallsOtelRedisInstance
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system
+        anyOf: ["redis"]
+      - attribute: redis.instance.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+          identifier:
+            fragments:
+              - attribute: redis.instance.id
+            hashAlgorithm: FARM_HASH
+
+  - name: apmCallsOtelRedisInstance2
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system
+        anyOf: ["redis"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+          identifier:
+            fragments:
+              - attribute: server.address
+              - value: ":"
+              - attribute: server.port
+            hashAlgorithm: FARM_HASH
