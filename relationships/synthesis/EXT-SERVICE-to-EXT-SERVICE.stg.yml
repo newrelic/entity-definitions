@@ -38,14 +38,49 @@ relationships:
     version: "1"
     origins:
       - Distributed Tracing
-      - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: ["Span", "Metric"]
+        anyOf: ["Span"]
       - attribute: instrumentation.name
         anyOf: ["nr_ebpf"]
       - attribute: trace_role
         anyOf: ["client"]
+      - attribute: remote_endpoint
+        present: true
+      - attribute: remote.host.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: EXTEBPFSERVER
+          fields:
+            - field: local_endpoint
+              attribute: remote_endpoint
+            - field: hostname
+              attribute: remote.host.name
+
+  - name: extEbpfClientCallsExtEbpfServerFromClientMetricStgOverride
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.name
+        anyOf: ["nr_ebpf"]
+      - attribute: trace_role
+        anyOf: ["client"]
+      - attribute: metricName
+        startsWith: "ebpf.tcp"
+      - attribute: remote_endpoint
+        present: true
+      - attribute: remote.host.name
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CALLS
