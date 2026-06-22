@@ -1,0 +1,60 @@
+relationships:
+  # lookupGuid alternative to the prod extInfraDockerContainerEXTService
+  # buildGuid rule. Resolves source CONTAINER via the CONTAINER candidate
+  # keyed on container.id. Both rules emit in staging; on promotion
+  # (delete prod .yml, rename this file to .yml) this rule supersedes it.
+  - name: extInfraContainerEXTServiceByContainerIdLookup
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log", "Metric", "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: container.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: CONTAINER
+          fields:
+            - field: containerId
+              attribute: container.id
+      target:
+        extractGuid:
+          attribute: entity.guid
+
+  - name: nrInfraDockerContainerEXTService
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log", "Metric", "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: container.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "docker:"
+              - attribute: container.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
