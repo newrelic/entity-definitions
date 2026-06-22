@@ -1,0 +1,277 @@
+{
+  "name": "vSphere Datacenter (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Cluster count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.cluster.count) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datacenter.name",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Datastore count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.datastore.count) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datacenter.name",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "Host count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.host.count) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datacenter.name",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "height": 3,
+            "width": 3
+          },
+          "title": "VM count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.vm.count) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datacenter.name",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 1,
+            "width": 12
+          },
+          "rawConfiguration": {
+            "text": "## Resources"
+          },
+          "title": ""
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Total CPU limit (MHz)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.cpu.limit) WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datacenter.name TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Total memory limit (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.memory.limit) / 1e9 WHERE instrumentation.provider = 'opentelemetry' FACET vcenter.datacenter.name TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "height": 1,
+            "width": 12
+          },
+          "rawConfiguration": {
+            "text": "## Storage"
+          },
+          "title": ""
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk space used (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.disk.space) / 1e9 WHERE instrumentation.provider = 'opentelemetry' AND disk_state = 'used' FACET vcenter.datacenter.name TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk space available (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.disk.space) / 1e9 WHERE instrumentation.provider = 'opentelemetry' AND disk_state = 'available' FACET vcenter.datacenter.name TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 9,
+            "row": 9,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Disk space used vs available (GiB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.disk.space) / 1e9 WHERE instrumentation.provider = 'opentelemetry' FACET disk_state TIMESERIES AUTO",
+                "accountId": 0}
+            ],
+            "units": {
+              "unit": "BYTES"
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "height": 1,
+            "width": 12
+          },
+          "rawConfiguration": {
+            "text": "## Hosts"
+          },
+          "title": ""
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Host count by power state",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.host.count) WHERE instrumentation.provider = 'opentelemetry' FACET power_state TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 13,
+            "height": 3,
+            "width": 6
+          },
+          "title": "VM count by power state",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(vcenter.datacenter.vm.count) WHERE instrumentation.provider = 'opentelemetry' FACET power_state TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
