@@ -126,7 +126,6 @@ You can test that the synthesis rules from your entity definition match the expe
 
 See [ext-pihole definition](https://github.com/newrelic/entity-definitions/tree/main/entity-types/ext-pihole/tests/) for an example of test data.
 
-
 ## Support
 
 Is the information provided in the repository not enough to solve your doubts? Get in touch with the team by opening an issue!
