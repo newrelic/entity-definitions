@@ -1,9 +1,7 @@
 domain: EXT
 type: SAP_SYSTEM
 goldenTags:
-  - instrumentation.provider
-  - sap.functional_area
-  - sap.system
+  - SYS_ID 
 
 synthesis:
   rules:
@@ -15,16 +13,33 @@ synthesis:
     conditions:
     - attribute: SAP_ETYPE
       value: SYSTEM
+    - attribute: instrumentation_proivder
+      value: SAP
+
     tags:
-      sap.functional_area:
       SYS_ID:
         entityTagName: sap.system
-      HOST_NAME:
-        entityTagName: host
+
+  - ruleName: oltp_sap_SAP_EID 
+    identifier: SAP_EID 
+    name: SAP_EID 
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: collector.name 
+      value: nr-sap-connector 
+    - attribute: SAP_ETYPE 
+      value: SYSTEM 
+    
+    tags:
+      service.name:
+        entityTagName: sap.system
 
 dashboardTemplates:
   SAP:
     template: dashboard.json
+  opentelemetry:
+    template: dashboard.json
+
 
 configuration:
   entityExpirationTime: QUARTERLY
@@ -32,4 +47,4 @@ configuration:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "nr-sap-monitoring"
