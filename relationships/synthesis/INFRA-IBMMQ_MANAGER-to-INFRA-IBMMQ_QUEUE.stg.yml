@@ -1,0 +1,67 @@
+# Staging override: production (nri-mq) MANAGES relationship + the OpenTelemetry one.
+relationships:
+  # Production (nri-mq): IDENTITY hash on targetName:qmgr. Renamed *PrometheusStg (rel names must be globally unique).
+  - name: ibmMqManagerManagesIbmMqQueuePrometheusStg
+    version: "1"
+    origins:
+      - Metric API
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "targetName"
+              - value: ":"
+              - attribute: "qmgr"
+            hashAlgorithm: IDENTITY
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # OpenTelemetry: source GUID from ibmmq.queue_manager.name (FARM_HASH) to match the OTel manager rule.
+  - name: ibmMqManagerManagesIbmMqQueueStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "MetricRaw" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: "ibmmq.queue_manager.name"
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: IBMMQ_QUEUE
