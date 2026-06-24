@@ -1,0 +1,100 @@
+domain: INFRA
+type: FLINKTASKMANAGER
+
+synthesis:
+  rules:
+  # OTel Collector Contrib (full GitHub URL) — confirmed otel.library.name in NRDB
+  - ruleName: infra_flinktaskmanager_otel_contrib
+    identifier: flink.taskmanager.id
+    name: flink.taskmanager.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: flink.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/flinkmetricsreceiver"
+      - attribute: flink.taskmanager.id
+        present: true
+    tags:
+      flink.taskmanager.id:
+        ttl: P1D
+      flink.resource.type:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # NRDOT short-form (canonical receiver type: flink_metrics)
+  - ruleName: infra_flinktaskmanager_otel
+    identifier: flink.taskmanager.id
+    name: flink.taskmanager.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: flink.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "otelcol/flink_metricsreceiver"
+      - attribute: flink.taskmanager.id
+        present: true
+    tags:
+      flink.taskmanager.id:
+        ttl: P1D
+      flink.resource.type:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+goldenTags:
+  - flink.taskmanager.id
+  - flink.resource.type
+  - host.name
+  - host.id
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
