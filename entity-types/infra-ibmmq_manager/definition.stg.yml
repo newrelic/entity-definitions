@@ -52,13 +52,10 @@ synthesis:
         clusterName:
 
     # --- OpenTelemetry rule (Prometheus exporter via OTel collector prometheusreceiver).
-    #     Underscore metric names + shared native identity (targetName:qmgr) to avoid duplicate entities. ---
+    #     Underscore metric names; identity keyed on qmgr, encoded into the GUID. ---
     - ruleName: infra_ibmmq_manager_otel_stg
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - targetName
-          - qmgr
+      identifier: qmgr
+      encodeIdentifierInGUID: true
       name: qmgr
       conditions:
         - attribute: eventType
