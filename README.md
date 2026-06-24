@@ -83,7 +83,7 @@ It is also possible to test new definitions by adding `.stg` suffix to its files
 
 Required validation steps:
 1. Ensure no file references are broken by override
-2. Verify override rule identifiers are different from originals (e.g. mySuperRule -> mySuperRuleStgOverride)
+2. New rules require new names, but existing rule identifiers can now stay the same as in the originals that they replace. (`.stg` file name uniqueness is no longer required against its own original.)
 3. If override changes file enough, you might need to consider adding a new definition / rule
 
 > [!NOTE]  
