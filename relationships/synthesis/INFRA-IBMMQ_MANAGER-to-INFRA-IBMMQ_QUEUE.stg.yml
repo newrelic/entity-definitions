@@ -1,6 +1,6 @@
 # Staging override: production (nri-mq) MANAGES relationship + the OpenTelemetry one.
 relationships:
-  # Production (nri-mq): IDENTITY hash on targetName:qmgr. Renamed *PrometheusStg (rel names must be globally unique).
+  # nri-mq path: build the source manager GUID from qmgr (FARM_HASH) to match the manager entity (identifier qmgr, encodeIdentifierInGUID). Renamed *PrometheusStg (rel names must be globally unique).
   - name: ibmMqManagerManagesIbmMqQueuePrometheusStg
     version: "1"
     origins:
@@ -23,10 +23,8 @@ relationships:
             value: IBMMQ_MANAGER
           identifier:
             fragments:
-              - attribute: "targetName"
-              - value: ":"
               - attribute: "qmgr"
-            hashAlgorithm: IDENTITY
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid
