@@ -1,15 +1,21 @@
-# Staging override: production (nri-mq) MANAGES relationship + the OpenTelemetry one.
+# Staging override: nri-mq + OpenTelemetry MANAGES relationships.
 relationships:
-  # Production (nri-mq): IDENTITY hash on targetName:qmgr. Renamed *PrometheusStg (rel names must be globally unique).
+  # nri-mq path: source manager GUID from qmgr (FARM_HASH); renamed *PrometheusStg for global rel-name uniqueness.
   - name: ibmMqManagerManagesIbmMqQueuePrometheusStg
     version: "1"
     origins:
       - Metric API
     conditions:
       - attribute: eventType
-        anyOf: [ "MetricRaw" ]
+        anyOf: [ "Metric" ]
       - attribute: entity.type
         anyOf: [ "IBMMQ_QUEUE" ]
+      - attribute: qmgr
+        present: true
+      - attribute: targetName
+        present: true
+      - attribute: instrumentation.provider
+        present: false
     relationship:
       expires: PT75M
       relationshipType: MANAGES
@@ -23,28 +29,32 @@ relationships:
             value: IBMMQ_MANAGER
           identifier:
             fragments:
-              - attribute: "targetName"
+              - attribute: targetName
               - value: ":"
-              - attribute: "qmgr"
-            hashAlgorithm: IDENTITY
+              - attribute: qmgr
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
           entityType:
-            attribute: entity.type
+            attribute: IBMMQ_QUEUE
 
-  # OpenTelemetry: source GUID from ibmmq.queue_manager.name (FARM_HASH) to match the OTel manager rule.
+  # OpenTelemetry path: source manager GUID from qmgr (FARM_HASH).
   - name: ibmMqManagerManagesIbmMqQueueStg
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "MetricRaw" ]
+        anyOf: [ "Metric" ]
       - attribute: entity.type
         anyOf: [ "IBMMQ_QUEUE" ]
       - attribute: instrumentation.provider
         anyOf: [ "opentelemetry" ]
+      - attribute: qmgr
+        present: true
+      - attribute: target.name
+        present: true
     relationship:
       expires: PT75M
       relationshipType: MANAGES
@@ -58,7 +68,9 @@ relationships:
             value: IBMMQ_MANAGER
           identifier:
             fragments:
-              - attribute: "ibmmq.queue_manager.name"
+              - attribute: target.name
+              - value: ":"
+              - attribute: qmgr
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:

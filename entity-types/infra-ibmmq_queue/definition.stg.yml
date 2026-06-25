@@ -5,7 +5,7 @@ goldenTags:
 
 synthesis:
   rules:
-    # --- Production nri-mq rule (carried over verbatim from definition.yml) ---
+    # nri-mq rule (staging): native identity = targetName:qmgr:queue, matching prod (OTel excluded via instrumentation.provider absent).
     - ruleName: infra_ibmmq_queue_nri_stg_1
       compositeIdentifier:
         separator: ":"
@@ -14,55 +14,62 @@ synthesis:
           - qmgr
           - queue
       encodeIdentifierInGUID: true
-      name: queue
+      compositeName:
+        fragments:
+          - attribute: queue
+          - value: " ("
+          - attribute: qmgr
+          - value: ")"
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
           prefix: ibmmq_queue
+        - attribute: instrumentation.provider
+          present: false
       tags:
         qmgr:
 
-    # --- New OpenTelemetry rule. Identifier is targetName + ibmmq.queue_manager.name + ibmmq.queue.
-    #     Composite name is qmgr:queue so two managers can share a queue name without collision. ---
+    # OpenTelemetry rule (Prometheus receiver): underscored metrics; identity keyed on target.name:qmgr:queue.
     - ruleName: infra_ibmmq_queue_otel_stg_1
       compositeIdentifier:
         separator: ":"
         attributes:
-          - ibmmq.queue_manager.name
-          - ibmmq.queue
+          - target.name
+          - qmgr
+          - queue
       encodeIdentifierInGUID: true
       compositeName:
         fragments:
-          - attribute: ibmmq.queue_manager.name
-          - value: ":"
-          - attribute: ibmmq.queue
+          - attribute: queue
+          - value: " ("
+          - attribute: qmgr
+          - value: ")"
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: ibmmq.queue.
+          prefix: ibmmq_queue
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
           value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
-        - attribute: ibmmq.queue_manager.name
+        - attribute: qmgr
           present: true
-        - attribute: ibmmq.queue
+        - attribute: queue
           present: true
       tags:
-        ibmmq.queue_manager.name:
-          entityTagName: qmgr
-        ibmmq.queue:
-          entityTagName: queue
+        qmgr:
+        queue:
+        target.name:
         usage:
-        cluster:
+        cluster.name:
           entityTagName: clusterName
-        deployment.environment:
         otel.library.name:
           entityTagName: instrumentation.name
         instrumentation.provider:
         server.address:
+          ttl: P1D
         host.id:
           ttl: P1D
         host.name:
