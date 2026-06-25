@@ -8,10 +8,9 @@ scheduledCheckpoints:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(postgresql.bgwriter.checkpoint.count)
+      select: sum(postgresql.bgwriter.checkpoint.count) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
       where: type = 'scheduled'
-      
 
 requestedCheckpoints:
   title: Requested checkpoints
@@ -23,7 +22,7 @@ requestedCheckpoints:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(postgresql.bgwriter.checkpoint.count)
+      select: sum(postgresql.bgwriter.checkpoint.count) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
       where: type = 'requested'
 
@@ -37,5 +36,5 @@ buffersAllocated:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: average(postgresql.bgwriter.buffers.allocated)
+      select: sum(postgresql.bgwriter.buffers.allocated) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
