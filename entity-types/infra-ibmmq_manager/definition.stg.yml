@@ -3,7 +3,7 @@ type: IBMMQ_MANAGER
 
 synthesis:
   rules:
-    # --- Production nri-mq rules (carried over verbatim from definition.yml) ---
+    # nri-mq rules (staging): native identity = targetName:qmgr, matching prod (OTel excluded via instrumentation.provider absent).
     - ruleName: infra_ibmmq_manager_nri_stg_1
       compositeIdentifier:
         separator: ":"
@@ -16,6 +16,8 @@ synthesis:
           value: Metric
         - attribute: metricName
           prefix: ibmmq_qmgr
+        - attribute: instrumentation.provider
+          present: false
       tags:
         clusterName:
 
@@ -31,7 +33,8 @@ synthesis:
           value: Metric
         - attribute: metricName
           prefix: ibmmq_channel
-
+        - attribute: instrumentation.provider
+          present: false
       tags:
         clusterName:
 
@@ -47,36 +50,43 @@ synthesis:
           value: Metric
         - attribute: metricName
           prefix: ibmmq_subscription
-
+        - attribute: instrumentation.provider
+          present: false
       tags:
         clusterName:
 
-    # --- New OpenTelemetry rule (IBM MQ Prometheus exporter scraped by the OTel collector
-    #     prometheusreceiver). Identifier is ibmmq.queue_manager.name. ---
+    # OpenTelemetry rule (Prometheus receiver): underscored metrics; identity keyed on target.name:qmgr.
     - ruleName: infra_ibmmq_manager_otel_stg
-      identifier: ibmmq.queue_manager.name
-      name: ibmmq.queue_manager.name
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - target.name
+          - qmgr
       encodeIdentifierInGUID: true
+      name: qmgr
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: ibmmq.qmgr.
+          prefix: ibmmq_qmgr
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
           value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
-        - attribute: ibmmq.queue_manager.name
+        - attribute: qmgr
           present: true
+        - attribute: queue
+          present: false
       tags:
-        ibmmq.queue_manager.name:
-          entityTagName: qmgr
-        cluster:
+        qmgr:
+        target.name:
+        cluster.name:
           entityTagName: clusterName
         otel.library.name:
           entityTagName: instrumentation.name
         instrumentation.provider:
         server.address:
+          ttl: P1D
         host.id:
           ttl: P1D
         host.name:
