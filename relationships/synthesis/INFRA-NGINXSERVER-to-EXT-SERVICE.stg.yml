@@ -1,5 +1,5 @@
 relationships:
-  - name: otelExtServiceCallsOtelInfraNginxServer
+  - name: otelInfraNginxServerCallsOtelExtService
     version: "1"
     origins:
       - OpenTelemetry
@@ -22,18 +22,18 @@ relationships:
       expires: PT75M
       relationshipType: CALLS
       source:
-        lookupGuid:
-          candidateCategory: NGINXSERVER
-          fields:
-            - field: nginxUpstreamDeploymentNameExtService
-              attribute: nginx.deployment.name
-      target:
         extractGuid:
           attribute: entity.guid
           entityType:
             value: NGINXSERVER
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: nginxDeploymentNameExtService
+              attribute: nginx.deployment.name
 
-  - name: otelExtServiceCallsOtelInfraNginxPlusServer
+  - name: otelInfraNginxPlusServerCallsOtelExtService
     version: "1"
     origins:
       - OpenTelemetry
@@ -56,13 +56,13 @@ relationships:
       expires: PT75M
       relationshipType: CALLS
       source:
-        lookupGuid:
-          candidateCategory: NGINXSERVER
-          fields:
-            - field: nginxUpstreamDeploymentNameExtService
-              attribute: nginx.deployment.name
-      target:
         extractGuid:
           attribute: entity.guid
           entityType:
             value: NGINXSERVER
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: nginxDeploymentNameExtService
+              attribute: nginx.deployment.name
