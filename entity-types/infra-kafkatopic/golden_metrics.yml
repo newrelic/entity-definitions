@@ -1,5 +1,5 @@
 bytesInPerSecond:
-  title: Bytes in per second
+  title: "OTel: Bytes in per second"
   unit: BYTES_PER_SECOND
   queries:
     opentelemetry:
@@ -7,14 +7,9 @@ bytesInPerSecond:
       from: Metric
       where: metricName = 'kafka.topic.io' AND (state = 'in' OR direction = 'in')
       eventId: entity.guid
-    gcp:
-      select: rate(sum(gcp.managedkafka.byte_in_count), 1 second)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
 
 bytesOutPerSecond:
-  title: Bytes out per second
+  title: "OTel: Bytes out per second"
   unit: BYTES_PER_SECOND
   queries:
     opentelemetry:
@@ -22,14 +17,9 @@ bytesOutPerSecond:
       from: Metric
       where: metricName = 'kafka.topic.io' AND (state = 'out' OR direction = 'out')
       eventId: entity.guid
-    gcp:
-      select: rate(sum(gcp.managedkafka.byte_out_count), 1 second)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
 
 messagesInPerSecond:
-  title: Messages in per second
+  title: "OTel: Messages in per second"
   unit: MESSAGES_PER_SECOND
   queries:
     opentelemetry:
@@ -37,11 +27,6 @@ messagesInPerSecond:
       from: Metric
       where: metricName = 'kafka.prod.msg.count'
       eventId: entity.guid
-    gcp:
-      select: rate(sum(gcp.managedkafka.message_in_count), 1 second)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
 
 consumerGroupLag:
   title: "OTel: Consumer group lag"
@@ -72,13 +57,3 @@ partitionsWithNonPreferredLeader:
       from: KafkaTopicSample
       eventId: entityGuid
       eventName: entityName
-
-gcpTopicErrors:
-  title: Topic Errors
-  unit: COUNT
-  queries:
-    gcp:
-      select: sum(gcp.managedkafka.topic_error_count)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name

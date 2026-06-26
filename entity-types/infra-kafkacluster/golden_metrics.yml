@@ -42,11 +42,6 @@ partitionCount:
       from: Metric
       where: metricName='kafka.cluster.partition.count' and getField(kafka.cluster.partition.count , 'latest') > 0
       eventId: entity.guid
-    gcp:
-      select: latest(gcp.managedkafka.partitions)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
 
 offlinePartitions:
   title: Offline partitions
@@ -62,29 +57,3 @@ offlinePartitions:
       from: Metric
       where: metricName='kafka.partition.offline'
       eventId: entity.guid
-    gcp:
-      select: max(gcp.managedkafka.offline_partitions)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-
-gcpCpuUsage:
-  title: CPU Usage (vCPU/s)
-  unit: COUNT
-  queries:
-    gcp:
-      select: rate(sum(gcp.managedkafka.cpu.core_usage_time), 1 minute)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-
-gcpRequestLatency:
-  title: Request Latency p99 (ms)
-  unit: MS
-  queries:
-    gcp:
-      select: average(gcp.managedkafka.request_latencies)
-      from: Metric
-      where: "metric.percentile = '99'"
-      eventId: entity.guid
-      eventName: entity.name
