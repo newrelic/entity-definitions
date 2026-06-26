@@ -25,7 +25,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(sqlserver.user.connection.count) AS 'Connections' FROM Metric"
+                "query": "SELECT latest(sqlserver.user.connection.count) AS 'Connections' FROM Metric WHERE metricName = 'sqlserver.user.connection.count'"
               }
             ],
             "platformOptions": {
@@ -66,7 +66,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(sqlserver.user.connection.count) AS 'User Connections' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT average(sqlserver.user.connection.count) AS 'User Connections' FROM Metric WHERE metricName = 'sqlserver.user.connection.count' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -119,7 +119,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT derivative(sqlserver.batch.request.rate, 1 second) AS 'Batch req/sec' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT derivative(sqlserver.batch.request.rate, 1 second) AS 'Batch req/sec' FROM Metric WHERE metricName = 'sqlserver.batch.request.rate' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -160,7 +160,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(sqlserver.page.buffer_cache.hit_ratio) AS 'Buffer Cache Hit %' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT average(sqlserver.page.buffer_cache.hit_ratio) AS 'Buffer Cache Hit %' FROM Metric WHERE metricName = 'sqlserver.page.buffer_cache.hit_ratio' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -207,7 +207,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(sqlserver.page.life_expectancy) AS 'Page Life Expectancy (sec)' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT average(sqlserver.page.life_expectancy) AS 'Page Life Expectancy (sec)' FROM Metric WHERE metricName = 'sqlserver.page.life_expectancy' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -245,7 +245,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(sqlserver.memory.grants.pending.count) AS 'Pending Grants' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT latest(sqlserver.memory.grants.pending.count) AS 'Pending Grants' FROM Metric WHERE metricName = 'sqlserver.memory.grants.pending.count' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -295,7 +295,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT filter(latest(sqlserver.memory.area), WHERE memory.pool = 'total') / filter(latest(sqlserver.memory.area), WHERE memory.pool = 'target') * 100 AS 'Memory %' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT filter(latest(sqlserver.memory.area), WHERE memory.pool = 'total') / filter(latest(sqlserver.memory.area), WHERE memory.pool = 'target') * 100 AS 'Memory %' FROM Metric WHERE metricName = 'sqlserver.memory.area' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -342,7 +342,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(sqlserver.memory.area) FROM Metric FACET memory.pool TIMESERIES AUTO"
+                "query": "SELECT average(sqlserver.memory.area) FROM Metric WHERE metricName = 'sqlserver.memory.area' FACET memory.pool TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -374,7 +374,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(sqlserver.database.io), 1 second) / (1024*1024) AS 'Write MB/s' FROM Metric WHERE direction = 'write' FACET sqlserver.database.name TIMESERIES AUTO"
+                "query": "SELECT rate(sum(sqlserver.database.io), 1 second) / (1024*1024) AS 'Write MB/s' FROM Metric WHERE metricName = 'sqlserver.database.io' AND direction = 'write' FACET sqlserver.database.name TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -409,7 +409,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(sqlserver.database.io), 1 second) / (1024*1024) AS 'Read MB/s' FROM Metric WHERE direction = 'read' FACET sqlserver.database.name TIMESERIES AUTO"
+                "query": "SELECT rate(sum(sqlserver.database.io), 1 second) / (1024*1024) AS 'Read MB/s' FROM Metric WHERE metricName = 'sqlserver.database.io' AND direction = 'read' FACET sqlserver.database.name TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -453,7 +453,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT (sum(sqlserver.database.latency) / sum(sqlserver.database.operations)) * 1000 AS 'Avg I/O wait (ms per op)' FROM Metric FACET direction TIMESERIES AUTO"
+                "query": "SELECT (sum(sqlserver.database.latency) / sum(sqlserver.database.operations)) * 1000 AS 'Avg I/O wait (ms per op)' FROM Metric WHERE metricName IN ('sqlserver.database.latency', 'sqlserver.database.operations') FACET direction TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -485,7 +485,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(sqlserver.database.count) FROM Metric FACET database.status"
+                "query": "SELECT latest(sqlserver.database.count) FROM Metric WHERE metricName = 'sqlserver.database.count' FACET database.status"
               }
             ],
             "platformOptions": {
@@ -519,7 +519,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(sqlserver.database.file.size) / (1024*1024) AS 'Size (MB)' FROM Metric FACET sqlserver.database.name, file_type"
+                "query": "SELECT latest(sqlserver.database.file.size) / (1024*1024) AS 'Size (MB)' FROM Metric WHERE metricName = 'sqlserver.database.file.size' FACET sqlserver.database.name, file_type"
               }
             ],
             "platformOptions": {
@@ -551,7 +551,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(sqlserver.database.tempdb.space) / 1024 AS 'MB' FROM Metric FACET tempdb.state TIMESERIES AUTO"
+                "query": "SELECT latest(sqlserver.database.tempdb.space) / 1024 AS 'MB' FROM Metric WHERE metricName = 'sqlserver.database.tempdb.space' FACET tempdb.state TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -586,7 +586,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(sqlserver.database.tempdb.version_store.size) / 1024 AS 'current MB', max(sqlserver.database.tempdb.version_store.size) / 1024 AS 'peak MB' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT latest(sqlserver.database.tempdb.version_store.size) / 1024 AS 'current MB', max(sqlserver.database.tempdb.version_store.size) / 1024 AS 'peak MB' FROM Metric WHERE metricName = 'sqlserver.database.tempdb.version_store.size' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -621,7 +621,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(sqlserver.processes.blocked) AS 'Blocked Processes' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT latest(sqlserver.processes.blocked) AS 'Blocked Processes' FROM Metric WHERE metricName = 'sqlserver.processes.blocked' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -656,7 +656,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT sum(sqlserver.os.wait.duration) AS 'Lock wait (s)' FROM Metric WHERE wait.category = 'Lock' TIMESERIES AUTO"
+                "query": "SELECT sum(sqlserver.os.wait.duration) AS 'Lock wait (s)' FROM Metric WHERE metricName = 'sqlserver.os.wait.duration' AND wait.category = 'Lock' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
@@ -706,7 +706,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT derivative(sqlserver.deadlock.rate, 1 second) AS 'Total Deadlocks/sec' FROM Metric TIMESERIES AUTO"
+                "query": "SELECT derivative(sqlserver.deadlock.rate, 1 second) AS 'Total Deadlocks/sec' FROM Metric WHERE metricName = 'sqlserver.deadlock.rate' TIMESERIES AUTO"
               }
             ],
             "platformOptions": {
