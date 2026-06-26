@@ -21,7 +21,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(duration.ms) AS 'Latency (ms)' FROM Span WHERE subcomponent.entity.guid = '{{entity.id}}' TIMESERIES"
+                "query": "SELECT average(newrelic.goldenmetrics.apm.ai_agent.responseTimeMs) AS 'Response Time Ms' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
               }
             ]
           }
@@ -41,7 +41,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(count(*), 1 minute) AS 'Throughput' FROM Span WHERE subcomponent.entity.guid = '{{entity.id}}' TIMESERIES"
+                "query": "SELECT rate(count(newrelic.goldenmetrics.apm.ai_agent.throughput), 1 MINUTES) AS 'Throughput' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
               }
             ]
           }
@@ -61,7 +61,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT percentage(count(*), WHERE otel.status_code = 'ERROR') AS 'Error %' FROM Span WHERE subcomponent.entity.guid = '{{entity.id}}' TIMESERIES"
+                "query": "SELECT average(newrelic.goldenmetrics.apm.ai_agent.errorRate) AS 'Error %' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
               }
             ]
           }
