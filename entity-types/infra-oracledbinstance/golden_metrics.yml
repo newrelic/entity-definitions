@@ -1,105 +1,56 @@
-bufferCacheHitRatio:
-  title: Buffer Cache Hit Ratio
-  unit: PERCENTAGE
-  queries:
-    newRelic:
-      select: average(memory.bufferCacheHitRatio)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(oracledb.system.buffer_cache_hit_ratio)
-      from: Metric
-      where: metricName = 'oracledb.system.buffer_cache_hit_ratio'
-databaseCpuTimeRatio:
-  title: Database CPU Time Ratio
-  unit: PERCENTAGE
-  queries:
-    opentelemetry:
-      select: average(oracledb.system.database_cpu_time_ratio)
-      from: Metric
-      where: metricName = 'oracledb.system.database_cpu_time_ratio'
-responseTimePerTransaction:
-  title: Latency
-  unit: MS
-  queries:
-    opentelemetry:
-      select: average(oracledb.system.response_time_per_transaction)
-      from: Metric
-      where: metricName = 'oracledb.system.response_time_per_transaction'
-ioMegabytesPerSecond:
-  title: IO megabytes per second
-  unit: BYTES_PER_SECOND
-  queries:
-    newRelic:
-      select: average(network.ioMegabytesPerSecond)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(oracledb.system.io_megabytes_per_second)
-      from: Metric
-      where: metricName = 'oracledb.system.io_megabytes_per_second'
-redoGeneratedBytesPerSecond:
-  title: I/O Throughput
-  unit: BYTES_PER_SECOND
-  queries:
-    newRelic:
-      select: average(db.redoWritesPerSecond)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(oracledb.system.redo_generated_bytes_per_second)
-      from: Metric
-      where: metricName = 'oracledb.system.redo_generated_bytes_per_second'
-executionsPerSecond:
-  title: Executions per second (Queries/s)
-  unit: OPERATIONS_PER_SECOND
-  queries:
-    newRelic:
-      select: average(db.executionsPerSecond)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
-    opentelemetry:
-      select: average(oracledb.system.executions_per_second)
-      from: Metric
-      where: metricName = 'oracledb.system.executions_per_second'
-averageActiveSessions:
-  title: Active Workload
+executionCount:
+  title: Execution count
   unit: COUNT
   queries:
-    newrelic:
-      select: latest(db.averageActiveSessions)
-      from: OracleDatabaseSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
-      select: latest(oracledb.system.average_active_sessions)
+      select: latest(oracledb.executions)
       from: Metric
-      where: metricName = 'oracledb.system.average_active_sessions'
-physicalReadsPerSecond:
-  title: Physical Reads per Second
-  unit: OPERATIONS_PER_SECOND
+      where: metricName = 'oracledb.executions'
+sessionCount:
+  title: Session count
+  unit: COUNT
   queries:
     opentelemetry:
-      select: average(oracledb.system.physical_reads_per_second)
+      select: latest(oracledb.sessions.usage)
       from: Metric
-      where: metricName = 'oracledb.system.physical_reads_per_second'
-enqueueWaitsPerSecond:
-  title: Enqueue Waits per Second
-  unit: OPERATIONS_PER_SECOND
+      where: metricName = 'oracledb.sessions.usage'
+enqueueDeadlocks:
+  title: Deadlocks
+  unit: COUNT
   queries:
     opentelemetry:
-      select: average(oracledb.system.enqueue_waits_per_second)
+      select: latest(oracledb.enqueue_deadlocks)
       from: Metric
-      where: metricName = 'oracledb.system.enqueue_waits_per_second'
-hardParseCountPerSecond:
-  title: Hard Parse Count per Second
-  unit: OPERATIONS_PER_SECOND
+      where: metricName = 'oracledb.enqueue_deadlocks'
+userRollbacks:
+  title: User rollbacks
+  unit: COUNT
   queries:
     opentelemetry:
-      select: average(oracledb.system.hard_parse_count_per_second)
+      select: latest(oracledb.user_rollbacks)
       from: Metric
-      where: metricName = 'oracledb.system.hard_parse_count_per_second'
+      where: metricName = 'oracledb.user_rollbacks'
+dbBlocks:
+  title: DB Block Gets
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(oracledb.db_block_gets)
+      from: Metric
+      where: metricName = 'oracledb.db_block_gets'      
+logicalReads:
+  title: Logical reads
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(oracledb.logical_reads)
+      from: Metric
+      where: metricName = 'oracledb.logical_reads'      
+consistentReads:
+  title: Consistent read requests from buffer cache
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(oracledb.consistent_gets)
+      from: Metric
+      where: metricName = 'oracledb.consistent_gets'
