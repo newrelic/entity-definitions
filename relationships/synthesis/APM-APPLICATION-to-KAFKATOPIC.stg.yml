@@ -170,3 +170,132 @@ relationships:
               - value: ":clustername="
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
+
+  # Self-hosted Kafka: NR APM MessageBroker/Kafka Produce metrics with kafka.cluster.id attribute
+  - name: apmProducesNRKafkaTopicClusterIdStg
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/.+/Produce/.+"
+      - attribute: kafka.cluster.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              attribute: kafka.cluster.id
+            - field: topic
+              attribute: metricName__6
+
+  # Self-hosted Kafka: NR APM MessageBroker/Kafka Consume metrics with kafka.cluster.id attribute
+  - name: apmConsumesNRKafkaTopicClusterIdStg
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/.+/Consume/.+"
+      - attribute: kafka.cluster.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              attribute: kafka.cluster.id
+            - field: topic
+              attribute: metricName__6
+
+  # Self-hosted Kafka: OTel kafka.producer.* metrics with kafka.cluster.id (no kafka.cluster.name)
+  - name: apmProducesOtelKafkaTopicClusterIdStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.producer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: kafka.cluster.id
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: ":"
+              - attribute: kafka.cluster.id
+            hashAlgorithm: FARM_HASH
+
+  # Self-hosted Kafka: OTel kafka.consumer.* metrics with kafka.cluster.id (no kafka.cluster.name)
+  - name: apmConsumesOtelKafkaTopicClusterIdStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: metricName
+        startsWith: "kafka.consumer"
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: kafka.cluster.id
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - attribute: topic
+              - value: ":"
+              - attribute: kafka.cluster.id
+            hashAlgorithm: FARM_HASH
