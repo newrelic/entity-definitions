@@ -1,9 +1,9 @@
 {
-  "name": "AI Agent Dashboard",
-  "description": "Overview dashboard for AI Agent",
+  "name": "AI Tool Dashboard",
+  "description": "Overview dashboard for AI Tool",
   "pages": [
     {
-      "name": "AI Agent dashboard",
+      "name": "AI Tool dashboard",
       "description": "",
       "widgets": [
         {
@@ -21,7 +21,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT average(duration.ms) AS 'Latency (ms)' FROM Span WHERE subcomponent.entity.guid = '{{entity.id}}' AND gen_ai.agent.name IS NOT NULL TIMESERIES"
+                "query": "SELECT average(newrelic.goldenmetrics.apm.ai_tool.responseTimeMs) AS 'Response Time Ms' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
               }
             ]
           }
@@ -41,13 +41,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(count(*), 1 minute) AS 'Throughput' FROM Span WHERE subcomponent.entity.guid = '{{entity.id}}' AND gen_ai.agent.name IS NOT NULL TIMESERIES"
+                "query": "SELECT rate(count(newrelic.goldenmetrics.apm.ai_tool.throughput), 1 MINUTES) AS 'Throughput' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
               }
             ]
           }
         },
         {
-          "title": "Error Rate (% of failed executions)",
+          "title": "Error Rate (% of failed invocations)",
           "layout": {
             "column": 9,
             "row": 1,
@@ -61,7 +61,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT filter(count(*), WHERE otel.status_code = 'ERROR') / count(*) * 100 AS 'Error %' FROM Span WHERE subcomponent.entity.guid = '{{entity.id}}' AND gen_ai.agent.name IS NOT NULL TIMESERIES"
+                "query": "SELECT average(newrelic.goldenmetrics.apm.ai_tool.errorRate) AS 'Error %' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
               }
             ]
           }
