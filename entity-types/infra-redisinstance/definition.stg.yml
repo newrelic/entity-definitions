@@ -4,6 +4,198 @@ type: REDISINSTANCE
 synthesis:
   # Apart from this rule REDISINSTANCE entities are also created from infra pipeline.
   rules:
+  # Custom identifier rules (higher priority)
+  # If the user explicitly sets redis.instance.id, these rules take precedence
+  # regardless of whether server.address is also present.
+
+  # redis.instance.id pattern - contrib receiver (full module path)
+  - ruleName: infra_redisinstance_otel
+    identifier: redis.instance.id
+    name: redis.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Triggers when redis.instance.id is explicitly set by the user
+      - attribute: redis.instance.id
+        present: true
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
+    tags:
+      # Required resource attributes
+      redis.instance.id:
+      redis.version:
+      redis.role:
+      redis.port:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Optional resource attributes
+      redis.cluster.name:
+      redis.cluster.enabled:
+      redis.maxmemory:
+      redis.persistence.enabled:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      # Keep server.address as a tag for filtering
+      server.address:
+      server.port:
+
+  # redis.instance.id pattern - standard legacy receiver.
+  - ruleName: infra_redisinstance_otel_1
+    identifier: redis.instance.id
+    name: redis.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Triggers when redis.instance.id is explicitly set by the user
+      - attribute: redis.instance.id
+        present: true
+      - attribute: otel.library.name
+        value: otelcol/redisreceiver
+    tags:
+      # Required resource attributes
+      redis.instance.id:
+      redis.version:
+      redis.role:
+      redis.port:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Optional resource attributes
+      redis.cluster.name:
+      redis.cluster.enabled:
+      redis.maxmemory:
+      redis.persistence.enabled:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      # Keep server.address as a tag for filtering
+      server.address:
+      server.port:
+
+  # Prometheus receiver rules (redis_exporter + prometheus receiver)
+  #
+  # NOTE: server.address and server.port are not available in the redis_exporter
+  # metrics, so the composite pattern is not possible. Only redis.instance.id
+  # pattern is supported for the Prometheus receiver approach.
+  #
+  # NRDOT variant:
+  - ruleName: infra_redisinstance_otel_prometheus
+    identifier: redis.instance.id
+    name: redis.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Triggers when redis.instance.id is explicitly set by the user
+      - attribute: redis.instance.id
+        present: true
+      - attribute: otel.library.name
+        value: otelcol/prometheusreceiver
+    tags:
+      # Required resource attributes
+      redis.instance.id:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Optional resource attributes
+      redis.cluster.name:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # Contrib variant (full module path):
+  - ruleName: infra_redisinstance_otel_prometheus_1
+    identifier: redis.instance.id
+    name: redis.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: redis.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Triggers when redis.instance.id is explicitly set by the user
+      - attribute: redis.instance.id
+        present: true
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      # Required resource attributes
+      redis.instance.id:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Optional resource attributes
+      redis.cluster.name:
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # Composite identifier rules (fallback)
+  # Only trigger when no custom redis.instance.id is set.
+
+  # server.address:server.port pattern - standard legacy receiver.
   - ruleName: infra_redisinstance_composite
     compositeIdentifier:
       separator: ":"
@@ -28,6 +220,9 @@ synthesis:
       # could deffer between different runtime receivers.
       - attribute: otel.library.name
         value: otelcol/redisreceiver
+      # Only use composite when no custom identifier is provided
+      - attribute: redis.instance.id
+        present: false
     tags:
       # Default resource attributes
       redis.version:
@@ -61,7 +256,8 @@ synthesis:
         entityTagName: instrumentation.name
       server.address:
       server.port:
-  # OpenTelemetry composite rule - contrib receiver (full module path)
+
+  # server.address:server.port pattern - contrib receiver (full module path)
   - ruleName: infra_redisinstance_composite_1
     compositeIdentifier:
       separator: ":"
@@ -83,6 +279,9 @@ synthesis:
         value: opentelemetry
       - attribute: otel.library.name
         value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
+      # Only use composite when no custom identifier is provided
+      - attribute: redis.instance.id
+        present: false
     tags:
       # Default resource attributes
       redis.version:
@@ -115,104 +314,37 @@ synthesis:
       server.address:
       server.port:
 
-  # OpenTelemetry synthesis rule - redis.instance.id pattern
-  - ruleName: infra_redisinstance_otel
+  # Log synthesis rules
+
+  # Log rule - redis.instance.id pattern (higher priority)
+  - ruleName: infra_redisinstance_otel_logs_instance_id
     identifier: redis.instance.id
     name: redis.instance.id
     encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
-        value: Metric
-      # Support both redis. and redis_ prefix metrics
-      - attribute: metricName
-        prefix: redis.
+        value: Log
       - attribute: instrumentation.provider
         value: opentelemetry
-      # Only trigger when redis.instance.id pattern is used (not server.address pattern)
+      - attribute: newrelic.source
+        value: "api.logs.otlp"
+      - attribute: db.system
+        value: "redis"
       - attribute: redis.instance.id
         present: true
-      - attribute: server.address
-        present: false
-      - attribute: otel.library.name
-        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
     tags:
-      # Required resource attributes
       redis.instance.id:
-      redis.version:
       redis.role:
-      redis.port:
       host.name:
         ttl: P1D
       host.id:
         ttl: P1D
-      # Optional resource attributes
-      redis.cluster.name:
-      redis.cluster.enabled:
-      redis.maxmemory:
-      redis.persistence.enabled:
-      # Environment resource attributes
-      host.type:
       cloud.provider:
-      cloud.account.id:
       cloud.region:
-      # Kubernetes attributes (optional)
-      k8s.namespace.name:
-        ttl: P1D
-      k8s.pod.name:
-        ttl: P1D
-      # OTel attributes
-      otel.library.name:
-        entityTagName: instrumentation.name
+      server.address:
+      server.port:
 
-  # OpenTelemetry synthesis rule - redis.instance.id pattern (standard collector)
-  - ruleName: infra_redisinstance_otel_1
-    identifier: redis.instance.id
-    name: redis.instance.id
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: eventType
-        value: Metric
-      - attribute: metricName
-        prefix: redis.
-      - attribute: instrumentation.provider
-        value: opentelemetry
-      # Only trigger when redis.instance.id pattern is used (not server.address pattern)
-      - attribute: redis.instance.id
-        present: true
-      - attribute: server.address
-        present: false
-      - attribute: otel.library.name
-        value: otelcol/redisreceiver
-    tags:
-      # Required resource attributes
-      redis.instance.id:
-      redis.version:
-      redis.role:
-      redis.port:
-      host.name:
-        ttl: P1D
-      host.id:
-        ttl: P1D
-      # Optional resource attributes
-      redis.cluster.name:
-      redis.cluster.enabled:
-      redis.maxmemory:
-      redis.persistence.enabled:
-      # Environment resource attributes
-      host.type:
-      cloud.provider:
-      cloud.account.id:
-      cloud.region:
-      # Kubernetes attributes (optional)
-      k8s.namespace.name:
-        ttl: P1D
-      k8s.pod.name:
-        ttl: P1D
-      # OTel attributes
-      otel.library.name:
-        entityTagName: instrumentation.name
-
-  # OpenTelemetry log synthesis rule - server.address:server.port pattern
+  # Log rule - server.address:server.port pattern (fallback)
   - ruleName: infra_redisinstance_otel_logs
     compositeIdentifier:
       separator: ":"
@@ -238,6 +370,9 @@ synthesis:
         present: true
       - attribute: server.port
         present: true
+      # Only use composite when no custom identifier is provided
+      - attribute: redis.instance.id
+        present: false
     tags:
       server.address:
       server.port:
@@ -249,34 +384,6 @@ synthesis:
       cloud.region:
       otel.library.name:
         entityTagName: instrumentation.name
-
-  # OpenTelemetry log synthesis rule - redis.instance.id pattern
-  - ruleName: infra_redisinstance_otel_logs_service_instance
-    identifier: redis.instance.id
-    name: redis.instance.id
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: eventType
-        value: Log
-      - attribute: instrumentation.provider
-        value: opentelemetry
-      - attribute: newrelic.source
-        value: "api.logs.otlp"
-      - attribute: db.system
-        value: "redis"
-      - attribute: redis.instance.id
-        present: true
-      - attribute: server.address
-        present: false
-    tags:
-      redis.instance.id:
-      redis.role:
-      host.name:
-        ttl: P1D
-      host.id:
-        ttl: P1D
-      cloud.provider:
-      cloud.region:
 
   tags:
     # For OpenTelemetry

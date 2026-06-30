@@ -1,0 +1,224 @@
+{
+  "name": "Redis Cluster (OpenTelemetry)",
+  "description": "Redis Cluster metrics via OpenTelemetry",
+  "pages": [
+    {
+      "name": "Cluster Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Cluster State",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT IF(latest(redis.cluster.state) = 1, 'OK', 'FAIL') AS 'Cluster State'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": -1
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster Size (Masters)",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.size) AS 'Masters'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Known Nodes",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.known_nodes) AS 'Total Nodes'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Current Epoch",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 2
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.current_epoch) AS 'Config Epoch'"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Slot Health",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.slots_assigned) AS 'Assigned', latest(redis.cluster.slots_ok) AS 'OK', latest(redis.cluster.slots_pfail) AS 'PFail', latest(redis.cluster.slots_fail) AS 'Fail'"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "title": "Slot Coverage Over Time",
+          "layout": {
+            "column": 5,
+            "row": 3,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.slots_ok) AS 'Slots OK', latest(redis.cluster.slots_pfail) AS 'Slots PFail', latest(redis.cluster.slots_fail) AS 'Slots Fail' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster Bus Messages Sent",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.messages_sent) AS 'Messages Sent' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster Bus Messages Received",
+          "layout": {
+            "column": 7,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.messages_received) AS 'Messages Received' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster Connections",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.connections) AS 'Cluster Bus Connections' TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Known Nodes Over Time",
+          "layout": {
+            "column": 7,
+            "row": 9,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(redis.cluster.known_nodes) AS 'Known Nodes', latest(redis.cluster.size) AS 'Masters' TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

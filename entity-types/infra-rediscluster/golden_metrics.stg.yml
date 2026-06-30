@@ -1,0 +1,40 @@
+clusterState:
+  title: Cluster State
+  unit: ENUM
+  queries:
+    opentelemetry:
+      select: latest(redis.cluster.state)
+      from: Metric
+      where: metricName = 'redis.cluster.state'
+      eventId: entity.guid
+      eventName: entity.name
+clusterSize:
+  title: Cluster Size
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(redis.cluster.size)
+      from: Metric
+      where: metricName = 'redis.cluster.size'
+      eventId: entity.guid
+      eventName: entity.name
+clusterSlotsFailed:
+  title: Slots Failed
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(redis.cluster.slots_fail) + latest(redis.cluster.slots_pfail)
+      from: Metric
+      where: metricName IN ('redis.cluster.slots_fail', 'redis.cluster.slots_pfail')
+      eventId: entity.guid
+      eventName: entity.name
+clusterMessagesSent:
+  title: Cluster Messages Sent
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(redis.cluster.messages_sent)
+      from: Metric
+      where: metricName = 'redis.cluster.messages_sent'
+      eventId: entity.guid
+      eventName: entity.name

@@ -1,0 +1,188 @@
+domain: INFRA
+type: REDISCLUSTER
+
+goldenTags:
+- redis.cluster.name
+- host.name
+- cloud.provider
+- cloud.region
+- k8s.cluster.name
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+  # Redis Cluster entity - Prometheus receiver contrib (full module path)
+  # Matches cluster-level metrics from redis_exporter in cluster mode.
+  # Cluster metrics are distinguished by redis.cluster.name present
+  # AND redis.instance.id NOT present (cluster-level, not per-node).
+  - ruleName: infra_rediscluster_otel_prometheus
+    identifier: redis.cluster.name
+    name: redis.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    - attribute: redis.cluster.name
+      present: true
+    - attribute: redis.instance.id
+      present: false
+    tags:
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      # Cluster attributes
+      redis.cluster.name:
+        ttl: P1D
+      # Host attributes
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Cloud/environment attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+
+  # Redis Cluster entity - Prometheus receiver NRDOT (short form)
+  - ruleName: infra_rediscluster_otel_prometheus_1
+    identifier: redis.cluster.name
+    name: redis.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: otelcol/prometheusreceiver
+    - attribute: redis.cluster.name
+      present: true
+    - attribute: redis.instance.id
+      present: false
+    tags:
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      # Cluster attributes
+      redis.cluster.name:
+        ttl: P1D
+      # Host attributes
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Cloud/environment attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+
+  # Redis Cluster entity - Redis receiver contrib (full module path)
+  # For when the native redis receiver adds cluster metric support.
+  - ruleName: infra_rediscluster_otel_redisreceiver
+    identifier: redis.cluster.name
+    name: redis.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/redisreceiver"
+    - attribute: redis.cluster.name
+      present: true
+    - attribute: redis.instance.id
+      present: false
+    tags:
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      # Cluster attributes
+      redis.cluster.name:
+        ttl: P1D
+      # Host attributes
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Cloud/environment attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+
+  # Redis Cluster entity - Redis receiver NRDOT (short form)
+  - ruleName: infra_rediscluster_otel_redisreceiver_1
+    identifier: redis.cluster.name
+    name: redis.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: otelcol/redisreceiver
+    - attribute: redis.cluster.name
+      present: true
+    - attribute: redis.instance.id
+      present: false
+    tags:
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+      # Cluster attributes
+      redis.cluster.name:
+        ttl: P1D
+      # Host attributes
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Cloud/environment attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
