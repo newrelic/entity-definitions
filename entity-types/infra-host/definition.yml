@@ -16,6 +16,12 @@ goldenTags:
 - oci.compartmentId
 - oci.region
 - oci.availabilityDomain
+- oci.faultDomain
+- oci.shape
+- oci.instancePoolId
+- oci.imageId
+- oci.gpuId
+- oci.rdmaId
 # uniquely identify if ATP processor is being used
 - process.atp.enabled
 # opentelemetry semantic conventions for cloud instances
@@ -26,6 +32,90 @@ goldenTags:
 - cloud.platform
 synthesis:
   rules:
+    # AWS ECS EC2 host via OpenTelemetry awsecscontainermetricsreceiver
+    - ruleName: infra_host_otel_ecs_ec2_host_id
+      identifier: host.id
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: newrelic.source
+          value: api.metrics.otlp
+        - attribute: cloud.platform
+          value: aws_ecs
+        - attribute: aws.ecs.launchtype
+          value: ec2
+        - attribute: host.name
+          present: true
+        - attribute: host.id
+          present: true
+      tags:
+        # Host attributes
+        host.name:
+        host.type:
+        host.image.id:
+        # Cloud attributes
+        cloud.provider:
+        cloud.platform:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        # ECS attributes
+        aws.ecs.cluster.name:
+          entityTagName: aws.ecs.clusterName
+        aws.ecs.cluster.arn:
+          entityTagName: aws.ecs.clusterArn
+        aws.ecs.launchtype:
+          entityTagName: aws.ecs.launchType
+        # Instrumentation
+        instrumentation.provider:
+
+    # AWS ECS EC2 host via OpenTelemetry awsecscontainermetricsreceiver
+    - ruleName: infra_host_otel_ecs_ec2_host_name_fallback
+      identifier: host.name
+      name: host.name
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: newrelic.source
+          value: api.metrics.otlp
+        - attribute: cloud.platform
+          value: aws_ecs
+        - attribute: aws.ecs.launchtype
+          value: ec2
+        - attribute: host.name
+          present: true
+      tags:
+        # Host attributes
+        host.name:
+        host.type:
+        host.image.id:
+        # Cloud attributes
+        cloud.provider:
+        cloud.platform:
+        cloud.account.id:
+        cloud.region:
+        cloud.availability_zone:
+        # ECS attributes
+        aws.ecs.cluster.name:
+          entityTagName: aws.ecs.clusterName
+        aws.ecs.cluster.arn:
+          entityTagName: aws.ecs.clusterArn
+        aws.ecs.launchtype:
+          entityTagName: aws.ecs.launchType
+        # Instrumentation
+        instrumentation.provider:
+
     # opentelemetry host data from opentelemetry-collector
     - ruleName: infra_host_host_id
       identifier: host.id

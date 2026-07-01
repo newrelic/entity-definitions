@@ -1,0 +1,64 @@
+relationships:
+  # Pattern 1: APM legacy timeslice metrics - Datastore/instance/MongoDB/{docdb-hostname}/{port}
+  # Matches when NR Java agent instruments MongoDB driver calls against a DocumentDB endpoint
+  - name: apmApplicationCallsAwsDocDbInstance
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "Datastore/instance/MongoDB/<host>.docdb.amazonaws.com/<port>"
+        regex: "^datastore/instance/mongodb/[a-zA-Z0-9-]+\\.[a-z0-9]+\\.[a-zA-Z0-9-]+\\.docdb\\.amazonaws\\.com/[0-9]+"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDOCDBINSTANCE
+          fields:
+            # Extract instance identifier from hostname (e.g., my-docdb-instance-1.cluster-xyz.us-east-1.docdb.amazonaws.com -> my-docdb-instance-1)
+            - field: instanceId
+              capture:
+                attribute: metricName__4
+                regex: '^([^.]+)\..*\.docdb\.amazonaws\.com$'
+            # Pass full hostname as endpoint for tier-based precision matching
+            - field: endpoint
+              attribute: metricName__4
+            # Extract port from metric name for additional matching when available
+            - field: port
+              attribute: metricName__5
+
+  # Pattern 2: Distributed Tracing - Span with peer.hostname pointing to DocumentDB
+  - name: apmApplicationCallsAwsDocDbInstanceFromSpan
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: peer.hostname
+        regex: '^[a-zA-Z0-9.-]+\.docdb\.amazonaws\.com$'
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDOCDBINSTANCE
+          fields:
+            # Extract instance identifier from hostname (e.g., my-docdb-instance-1.cluster-xyz.us-east-1.docdb.amazonaws.com -> my-docdb-instance-1)
+            - field: instanceId
+              capture:
+                attribute: peer.hostname
+                regex: '^([^.]+)\..*\.docdb\.amazonaws\.com$'
+            # Pass full hostname as endpoint for tier-based precision matching
+            - field: endpoint
+              attribute: peer.hostname
+            # Also pass port for additional matching when available
+            - field: port
+              attribute: server.port

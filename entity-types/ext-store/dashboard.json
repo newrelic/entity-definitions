@@ -7,12 +7,12 @@
       "description": null,
       "widgets": [
         {
-          "title": "Way Station",
+          "title": "Count of Devices",
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 6,
-            "height": 2
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.billboard"
@@ -21,38 +21,58 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM XMLRPC SELECT latest(IsPrimaryProductionAvailable) WHERE store.number = '{{tags.store.number}}'"
+                "query": "FROM SystemSample SELECT uniqueCount(hostname) as 'Devices' WHERE store.number = '{{tags.store.number}}' SINCE 1 day ago"
               }
             ]
           }
         },
         {
-          "title": "Way Station",
+          "title": "Disk Utilization > 90%",
           "layout": {
-            "column": 7,
+            "column": 5,
             "row": 1,
-            "width": 6,
-            "height": 2
+            "width": 4,
+            "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM XMLRPC SELECT latest(IsFailoverProductionAvailable) WHERE store.number = '{{tags.store.number}}'"
+                "query": "FROM StorageSample SELECT latest(diskUsedPercent) as 'DISK USED %' WHERE store.number = '{{tags.store.number}}' and diskUsedPercent > 90 and mountPoint = 'C:' FACET entityName, mountPoint TIMESERIES 1 hour SINCE 1 day ago LIMIT MAX"
               }
             ]
           }
         },
         {
-          "title": "Way Station",
+          "title": "Memory Utilization > 80%",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(memoryUsedPercent ) FROM SystemSample WHERE store.number = '{{tags.store.number}}' and memoryUsedPercent > 80 FACET entityName SINCE 1 day ago LIMIT MAX TIMESERIES auto"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Number of Application Restart",
           "layout": {
             "column": 1,
-            "row": 3,
-            "width": 6,
-            "height": 2
+            "row": 4,
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.billboard"
@@ -61,18 +81,18 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM XMLRPC SELECT latest(WayState) WHERE store.number = '{{tags.store.number}}'"
+                "query": "SELECT count(*) as 'Application Restart' FROM appRestart where store.number = '{{tags.store.number}}' SINCE 1 day ago"
               }
             ]
           }
         },
         {
-          "title": "Way Station",
+          "title": "Percentage of Application Restarts by Reason",
           "layout": {
-            "column": 7,
-            "row": 3,
-            "width": 6,
-            "height": 2
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
           },
           "visualization": {
             "id": "viz.billboard"
@@ -81,7 +101,127 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM XMLRPC SELECT latest(WaySystemDate) WHERE store.number = '{{tags.store.number}}'"
+                "query": "SELECT count(*) FROM appRestart where  store.number = '{{tags.store.number}}' FACET cases(where restartCase = 'rfmPackage' AS 'RFM/Binary update', restartCase = 'logOnOff' AS 'Windows logoff', restartCase = 'automatedReboot' AS 'Automated Reboot', where restartCase = 'remoteReboot' as 'Remote restart command', where restartCase = 'unknown' as 'Unknown', where restartCase = 'deviceReboot' as 'Device Reboot') as 'Reason' SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Device Status",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XMLRPC SELECT latest(toDateTime(timestamp, 'MM-dd-yyyy HH:mm')) as 'Date' WHERE node = 'FOE' AND store.number = '{{tags.store.number}}' FACET cases(where online = 1 as 'ONLINE', online = 0 as 'OFFLINE') as 'State', id as 'FOE ID' SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Devices Business Date Differs from Way Station",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM (SELECT count(*) > 1 as 'count' from XMLRPC where string(WayBusinessDay) != string(businessDate) and node='FOE' FACET toDateTime(timestamp,'MM-dd-yyyy HH:mm') as 'Date', store.number as 'Store', id as 'ID', ip as 'IP', type as 'Type', WayBusinessDay as 'Way Business Day', businessDate AS 'Business Date') SELECT Date as 'Date (UTC)', Store, ID as 'FOE ID', `Way Business Day`, `Business Date`, timestamp WHERE count is true AND store.number = '{{tags.store.number}}' SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "FOE Device Logged State",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XMLRPC SELECT latest(timestamp) as 'Date' WHERE node = 'FOE' AND store.number = '{{tags.store.number}}' FACET state as 'State', id as 'FOE ID' SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "RPS Device State",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM XMLRPC SELECT latest(toDateTime(timestamp, 'MM-dd-yyyy HH:mm')) as 'Date' WHERE id like 'RPS%' AND store.number = '{{tags.store.number}}' FACET cases(where online = 1 as 'ONLINE', online = 0 as 'OFFLINE') as 'State', id as 'RPS ID' SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "POS's with different Package than way station",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(count(*), where string(WayPackage) != string(pkg)) from XMLRPC where online = '1' and node='POS' and store.number = '{{tags.store.number}}' FACET store.number, id as 'ID', WayPackage, pkg as 'Package' SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Open list of incidents for POS with different Package than way station",
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "WITH (SELECT latest(timestamp) FROM NrAiIncident SINCE 1 hour ago) as duration FROM NrAiIncident SELECT (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)' WHERE incidentId NOT IN (SELECT uniques(incidentId,10000) FROM NrAiIncident WHERE conditionName like 'POS with different package than way station' and event = 'close' and tags.store.number = '{{tags.store.number}}' SINCE 1 month ago) and conditionName like 'POS with different package than way station' and event = 'open' and tags.store.number = '{{tags.store.number}}' FACET incidentLink, tags.store.number as 'Store Number', tags.ID as 'FOE ID' LIMIT max SINCE 1 day ago"
               }
             ]
           }
