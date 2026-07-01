@@ -1,0 +1,48 @@
+domain: INFRA
+type: ZOOKEEPER
+
+synthesis:
+  rules:
+  - ruleName: infra_zookeeper_otel_instance
+    identifier: zookeeper.instance.id
+    name: zookeeper.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: zookeeper.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: zookeeper.instance.id
+    tags:
+      zookeeper.instance.id:
+      service.name:
+      service.instance.id:
+      host.name:
+      host.id:
+      server.state:
+      zk.version:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+goldenTags:
+- zookeeper.instance.id
+- service.name
+- host.name
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
