@@ -170,3 +170,50 @@ relationships:
               - value: ":clustername="
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
+
+  # Self-hosted Kafka: NR APM MessageBroker/Kafka/Cluster/{cluster_id}/Topic/{topic}/Produce
+  - name: apmProducesNRKafkaTopicByClusterIdStg
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Cluster/[^/]+/Topic/[^/]+/Produce$"
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+
+  # Self-hosted Kafka: NR APM MessageBroker/Kafka/Cluster/{cluster_id}/Topic/{topic}/Consume
+  - name: apmConsumesNRKafkaTopicByClusterIdStg
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Cluster/[^/]+/Topic/[^/]+/Consume$"
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+
