@@ -1,0 +1,54 @@
+activeJobs:
+  title: Active jobs
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(`spark.driver.dag_scheduler.job.active`)
+      from: Metric
+      where: metricName = 'spark.driver.dag_scheduler.job.active'
+      eventId: entity.guid
+      eventName: entity.name
+
+activeStages:
+  title: Active stages
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(`spark.driver.dag_scheduler.stage.count`)
+      from: Metric
+      where: metricName = 'spark.driver.dag_scheduler.stage.count'
+      eventId: entity.guid
+      eventName: entity.name
+
+activeTasks:
+  title: Active executor tasks
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(`spark.executor.task.active`)
+      from: Metric
+      where: metricName = 'spark.executor.task.active'
+      eventId: entity.guid
+      eventName: entity.name
+
+jvmHeapMemory:
+  title: Driver JVM heap memory used
+  unit: BYTES
+  queries:
+    opentelemetry:
+      select: latest(`spark.driver.executor.memory.jvm`)
+      from: Metric
+      where: metricName = 'spark.driver.executor.memory.jvm'
+      eventId: entity.guid
+      eventName: entity.name
+
+gcTime:
+  title: Driver GC time
+  unit: MS
+  queries:
+    opentelemetry:
+      select: latest(`spark.driver.executor.gc.time`)
+      from: Metric
+      where: metricName = 'spark.driver.executor.gc.time'
+      eventId: entity.guid
+      eventName: entity.name
