@@ -1,10 +1,43 @@
 domain: INFRA
 type: VSPHERECLUSTER
+
+synthesis:
+  rules:
+  # OpenTelemetry synthesis rule - covers both old and new collector formats
+  - ruleName: infra_vspherecluster_otel
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - vcenter.datacenter.name
+        - vcenter.cluster.name
+    name: vcenter.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: vcenter.cluster.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+    tags:
+      vcenter.datacenter.name:
+      vcenter.cluster.name:
+      otel.library.name:
+        entityTagName: instrumentation.name
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
 goldenTags:
 - vsphere.clusterDatacenterLocation
 - vsphere.clusterDatacenterName
 - vsphere.clusterHostList
 - vsphere.clusterDatastoreList
+# OpenTelemetry
+- vcenter.datacenter.name
+- vcenter.cluster.name
+
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -13,6 +46,8 @@ dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
 
 ownership:
   primaryOwner:
