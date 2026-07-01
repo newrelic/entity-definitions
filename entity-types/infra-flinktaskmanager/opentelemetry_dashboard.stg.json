@@ -1,0 +1,76 @@
+{
+  "name": "Flink TaskManager (OTel)",
+  "pages": [
+    {
+      "name": "Flink TaskManager (OTel)",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 1, "row": 1, "height": 3, "width": 4 },
+          "title": "JVM CPU Load (%)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT average(flink.jvm.cpu.load) * 100 AS 'CPU Load %' FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET flink.taskmanager.id TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": { "id": "viz.area" },
+          "layout": { "column": 5, "row": 1, "height": 3, "width": 4 },
+          "title": "Heap Memory Used vs Max (bytes)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(flink.jvm.memory.heap.used) AS 'Used', latest(flink.jvm.memory.heap.max) AS 'Max' FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET flink.taskmanager.id TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 9, "row": 1, "height": 3, "width": 4 },
+          "title": "Records Processed per Minute",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(flink.task.record.count), 1 minute) FROM Metric WHERE record = 'in' AND instrumentation.provider = 'opentelemetry' FACET flink.taskmanager.id TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 1, "row": 4, "height": 3, "width": 6 },
+          "title": "GC Collections Time (ms)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(flink.jvm.gc.collections.time) FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET flink.taskmanager.id TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 7, "row": 4, "height": 3, "width": 6 },
+          "title": "Managed Memory Used vs Total (bytes)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(flink.memory.managed.used) AS 'Used', latest(flink.memory.managed.total) AS 'Total' FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET flink.taskmanager.id TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

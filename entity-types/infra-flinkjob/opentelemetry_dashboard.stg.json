@@ -1,0 +1,76 @@
+{
+  "name": "Flink Job (OTel)",
+  "pages": [
+    {
+      "name": "Flink Job (OTel)",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 1, "row": 1, "height": 3, "width": 4 },
+          "title": "Checkpoints Completed vs Failed",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(flink.job.checkpoint.count) FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET checkpoint, flink.job.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 5, "row": 1, "height": 3, "width": 4 },
+          "title": "Job Restarts",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(flink.job.restart.count) FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET flink.job.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 9, "row": 1, "height": 3, "width": 4 },
+          "title": "Last Checkpoint Duration (ms)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(flink.job.last_checkpoint.time) FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET flink.job.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 1, "row": 4, "height": 3, "width": 6 },
+          "title": "Checkpoints In Progress",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(flink.job.checkpoint.in_progress) FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET flink.job.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        },
+        {
+          "visualization": { "id": "viz.line" },
+          "layout": { "column": 7, "row": 4, "height": 3, "width": 6 },
+          "title": "Last Checkpoint Size (bytes)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(flink.job.last_checkpoint.size) FROM Metric WHERE instrumentation.provider = 'opentelemetry' FACET flink.job.name TIMESERIES AUTO",
+                "accountId": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
