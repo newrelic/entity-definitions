@@ -1,0 +1,68 @@
+relationships:
+  - name: otelInfraNginxServerCallsApmApplication
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: metricName
+        startsWith: nginx.
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: otel.library.name
+        anyOf: [ "otelcol/prometheusreceiver", "otelcol/nginxreceiver", "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/nginxreceiver", "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: NGINXSERVER
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: nginxDeploymentNameApmApp
+              attribute: nginx.deployment.name
+
+  - name: otelInfraNginxPlusServerCallsApmApplication
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: metricName
+        startsWith: nginxplus_
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: otel.library.name
+        anyOf: [ "otelcol/prometheusreceiver", "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: NGINXSERVER
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: nginxDeploymentNameApmApp
+              attribute: nginx.deployment.name
