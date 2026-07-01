@@ -39,6 +39,31 @@ synthesis:
         otel.library.name:
           entityTagName: instrumentation.name
     
+    # OpenTelemetry with Prometheus Receiver (RabbitMQ dot-notation attributes)
+    - ruleName: infra_rabbitmqnode_rabbitmq_node_name_prom
+      identifier: rabbitmq.node.name
+      name: rabbitmq.node.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: rabbitmq.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+        - attribute: rabbitmq.node.name
+          present: true
+        - attribute: rabbitmq.vhost.name
+          present: false
+        - attribute: rabbitmq.queue.name
+          present: false
+      tags:
+        rabbitmq.node.name:
+        otel.library.name:
+          entityTagName: instrumentation.name
+
     # OpenTelemetry with Prometheus Receiver (RabbitMQ Prometheus Exporter)
     - ruleName: infra_rabbitmqnode_rabbitmq_node
       identifier: rabbitmq_node
@@ -83,16 +108,27 @@ synthesis:
     # Data from RabbitMQ integation OHI
     - ruleName: infra_rabbitmqnode_entityId
       identifier: entityId
-      name: entityName
+      name: entityKey
       legacyFeatures:
         useNonStandardAttributes: true
         overrideGuidType: true
       conditions:
       - attribute: eventType
         value: RabbitmqNodeSample
+      prefixedTags:
+        label.:
+          ttl: PT4H
       tags:
         rabbitmqClusterName:
           entityTagNames: [rabbitmq.cluster.name]
+        integrationName:
+          ttl: P1D
+        integrationVersion:
+          ttl: P1D
+        reportingAgent:
+          ttl: P1D
+        reportingEndpoint:
+          ttl: P1D
 
   tags:
     # For OpenTelemetry

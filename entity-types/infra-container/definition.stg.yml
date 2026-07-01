@@ -25,6 +25,7 @@ synthesis:
       container.runtime:
       container.image.name:
       container.hostname:
+      container.id:
       # Optional resource attribute
       container.image.id:
       # Environment resource attributes
@@ -58,6 +59,7 @@ synthesis:
       container.runtime:
       container.image.name:
       container.hostname:
+      container.id:
       # Optional resource attribute
       container.image.id:
       # Environment resource attributes
@@ -88,6 +90,7 @@ synthesis:
       container.runtime:
       container.image.name:
       container.hostname:
+      container.id:
       # Optional resource attribute
       container.image.id:
       # Environment resource attributes
@@ -99,7 +102,7 @@ synthesis:
       host.name:
 
   # AWS ECS container metrics via OpenTelemetry awsecscontainermetricsreceiver
-  - ruleName: infra_container_otel_ecs
+  - ruleName: infra_container_otel_ecs_stg
     identifier: container.id
     name: container.name
     encodeIdentifierInGUID: true
@@ -113,9 +116,16 @@ synthesis:
         value: opentelemetry
       - attribute: cloud.platform
         value: aws_ecs
+      - attribute: aws.ecs.docker.name
+        present: true
+      - attribute: container.name
+        present: true
+      - attribute: container.id
+        present: true
     tags:
       # Container attributes
       container.image.name:
+      container.id:
       container.image.tag:
       container.name:
         entityTagName: docker.name

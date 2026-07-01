@@ -1,0 +1,133 @@
+throughput:
+  title: Throughput (invocations per minute)
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    opentelemetry:
+      select: rate(count(*), 1 minute) AS 'Throughput'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: rate(count(apm.service.transaction.duration), 1 minute) AS 'Throughput'
+      eventName: appName
+
+responseTimeMs:
+  title: Latency (Average execution time)
+  unit: MS
+  queries:
+    opentelemetry:
+      select: average(duration.ms) AS 'Latency (ms)'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      # Multiply by 1000 to convert APM seconds to MS
+      select: average(apm.service.transaction.duration) * 1000 AS 'Response time (ms)'
+      eventName: appName
+
+errorRate:
+  title: Error Rate (% of failed executions)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: filter(count(*), WHERE otel.status_code = 'ERROR') / count(*) * 100 AS 'Error %'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: (count(apm.service.error.count) / count(apm.service.transaction.duration)) * 100 AS 'Error %'
+      eventName: appName
+
+successRate:
+  title: Success Rate (% of executions completed)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: filter(count(*), WHERE otel.status_code != 'ERROR') / count(*) * 100 AS 'Success Rate %'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      # Calculates the inverse of the error rate
+      select: (1 - (count(apm.service.error.count) / count(apm.service.transaction.duration))) * 100 AS 'Success Rate %'
+      eventName: appName
+
+toolCallsPerExecution:
+  title: Tool Calls / Execution (Avg tools invoked per run)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: uniqueCount(gen_ai.tool.name) AS 'Tool Calls'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL AND gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+
+llmCallsPerExecution:
+  title: LLM Calls / Execution (Avg model calls per run)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: count(*) AS 'LLM Calls'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL AND gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: count(apm.service.ai.requests) AS 'LLM Calls'
+      eventName: appName
+      facet: apm.service.ai.model
+
+
+totalTokensPerExecution:
+  title: Total Tokens / Execution (Tokens consumed per agent run)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(gen_ai.usage.input_tokens + gen_ai.usage.output_tokens) AS 'Total Tokens'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: sum(apm.service.ai.total_tokens) AS 'Total Tokens'
+      eventName: appName
+
+uniqueToolsUsed:
+  title: Unique Tools Used (Distinct tools invoked)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: uniqueCount(gen_ai.tool.name) AS 'Unique Tools'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: uniqueCount(apm.service.ai.tool_name) AS 'Unique Tools'
+      eventName: appName
+
+uniqueModelsUsed:
+  title: Unique Models Used (Distinct models invoked)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: uniqueCount(gen_ai.request.model) AS 'Unique Models'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL AND gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: uniqueCount(apm.service.ai.model) AS 'Unique Models'
+      eventName: appName
+
+childAgentCalls:
+  title: Child Agent Calls (Calls to sub-agents)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: count(*) AS 'Child Agent Calls'
+      from: Span
+      where: gen_ai.agent.name IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: count(apm.service.transaction.duration) AS 'Child Agent Calls'
+      # Standard APM attribute for child agent relationships
+      where: apm.service.ai.is_child = true
+      eventName: appName
+  

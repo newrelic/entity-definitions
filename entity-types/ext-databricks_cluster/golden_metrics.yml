@@ -1,17 +1,21 @@
-driverMemory:
-  title: Average Driver Memory Used
+jobThroughput:
+  title: Spark Job Throughput
+  unit: REQUESTS_PER_MINUTE
   query:
-    select: average(spark.app.executor.memoryUsed)
-    from: Metric
-    eventId: entity.guid
-
-jobs:
-  title: Spark Jobs
+    select: rate(count(*), 1 minute)
+    from: SparkJob
+    where: "event = 'complete'"
+jobLatency:
+  title: Spark Job Latency (95th percentile)
+  unit: MS
   query:
-    select: latest(spark.app.jobs)
-    from: Metric
-    facet: sparkAppJobStatus
-    eventId: entity.guid
-
-
-
+    select: percentile(duration, 95)
+    from: SparkJob
+    where: "event = 'complete'"
+stageDiskSpilled:
+  title: Spark Stage Bytes Spilled to Disk
+  unit: BYTES
+  query:
+    select: sum(diskSpilledBytes)
+    from: SparkStage
+    where: "event = 'complete'"
