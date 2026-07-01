@@ -1,0 +1,113 @@
+relationships:
+  # infra metrics from NR infra agent
+  - name: nrInfraK8sContainerEXTService
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log", "Metric", "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+              - value: ":container:"
+              - attribute: k8s.container.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+  # infra metrics from OTel kubeletstats receiver
+  - name: extInfraK8sContainerEXTService
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log", "Metric", "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+              - value: ":"
+              - attribute: k8s.container.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+
+  # STG-only: relate the K8s container to the EXT-SERVICE when the service telemetry
+  # carries `container.id` but NOT `k8s.container.name` (NR-576629). The two rules above
+  # cannot fire in that case because their source GUID is built from a composite that
+  # includes k8s.container.name. Here we resolve the real container via the
+  # K8S_CONTAINER_BY_ID candidate (container.id -> k8s.containerId tag).
+  #
+  # The candidate uses onMiss: NO_OP, so a service whose container cannot be resolved
+  # simply gets no edge — it never materializes an uninstrumented placeholder container
+  # (the failure mode of the reverted PR #2940). The `k8s.container.name present: false`
+  # guard keeps this rule from overlapping with the two buildGuid rules above.
+  - name: extK8sContainerEXTServiceByContainerId
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Log", "Metric", "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: k8s.cluster.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: container.id
+        present: true
+      - attribute: k8s.container.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: K8S_CONTAINER_BY_ID
+          fields:
+            - field: containerId
+              attribute: container.id
+      target:
+        extractGuid:
+          attribute: entity.guid
