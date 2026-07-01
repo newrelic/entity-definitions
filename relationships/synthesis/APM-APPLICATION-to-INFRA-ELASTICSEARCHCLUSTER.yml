@@ -1,0 +1,26 @@
+relationships:
+  - name: apmApplicationCallsInfraElasticsearchCluster
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: es.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: ELASTICSEARCHCLUSTER
+          identifier:
+            fragments:
+              - attribute: es.cluster.name
+            hashAlgorithm: FARM_HASH

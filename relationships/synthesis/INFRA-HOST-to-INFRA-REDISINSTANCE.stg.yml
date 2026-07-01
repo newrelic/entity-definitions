@@ -1,0 +1,203 @@
+relationships:
+  - name: hostHostsRedisinstanceStg
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "RedisSample" ]
+      - attribute: nr.entityType
+        anyOf: ["REDISINSTANCE"]
+      - attribute: reportingAgent
+        present: true
+      - attribute: clusterName # condition to exclude k8s hosts
+        present: false
+      - attribute: podName
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent # cloudproviderID
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: REDISINSTANCE
+
+  - name: hostHostsRedisinstanceRule2Stg
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions: 
+      - attribute: eventType
+        anyOf: [ "RedisSample" ]
+      - attribute: nr.entityType
+        anyOf: ["REDISINSTANCE"]
+      - attribute: fullHostname
+        present: true
+      - attribute: reportingAgent
+        present: false
+      - attribute: clusterName # condition to exclude k8s hosts
+        present: false
+      - attribute: podName
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: REDISINSTANCE
+
+  # OpenTelemetry: Local scenario - Redis runs on the same host as collector
+  - name: hostHostsOtelRedisInstanceLocal
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: metricName
+        startsWith: redis.
+      - attribute: entity.type
+        anyOf: ["REDISINSTANCE"]
+      - attribute: host.id
+        present: true
+      - attribute: container.id
+        present: false
+      - attribute: server.address
+        regex: "^(localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0)$"
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: REDISINSTANCE
+
+  # OpenTelemetry: Remote scenario - Host monitors remote Redis instance
+  - name: hostMeasuresOtelRedisInstanceRemote
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: metricName
+        startsWith: redis.
+      - attribute: entity.type
+        anyOf: ["REDISINSTANCE"]
+      - attribute: host.id
+        present: true
+      - attribute: container.id
+        present: false
+      - attribute: server.address
+        regex: "^(?!localhost|127\\.0\\.0\\.1|::1|0\\.0\\.0\\.0).*"
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: REDISINSTANCE
+
+  # OpenTelemetry: Host measures Redis when server.address is not present
+  # (service.instance.id pattern where server.address is absent)
+  - name: hostMeasuresOtelRedisInstanceNoAddress
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: metricName
+        startsWith: redis.
+      - attribute: entity.type
+        anyOf: ["REDISINSTANCE"]
+      - attribute: host.id
+        present: true
+      - attribute: container.id
+        present: false
+      - attribute: server.address
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: REDISINSTANCE

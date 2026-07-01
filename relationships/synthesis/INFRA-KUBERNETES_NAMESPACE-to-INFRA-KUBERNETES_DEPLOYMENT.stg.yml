@@ -1,0 +1,54 @@
+relationships:
+  - name: k8sNamespaceContainsDeployment
+    version: "1"
+    origins:
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "K8sDeploymentSample" ]
+      - attribute: entityGuid
+        present: true
+      - attribute: namespaceName
+        present: true
+      - attribute: clusterName
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: KUBERNETES_NAMESPACE
+          fields:
+            - field: k8s.clusterName
+              attribute: clusterName
+            - field: k8s.namespaceName
+              attribute: namespaceName
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_DEPLOYMENT
+  - name: otelKsmK8sNamespaceContainsDeployment
+    # use kube-state-metrics kube_deployment_created
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_deployment_created" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: KUBERNETES_NAMESPACE
+          fields:
+            - field: k8s.clusterName
+              attribute: k8s.cluster.name
+            - field: k8s.namespaceName
+              attribute: k8s.namespace.name
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_DEPLOYMENT
