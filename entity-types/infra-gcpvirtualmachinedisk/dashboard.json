@@ -1,0 +1,163 @@
+{
+  "name": "GCP Virtual Machine Disk",
+  "description": null,
+  "pages": [
+    {
+      "name": "GCP Virtual Machine Disk",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Disk Read/Write Bytes",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`gcp.compute.instance.disk.read_bytes_count`) AS 'Read', sum(`gcp.compute.instance.disk.write_bytes_count`) AS 'Write' WHERE entity.guid IN ({{entity.guid}}) TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Disk Read/Write Operations",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`gcp.compute.instance.disk.read_ops_count`) AS 'Read ops', sum(`gcp.compute.instance.disk.write_ops_count`) AS 'Write ops' WHERE entity.guid IN ({{entity.guid}}) TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Average I/O Latency (ms)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(`gcp.compute.instance.disk.average_io_latency`) / 1000 AS 'Avg I/O latency (ms)' WHERE entity.guid IN ({{entity.guid}}) TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Average I/O Queue Depth",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(`gcp.compute.instance.disk.average_io_queue_depth`) AS 'Queue depth' WHERE entity.guid IN ({{entity.guid}}) TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throttled Operations",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT sum(`gcp.compute.instance.disk.throttled_read_ops_count`) AS 'Throttled reads', sum(`gcp.compute.instance.disk.throttled_write_ops_count`) AS 'Throttled writes' WHERE entity.guid IN ({{entity.guid}}) TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Provisioned Size (GiB)",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(`gcp.compute.instance.disk.provisioning.size`) / 1073741824 AS 'Size (GiB)' WHERE entity.guid IN ({{entity.guid}})"
+              }
+            ],
+            "thresholds": []
+          }
+        }
+      ]
+    }
+  ]
+}
