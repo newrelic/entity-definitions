@@ -1,0 +1,27 @@
+runCount:
+  title: Workflow Runs
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.composer.workflow.run_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+runDuration:
+  title: Workflow Run Duration
+  unit: SECONDS
+  queries:
+    gcp:
+      select: average(`gcp.composer.workflow.run_duration`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+failedRunRate:
+  title: Failed Run Rate
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: filter(sum(`gcp.composer.workflow.run_count`), WHERE `metric.state` = 'failed') * 100 / sum(`gcp.composer.workflow.run_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
