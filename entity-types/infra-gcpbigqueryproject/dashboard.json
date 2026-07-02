@@ -1,0 +1,219 @@
+{
+  "name": "GCP BigQuery Project",
+  "pages": [
+    {
+      "name": "GCP BigQuery Project",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "In flight queries",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(`gcp.bigquery.query.in_flight`) AS 'In flight' WHERE entity.guid = '{{entity.id}}' SINCE 1 hour ago",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "In flight jobs",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(`gcp.bigquery.job.num_in_flight`) AS 'In flight' WHERE entity.guid = '{{entity.id}}' SINCE 1 hour ago",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Slots allocated",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(`gcp.bigquery.slots.allocated_for_project`) AS 'Slots' WHERE entity.guid = '{{entity.id}}' SINCE 1 hour ago",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Queries executed",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.bigquery.query.count`) AS 'Queries' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Query execution time (s)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(`gcp.bigquery.query.execution_times`) AS 'Avg', max(`gcp.bigquery.query.execution_times`) AS 'Max' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Query scanned bytes by statement type",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.bigquery.query.scanned_bytes`) AS 'Scanned' WHERE entity.guid = '{{entity.id}}' FACET `metric.statement_type` TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Query scanned bytes billed",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.bigquery.query.scanned_bytes_billed`) AS 'Billed' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Slots allocated by job type",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(`gcp.bigquery.slots.allocated_for_project`) AS 'Slots' WHERE entity.guid = '{{entity.id}}' FACET `metric.job_type` TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Slots assigned by job type",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT average(`gcp.bigquery.slots.assigned`) AS 'Slots' WHERE entity.guid = '{{entity.id}}' FACET `metric.job_type` TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Streaming inserts — bytes",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.bigquery.storage.insertall_inserted_bytes`) AS 'Bytes' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 13,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Streaming inserts — rows",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(`gcp.bigquery.storage.insertall_inserted_rows`) AS 'Rows' WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
