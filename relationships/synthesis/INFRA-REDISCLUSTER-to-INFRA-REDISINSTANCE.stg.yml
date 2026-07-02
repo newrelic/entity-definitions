@@ -1,0 +1,84 @@
+relationships:
+  # OpenTelemetry: Redis Cluster contains Redis Instance (redis.instance.id pattern)
+  # Triggers when instance metrics carry redis.cluster.name attribute
+  - name: otelRedisClusterContainsRedisInstance
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: metricName
+        startsWith: redis.
+      - attribute: entity.type
+        anyOf: ["REDISINSTANCE"]
+      - attribute: redis.cluster.name
+        present: true
+      - attribute: redis.instance.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: REDISCLUSTER
+          identifier:
+            fragments:
+              - attribute: redis.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # OpenTelemetry: Redis Cluster contains Redis Instance (composite pattern)
+  # Triggers when instance metrics carry redis.cluster.name + server.address
+  - name: otelRedisClusterContainsRedisInstanceComposite
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: metricName
+        startsWith: redis.
+      - attribute: entity.type
+        anyOf: ["REDISINSTANCE"]
+      - attribute: redis.cluster.name
+        present: true
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+      - attribute: redis.instance.id
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: REDISCLUSTER
+          identifier:
+            fragments:
+              - attribute: redis.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
