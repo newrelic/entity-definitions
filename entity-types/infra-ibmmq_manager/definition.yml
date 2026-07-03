@@ -56,11 +56,9 @@ synthesis:
       tags:
         clusterName:
 
-    # OpenTelemetry rules (Prometheus receiver): underscored metrics. In OTel data host.id == target.name,
-    # so identity is keyed on host.id (primary). target.name is a backup used only when host.id is absent
-    # (see the *_fallback rule). The two are mutually exclusive via host.id present true/false, so a queue
-    # manager is never synthesized twice. targetName/host.id is omitted from the pair so a multi-instance
-    # queue manager stays one entity across host failover.
+    # OpenTelemetry rule (Prometheus receiver): identity keyed on host.id (== target.name in OTel data).
+    # target.name is the fallback when host.id is absent (see *_fallback); mutually exclusive via
+    # host.id present true/false, so a queue manager is never synthesized twice.
     - ruleName: infra_ibmmq_manager_otel
       compositeIdentifier:
         separator: ":"
@@ -154,10 +152,9 @@ synthesis:
         k8s.namespace.name:
           ttl: P1D
 
-    # OpenTelemetry Log synthesis rule: associates logs forwarded via the OTel Collector's filelog
-    # receiver with the queue manager entity. Without it, logs only appear on the HOST entity's Logs
-    # page. Identity mirrors the OTel metric rule (host.id:qmgr) so logs land on the same entity;
-    # queue absent keeps queue-scoped logs off the manager.
+    # OpenTelemetry Log rule: attaches OTel Collector filelog logs to the queue manager entity
+    # (without it they land on the HOST). Same host.id:qmgr identity as the metric rule; queue
+    # absent keeps queue-scoped logs off the manager.
     - ruleName: infra_ibmmq_manager_otel_logs
       compositeIdentifier:
         separator: ":"
