@@ -1,0 +1,71 @@
+relationships:
+  # OpenTelemetry: APM service calls Redis Cluster
+  # Triggers from OTel-instrumented app spans/metrics with db.system=redis and redis.cluster.name
+  - name: otelServiceCallsRedisCluster
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["SERVICE"]
+      - attribute: db.system
+        anyOf: ["redis"]
+      - attribute: redis.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: REDISCLUSTER
+          identifier:
+            fragments:
+              - attribute: redis.cluster.name
+            hashAlgorithm: FARM_HASH
+
+  # OpenTelemetry: APM service calls Redis Cluster (from Span data)
+  - name: otelServiceCallsRedisClusterSpan
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["SERVICE"]
+      - attribute: db.system
+        anyOf: ["redis"]
+      - attribute: redis.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: REDISCLUSTER
+          identifier:
+            fragments:
+              - attribute: redis.cluster.name
+            hashAlgorithm: FARM_HASH
