@@ -1,68 +1,46 @@
 relationships:
-  - name: apmApplicationCallsOtelInfraNginxServer
+  - name: apmApplicationCallsNginxServerByUpstreamLabelStg
     version: "1"
     origins:
-      - OpenTelemetry
+      - Distributed Tracing
+      - APM Metrics
     conditions:
       - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: nginx.deployment.name
+        anyOf: [ "Span", "Transaction" ]
+      - attribute: newrelic.source
+        present: false
+      - attribute: tags.nginx.upstream.deployment.name
         present: true
-      - attribute: nginx.server.endpoint
-        present: true
-      - attribute: nginx.display.name
-        present: true
-      - attribute: metricName
-        startsWith: nginx.
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: otel.library.name
-        anyOf: [ "otelcol/prometheusreceiver", "otelcol/nginxreceiver", "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/nginxreceiver", "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver" ]
     relationship:
       expires: PT75M
       relationshipType: CALLS
       source:
+        extractGuid:
+          attribute: entity.guid
+      target:
         lookupGuid:
           candidateCategory: NGINXSERVER
           fields:
-            - field: nginxUpstreamDeploymentNameApmApp
-              attribute: nginx.deployment.name
-      target:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
-            value: NGINXSERVER
-
-  - name: apmApplicationCallsOtelInfraNginxPlusServer
+            - field: deploymentName
+              attribute: tags.nginx.upstream.deployment.name
+  - name: apmApplicationCallsNginxServerByAddressStg
     version: "1"
     origins:
-      - OpenTelemetry
+      - APM Metrics
     conditions:
-      - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: nginx.deployment.name
-        present: true
-      - attribute: nginx.server.endpoint
-        present: true
-      - attribute: nginx.display.name
-        present: true
       - attribute: metricName
-        startsWith: nginxplus_
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: otel.library.name
-        anyOf: [ "otelcol/prometheusreceiver", "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver" ]
+        regex: "^External/[^/]+/.*"
     relationship:
       expires: PT75M
       relationshipType: CALLS
       source:
+        extractGuid:
+          attribute: entity.guid
+      target:
         lookupGuid:
           candidateCategory: NGINXSERVER
           fields:
-            - field: nginxUpstreamDeploymentNameApmApp
-              attribute: nginx.deployment.name
-      target:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
-            value: NGINXSERVER
+            - field: serverAddress
+              capture:
+                attribute: metricName__2
+                regex: "^([^:/]+)"
