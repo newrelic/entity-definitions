@@ -5,7 +5,9 @@ goldenTags:
 
 synthesis:
   rules:
-    - ruleName: infra_ibmmq_queue_composite
+    # nri-mq rule: native identity = targetName:qmgr:queue. OTel excluded via instrumentation.provider
+    # absent so nri-mq and OpenTelemetry never double-synthesize the same queue.
+    - ruleName: infra_ibmmq_queue_nri_1
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -13,18 +15,139 @@ synthesis:
           - qmgr
           - queue
       encodeIdentifierInGUID: true
-      name: queue
+      compositeName:
+        fragments:
+          - attribute: queue
+          - value: " ("
+          - attribute: qmgr
+          - value: ")"
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
           prefix: ibmmq_queue
+        - attribute: instrumentation.provider
+          present: false
       tags:
         qmgr:
+
+    # OpenTelemetry rule (Prometheus receiver): identity keyed on host.id:qmgr:queue (host.id ==
+    # target.name in OTel data); target.name is the fallback when host.id is absent (see *_fallback);
+    # mutually exclusive via host.id present true/false.
+    - ruleName: infra_ibmmq_queue_otel
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - host.id
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      compositeName:
+        fragments:
+          - attribute: queue
+          - value: " ("
+          - attribute: qmgr
+          - value: ")"
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq_queue
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+        - attribute: qmgr
+          present: true
+        - attribute: queue
+          present: true
+        - attribute: host.id
+          present: true
+      tags:
+        qmgr:
+        queue:
+        host.id:
+        target.name:
+        usage:
+        cluster.name:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+        server.address:
+          ttl: P1D
+        host.name:
+          ttl: P1D
+        k8s.pod.name:
+          ttl: P1D
+        k8s.node.name:
+          ttl: P1D
+        k8s.pod.uid:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
+
+    # Backup metric rule: host.id absent, fall back to target.name for identity.
+    - ruleName: infra_ibmmq_queue_otel_fallback
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - target.name
+          - qmgr
+          - queue
+      encodeIdentifierInGUID: true
+      compositeName:
+        fragments:
+          - attribute: queue
+          - value: " ("
+          - attribute: qmgr
+          - value: ")"
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: ibmmq_queue
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
+        - attribute: qmgr
+          present: true
+        - attribute: queue
+          present: true
+        - attribute: host.id
+          present: false
+        - attribute: target.name
+          present: true
+      tags:
+        qmgr:
+        queue:
+        target.name:
+        host.id:
+        usage:
+        cluster.name:
+          entityTagName: clusterName
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+        server.address:
+          ttl: P1D
+        host.name:
+          ttl: P1D
+        k8s.pod.name:
+          ttl: P1D
+        k8s.node.name:
+          ttl: P1D
+        k8s.pod.uid:
+          ttl: P1D
+        k8s.namespace.name:
+          ttl: P1D
 
 dashboardTemplates:
   newRelic:
     template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
 
 configuration:
   entityExpirationTime: DAILY
