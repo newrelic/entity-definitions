@@ -1,66 +1,28 @@
 category: NGINXSERVER
 lookups:
-  # ── Outbound: NGINXSERVER → EXT SERVICE (backends) ────────────────────────
-  # Used by: INFRA-NGINXSERVER-to-EXT-SERVICE.stg.yml
+  # Path A — deployment-name lookup
   - entityTypes:
-      - domain: EXT
-        type: SERVICE
+      - domain: INFRA
+        type: NGINXSERVER
     tags:
       matchingMode: ALL
       predicates:
         - tagKeys: ["nginx.deployment.name"]
-          field: nginxDeploymentNameExtService
+          field: deploymentName
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
       action: NO_OP
 
-  # ── Outbound: NGINXSERVER → APM APPLICATION (backends) ────────────────────
-  # Used by: INFRA-NGINXSERVER-to-APM-APPLICATION.stg.yml
+  # Path B — address-only lookup
   - entityTypes:
-      - domain: APM
-        type: APPLICATION
+      - domain: INFRA
+        type: NGINXSERVER
     tags:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["nginx.deployment.name"]
-          field: nginxDeploymentNameApmApp
-    onMatch:
-      onMultipleMatches: RELATE_ALL
-    onMiss:
-      action: NO_OP
-
-  # ── Inbound: EXT SERVICE → NGINXSERVER (clients) ──────────────────────────
-  # Used by: EXT-SERVICE-to-INFRA-NGINXSERVER.stg.yml
-  # OTel client services set tags.nginx.upstream.deployment.name to identify
-  # which NGINXSERVER they call. Keyed separately from nginx.deployment.name
-  # to distinguish callers from callees.
-  - entityTypes:
-      - domain: EXT
-        type: SERVICE
-    tags:
-      matchingMode: ALL
-      predicates:
-        - tagKeys: ["nginx.upstream.deployment.name"]
-          field: nginxUpstreamDeploymentNameExtService
-    onMatch:
-      onMultipleMatches: RELATE_ALL
-    onMiss:
-      action: NO_OP
-
-  # ── Inbound: APM APPLICATION → NGINXSERVER (clients) ──────────────────────
-  # Used by: APM-APPLICATION-to-INFRA-NGINXSERVER.stg.yml
-  # NR APM client services set NEW_RELIC_LABELS=nginx.upstream.deployment.name:<value>,
-  # which becomes an entity tag. Keyed separately from nginx.deployment.name
-  # to distinguish callers from callees.
-  - entityTypes:
-      - domain: APM
-        type: APPLICATION
-    tags:
-      matchingMode: ALL
-      predicates:
-        - tagKeys: ["nginx.upstream.deployment.name"]
-          field: nginxUpstreamDeploymentNameApmApp
+        - tagKeys: ["nginx.server.address"]
+          field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
