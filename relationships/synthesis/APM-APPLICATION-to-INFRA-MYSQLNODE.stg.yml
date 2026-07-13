@@ -1,0 +1,35 @@
+relationships:
+  # STAGING ONLY.
+  # APM native agent to INFRA MYSQLNODE, resolved by database host + port.
+  # Native-agent datastore spans emit server.address and server.port describing the
+  # database connection target (DatastoreParameters.getHost()/getPort()), so the
+  # host+port candidate lookup resolves to a single MySQL instance. This avoids the
+  # host.name-only fan-out where one host running multiple instances relates to all
+  # of them. This intentionally targets NATIVE APM spans (Query Comments / query-level
+  # linking is a native-APM-agent feature), so the OTLP-specific newrelic.source filter
+  # is omitted. Mirrors APM-APPLICATION-to-INFRA-MSSQLINSTANCE.stg.yml.
+  - name: apmApplicationCallsMysqlNodeByHostPortStaging
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: db.system
+        anyOf: ["mysql"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MYSQLNODE
+          fields:
+            - field: serverAddress
+              attribute: server.address
+            - field: serverPort
+              attribute: server.port
