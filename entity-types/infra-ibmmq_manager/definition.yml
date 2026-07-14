@@ -3,8 +3,7 @@ type: IBMMQ_MANAGER
 
 synthesis:
   rules:
-    # nri-mq rules: native identity = targetName:qmgr. OTel excluded via instrumentation.provider absent
-    # so nri-mq and OpenTelemetry never double-synthesize the same queue manager.
+    # nri-mq rules: identity targetName:qmgr.
     - ruleName: infra_ibmmq_manager_nri_1
       compositeIdentifier:
         separator: ":"
@@ -17,10 +16,9 @@ synthesis:
           value: Metric
         - attribute: metricName
           prefix: ibmmq_qmgr
-        - attribute: instrumentation.provider
-          present: false
       tags:
         clusterName:
+        instrumentation.provider:
 
     - ruleName: infra_ibmmq_manager_nri_2
       compositeIdentifier:
@@ -34,10 +32,9 @@ synthesis:
           value: Metric
         - attribute: metricName
           prefix: ibmmq_channel
-        - attribute: instrumentation.provider
-          present: false
       tags:
         clusterName:
+        instrumentation.provider:
 
     - ruleName: infra_ibmmq_manager_nri_3
       compositeIdentifier:
@@ -51,10 +48,9 @@ synthesis:
           value: Metric
         - attribute: metricName
           prefix: ibmmq_subscription
-        - attribute: instrumentation.provider
-          present: false
       tags:
         clusterName:
+        instrumentation.provider:
 
     # OpenTelemetry rule (Prometheus receiver): identity keyed on host.id (== target.name in OTel data).
     # target.name is the fallback when host.id is absent (see *_fallback); mutually exclusive via
