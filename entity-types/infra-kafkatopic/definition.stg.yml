@@ -169,6 +169,36 @@ synthesis:
       reportingAgent:
         ttl: P1D
 
+  # This rule is for GCP Managed Kafka topic metrics from Cloud Monitoring (gcp-polling-v2)
+  - ruleName: infra_kafkatopic_gcp_managedkafka_stg
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - gcp.topic_id
+      - gcp.cluster_id
+    compositeName:
+      fragments:
+      - attribute: gcp.topic_id
+      - value: " ("
+      - attribute: gcp.cluster_id
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: gcp
+    - attribute: gcp.resource.type
+      value: managedkafka.googleapis.com/Topic
+    tags:
+      instrumentation.provider:
+      gcp.projectId:
+      gcp.region:
+      gcp.cluster_id:
+        entityTagName: clusterName
+      gcp.topic_id:
+        entityTagName: topic
+
 goldenTags:
 - clusterName
 - topic
