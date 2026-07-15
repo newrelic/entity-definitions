@@ -17,6 +17,7 @@ synthesis:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
       multiValue: false
   rules:
+  # Base Database Service (VM/BM DB systems) — resourceId is the DB System OCID
   - ruleName: infra_ocidatabase_oci_resourceId
     identifier: oci.resourceId
     name: oci.resourceName
@@ -26,6 +27,42 @@ synthesis:
     conditions:
     - attribute: oci.resourceId
       prefix: "ocid1.dbsystem"
+    - attribute: oci.namespace
+      value: "oci_database"
+  # Exadata Database Service (dedicated / Cloud) — resourceId is the Cloud VM Cluster OCID
+  - ruleName: infra_ocidatabase_oci_resourceId_2
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.cloudvmcluster"
+    - attribute: oci.namespace
+      value: "oci_database"
+  # Exadata Database Service on Cloud@Customer — resourceId is the VM Cluster OCID
+  - ruleName: infra_ocidatabase_oci_resourceId_3
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.vmcluster"
+    - attribute: oci.namespace
+      value: "oci_database"
+  # Globally Distributed Exadata Database on Exascale Infrastructure — resourceId is the Exadata DB VM Cluster OCID
+  - ruleName: infra_ocidatabase_oci_resourceId_4
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.exadbvmcluster"
     - attribute: oci.namespace
       value: "oci_database"
 ownership:
