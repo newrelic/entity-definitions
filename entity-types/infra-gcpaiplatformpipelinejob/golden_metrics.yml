@@ -2,6 +2,11 @@ jobDuration:
   title: Runtime seconds of the pipeline job being executed (from creation to end)
   unit: SECONDS
   queries:
+    gcp:
+      select: average(`gcp.aiplatform.pipelinejob.duration`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
     gcpSample:
       select: average(`pipelinejob.Duration`)
       from: GcpVertexAiPipelineJobSample
@@ -9,8 +14,13 @@ jobDuration:
       eventName: entityName
 taskCompletedCount:
   title: Total number of completed PipelineTasks
-  unit: COUNT 
+  unit: COUNT
   queries:
+    gcp:
+      select: sum(`gcp.aiplatform.pipelinejob.task_completed_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
     gcpSample:
       select: sum(`pipelinejob.TaskCompletedCount`)
       from: GcpVertexAiPipelineJobSample
