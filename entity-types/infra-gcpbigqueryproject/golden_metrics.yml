@@ -3,26 +3,26 @@ queries:
   unit: COUNT
   queries:
     gcp:
-      select: sum(`gcp.bigquery.query.count`)
+      select: average(`gcp.bigquery.query.count`)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: sum(`query.Count`)
+      select: average(`query.Count`)
       from: GcpBigQueryProjectSample
       eventId: entityGuid
       eventName: entityName
 executionTime:
-  title: Execution time
+  title: Execution time p95 (s)
   unit: SECONDS
   queries:
     gcp:
-      select: average(`gcp.bigquery.query.execution_times`)
+      select: percentile(`gcp.bigquery.query.execution_times`, 95)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(`query.ExecutionTimes`)
+      select: percentile(`query.ExecutionTimes`, 95)
       from: GcpBigQueryProjectSample
       eventId: entityGuid
       eventName: entityName
