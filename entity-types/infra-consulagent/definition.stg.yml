@@ -1,0 +1,47 @@
+domain: INFRA
+type: CONSULAGENT
+
+synthesis:
+  rules:
+  # OpenTelemetry synthesis rule for Consul metrics from OTel Prometheus receiver
+  - ruleName: infra_consulagent_otel_instance
+    identifier: service.instance.id
+    name: service.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: consul_
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: service.instance.id
+    tags:
+      instance:
+      job:
+      service.instance.id:
+      service.name:
+      node:
+      datacenter:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
