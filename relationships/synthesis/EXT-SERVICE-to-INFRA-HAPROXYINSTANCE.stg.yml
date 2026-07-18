@@ -1,0 +1,32 @@
+relationships:
+  # OTel client service → HAPROXYINSTANCE (CALLS), label-based.
+  # The client (e.g. haproxy-frontend) declares which HAProxy it calls via
+  #   OTEL_RESOURCE_ATTRIBUTES=tags.haproxy.deployment.name=<name>
+  # Note the key: on HAProxy the *client* carries haproxy.deployment.name
+  # (inverse of the NGINXSERVER convention, where the client carries the
+  # upstream key). See PR #3019 for the nginx analog.
+  - name: otelExtServiceCallsHaproxyInstanceByDeploymentLabelStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.metrics.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: tags.haproxy.deployment.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: HAPROXYINSTANCE
+          fields:
+            - field: deploymentName
+              attribute: tags.haproxy.deployment.name

@@ -1,0 +1,33 @@
+relationships:
+  # HAPROXYINSTANCE → OTel backend service (CALLS), label-based.
+  # The backend (e.g. haproxy-backend-8001/8002) declares the HAProxy that fronts
+  # it via
+  #   OTEL_RESOURCE_ATTRIBUTES=tags.haproxy.upstream.deployment.name=<name>
+  # ("upstream" = the load balancer in front of the backend). Note the key: on
+  # HAProxy the *backend* carries haproxy.upstream.deployment.name (inverse of the
+  # NGINXSERVER convention, where the backend carries the plain deployment key).
+  - name: haproxyInstanceCallsOtelExtServiceByUpstreamLabelStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.metrics.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: tags.haproxy.upstream.deployment.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: HAPROXYINSTANCE
+          fields:
+            - field: deploymentName
+              attribute: tags.haproxy.upstream.deployment.name
+      target:
+        extractGuid:
+          attribute: entity.guid

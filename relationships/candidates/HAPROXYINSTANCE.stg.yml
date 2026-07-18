@@ -1,0 +1,19 @@
+category: HAPROXYINSTANCE
+lookups:
+  # Deployment-name lookup — indexes the HAPROXYINSTANCE entity by its
+  # haproxy.deployment.name join tag (label-based / Option 5). Both relationship
+  # directions resolve against this single field; the join value is identical on
+  # the client side (tags.haproxy.deployment.name) and the backend side
+  # (tags.haproxy.upstream.deployment.name).
+  - entityTypes:
+      - domain: INFRA
+        type: HAPROXYINSTANCE
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["haproxy.deployment.name"]
+          field: deploymentName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
