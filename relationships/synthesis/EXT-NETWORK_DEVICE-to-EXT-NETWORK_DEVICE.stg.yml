@@ -4,8 +4,8 @@ relationships:
     origins: [Event API]
     conditions:
       - { attribute: eventType,   anyOf: ["NetworkTopology"] }
-      - { attribute: extType,     present: true }        # SWITCH | ROUTER | ACCESS_POINT
-      - { attribute: device_name, present: true }
+      - { attribute: networkEntityType, present: true }  # SWITCH | ROUTER | ACCESS_POINT | NETWORK_DEVICE
+      - { attribute: deviceName,  present: true }
       - { attribute: dstName,     present: true }
       - { attribute: dstPort,     present: false }       # fallback: no neighbour port → no port chain
     relationship:
@@ -15,9 +15,9 @@ relationships:
         buildGuid:
           account: { attribute: accountId }
           domain:  { value: EXT }
-          type:    { attribute: extType }
+          type:    { attribute: networkEntityType }
           identifier:
-            fragments: [ { attribute: device_name } ]
+            fragments: [ { attribute: deviceName } ]
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
