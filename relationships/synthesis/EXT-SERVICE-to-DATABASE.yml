@@ -1,0 +1,27 @@
+relationships:
+  - name: extServiceCallsGenericDatabase
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system.name
+        anyOf: [ "postgresql", "mysql", "microsoft.sql_server" ]
+      - attribute: server.address
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: DATABASE
+          fields:
+            - field: endpoint
+              attribute: server.address
