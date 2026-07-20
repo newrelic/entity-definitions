@@ -1,0 +1,132 @@
+# Network monitoring entity — EXT/SWITCH, EXT-only topology node.
+# Design: docs/superpowers/specs/2026-07-08-network-topology-ext-only.md
+#
+# The topology has NO INFRA family: EXT/SWITCH itself is the node, keyed on device_name. Three rules:
+#   1. ext_switch_device_name          — UNCHANGED kentik metric build.
+#   2. ext_switch_from_networking_event — builds/enriches the node from the Networking event for ALL
+#      sources (ktranslate/SNMP, Mist, Meraki). Coalesces on device_name; adds the normalized match
+#      tags (hostname/mac/managementIp) the topology resolver needs, plus descriptive + stack tags.
+#   3. ext_switch_drift_flags           — absorbs the correlator's drift verdict flags (§5.4.4 base).
+#
+# Identity is device_name (EXT's existing key — no separate deviceKey). device_name is also exposed
+# as the `hostname` MATCH TAG so the resolver can find this node; if the job emits a normalized
+# device_name, matching gains case/domain parity with the observed dstName.
+domain: EXT
+type: SWITCH
+synthesis:
+  rules:
+  # 1) UNCHANGED: entity synthesized from kentik metrics.
+  - ruleName: ext_switch_device_name
+    name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-switch
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+
+  # 2) Topology build/enrich from the Networking event (ktranslate, Mist, Meraki — all land here).
+  #    Coalesces onto the kentik-built entity when it exists (same device_name), or builds the node
+  #    when only topology data is available.
+  - ruleName: ext_switch_from_networking_event
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Networking
+    - attribute: extType
+      value: SWITCH
+    - attribute: device_name
+      present: true
+    tags:
+      device_name:
+        entityTagName: hostname          # device name as the match tag (the reliable resolver tier)
+      observedMac:
+        entityTagName: mac               # best-effort drift signal + match key
+      managementIp:
+        entityTagName: managementIp
+      source:
+        entityTagName: source            # ktranslate | mist | meraki
+      serial:
+        entityTagName: serial
+      vendor:
+        entityTagName: vendor
+      model:
+        entityTagName: model
+      # --- stack / Virtual Chassis enrichment (one node per stack) ---
+      isStack:
+        entityTagName: isStack
+      stackType:
+        entityTagName: stackType
+      stackMemberCount:
+        entityTagName: stackMemberCount
+      stackMemberMac:
+        entityTagName: stackMemberMac
+        multiValue: true
+      stackMemberSerial:
+        entityTagName: stackMemberSerial
+        multiValue: true
+      stackMemberRole:
+        entityTagName: stackMemberRole
+        multiValue: true
+      stackMemberModel:
+        entityTagName: stackMemberModel
+        multiValue: true
+
+  # 3) Drift verdict flags from the correlator's NetworkTopologyDiagnostic output (coalesce on device_name).
+  - ruleName: ext_switch_drift_flags
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkTopologyDiagnostic
+    - attribute: extType
+      value: SWITCH
+    - attribute: device_name
+      present: true
+    - attribute: detection
+      present: true
+    tags:
+      duplicateSuspected:
+        entityTagName: duplicateSuspected
+      duplicatePeer:
+        entityTagName: duplicatePeer
+      duplicateMac:
+        entityTagName: duplicateMac
+      nameCollisionSuspected:
+        entityTagName: nameCollisionSuspected
+      collisionMacs:
+        entityTagName: collisionMacs
+      renameSuspected:
+        entityTagName: renameSuspected
+      hardwareChangeSuspected:
+        entityTagName: hardwareChangeSuspected
+      detection:
+        entityTagName: lastDetection
+
+goldenTags:
+- device_ip
+- container_service
+- vendor
+- model
+
+## Note - these dashboards are overwritten at the entity-ui layer by custom components built by the NR product team
+dashboardTemplates:
+  # Default
+  default:
+    template: default-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"

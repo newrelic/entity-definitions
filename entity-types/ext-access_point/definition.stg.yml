@@ -1,0 +1,182 @@
+# Network monitoring entity — EXT/ACCESS_POINT, EXT-only topology node.
+# Design: docs/superpowers/specs/2026-07-08-network-topology-ext-only.md
+#
+# See ext-switch for the three-rule structure. APs aren't stacked (no stack tags). The kentik
+# provider rules and the unifi/serial rule are preserved; the topology rule builds/enriches the node
+# from the Networking event for all sources (ktranslate, Mist, Meraki). NOTE: the unifi/serial rule
+# keys on `serial`, not device_name, so the topology rule does not coalesce with that subset.
+domain: EXT
+type: ACCESS_POINT
+synthesis:
+  rules:
+  # --- UNCHANGED kentik provider rules ---
+  - ruleName: ext_access_point_device_name
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cisco-ap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  - ruleName: ext_access_point_device_name_2
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-fortinet-ap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  - ruleName: ext_access_point_device_name_3
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cambium-ap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  - ruleName: ext_access_point_device_name_4
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-wap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # UNCHANGED prometheus/unifi rule (serial-keyed; not reached by the topology rule below).
+  - ruleName: ext_access_point_serial
+    identifier: serial
+    name: ip
+    debug: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: metricName
+      value: 'unifipoller_device_info'
+    tags:
+      model:
+      version:
+      mac:
+      ip:
+        entityTagName: device_ip
+        multiValue: false
+
+  # 2) Topology build/enrich from the Networking event (ktranslate, Mist, Meraki).
+  - ruleName: ext_access_point_from_networking_event
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Networking
+    - attribute: extType
+      value: ACCESS_POINT
+    - attribute: device_name
+      present: true
+    tags:
+      device_name:
+        entityTagName: hostname          # device name as the match tag (the reliable resolver tier)
+      observedMac:
+        entityTagName: mac
+      managementIp:
+        entityTagName: managementIp
+      source:
+        entityTagName: source
+      serial:
+        entityTagName: serial
+      vendor:
+        entityTagName: vendor
+      model:
+        entityTagName: model
+
+  # 3) Drift verdict flags.
+  - ruleName: ext_access_point_drift_flags
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkTopologyDiagnostic
+    - attribute: extType
+      value: ACCESS_POINT
+    - attribute: device_name
+      present: true
+    - attribute: detection
+      present: true
+    tags:
+      duplicateSuspected:
+        entityTagName: duplicateSuspected
+      duplicatePeer:
+        entityTagName: duplicatePeer
+      duplicateMac:
+        entityTagName: duplicateMac
+      nameCollisionSuspected:
+        entityTagName: nameCollisionSuspected
+      collisionMacs:
+        entityTagName: collisionMacs
+      renameSuspected:
+        entityTagName: renameSuspected
+      hardwareChangeSuspected:
+        entityTagName: hardwareChangeSuspected
+      detection:
+        entityTagName: lastDetection
+
+goldenTags:
+- device_ip
+- container_service
+- vendor
+- model
+
+dashboardTemplates:
+  kentik:
+    template: default-dashboard.json
+  kentik/aruba-access-point:
+    template: aruba-access-point-dashboard.json
+  kentik/unifi-access-point:
+    template: unifi-access-point-dashboard.json
+  kentik/cisco-access-point:
+    template: cisco-access-point-dashboard.json
+  kentik/fortinet-fortiap:
+    template: fortinet-access-point-dashboard.json
+  kentik/cambium-mib:
+    template: cambium-access-point-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"
