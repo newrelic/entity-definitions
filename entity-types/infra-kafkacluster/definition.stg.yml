@@ -242,6 +242,27 @@ synthesis:
       # Cluster information
       clusterName:
 
+    # This rule is for GCP Managed Kafka cluster metrics from Cloud Monitoring (gcp-polling-v2)
+  - ruleName: infra_kafkacluster_gcp_managedkafka_stg
+    identifier: cluster_id
+    name: cluster_id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: instrumentation.provider
+        value: gcp
+      - attribute: gcp.resource.type
+        value: managedkafka.googleapis.com/Cluster
+    tags:
+      # GCP resource attributes
+      instrumentation.provider:
+      gcp.projectId:
+      gcp.projectName:
+      gcp.region:
+      cluster_id:
+        entityTagName: clusterName
+
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
