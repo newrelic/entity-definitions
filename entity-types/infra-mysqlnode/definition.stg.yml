@@ -3,9 +3,12 @@ type: MYSQLNODE
 
 synthesis:
   rules:
+    # opentelemetry - metrics (OTel Collector mysqlreceiver)
+    # Loose matching is intentional: any mysql.* metric from an OTel provider.
+    # The otel.library.name check was deliberately removed upstream, do not re-add it here.
     - ruleName: infra_mysqlnode_mysql_instance_endpoint
       identifier: mysql.instance.endpoint # server.address:server.port
-      name: mysql.instance.endpoint 
+      name: mysql.instance.endpoint
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -14,64 +17,70 @@ synthesis:
           prefix: mysql.
         - attribute: instrumentation.provider
           value: opentelemetry
-        # This handles both library name formats for backward compatibility
-        - attribute: otel.library.name
-          value: "otelcol/mysqlreceiver"
       tags:
         # Environment resource attributes
         host.type:
         cloud.provider:
         cloud.account.id:
         cloud.region:
+        # server.address/server.port are required by the MYSQLNODE relationship
+        # candidate so native-APM apps (datastore distributed-tracing spans) can link here.
+        server.address:
+        server.port:
         otel.library.name:
           entityTagName: instrumentation.name
 
-    - ruleName: infra_mysqlnode_mysql_instance_endpoint_2
-      identifier: mysql.instance.endpoint # server.address:server.port
-      name: mysql.instance.endpoint 
+    # opentelemetry - query performance logs (OTel-contrib mysqlreceiver)
+    # The otel.library.name condition is REQUIRED on log rules: MSSQL and other DB
+    # receivers also emit db.server.* log events, so it disambiguates the source.
+    - ruleName: infra_mysqlnode_mysql_instance_endpoint_logs
+      identifier: mysql.instance.endpoint
+      name: mysql.instance.endpoint
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: mysql.
+          value: Log
+        - attribute: event.name
+          prefix: db.server.
         - attribute: instrumentation.provider
           value: opentelemetry
-        # This handles both library name formats for backward compatibility
         - attribute: otel.library.name
-          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver"
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver
       tags:
-        # Environment resource attributes
-        host.type:
-        cloud.provider:
-        cloud.account.id:
-        cloud.region:
+        server.address:
+        server.port:
+        db.namespace:
+          entityTagName: database.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
         otel.library.name:
           entityTagName: instrumentation.name
 
-    - ruleName: infra_mysqlnode_mysql_instance_endpoint_3
-      identifier: mysql.instance.endpoint # server.address:server.port
-      name: mysql.instance.endpoint 
+    # opentelemetry - query performance logs (newrelic-forks nrmysqlreceiver)
+    - ruleName: infra_mysqlnode_mysql_instance_endpoint_logs_nrfork
+      identifier: mysql.instance.endpoint
+      name: mysql.instance.endpoint
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: mysql.
+          value: Log
+        - attribute: event.name
+          prefix: db.server.
         - attribute: instrumentation.provider
           value: opentelemetry
-        # This handles both library name formats for backward compatibility
         - attribute: otel.library.name
-          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlqueryreceiver"
+          value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nrmysqlreceiver
       tags:
-        # Environment resource attributes
-        host.type:
-        cloud.provider:
-        cloud.account.id:
-        cloud.region:
+        server.address:
+        server.port:
+        db.namespace:
+          entityTagName: database.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
         otel.library.name:
           entityTagName: instrumentation.name
 
+    # nri-mysql / MysqlSample
     - ruleName: infra_mysqlnode_entityId
       identifier: entityId
       name: entityName
@@ -118,4 +127,4 @@ dashboardTemplates:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "Database Integrations"
