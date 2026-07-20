@@ -1,18 +1,8 @@
-# Network monitoring entity — EXT/PORT, EXT-only topology port node.
-# Design: docs/superpowers/specs/2026-07-08-network-topology-ext-only.md
-#
-# The port node in the EXT-only topology (replaces the former INFRA/NETWORK_PORT). Keyed on the
-# owning device's identity + port name: `device_name : port`. Built from the Networking event for all
-# sources. Exposes the owning device's match tags (deviceMac / deviceManagementIp / deviceHostname) +
-# port so the EXT/PORT candidate can resolve a far port by any of them + port name.
-#
-# `deviceHostname` = the owning device's `device_name`, the reliable far-port match tier; `deviceMac`
-# is best-effort. Identity uses device_name (matches the EXT device identity) — no separate deviceKey.
 domain: EXT
 type: PORT
 synthesis:
   rules:
-  - ruleName: ext_port_from_networking_event
+  - ruleName: ext_port_from_networktopology_event
     compositeIdentifier:
       separator: ":"
       attributes:
@@ -22,7 +12,7 @@ synthesis:
     name: port
     conditions:
     - attribute: eventType
-      value: Networking
+      value: NetworkTopology
     - attribute: device_name
       present: true
     - attribute: port

@@ -1,16 +1,9 @@
-# Port CONNECTS_TO Port — EXT-only, robust far-port resolution.
-# Design: docs/superpowers/specs/2026-07-08-network-topology-ext-only.md
-#
-# NEAR port = buildGuid(EXT, PORT, device_name:port) — deterministic; matches the EXT/PORT node.
-# FAR  port = candidate NETWORK_PORT, resolving by the neighbour's device tier + port:
-#             (dstMac:port) -> (dstIp:port) -> (dstName:port). dstName tier is the reliable one.
-# Gate: dstPort present (far port name) AND dstName present (far device identifiable).
 relationships:
   - name: extPortConnectsToPort
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,   anyOf: ["Networking"] }
+      - { attribute: eventType,   anyOf: ["NetworkTopology"] }
       - { attribute: device_name, present: true }
       - { attribute: port,        present: true }
       - { attribute: dstPort,     present: true }

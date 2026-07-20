@@ -1,14 +1,7 @@
-# Network monitoring entity — EXT/ROUTER, EXT-only topology node.
-# Design: docs/superpowers/specs/2026-07-08-network-topology-ext-only.md
-#
-# See ext-switch for the three-rule structure. Note deviceType `gateway` maps to extType `ROUTER`
-# (EXT uses ROUTER, not GATEWAY). Routers are the devices most likely to expose no MAC over SNMP, so
-# `observedMac` is often absent and `hostname` is the working match tier.
 domain: EXT
 type: ROUTER
 synthesis:
   rules:
-  # 1) UNCHANGED: Network Router devices from Kentik using Metric API.
   - ruleName: ext_router_device_name
     identifier: device_name
     name: device_name
@@ -26,7 +19,6 @@ synthesis:
     prefixedTags:
       tags.:
         ttl: PT4H
-  # 1b) UNCHANGED: Mikrotik routers using Metric API.
   - ruleName: ext_router_mikrotik_serialnumber
     identifier: mikrotik.serialnumber
     name: mikrotik.name
@@ -45,23 +37,22 @@ synthesis:
       mikrotik.currentfirmware:
         entityTagName: firmware
 
-  # 2) Topology build/enrich from the Networking event (all sources; extType ROUTER = deviceType gateway).
-  - ruleName: ext_router_from_networking_event
+  - ruleName: ext_router_from_networktopology_event
     identifier: device_name
     name: device_name
     encodeIdentifierInGUID: true
     conditions:
     - attribute: eventType
-      value: Networking
+      value: NetworkTopology
     - attribute: extType
       value: ROUTER
     - attribute: device_name
       present: true
     tags:
       device_name:
-        entityTagName: hostname          # device name as the match tag (the reliable resolver tier)
+        entityTagName: hostname
       observedMac:
-        entityTagName: mac               # often absent on routers
+        entityTagName: mac
       managementIp:
         entityTagName: managementIp
       source:
@@ -90,38 +81,6 @@ synthesis:
       stackMemberModel:
         entityTagName: stackMemberModel
         multiValue: true
-
-  # 3) Drift verdict flags.
-  - ruleName: ext_router_drift_flags
-    identifier: device_name
-    name: device_name
-    encodeIdentifierInGUID: true
-    conditions:
-    - attribute: eventType
-      value: NetworkTopologyDiagnostic
-    - attribute: extType
-      value: ROUTER
-    - attribute: device_name
-      present: true
-    - attribute: detection
-      present: true
-    tags:
-      duplicateSuspected:
-        entityTagName: duplicateSuspected
-      duplicatePeer:
-        entityTagName: duplicatePeer
-      duplicateMac:
-        entityTagName: duplicateMac
-      nameCollisionSuspected:
-        entityTagName: nameCollisionSuspected
-      collisionMacs:
-        entityTagName: collisionMacs
-      renameSuspected:
-        entityTagName: renameSuspected
-      hardwareChangeSuspected:
-        entityTagName: hardwareChangeSuspected
-      detection:
-        entityTagName: lastDetection
 
 goldenTags:
 - device_ip

@@ -1,19 +1,9 @@
-# Device CONNECTS_TO Device — EXT-only. Design: docs/superpowers/specs/2026-07-08-network-topology-ext-only.md
-#
-# Both ends are EXT topology nodes (EXT/SWITCH | EXT/ROUTER | EXT/ACCESS_POINT).
-#   SOURCE = buildGuid(EXT, <extType>, device_name) — equals the EXT node the event builds/enriches.
-#   TARGET = candidate NETWORK_DEVICE (dstMac -> dstIp -> dstName) over the three EXT types.
-# One rule for all three device types (type from `extType`). FALLBACK ONLY: gated on `dstPort` absent
-# so it does not double-draw when the port chain forms (device→port→port→device).
-#
-# CONFIRM: buildGuid(EXT, <type>, device_name, FARM_HASH) must equal the EXT entity GUID (built with
-# encodeIdentifierInGUID: true) — the build-equals-entity assumption.
 relationships:
   - name: extDeviceConnectsToDevice
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,   anyOf: ["Networking"] }
+      - { attribute: eventType,   anyOf: ["NetworkTopology"] }
       - { attribute: extType,     present: true }        # SWITCH | ROUTER | ACCESS_POINT
       - { attribute: device_name, present: true }
       - { attribute: dstName,     present: true }

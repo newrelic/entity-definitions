@@ -1,15 +1,7 @@
-# Network monitoring entity — EXT/ACCESS_POINT, EXT-only topology node.
-# Design: docs/superpowers/specs/2026-07-08-network-topology-ext-only.md
-#
-# See ext-switch for the three-rule structure. APs aren't stacked (no stack tags). The kentik
-# provider rules and the unifi/serial rule are preserved; the topology rule builds/enriches the node
-# from the Networking event for all sources (ktranslate, Mist, Meraki). NOTE: the unifi/serial rule
-# keys on `serial`, not device_name, so the topology rule does not coalesce with that subset.
 domain: EXT
 type: ACCESS_POINT
 synthesis:
   rules:
-  # --- UNCHANGED kentik provider rules ---
   - ruleName: ext_access_point_device_name
     identifier: device_name
     name: device_name
@@ -78,7 +70,6 @@ synthesis:
     prefixedTags:
       tags.:
         ttl: PT4H
-  # UNCHANGED prometheus/unifi rule (serial-keyed; not reached by the topology rule below).
   - ruleName: ext_access_point_serial
     identifier: serial
     name: ip
@@ -97,21 +88,20 @@ synthesis:
         entityTagName: device_ip
         multiValue: false
 
-  # 2) Topology build/enrich from the Networking event (ktranslate, Mist, Meraki).
-  - ruleName: ext_access_point_from_networking_event
+  - ruleName: ext_access_point_from_networktopology_event
     identifier: device_name
     name: device_name
     encodeIdentifierInGUID: true
     conditions:
     - attribute: eventType
-      value: Networking
+      value: NetworkTopology
     - attribute: extType
       value: ACCESS_POINT
     - attribute: device_name
       present: true
     tags:
       device_name:
-        entityTagName: hostname          # device name as the match tag (the reliable resolver tier)
+        entityTagName: hostname
       observedMac:
         entityTagName: mac
       managementIp:
@@ -124,38 +114,6 @@ synthesis:
         entityTagName: vendor
       model:
         entityTagName: model
-
-  # 3) Drift verdict flags.
-  - ruleName: ext_access_point_drift_flags
-    identifier: device_name
-    name: device_name
-    encodeIdentifierInGUID: true
-    conditions:
-    - attribute: eventType
-      value: NetworkTopologyDiagnostic
-    - attribute: extType
-      value: ACCESS_POINT
-    - attribute: device_name
-      present: true
-    - attribute: detection
-      present: true
-    tags:
-      duplicateSuspected:
-        entityTagName: duplicateSuspected
-      duplicatePeer:
-        entityTagName: duplicatePeer
-      duplicateMac:
-        entityTagName: duplicateMac
-      nameCollisionSuspected:
-        entityTagName: nameCollisionSuspected
-      collisionMacs:
-        entityTagName: collisionMacs
-      renameSuspected:
-        entityTagName: renameSuspected
-      hardwareChangeSuspected:
-        entityTagName: hardwareChangeSuspected
-      detection:
-        entityTagName: lastDetection
 
 goldenTags:
 - device_ip
