@@ -3,10 +3,10 @@ type: MYSQLNODE
 
 synthesis:
   rules:
-    # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/0c50ef5a58683a214a509ee15c75279a6334d9b9/receiver/mysqlreceiver/metadata.yaml#L12C9-L12C17
+    # opentelemetry
     - ruleName: infra_mysqlnode_mysql_instance_endpoint
       identifier: mysql.instance.endpoint # server.address:server.port
-      name: mysql.instance.endpoint 
+      name: mysql.instance.endpoint
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -15,10 +15,6 @@ synthesis:
           prefix: mysql.
         - attribute: instrumentation.provider
           value: opentelemetry
-        # This filters only metrics coming from mysqlreceiver , given that metrics
-        # could differ between different runtime receivers.
-        - attribute: otel.library.name
-          value: otelcol/mysqlreceiver
       tags:
         # Environment resource attributes
         host.type:
@@ -28,6 +24,7 @@ synthesis:
         otel.library.name:
           entityTagName: instrumentation.name
 
+    # nri-mysql / MysqlSample
     - ruleName: infra_mysqlnode_entityId
       identifier: entityId
       name: entityName
@@ -74,4 +71,4 @@ dashboardTemplates:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "Database Integrations"

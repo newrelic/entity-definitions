@@ -1,0 +1,28 @@
+relationships:
+  - name: awsEcsTaskContainsContainer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: cloud.platform
+        anyOf: ["aws_ecs"]
+      - attribute: entity.type
+        anyOf: ["CONTAINER"]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSECSTASK
+          fields:
+            - field: awsEcsTaskArn
+              attribute: aws.ecs.task.arn
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: CONTAINER

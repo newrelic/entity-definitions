@@ -1,5 +1,5 @@
 relationships:
-  # From K8s container to Kafka broker
+  # Rule 1: NR OnHost Integration K8s container IS Kafka broker (KafkaBrokerSample)
   - name: ContainerContainsKafkaBroker
     version: "1"
     origins:
@@ -19,7 +19,7 @@ relationships:
         present: true
     relationship:
       expires: PT75M
-      relationshipType: HOSTS
+      relationshipType: IS
       source:
         buildGuid:
           account:
@@ -45,3 +45,175 @@ relationships:
           attribute: entityGuid
           entityType:
             value: KAFKABROKER
+
+  # Rule 2: OTel Container -> OTel Kafka broker (plain Docker)  (dockerstats receiver)
+  - name: OtelKafkaBrokerToOtelDockerContainer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric", "Log"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+      - attribute: container.id
+        present: true
+      - attribute: k8s.pod.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: IS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: container.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # Rule 3: NR native Container (ContainerSample)  →  OTel Kafka broker (plain Docker)
+  - name: OtelKafkaBrokerToNrDockerContainer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric", "Log"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+      - attribute: container.id
+        present: true
+      - attribute: k8s.pod.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: IS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "docker:"
+              - attribute: container.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # Rule 4: OTel K8s Container (kube-state-metrics / cAdvisor / kubeletstats) -> OTel Kafka broker (K8s)
+  - name: OtelKafkaBrokerToOtelK8sContainer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric", "Log"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+      - attribute: k8s.cluster.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.container.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: IS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+              - value: ":"
+              - attribute: k8s.container.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type
+
+  # Rule 5: NR native K8s Container (K8sContainerSample) -> OTel Kafka broker (K8s)
+  - name: OtelKafkaBrokerToNrK8sContainer
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric", "Log"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["KAFKABROKER"]
+      - attribute: k8s.cluster.name
+        present: true
+      - attribute: k8s.namespace.name
+        present: true
+      - attribute: k8s.pod.name
+        present: true
+      - attribute: k8s.container.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: IS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+              - value: ":container:"
+              - attribute: k8s.container.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            attribute: entity.type

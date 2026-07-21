@@ -268,7 +268,7 @@ synthesis:
 
 #### TTL tags
 
-By default, unique `key:value` tuples for tags are stored on the entity object indefinitely. You can override this behavior using the `ttl` configuration option.
+By default, unique `key:value` tuples for tags are stored on the entity object indefinitely. You can override this behavior using the `ttl` configuration option, which accepts any [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) duration of 4 hours (`PT4H`) or longer.
 
 For example, given this configuration:
 
@@ -299,9 +299,9 @@ synthesis:
       name: device_name
       tags:
         environment:
-          ttl: P4H
+          ttl: PT4H
         owner_group:
-          ttl: P4H
+          ttl: PT4H
 ```
 
 Would result in the original `environment: production` value being purged after 4 hours of telemetry on this entity, where this tuple is absent. In addition, the lack of telemetry using the tag key `owner_group` would also capture that any tuples using this key are absent, and thus expired.
@@ -317,7 +317,7 @@ environment: testing
 | -------- | -------- | ------------ | ---------------- |
 | multiValue | Boolean  | No | If set to `false`, any update will replace all existing values in the tag, making it a tag with only one value. Defaults to `true`. |
 | entityTagNames | List<String> | No | If provided, the attribute value will be copied into a tag using each value of the list as the key. Defaults to list with the attribute name. |
-| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). |
+| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). Minimum value is 4 hours (`PT4H`). |
 
 #### Default tags
 
@@ -394,7 +394,7 @@ Every attribute name including any of the provided prefixes will get indexed as 
 
 | **Name** | **Type** | **Required** | **Description**  |
 | -------- | -------- | ------------ | ---------------- |
-| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). |
+| ttl | String | No | If provided, the tag will be removed if it's not reported again on the given period of time, the period is defined in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601#Durations). Minimum value is 4 hours (`PT4H`). |
 
 Finally, notice the `prefixedTags` structure is not a nested child hanging from `tags`, but directly from `rules`.
 

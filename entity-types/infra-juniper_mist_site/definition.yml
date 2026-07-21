@@ -1,0 +1,58 @@
+
+domain: INFRA
+type: JUNIPER_MIST_SITE
+synthesis:
+  rules:
+    - ruleName: infra_juniper_mist_site_id
+      name: mist.site_name
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - vendor
+          - mist.org_id
+          - mist.site_id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: instrumentation.name
+          value: juniper_mist
+        - attribute: mist.site
+          present: true
+      tags:
+        mist.site_id:
+          entityTagName: mist.site_id
+          multiValue: false
+        mist.site_name:
+          entityTagName: mist.site_name
+          multiValue: false
+        mist.org_name:
+          entityTagName: mist.org_name
+          multiValue: false
+        mist.org_id:
+          entityTagName: mist.org_id
+          multiValue: false
+        vendor:
+          entityTagName: vendor
+          multiValue: false
+        mist.region:
+          entityTagName: mist.region
+          multiValue: false
+        mist.latlng_lat:
+          entityTagName: mist.latitude
+          multiValue: false
+        mist.latlng_lng:
+          entityTagName: mist.longitude
+          multiValue: false
+        mist.country_code:
+          entityTagName: mist.country_code
+          multiValue: false
+        mist.timezone:
+          entityTagName: mist.timezone
+          multiValue: false
+      # Add a 1 day ttl on all tags ingested in metric api using tags. prefix
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"

@@ -1,9 +1,9 @@
 {
-  "name": "Sesame Entity",
+  "name": "Sesame Monitoring",
   "description": null,
   "pages": [
     {
-      "name": "Sesame Entity",
+      "name": "Sesame Monitoring",
       "description": null,
       "widgets": [
         {
@@ -21,13 +21,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log SELECT uniqueCount(host.name) as 'Devices' WHERE substring(host.name,7,3) IN ('GSC', 'POS', 'CSO') and store.number = '{{tags.store.number}}' "
+                "query": "FROM SystemSample SELECT uniqueCount(hostname) as 'Devices' WHERE store.number = '{{tags.store.number}}' SINCE 1 day ago"
               }
             ]
-		  }
+          }
         },
         {
-          "title": "Unique Plugins/Host/Node in Zombie State",
+          "title": "Count of Devices per DeviceType",
           "layout": {
             "column": 5,
             "row": 1,
@@ -41,13 +41,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Log SELECT filter(uniqueCount(concat(host.name, Name, Node)), WHERE State = 'Zombie') as 'Unique Plugins/Host/Node' WHERE source = 'newposHeartbeat' AND store.number = '{{tags.store.number}}' FACET Name as 'Plugin name' LIMIT MAX "
+                "query": "FROM SystemSample SELECT uniqueCount(hostname) as 'Devices' WHERE store.number = '{{tags.store.number}}' FACET device.type SINCE 1 day ago LIMIT MAX"
               }
             ]
           }
         },
         {
-          "title": "Count of Sesame Status",
+          "title": "Unique Plugins/Host/Node in Zombie State",
           "layout": {
             "column": 9,
             "row": 1,
@@ -55,19 +55,19 @@
             "height": 3
           },
           "visualization": {
-            "id": "viz.billboard"
+            "id": "viz.table"
           },
           "rawConfiguration": {
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(*) FROM InfrastructureEvent WHERE changedPath = 'services/windows_services/NpSharp' AND store.number = '{{tags.store.number}}' FACET cases(WHERE summary = 'Service started: NpSharp' as 'Started', WHERE summary = 'Service stopped: NpSharp' as 'Stopped') "
+                "query": "FROM Log SELECT uniqueCount(concat(host.name, Name, Node)) as 'Unique Plugins/Host/Node' WHERE source= 'newposHeartbeat' and State='Zombie' and store.number = '{{tags.store.number}}' FACET hostname, Name as 'Plugin name' SINCE 1 day ago limit max"
               }
             ]
           }
         },
         {
-          "title": "Number of Application Restarts",
+          "title": "Number of Application Restart",
           "layout": {
             "column": 1,
             "row": 4,
@@ -81,7 +81,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(*) as 'Application Restarts' FROM appRestart WHERE store.number = '{{tags.store.number}}' "
+                "query": "SELECT count(*) as 'Application Restart' FROM appRestart where store.number = '{{tags.store.number}}' SINCE 1 day ago"
               }
             ]
           }
@@ -101,11 +101,11 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(*) FROM appRestart WHERE store.number = '{{tags.store.number}}' FACET cases(WHERE restartCase = 'rfmPackage' AS 'RFM/Binary update', WHERE restartCase = 'logOnOff' AS 'Windows logoff', WHERE restartCase = 'automatedReboot' AS 'Automated Reboot', WHERE restartCase = 'remoteReboot' as 'Remote restart command', WHERE restartCase = 'unknown' as 'Unknown', WHERE restartCase = 'deviceReboot' as 'Device Reboot') as 'Reason' "
+                "query": "SELECT count(*) FROM appRestart WHERE store.number = '{{tags.store.number}}' FACET cases(WHERE restartCase = 'rfmPackage' AS 'RFM/Binary update', restartCase = 'logOnOff' AS 'Windows logoff', restartCase = 'automatedReboot' AS 'Automated Reboot', WHERE restartCase = 'remoteReboot' as 'Remote restart command', WHERE restartCase = 'unknown' as 'Unknown', WHERE restartCase = 'deviceReboot' as 'Device Reboot') as 'Reason' SINCE 1 day ago"
               }
             ]
           }
-		},
+        },
         {
           "title": "Number of Application Restarts by Reason + Device Type",
           "layout": {
@@ -121,13 +121,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(*) as 'Application Restarts' FROM appRestart where store.number = '{{tags.store.number}}' FACET cases(WHERE restartCase = 'rfmPackage' AS 'RFM/Binary update', WHERE restartCase = 'logOnOff' AS 'Windows logoff', WHERE restartCase = 'automatedReboot' AS 'Automated Reboot', WHERE restartCase = 'remoteReboot' as 'Remote restart command', WHERE restartCase = 'unknown' as 'Unknown', WHERE restartCase = 'deviceReboot' as 'Device Reboot'), capture(host.name, r'.{7}(?P<dt>.{3}).*') as 'Device Type' LIMIT MAX "
+                "query": "SELECT count(*) as 'Application Restarts' FROM appRestart where store.number = '{{tags.store.number}}' FACET cases(WHERE restartCase = 'rfmPackage' AS 'RFM/Binary update', restartCase = 'logOnOff' AS 'Windows logoff', WHERE restartCase = 'automatedReboot' AS 'Automated Reboot', WHERE restartCase = 'remoteReboot' as 'Remote restart command', WHERE restartCase = 'unknown' as 'Unknown', WHERE restartCase = 'deviceReboot' as 'Device Reboot') as 'Reason', host.name SINCE 1 day ago"
               }
             ]
           }
         },
         {
-          "title": "Top 10 Devices with multiple Application Started",
+          "title": "POS Online/Offline",
           "layout": {
             "column": 1,
             "row": 7,
@@ -141,13 +141,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(*) FROM InfrastructureEvent WHERE changedPath = 'services/windows_services/NpSharp' AND summary = 'Service started: NpSharp' AND store.number = '{{tags.store.number}}' FACET hostname, summary  as 'Status' LIMIT 10 "
+                "query": "SELECT latest(toDateTime(timestamp, 'MM-dd-yyyy HH:mm')) as 'Date' FROM XMLRPC WHERE node = 'POS' and device.type != 'CSO' FACET cases(where online = 1 as 'ONLINE', online = 0 as 'OFFLINE') as 'State', id as 'POS ID', alias WHERE store.number = '{{tags.store.number}}' SINCE 1 day ago LIMIT MAX"
               }
             ]
           }
         },
         {
-          "title": "Top 10 Devices with multiple Application Stopped",
+          "title": "CSO Online/Offline",
           "layout": {
             "column": 5,
             "row": 7,
@@ -158,19 +158,16 @@
             "id": "viz.table"
           },
           "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT count(*) FROM InfrastructureEvent WHERE changedPath = 'services/windows_services/NpSharp' AND summary = 'Service stopped: NpSharp' AND store.number = '{{tags.store.number}}' FACET hostname, summary as 'Status' LIMIT 10 "
+                "query": "SELECT latest(toDateTime(timestamp, 'MM-dd-yyyy HH:mm')) as 'Date' from XMLRPC where node = 'POS' and device.type = 'CSO'  facet cases(where online = 1 as 'ONLINE', online = 0 as 'OFFLINE') as 'State', id as 'POS ID', alias  where store.number = '{{tags.store.number}}' since 24 hours ago limit max"
               }
             ]
           }
         },
         {
-          "title": "Details",
+          "title": "Other devices Online/Offline",
           "layout": {
             "column": 9,
             "row": 7,
@@ -181,13 +178,90 @@
             "id": "viz.table"
           },
           "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT timestamp, NRConfigRelease, agentVersion, changedPath, summary, country, deltaId, format, hostname, instanceType, newValue, oldValue, store.number FROM InfrastructureEvent WHERE changedPath='services/windows_services/NpSharp' AND store.number = '{{tags.store.number}}' LIMIT MAX "
+                "query": "FROM Metric SELECT latest(toDateTime(timestamp, 'MM-dd-yyyy HH:mm')) as 'Date' where job = 'blackbox' and probe_success IS NOT NULL and substring(hostname,7,3) NOT IN ('POS','CSO') and substring(hostname,2,5) = '{{tags.store.number}}' facet cases(where getField(probe_success, latest) = 1 as 'ONLINE', getField(probe_success, latest) != 1 as 'OFFLINE') as 'State', hostname, substring(hostname,2,5) as 'store.number' SINCE 1 day ago limit max"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Primary Production Down",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "with ( SELECT latest(timestamp) from NrAiIncident since 1 hour ago) as duration FROM NrAiIncident select (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)'  where incidentId NOT IN (SELECT uniques(incidentId,10000) from NrAiIncident where conditionName like 'Primary Production Down' and event = 'close' since 1 day ago) and conditionName like 'Primary Production Down' and event = 'open' and tags.store.number = '{{tags.store.number}}' limit max since 1 day ago facet incidentLink, tags.store.number as 'Store Number' "
+              }
+            ]
+          }
+        },
+        {
+          "title": "Backup Production Unavailable",
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "with ( SELECT latest(timestamp) from NrAiIncident since 1 hour ago) as duration FROM NrAiIncident select (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)'  where incidentId NOT IN (SELECT uniques(incidentId,10000) from NrAiIncident where conditionName like 'Backup Production Unavailable' and event = 'close' since 1 day ago) and conditionName like 'Backup Production Unavailable' and event = 'open' and tags.store.number = '{{tags.store.number}}' limit max since 1 day ago facet incidentLink, tags.store.number as 'Store Number' "
+              }
+            ]
+          }
+        },
+        {
+          "title": "POS's with different Package than way station",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(count(*), where string(WayPackage) != string(pkg)) from XMLRPC where online = '1' and node='POS' and store.number = '{{tags.store.number}}' facet store.number, id as 'ID', WayPackage, pkg as 'Package' SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Open list of incidents for POS with different Package than way station",
+          "layout": {
+            "column": 5,
+            "row": 13,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "WITH (SELECT latest(timestamp) FROM NrAiIncident since 1 hour ago) as duration FROM NrAiIncident SELECT (duration - latest(openTime)) / 1000 / 60 as 'Duration (Minutes)' WHERE incidentId NOT IN (SELECT uniques(incidentId,10000) FROM NrAiIncident where conditionName like 'POS with different package than way station' and event = 'close' and tags.store.number = '{{tags.store.number}}' SINCE 1 month ago) and conditionName like 'POS with different package than way station' and event = 'open' and tags.store.number = '{{tags.store.number}}' FACET incidentLink, tags.store.number as 'Store Number', tags.ID as 'FOE ID' LIMIT MAX SINCE 1 day ago"
               }
             ]
           }
