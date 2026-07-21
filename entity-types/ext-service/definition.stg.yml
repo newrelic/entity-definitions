@@ -45,6 +45,19 @@ synthesis:
         entityTagName: language
       telemetry.sdk.version:
 
+  - ruleName: ext_service_otel_collector
+    # produces same entity guid as the default rule applying to all non-otelcol telemetry
+    identifier: service.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: metricName
+        prefix: otelcol # matches both otelcol_ and otelcol.
+    tags:
+      service.name:
+        entityTagName: otel_collector
+        ttl: P1D
+
     # telemetry for gen_ai otel application with user opt-in tag
   - ruleName: ext_service_gen_ai_otel_app
     identifier: service.name
