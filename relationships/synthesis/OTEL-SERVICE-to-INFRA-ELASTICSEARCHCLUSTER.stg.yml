@@ -1,0 +1,37 @@
+relationships:
+  # OTEL APM Application calls Elasticsearch Cluster
+  # Matches on elasticsearch.cluster.name attribute in spans
+  # Agent reads cluster name from ES GET / response and enriches spans
+  - name: otelApmCallsElasticsearchClusterByName
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["SERVICE", "APPLICATION"]
+      - attribute: db.system
+        anyOf: ["elasticsearch"]
+      - attribute: elasticsearch.cluster.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: ELASTICSEARCHCLUSTER
+          identifier:
+            fragments:
+              - attribute: elasticsearch.cluster.name
+            hashAlgorithm: FARM_HASH
