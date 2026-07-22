@@ -4,7 +4,9 @@ cpuUsage:
     newRelic:
       select: max(docker.container.cpuUsedCores) or max(k8s.container.cpuUsedCores) as 'CPU used cores'
     # defaulting to newRelic query for now since we cannot match value functions for OpenTelemetry cumulative metrics.
-    # opentelemetry:
+    opentelemetry:
+      # via KubeletStats Receiver
+      select: max(container.cpu.usage) AS 'CPU used cores'
 cpuUtilization:
   title: CPU utilization (%)
   unit: PERCENTAGE
@@ -12,8 +14,8 @@ cpuUtilization:
     newRelic:
       select: max(docker.container.cpuPercent) or max(k8s.container.cpuCoresUtilization) AS 'CPU Utilization (%)'
     opentelemetry:
-      # via dockerstatsreceiver & kubeletstatsreceiver – which send equivalent value named container.cpu.usage, container.cpu.utilization (deprecated)
-      select: max(container.cpu.usage or container.cpu.utilization) AS 'CPU Utilization (%)'
+      # via kubeletstatsreceiver which has values 0-1 & awsecscontainermetricsreceiver which has values 0-100
+      select: max(k8s.container.cpu_limit_utilization * 100 or container.cpu.utilized) AS 'CPU Utilization (%)'
 memoryUsage:
   title: Memory usage (bytes)
   unit: BYTES
