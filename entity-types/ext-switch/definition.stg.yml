@@ -1,0 +1,83 @@
+domain: EXT
+type: SWITCH
+synthesis:
+  rules:
+  - ruleName: ext_switch_device_name
+    name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-switch
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+
+  - ruleName: ext_switch_from_networktopology_event
+    identifier: deviceName
+    name: deviceName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkTopology
+    - attribute: networkEntityType
+      value: SWITCH
+    - attribute: deviceName
+      present: true
+    tags:
+      deviceName:
+        entityTagName: hostname
+      observedMac:
+        entityTagName: mac
+      managementIp:
+        entityTagName: managementIp
+      source:
+        entityTagName: source
+      serial:
+        entityTagName: serial
+      vendor:
+        entityTagName: vendor
+      model:
+        entityTagName: model
+      # --- stack / Virtual Chassis enrichment (one node per stack) ---
+      isStack:
+        entityTagName: isStack
+      stackType:
+        entityTagName: stackType
+      stackMemberCount:
+        entityTagName: stackMemberCount
+      stackMemberMac:
+        entityTagName: stackMemberMac
+        multiValue: true
+      stackMemberSerial:
+        entityTagName: stackMemberSerial
+        multiValue: true
+      stackMemberRole:
+        entityTagName: stackMemberRole
+        multiValue: true
+      stackMemberModel:
+        entityTagName: stackMemberModel
+        multiValue: true
+
+goldenTags:
+- device_ip
+- container_service
+- vendor
+- model
+
+## Note - these dashboards are overwritten at the entity-ui layer by custom components built by the NR product team
+dashboardTemplates:
+  # Default
+  default:
+    template: default-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"

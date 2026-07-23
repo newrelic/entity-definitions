@@ -30,3 +30,85 @@ relationships:
           attribute: entity.guid
           entityType:
             attribute: entity.type
+
+  # OpenTelemetry path (primary): source manager GUID from host.id:qmgr (FARM_HASH), matching the
+  # encodeIdentifierInGUID identity of the OTel IBMMQ_MANAGER synthesis rule.
+  - name: ibmMqManagerManagesIbmMqQueueOtel
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: qmgr
+        present: true
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: host.id
+              - value: ":"
+              - attribute: qmgr
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: IBMMQ_QUEUE
+
+  # OpenTelemetry path (backup): host.id absent, source manager GUID from target.name:qmgr, matching
+  # the *_fallback OTel IBMMQ_MANAGER synthesis rule.
+  - name: ibmMqManagerManagesIbmMqQueueOtelFallback
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "IBMMQ_QUEUE" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: qmgr
+        present: true
+      - attribute: host.id
+        present: false
+      - attribute: target.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: IBMMQ_MANAGER
+          identifier:
+            fragments:
+              - attribute: target.name
+              - value: ":"
+              - attribute: qmgr
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: IBMMQ_QUEUE
