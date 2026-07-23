@@ -1,0 +1,112 @@
+relationships:
+  - name: extSwitchConnectsToDevice
+    version: "1"
+    origins: [Event API]
+    conditions:
+      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
+      - { attribute: networkEntityType, anyOf: ["SWITCH"] }
+      - { attribute: deviceName,        present: true }
+      - { attribute: dstName,          present: true }
+      - { attribute: dstPort,          present: false }   # fallback: no neighbour port → no port chain
+    relationship:
+      expires: PT75M
+      relationshipType: CONNECTS_TO
+      source:
+        buildGuid:
+          account: { attribute: accountId }
+          domain:  { value: EXT }
+          type:    { value: SWITCH }
+          identifier:
+            fragments: [ { attribute: deviceName } ]
+            hashAlgorithm: FARM_HASH
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_DEVICE
+          fields:
+            - { field: mac,          attribute: dstMac }
+            - { field: managementIp, attribute: dstIp }
+            - { field: hostname,     attribute: dstName }
+
+  - name: extRouterConnectsToDevice
+    version: "1"
+    origins: [Event API]
+    conditions:
+      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
+      - { attribute: networkEntityType, anyOf: ["ROUTER"] }
+      - { attribute: deviceName,        present: true }
+      - { attribute: dstName,          present: true }
+      - { attribute: dstPort,          present: false }
+    relationship:
+      expires: PT75M
+      relationshipType: CONNECTS_TO
+      source:
+        buildGuid:
+          account: { attribute: accountId }
+          domain:  { value: EXT }
+          type:    { value: ROUTER }
+          identifier:
+            fragments: [ { attribute: deviceName } ]
+            hashAlgorithm: FARM_HASH
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_DEVICE
+          fields:
+            - { field: mac,          attribute: dstMac }
+            - { field: managementIp, attribute: dstIp }
+            - { field: hostname,     attribute: dstName }
+
+  - name: extAccessPointConnectsToDevice
+    version: "1"
+    origins: [Event API]
+    conditions:
+      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
+      - { attribute: networkEntityType, anyOf: ["ACCESS_POINT"] }
+      - { attribute: deviceName,        present: true }
+      - { attribute: dstName,          present: true }
+      - { attribute: dstPort,          present: false }
+    relationship:
+      expires: PT75M
+      relationshipType: CONNECTS_TO
+      source:
+        buildGuid:
+          account: { attribute: accountId }
+          domain:  { value: EXT }
+          type:    { value: ACCESS_POINT }
+          identifier:
+            fragments: [ { attribute: deviceName } ]
+            hashAlgorithm: FARM_HASH
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_DEVICE
+          fields:
+            - { field: mac,          attribute: dstMac }
+            - { field: managementIp, attribute: dstIp }
+            - { field: hostname,     attribute: dstName }
+
+  - name: extNetworkDeviceConnectsToDevice
+    version: "1"
+    origins: [Event API]
+    conditions:
+      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
+      - { attribute: networkEntityType, anyOf: ["NETWORK_DEVICE"] }
+      - { attribute: deviceName,        present: true }
+      - { attribute: dstName,          present: true }
+      - { attribute: dstPort,          present: false }
+    relationship:
+      expires: PT75M
+      relationshipType: CONNECTS_TO
+      source:
+        buildGuid:
+          account: { attribute: accountId }
+          domain:  { value: EXT }
+          type:    { value: NETWORK_DEVICE }
+          identifier:
+            fragments: [ { attribute: deviceName } ]
+            hashAlgorithm: FARM_HASH
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_DEVICE
+          fields:
+            - { field: mac,          attribute: dstMac }
+            - { field: managementIp, attribute: dstIp }
+            - { field: hostname,     attribute: dstName }

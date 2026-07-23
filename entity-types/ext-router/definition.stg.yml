@@ -1,0 +1,102 @@
+domain: EXT
+type: ROUTER
+synthesis:
+  rules:
+  - ruleName: ext_router_device_name
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-router
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  - ruleName: ext_router_mikrotik_serialnumber
+    identifier: mikrotik.serialnumber
+    name: mikrotik.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: instrumentation.provider
+      value: mikrotik-router
+    tags:
+      instrumentation.provider:
+      instrumentation.version:
+        entityTagName: agentVersion
+      mikrotik.model:
+        entityTagName: model
+      mikrotik.boardname:
+        entityTagName: boardname
+      mikrotik.currentfirmware:
+        entityTagName: firmware
+
+  - ruleName: ext_router_from_networktopology_event
+    identifier: deviceName
+    name: deviceName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkTopology
+    - attribute: networkEntityType
+      value: ROUTER
+    - attribute: deviceName
+      present: true
+    tags:
+      deviceName:
+        entityTagName: hostname
+      observedMac:
+        entityTagName: mac
+      managementIp:
+        entityTagName: managementIp
+      source:
+        entityTagName: source
+      serial:
+        entityTagName: serial
+      vendor:
+        entityTagName: vendor
+      model:
+        entityTagName: model
+      isStack:
+        entityTagName: isStack
+      stackType:
+        entityTagName: stackType
+      stackMemberCount:
+        entityTagName: stackMemberCount
+      stackMemberMac:
+        entityTagName: stackMemberMac
+        multiValue: true
+      stackMemberSerial:
+        entityTagName: stackMemberSerial
+        multiValue: true
+      stackMemberRole:
+        entityTagName: stackMemberRole
+        multiValue: true
+      stackMemberModel:
+        entityTagName: stackMemberModel
+        multiValue: true
+
+goldenTags:
+- device_ip
+- container_service
+- vendor
+- model
+
+## Note - these dashboards are overwritten at the entity-ui layer by custom components built by the NR product team
+dashboardTemplates:
+  # Default
+  default:
+    template: default-dashboard.json
+  # Mikrotik Router from mikrotik-newrelic script
+  mikrotik-router:
+    template: mikrotik-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"
