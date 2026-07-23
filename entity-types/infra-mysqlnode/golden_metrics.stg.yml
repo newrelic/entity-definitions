@@ -1,3 +1,17 @@
+# Golden metrics for INFRA-MYSQLNODE.
+#
+# Each metric provides a `newRelic` query (nri-mysql OHI / MysqlSample) and, where a
+# reliable equivalent exists, an `opentelemetry` query (OTel Collector mysqlreceiver,
+# FROM Metric).
+#
+# OTel note: MySQL receiver counters are cumulative & monotonic; NRDB cannot currently
+# apply value functions (rate/derivative) to them cleanly. So OTel golden metrics are
+# limited to gauge-style (non-monotonic) metrics using latest(). Counter-based golden
+# metrics stay newRelic-only; their OTel counterparts live on the dashboard instead.
+#
+# "gated" = the OTel metric is disabled by default in the receiver and must be enabled
+# in the collector config (metrics: <name>: enabled: true) for the query to return data.
+
 queriesPerSecond:
   title: Queries per second
   unit: OPERATIONS_PER_SECOND
@@ -22,7 +36,6 @@ slowQueriesPerMinute:
     # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
     # opentelemetry:
 
-  
 connectionsPerSecond:
   title: Connections per second
   unit: COUNT
@@ -84,6 +97,7 @@ maxUsedConnections:
       from: MysqlSample
       eventId: entityGuid
       eventName: entityName
+    # gated: mysql.max_used_connections is disabled by default in the receiver.
     opentelemetry:
       select: latest(mysql.max_used_connections)
       from: Metric
@@ -100,5 +114,23 @@ bufferPoolDataPages:
     opentelemetry:
       select: latest(mysql.buffer_pool.pages)
       from: Metric
-      where: state = 'data'
+      where: kind = 'data'
 
+# OpenTelemetry-only: the nri-mysql OHI does not report an equivalent buffer-pool
+# byte-usage attribute, so no newRelic query is provided.
+bufferPoolUsageBytes:
+  title: Buffer pool usage
+  unit: BYTES
+  queries:
+    opentelemetry:
+      select: latest(mysql.buffer_pool.usage)
+      from: Metric
+
+# OpenTelemetry-only: the nri-mysql OHI does not report server uptime in MysqlSample.
+uptime:
+  title: Uptime
+  unit: SECONDS
+  queries:
+    opentelemetry:
+      select: latest(mysql.uptime)
+      from: Metric

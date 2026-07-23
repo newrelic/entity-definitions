@@ -1,14 +1,14 @@
 replicationRequestLatenciesMs:
-  title: Replication request latencies (ms)
+  title: Replication request latencies p95 (ms)
   unit: MS
   queries:
     gcp:
-      select: average(gcp.bigtable.replication.latency)
+      select: percentile(gcp.bigtable.replication.latency, 95)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(replication.Latency)
+      select: percentile(replication.Latency, 95)
       from: GcpBigtableTableSample
       eventId: entityGuid
       eventName: entityName
@@ -17,12 +17,12 @@ serverRequestsFailed:
   unit: COUNT
   queries:
     gcp:
-      select: average(gcp.bigtable.server.error_count)
+      select: sum(gcp.bigtable.server.error_count)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(server.Error)
+      select: sum(server.Error)
       from: GcpBigtableTableSample
       eventId: entityGuid
       eventName: entityName
@@ -31,12 +31,12 @@ serverRequests:
   unit: COUNT
   queries:
     gcp:
-      select: average(gcp.bigtable.server.request_count)
+      select: sum(gcp.bigtable.server.request_count)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(server.Request)
+      select: sum(server.Request)
       from: GcpBigtableTableSample
       eventId: entityGuid
       eventName: entityName
@@ -45,12 +45,12 @@ uncompressedBytesOfResponseData:
   unit: BYTES
   queries:
     gcp:
-      select: average(gcp.bigtable.server.sent_bytes_count)
+      select: sum(gcp.bigtable.server.sent_bytes_count)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(server.SentBytes)
+      select: sum(server.SentBytes)
       from: GcpBigtableTableSample
       eventId: entityGuid
       eventName: entityName
