@@ -3,7 +3,7 @@ relationships:
   # carries `container.id` but NOT `k8s.container.name` (NR-576629). The two buildGuid
   # rules in the prod file cannot fire in that case because their source GUID is built
   # from a composite that includes k8s.container.name. Here we resolve the real
-  # container via the K8S_CONTAINER_BY_ID candidate (container.id -> k8s.containerId tag).
+  # container via the CONTAINER_WITHOUT_UNINSTRUMENTED candidate (container.id -> k8s.containerId tag).
   #
   # The candidate uses onMiss: NO_OP, so a service whose container cannot be resolved
   # simply gets no edge — it never materializes an uninstrumented placeholder container
@@ -31,7 +31,7 @@ relationships:
       relationshipType: HOSTS
       source:
         lookupGuid:
-          candidateCategory: K8S_CONTAINER_BY_ID
+          candidateCategory: CONTAINER_WITHOUT_UNINSTRUMENTED
           fields:
             - field: containerId
               attribute: container.id
