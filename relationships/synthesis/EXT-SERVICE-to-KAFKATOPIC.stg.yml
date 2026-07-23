@@ -493,3 +493,71 @@ relationships:
             - field: topic
               attribute: messaging.destination.name
 
+  # OTel instrumentation producer span → KAFKATOPIC via messaging.kafka.cluster.id (OTel semconv)
+  - name: extServiceProducesOtelInstrKafkaTopicStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "producer", "client" ]
+      - attribute: messaging.destination.name
+        present: true
+      - attribute: messaging.kafka.cluster.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              attribute: messaging.kafka.cluster.id
+            - field: topic
+              attribute: messaging.destination.name
+
+  # OTel instrumentation consumer span → KAFKATOPIC via messaging.kafka.cluster.id (OTel semconv)
+  - name: extServiceConsumesOtelInstrKafkaTopicStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+      - attribute: messaging.destination.name
+        present: true
+      - attribute: messaging.kafka.cluster.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              attribute: messaging.kafka.cluster.id
+            - field: topic
+              attribute: messaging.destination.name
+
