@@ -1,13 +1,13 @@
 relationships:
-  - name: extPortConnectsToPort
+  - name: extPortConnectsToPortByMac
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,   anyOf: ["NetworkTopology"] }
-      - { attribute: deviceName,  present: true }
-      - { attribute: port,        present: true }
-      - { attribute: dstPort,     present: true }
-      - { attribute: dstName,     present: true }
+      - { attribute: eventType,  anyOf: ["NetworkTopology"] }
+      - { attribute: deviceName, present: true }
+      - { attribute: port,       present: true }
+      - { attribute: dstPort,    present: true }
+      - { attribute: dstMac,     present: true }
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
@@ -23,7 +23,59 @@ relationships:
         lookupGuid:
           candidateCategory: NETWORK_PORT
           fields:
-            - { field: deviceMac,          attribute: dstMac }
+            - { field: deviceMac, attribute: dstMac }
+            - { field: port,      attribute: dstPort }
+
+  - name: extPortConnectsToPortByManagementIp
+    version: "1"
+    origins: [Event API]
+    conditions:
+      - { attribute: eventType,  anyOf: ["NetworkTopology"] }
+      - { attribute: deviceName, present: true }
+      - { attribute: port,       present: true }
+      - { attribute: dstPort,    present: true }
+      - { attribute: dstIp,      present: true }
+    relationship:
+      expires: PT75M
+      relationshipType: CONNECTS_TO
+      source:
+        buildGuid:
+          account: { attribute: accountId }
+          domain:  { value: EXT }
+          type:    { value: PORT }
+          identifier:
+            fragments: [ { attribute: deviceName }, { value: ":" }, { attribute: port } ]
+            hashAlgorithm: FARM_HASH
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_PORT
+          fields:
             - { field: deviceManagementIp, attribute: dstIp }
-            - { field: deviceHostname,     attribute: dstName }
             - { field: port,               attribute: dstPort }
+
+  - name: extPortConnectsToPortByHostname
+    version: "1"
+    origins: [Event API]
+    conditions:
+      - { attribute: eventType,  anyOf: ["NetworkTopology"] }
+      - { attribute: deviceName, present: true }
+      - { attribute: port,       present: true }
+      - { attribute: dstPort,    present: true }
+      - { attribute: dstName,    present: true }
+    relationship:
+      expires: PT75M
+      relationshipType: CONNECTS_TO
+      source:
+        buildGuid:
+          account: { attribute: accountId }
+          domain:  { value: EXT }
+          type:    { value: PORT }
+          identifier:
+            fragments: [ { attribute: deviceName }, { value: ":" }, { attribute: port } ]
+            hashAlgorithm: FARM_HASH
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_PORT
+          fields:
+            - { field: deviceHostname, attribute: dstName }
+            - { field: port,           attribute: dstPort }
