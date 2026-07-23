@@ -1,0 +1,41 @@
+domain: EXT
+type: PORT
+synthesis:
+  rules:
+  - ruleName: ext_port_from_networktopology_event
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - deviceName
+        - port
+    encodeIdentifierInGUID: true
+    name: port
+    conditions:
+    - attribute: eventType
+      value: NetworkTopology
+    - attribute: deviceName
+      present: true
+    - attribute: port
+      present: true
+    tags:
+      deviceName:
+        entityTagName: deviceHostname       # owning device name as the far-port match tier
+      observedMac:
+        entityTagName: deviceMac            # owning device's MAC (best-effort)
+      managementIp:
+        entityTagName: deviceManagementIp
+      port:
+        entityTagName: port
+      networkEntityType:
+        entityTagName: deviceType
+      vendor:
+        entityTagName: vendor
+
+goldenTags:
+  - deviceHostname
+  - deviceMac
+  - port
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"
