@@ -1,0 +1,50 @@
+domain: INFRA
+type: OCIVPN
+goldenTags:
+- oci.compartmentId
+- oci.region
+- oci.displayName
+- oci.lifecycleState
+- oci.cpeId
+- oci.drgId
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  # Metrics path: oci_vpn metrics carry `parentResourceId` (the IPSec connection OCID)
+  # and `publicIp` (per-tunnel) — there is NO `resourceId` dimension.
+  # Ref: https://docs.oracle.com/en-us/iaas/Content/Network/Reference/ipsecmetrics.htm
+  - ruleName: infra_ocivpn_oci_parentResourceId
+    identifier: oci.parentResourceId
+    # Raw oci_vpn metrics have no name dimension; fall back to the connection OCID.
+    # The inventory rule below (same OCID value => same GUID) supplies the friendly name.
+    name: oci.parentResourceId
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.parentResourceId
+      prefix: "ocid1.ipsecconnection"
+    - attribute: oci.namespace
+      value: "oci_vpn"
+  # Inventory path: beyond-workers polling feeds `oci.resourceId` (connection OCID) +
+  # `oci.resourceName`. Same OCID value as parentResourceId above => same entity GUID.
+  - ruleName: infra_ocivpn_oci_resourceId
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.ipsecconnection"
+    - attribute: oci.namespace
+      value: "oci_vpn"
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
