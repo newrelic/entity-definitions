@@ -1,10 +1,11 @@
 domain: INFRA
-type: ORACLEDBINSTANCE
+type: MSSQLINSTANCE
+
 synthesis:
   rules:
-    - ruleName: infra_oracle_db_instance_entityId
+    - ruleName: infra_mssqlinstance_entityId
       identifier: entityId
-      name: entityKey
+      name: entityName
       legacyFeatures:
         useNonStandardAttributes: true
         overrideGuidType: true
@@ -12,8 +13,8 @@ synthesis:
         label.:
           ttl: PT4H
       conditions:
-        - attribute: eventType
-          value: 'OracleDatabaseSample'
+        - attribute: event_type
+          value: "MssqlInstanceSample"
       tags:
         integrationName:
           ttl: P1D
@@ -21,86 +22,94 @@ synthesis:
           ttl: P1D
         reportingAgent:
           ttl: P1D
-        reportingEndpoint:
+        entityKey:
           ttl: P1D
 
 
-    - ruleName: infra_oracledbinstance_host_name_nrfork
+    - ruleName: infra_mssqlinstance_host_name_metrics_nrfork
       identifier: host.name
       name: host.name
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
-        - attribute: instrumentation.provider
-          value: opentelemetry
         - attribute: metricName
-          prefix: oracledb.
+          prefix: sqlserver.
+        - attribute: instrumentation.provider
+          value: opentelemetry
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        host.name:
+          entityTagNames: [server.address, endpoint]
         otel.library.version:
           entityTagName: instrumentation.version
-        host.address:
-          entityTagNames: [host.address, endpoint]
-        host.port:
-          entityTagName: host.port
 
-    - ruleName: infra_oracledbinstance_query_sample
+    - ruleName: infra_mssqlinstance_host_name_logs
       identifier: host.name
       name: host.name
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Log
+        - attribute: event.name
+          prefix: db.server.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/oracledbreceiver
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlserverreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        host.name:
+          entityTagNames: [server.address, endpoint]
+        db.namespace:
+          entityTagName: database.name
         otel.library.version:
           entityTagName: instrumentation.version
-        host.address:
-          entityTagNames: [host.address, endpoint]
-        host.port:
-          entityTagName: host.port
 
-    - ruleName: infra_oracledbinstance_query_sample_nrfork
+    - ruleName: infra_mssqlinstance_host_name_logs_nrfork
       identifier: host.name
       name: host.name
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Log
+        - attribute: event.name
+          prefix: db.server.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nroracledbreceiver
+          value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nrsqlserverreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        host.name:
+          entityTagNames: [server.address, endpoint]
+        db.namespace:
+          entityTagName: database.name
         otel.library.version:
           entityTagName: instrumentation.version
-        host.address:
-          entityTagNames: [host.address, endpoint]
-        host.port:
-          entityTagName: host.port
 
-    
-  
-goldenTags: []
+
+goldenTags:
+  - mssql.host
+  - mssql.instance
 configuration:
   entityExpirationTime: DAILY
   alertable: true
 
 dashboardTemplates:
-  # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
   opentelemetry:
-    template: opentelemetry_dashboard.stg.json
+    template: newrelic_otel_sql_dashboard.json
 
 ownership:
   primaryOwner:
