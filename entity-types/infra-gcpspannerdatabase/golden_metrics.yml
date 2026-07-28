@@ -3,7 +3,7 @@ requests:
   unit: COUNT
   queries:
     gcp:
-      select: sum(gcp.spanner.api.request_count)
+      select: average(gcp.spanner.api.request_count)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -17,7 +17,7 @@ errorRate:
   unit: PERCENTAGE
   queries:
     gcp:
-      select: 100 * filter(sum(gcp.spanner.api.request_count), WHERE status != 'OK') / sum(`api.Requests`)
+      select: 100 * filter(average(gcp.spanner.api.request_count), WHERE status != 'OK') / sum(`api.Requests`)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -31,7 +31,7 @@ latency:
   unit: SECONDS      
   queries:
     gcp:
-      select: (average(gcp.spanner.api.request_latencies)) / 1000
+      select: percentile(gcp.spanner.api.request_latencies, 95) * 1000
       from: Metric
       eventId: entity.guid
       eventName: entity.name
