@@ -8,7 +8,7 @@ replicationRequestLatenciesMs:
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(replication.Latency)
+      select: percentile(replication.Latency, 95)
       from: GcpBigtableTableSample
       eventId: entityGuid
       eventName: entityName
@@ -22,7 +22,7 @@ serverRequestsFailed:
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(server.Error)
+      select: sum(server.Error)
       from: GcpBigtableTableSample
       eventId: entityGuid
       eventName: entityName
@@ -36,7 +36,7 @@ serverRequests:
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(server.Request)
+      select: sum(server.Request)
       from: GcpBigtableTableSample
       eventId: entityGuid
       eventName: entityName
@@ -50,7 +50,7 @@ uncompressedBytesOfResponseData:
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(server.SentBytes)
+      select: sum(server.SentBytes)
       from: GcpBigtableTableSample
       eventId: entityGuid
       eventName: entityName
