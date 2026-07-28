@@ -1,0 +1,41 @@
+relationships:
+  # OpenTelemetry (EXT-SERVICE) -> Azure App Service (host) HOSTS relationship.
+  # When the app runs as an Azure App Service, the OTel Azure App Service resource detector
+  # stamps cloud.platform=azure_app_service and the App Service's full ARM cloud.resource_id
+  # onto every span. That cloud.resource_id equals the AZUREWEBAPP entity's azure.resourceId
+  # tag, so the App Service host is looked up via the AZUREAPPSERVICE candidate.
+  # Mirrors the edge shape of APM-APPLICATION-to-INFRA-AZUREAPPSERVICES.yml (source = the
+  # application, target = the App Service, HOSTS), but is span-driven for OTel services.
+  - name: extServiceHostsOnAzureAppService
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: cloud.platform
+        anyOf: [ "azure_app_service", "azure_functions" ]
+      - attribute: cloud.resource_id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZUREAPPSERVICE
+          fields:
+            - field: resourceId
+              attribute: cloud.resource_id
