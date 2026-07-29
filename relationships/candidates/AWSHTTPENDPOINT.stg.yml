@@ -1,0 +1,52 @@
+category: AWSHTTPENDPOINT
+# Consolidated candidate for APM apps making HTTP calls to AWS edge/proxy resources
+# (CloudFront, ELB/ALB/NLB, API Gateway). Driven by the metrics-only, host-regex-free
+# synthesis rule APM-APPLICATION-to-AWSHTTPENDPOINT - so every lookup MUST use
+# onMiss: NO_OP (a broad External matcher would otherwise stamp a typed AWS stub for
+# every third-party host). Each lookup matches the emitted host against BOTH the per-type
+# native host tag (from ACF PR #359 / polling / metric-streams) AND `endpoint` (already
+# live; carries Route53/custom-domain friendly names via ACF enrichMappingsWithDnsName).
+lookups:
+  - entityTypes:
+      - domain: INFRA
+        type: AWSCLOUDFRONTDISTRIBUTION
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.cloudfront.domainName", "aws.domainName"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  - entityTypes:
+      - domain: INFRA
+        type: AWSELB
+      - domain: INFRA
+        type: AWSALB
+      - domain: INFRA
+        type: AWSNLB
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.elb.dnsName", "aws.alb.dnsName", "aws.applicationelb.dnsName", "aws.nlb.dnsName", "aws.networkelb.dnsName"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  - entityTypes:
+      - domain: INFRA
+        type: AWSAPIGATEWAYAPI
+    tags:
+      matchingMode: ANY
+      predicates:
+        # host-only (scheme-stripped) key; see ACF/beyond-common notes in README.
+        - tagKeys: ["endpoint", "aws.apigateway.endpoint"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
