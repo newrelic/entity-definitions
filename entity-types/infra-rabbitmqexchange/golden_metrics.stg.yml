@@ -29,7 +29,7 @@ messagesPublishedPerChannelPerSecond:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: rate(sum(rabbitmq.exchange.messages.published_in), 1 second)
+      select: sum(rabbitmq.exchange.messages.published_in) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
@@ -57,7 +57,7 @@ messagesPublishedQueuePerSecond:
       eventId: entityGuid
       eventName: entityName
     opentelemetry:
-      select: rate(sum(rabbitmq.exchange.messages.published_out), 1 second)
+      select: sum(rabbitmq.exchange.messages.published_out) / sum((endTimestamp - timestamp) / 1000)
       from: Metric
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
