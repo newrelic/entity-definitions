@@ -1,0 +1,65 @@
+relationships:
+  # STAGING ONLY.
+  # OpenTelemetry-instrumented application -> INFRA MYSQLNODE, from OTLP distributed-
+  # tracing spans (newrelic.source = api.traces.otlp). Resolved by database host + port
+  # via the MYSQLNODE candidate. Mirrors OTEL-APPLICATION-to-INFRA-MSSQLINSTANCE.yml.
+  # The native-APM equivalent (no newrelic.source filter) lives in
+  # APM-APPLICATION-to-INFRA-MYSQLNODE.stg.yml.
+  #
+  # Two rules cover both the older (db.system) and newer (db.system.name) OTel database
+  # semantic-convention span attributes, since conditions within a rule are AND-ed.
+  - name: otelApplicationCallsMysqlNodeFromTraces
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: newrelic.source
+        anyOf: ["api.traces.otlp"]
+      - attribute: db.system
+        anyOf: ["mysql"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MYSQLNODE
+          fields:
+            - field: serverAddress
+              attribute: server.address
+            - field: serverPort
+              attribute: server.port
+
+  - name: otelApplicationCallsMysqlNodeFromTracesSemconv
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: newrelic.source
+        anyOf: ["api.traces.otlp"]
+      - attribute: db.system.name
+        anyOf: ["mysql"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MYSQLNODE
+          fields:
+            - field: serverAddress
+              attribute: server.address
+            - field: serverPort
+              attribute: server.port
