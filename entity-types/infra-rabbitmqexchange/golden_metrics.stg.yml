@@ -1,0 +1,64 @@
+bindings:
+  title: Bindings
+  queries:
+    newRelic:
+      select: average(exchange.bindings)
+      from: RabbitmqExchangeSample
+      eventId: entityGuid
+      eventName: entityName
+messagesPublishedPerChannel:
+  title: Messages published per channel
+  queries:
+    newRelic:
+      select: sum(exchange.messagesPublishedPerChannel)
+      from: RabbitmqExchangeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(rabbitmq.exchange.messages.published_in)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+messagesPublishedPerChannelPerSecond:
+  title: Messages published per channel per second
+  queries:
+    newRelic:
+      select: average(exchange.messagesPublishedPerChannelPerSecond)
+      from: RabbitmqExchangeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: rate(sum(rabbitmq.exchange.messages.published_in), 1 second)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+messagesPublishedQueue:
+  title: Messages published queue
+  queries:
+    newRelic:
+      select: sum(exchange.messagesPublishedQueue)
+      from: RabbitmqExchangeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: sum(rabbitmq.exchange.messages.published_out)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+messagesPublishedQueuePerSecond:
+  title: Messages published queue per second
+  queries:
+    newRelic:
+      select: average(exchange.messagesPublishedQueuePerSecond)
+      from: RabbitmqExchangeSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: rate(sum(rabbitmq.exchange.messages.published_out), 1 second)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
