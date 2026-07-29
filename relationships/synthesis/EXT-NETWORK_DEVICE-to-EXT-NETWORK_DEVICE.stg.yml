@@ -3,318 +3,446 @@ relationships:
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["SWITCH"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }   # fallback: no neighbour port → no port chain
-      - { attribute: dstMac,           present: true }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["SWITCH"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false   # fallback: no neighbour port → no port chain
+      - attribute: dstMac
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: SWITCH }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: SWITCH
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: mac, attribute: dstMac }
+            - field: mac
+              attribute: dstMac
 
   - name: extSwitchConnectsToDeviceByManagementIp
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["SWITCH"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
-      - { attribute: dstIp,            present: true }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["SWITCH"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
+      - attribute: dstIp
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: SWITCH }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: SWITCH
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: managementIp, attribute: dstIp }
+            - field: managementIp
+              attribute: dstIp
 
   - name: extSwitchConnectsToDeviceByNormalizedName
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["SWITCH"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["SWITCH"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: SWITCH }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: SWITCH
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: normalizedName, attribute: dstName }
+            - field: normalizedName
+              attribute: dstName
 
   - name: extRouterConnectsToDeviceByMac
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["ROUTER"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
-      - { attribute: dstMac,           present: true }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["ROUTER"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
+      - attribute: dstMac
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: ROUTER }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: ROUTER
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: mac, attribute: dstMac }
+            - field: mac
+              attribute: dstMac
 
   - name: extRouterConnectsToDeviceByManagementIp
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["ROUTER"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
-      - { attribute: dstIp,            present: true }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["ROUTER"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
+      - attribute: dstIp
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: ROUTER }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: ROUTER
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: managementIp, attribute: dstIp }
+            - field: managementIp
+              attribute: dstIp
 
   - name: extRouterConnectsToDeviceByNormalizedName
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["ROUTER"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["ROUTER"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: ROUTER }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: ROUTER
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: normalizedName, attribute: dstName }
+            - field: normalizedName
+              attribute: dstName
 
   - name: extAccessPointConnectsToDeviceByMac
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["ACCESS_POINT"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
-      - { attribute: dstMac,           present: true }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["ACCESS_POINT"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
+      - attribute: dstMac
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: ACCESS_POINT }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: ACCESS_POINT
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: mac, attribute: dstMac }
+            - field: mac
+              attribute: dstMac
 
   - name: extAccessPointConnectsToDeviceByManagementIp
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["ACCESS_POINT"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
-      - { attribute: dstIp,            present: true }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["ACCESS_POINT"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
+      - attribute: dstIp
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: ACCESS_POINT }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: ACCESS_POINT
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: managementIp, attribute: dstIp }
+            - field: managementIp
+              attribute: dstIp
 
   - name: extAccessPointConnectsToDeviceByNormalizedName
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["ACCESS_POINT"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["ACCESS_POINT"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: ACCESS_POINT }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: ACCESS_POINT
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: normalizedName, attribute: dstName }
+            - field: normalizedName
+              attribute: dstName
 
   - name: extNetworkDeviceConnectsToDeviceByMac
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["NETWORK_DEVICE"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
-      - { attribute: dstMac,           present: true }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["NETWORK_DEVICE"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
+      - attribute: dstMac
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: NETWORK_DEVICE }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: NETWORK_DEVICE
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: mac, attribute: dstMac }
+            - field: mac
+              attribute: dstMac
 
   - name: extNetworkDeviceConnectsToDeviceByManagementIp
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["NETWORK_DEVICE"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
-      - { attribute: dstIp,            present: true }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["NETWORK_DEVICE"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
+      - attribute: dstIp
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: NETWORK_DEVICE }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: NETWORK_DEVICE
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: managementIp, attribute: dstIp }
+            - field: managementIp
+              attribute: dstIp
 
   - name: extNetworkDeviceConnectsToDeviceByNormalizedName
     version: "1"
     origins: [Event API]
     conditions:
-      - { attribute: eventType,         anyOf: ["NetworkTopology"] }
-      - { attribute: networkEntityType, anyOf: ["NETWORK_DEVICE"] }
-      - { attribute: deviceName,        present: true }
-      - { attribute: dstName,          present: true }
-      - { attribute: dstPort,          present: false }
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["NETWORK_DEVICE"]
+      - attribute: deviceName
+        present: true
+      - attribute: dstName
+        present: true
+      - attribute: dstPort
+        present: false
     relationship:
       expires: PT75M
       relationshipType: CONNECTS_TO
       source:
         buildGuid:
-          account: { attribute: accountId }
-          domain:  { value: EXT }
-          type:    { value: NETWORK_DEVICE }
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: NETWORK_DEVICE
           identifier:
-            fragments: [ { attribute: deviceName } ]
+            fragments:
+              - attribute: deviceName
             hashAlgorithm: FARM_HASH
       target:
         lookupGuid:
           candidateCategory: NETWORK_DEVICE
           fields:
-            - { field: normalizedName, attribute: dstName }
+            - field: normalizedName
+              attribute: dstName
