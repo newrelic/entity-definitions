@@ -1,0 +1,200 @@
+{
+  "name": "Consul Agent (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "Overview",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Consul Metrics Seen",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT uniqueCount(metricName) WHERE instrumentation.provider = 'opentelemetry' AND metricName LIKE 'consul_%'",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Consul Nodes Reporting",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT uniqueCount(consul.node.id) WHERE instrumentation.provider = 'opentelemetry' AND metricName LIKE 'consul_%'",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Datacenters Reporting",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT uniqueCount(consul.datacenter) WHERE instrumentation.provider = 'opentelemetry' AND metricName LIKE 'consul_%'",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Metric Point Throughput",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT rate(count(*), 1 minute) WHERE instrumentation.provider = 'opentelemetry' AND metricName LIKE 'consul_%' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Top Consul Metrics by Volume",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT count(*) WHERE instrumentation.provider = 'opentelemetry' AND metricName LIKE 'consul_%' FACET metricName LIMIT 20",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Raft Apply Operations",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(consul_raft_apply) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "RPC Request Operations",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(consul_rpc_request) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "title": "ACL Cache Hits",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(consul_acl_token_cache_hit) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "title": "ACL Cache Misses",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT sum(consul_acl_token_cache_miss) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 12
+          },
+          "title": "Node and Datacenter Coverage",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT count(*) WHERE instrumentation.provider = 'opentelemetry' AND metricName LIKE 'consul_%' FACET consul.node.name, consul.datacenter LIMIT 100",
+                "accountId": 0}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+domain: EXT
+type: ACCESS_POINT
+synthesis:
+  rules:
+  - ruleName: ext_access_point_device_name
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cisco-ap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  - ruleName: ext_access_point_device_name_2
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-fortinet-ap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  - ruleName: ext_access_point_device_name_3
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-cambium-ap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  - ruleName: ext_access_point_device_name_4
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-wap
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  - ruleName: ext_access_point_serial
+    identifier: serial
+    name: ip
+    debug: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: metricName
+      value: 'unifipoller_device_info'
+    tags:
+      model:
+      version:
+      mac:
+      ip:
+        entityTagName: device_ip
+        multiValue: false
+
+  - ruleName: ext_access_point_from_networktopology_event
+    identifier: deviceName
+    name: deviceName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkTopology
+    - attribute: networkEntityType
+      value: ACCESS_POINT
+    - attribute: deviceName
+      present: true
+    tags:
+      deviceName:
+        entityTagName: hostname
+      observedMac:
+        entityTagName: mac
+      managementIp:
+        entityTagName: managementIp
+      source:
+        entityTagName: source
+      serial:
+        entityTagName: serial
+      vendor:
+        entityTagName: vendor
+      model:
+        entityTagName: model
+
+goldenTags:
+- device_ip
+- container_service
+- vendor
+- model
+
+dashboardTemplates:
+  kentik:
+    template: default-dashboard.json
+  kentik/aruba-access-point:
+    template: aruba-access-point-dashboard.json
+  kentik/unifi-access-point:
+    template: unifi-access-point-dashboard.json
+  kentik/cisco-access-point:
+    template: cisco-access-point-dashboard.json
+  kentik/fortinet-fortiap:
+    template: fortinet-access-point-dashboard.json
+  kentik/cambium-mib:
+    template: cambium-access-point-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"

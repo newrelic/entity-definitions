@@ -13,16 +13,16 @@ request:
       eventId: entityGuid
       eventName: entityName
 latencies:
-  title: Latency
+  title: Latency p95 (ms)
   unit: MS
   queries:
     gcp:
-      select: average(gcp.aiplatform.matching_engine.stream_update.latencies)
+      select: percentile(gcp.aiplatform.matching_engine.stream_update.latencies, 95)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(matchingEngine.streamUpdate.Latencies)
+      select: percentile(matchingEngine.streamUpdate.Latencies, 95)
       from: GcpVertexAiIndexSample
       eventId: entityGuid
       eventName: entityName
@@ -31,12 +31,12 @@ datapointCount:
   unit: COUNT
   queries:
     gcp:
-      select: average(gcp.aiplatform.matching_engine.stream_update.datapoint_count)
+      select: sum(gcp.aiplatform.matching_engine.stream_update.datapoint_count)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(matchingEngine.streamUpdate.Datapoint)
+      select: sum(matchingEngine.streamUpdate.Datapoint)
       from: GcpVertexAiIndexSample
       eventId: entityGuid
       eventName: entityName
