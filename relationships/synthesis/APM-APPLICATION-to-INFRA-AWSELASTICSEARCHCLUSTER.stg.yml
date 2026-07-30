@@ -1,0 +1,45 @@
+relationships:
+  # STAGING ONLY. NR-590130 — Elasticsearch / OpenSearch, ALL host cases.
+  #
+  # The prod rule (relationships/synthesis/APM-APPLICATION-to-INFRA-AWSELASTICSEARCHCLUSTER.yml)
+  # gates server.address / metricName on the AWS-native hostname
+  #   ^search-...\.((aos\.<region>\.on\.aws)|(<sub>\.(es|aos)\.amazonaws\.com))$
+  # so it forms the relationship ONLY for the native endpoint and BREAKS the moment the app
+  # talks to the cluster through a custom / Route53 domain (e.g. search.mycompany.com), even
+  # though the NR Java agent emits that friendly host verbatim.
+  #
+  # This staging rule is deliberately HOST-FREE: it matches any Elasticsearch datastore
+  # timeslice metric and takes the host verbatim, so native AND custom/Route53 domains are
+  # handled identically. The byte-for-byte match then happens in the DATABASE candidate
+  # (relationships/candidates/DATABASE.stg.yml), which now carries AWSELASTICSEARCHCLUSTER +
+  # the aws.es.DomainEndpoint tag; `endpoint` there carries the friendly value when
+  # auto-discovery (ACF) attaches it. Routing through the DATABASE candidate means onMiss
+  # stamps a generic DATABASE stub (not a wrong AWS type) for a self-managed ES host that
+  # has no discoverable AWS entity — the same, safe behaviour the generic-database rule
+  # already has for unmatched mysql/postgres hosts.
+  #
+  # Timeslice metrics are unsampled (guaranteed) for the NR agent, so a single APM-Metrics
+  # variant is sufficient and cannot over-match (metricName encodes vendor = Elasticsearch).
+  # The prod rule's Span variant is left in place for native hosts; this only adds the
+  # custom-domain coverage the prod rule lacks. Coexists with prod (distinct relationship
+  # name), per the .stg additive convention.
+  - name: apmApplicationCallsElasticsearchByHostStaging
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "Datastore/instance/Elasticsearch/$host/$port" — host taken verbatim (no host regex)
+        regex: "^Datastore/instance/Elasticsearch/[^/;]+/[^/;]+$"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: DATABASE
+          fields:
+            - field: endpoint
+              attribute: metricName__4
