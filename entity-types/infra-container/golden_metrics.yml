@@ -42,3 +42,13 @@ networkTrafficTotal:
       select: max(docker.container.networkRxBytesPerSecond) + max(docker.container.networkTxBytesPerSecond) AS 'Network traffic (bytes per second)'
     # defaulting to newRelic query for now since we cannot match value functions for OpenTelemetry cumulative metrics.
     # opentelemetry:
+containerRestart:
+  title: Container restarts
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(restartCount) AS 'Container restarts'
+      from: K8sContainerSample
+    opentelemetry:
+      # via kubeletstatsreceiver
+      select: latest(k8s.container.restartCount) AS 'Container restarts'
