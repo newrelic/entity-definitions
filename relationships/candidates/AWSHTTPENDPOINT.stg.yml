@@ -50,3 +50,30 @@ lookups:
       onMultipleMatches: RELATE_ALL
     onMiss:
       action: NO_OP
+
+  # NR-590130: Elasticsearch / OpenSearch reached over HTTP. The NR Java agent has NO
+  # elasticsearch/opensearch instrumentation module, so BOTH the low-level
+  # elasticsearch-rest-client (org.elasticsearch.client.RestClient) AND the high-level
+  # RestHighLevelClient run their HTTP over Apache HttpAsyncClient, which the agent's
+  # http-async-client-4 module records as an External HTTP call - category=http,
+  # span.kind=client, server.address = host - NOT a Datastore segment. VERIFIED on the rig
+  # for BOTH clients (low-level on the custom Route53 host; high-level pointed at the native
+  # search-*.es.amazonaws.com host): only External spans, ZERO datastore-category spans.
+  # (The pre-existing Datastore rule APM-APPLICATION-to-INFRA-AWSELASTICSEARCHCLUSTER +
+  # DATABASE candidate is a dead path for the Java agent; it only fires for agents/SDKs that
+  # DO emit an ES Datastore segment, e.g. OTel/Python with ES instrumentation.)
+  # That External host resolves here to the AWSELASTICSEARCHCLUSTER entity. Match the native
+  # host (aws.es.DomainEndpoint, ACF/metric-streams) OR the friendly Route53 value (endpoint,
+  # ACF enrichMappingsWithDnsName). onMiss NO_OP as above.
+  - entityTypes:
+      - domain: INFRA
+        type: AWSELASTICSEARCHCLUSTER
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.es.DomainEndpoint"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP

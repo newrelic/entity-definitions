@@ -1,6 +1,24 @@
 relationships:
   # STAGING ONLY. NR-590130 — Elasticsearch / OpenSearch, ALL host cases.
   #
+  # WHEN IS THE DATASTORE SAMPLE USEFUL? (which agents actually emit it)
+  #   - NR Java agent:  NOT useful — this rule never fires for it. VERIFIED on the rig
+  #     (2026-07-31): the Java agent has NO elasticsearch/opensearch instrumentation module,
+  #     so BOTH the low-level RestClient AND the high-level RestHighLevelClient run their HTTP
+  #     over Apache HttpAsyncClient and are recorded as External (category=http, span.kind=client,
+  #     server.address = host) — ZERO Datastore/instance/Elasticsearch metrics. For the Java
+  #     agent the relationship is carried entirely by the External path
+  #     (AWSHTTPENDPOINT candidate matching server.address). This Datastore rule is a DEAD PATH
+  #     for Java and is kept only for the agents below.
+  #   - OTel:           useful — the ES/OpenSearch instrumentation emits db.system=elasticsearch
+  #     spans that map to a Datastore timeslice, so this rule (via the DATABASE candidate) is
+  #     what forms the edge. (OTel also needs its own OTEL-SERVICE-to-INFRA rule; see
+  #     OTEL-SERVICE-to-INFRA-ELASTICSEARCHCLUSTER.stg.yml.)
+  #   - NR Python / Ruby / .NET / Node agents: useful — their ES client libraries ARE
+  #     instrumented as datastores, so they emit Datastore/instance/Elasticsearch/<host>/<port>
+  #     and this rule forms the edge for native AND custom/Route53 hosts.
+  # NET: keep this rule for non-Java agents; do NOT rely on it for the Java agent.
+  #
   # The prod rule (relationships/synthesis/APM-APPLICATION-to-INFRA-AWSELASTICSEARCHCLUSTER.yml)
   # gates server.address / metricName on the AWS-native hostname
   #   ^search-...\.((aos\.<region>\.on\.aws)|(<sub>\.(es|aos)\.amazonaws\.com))$
