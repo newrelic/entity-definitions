@@ -63,15 +63,16 @@ lookups:
   # DATABASE candidate is a dead path for the Java agent; it only fires for agents/SDKs that
   # DO emit an ES Datastore segment, e.g. OTel/Python with ES instrumentation.)
   # That External host resolves here to the AWSELASTICSEARCHCLUSTER entity. Match the native
-  # host (aws.es.DomainEndpoint, ACF/metric-streams) OR the friendly Route53 value (endpoint,
-  # ACF enrichMappingsWithDnsName). onMiss NO_OP as above.
+  # host from metric-streams (aws.es.DomainEndpoint) OR polling (aws.DomainEndpoint - bare
+  # `aws.` prefix, no service infix, per beyond-backend ClusterState.getMetadata) OR the
+  # friendly Route53 value (endpoint, ACF enrichMappingsWithDnsName). onMiss NO_OP as above.
   - entityTypes:
       - domain: INFRA
         type: AWSELASTICSEARCHCLUSTER
     tags:
       matchingMode: ANY
       predicates:
-        - tagKeys: ["endpoint", "aws.es.DomainEndpoint"]
+        - tagKeys: ["endpoint", "aws.es.DomainEndpoint", "aws.DomainEndpoint"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
