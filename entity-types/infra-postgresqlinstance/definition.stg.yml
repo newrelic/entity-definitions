@@ -1,20 +1,18 @@
 domain: INFRA
-type: MYSQLNODE
+type: POSTGRESQLINSTANCE
 
 synthesis:
   rules:
-    # opentelemetry - metrics (OTel Collector mysqlreceiver)
-    # Loose matching is intentional: any mysql.* metric from an OTel provider.
-    # The otel.library.name check was deliberately removed upstream, do not re-add it here.
-    - ruleName: infra_mysqlnode_mysql_instance_endpoint
-      identifier: mysql.instance.endpoint # server.address:server.port
-      name: mysql.instance.endpoint
+    # opentelemetry (postgresqlreceiver); service.instance.id is host:port, enabled by default
+    - ruleName: infra_postgresqlinstance_service_instance_id
+      identifier: service.instance.id # host:port
+      name: service.instance.id
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           value: Metric
         - attribute: metricName
-          prefix: mysql.
+          prefix: postgresql.
         - attribute: instrumentation.provider
           value: opentelemetry
       tags:
@@ -27,18 +25,17 @@ synthesis:
           entityTagName: instrumentation.name
         otel.library.version:
           entityTagName: instrumentation.version
-        # server.address/server.port are required by the MYSQLNODE relationship
-        # candidate so native-APM apps (datastore distributed-tracing spans) can link here.
         server.address:
           entityTagNames: [server.address, endpoint]
         server.port:
           entityTagName: server.port
 
     # opentelemetry logs (db.server.top_query / db.server.query_sample);
-    # db.system.name is always present on these log events when enabled and is
-    - ruleName: infra_mysqlnode_otel_logs
-      identifier: mysql.instance.endpoint
-      name: mysql.instance.endpoint
+    # db.system.name is always present on these log events when enabled.
+    # Using service.instance.id (host:port) to match the metric rule above.
+    - ruleName: infra_postgresqlinstance_otel_logs
+      identifier: service.instance.id # host:port
+      name: service.instance.id
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -46,7 +43,7 @@ synthesis:
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: db.system.name
-          value: mysql
+          value: postgresql
       tags:
         host.type:
         cloud.provider:
@@ -61,10 +58,10 @@ synthesis:
         server.port:
           entityTagName: server.port
 
-    # nri-mysql / MysqlSample
-    - ruleName: infra_mysqlnode_entityId
+    # nri-postgresql / PostgresqlInstanceSample
+    - ruleName: infra_postgresqlinstance_entityId
       identifier: entityId
-      name: entityName
+      name: entityKey
       legacyFeatures:
         useNonStandardAttributes: true
         overrideGuidType: true
@@ -72,14 +69,16 @@ synthesis:
         label.:
           ttl: PT4H
       conditions:
-        - attribute: event_type
-          value: 'MysqlSample'
+        - attribute: eventType
+          value: 'PostgresqlInstanceSample'
       tags:
         integrationName:
           ttl: P1D
         integrationVersion:
           ttl: P1D
         reportingAgent:
+          ttl: P1D
+        reportingEndpoint:
           ttl: P1D
 
   tags:
@@ -88,12 +87,7 @@ synthesis:
       entityTagName: instrumentation.provider
 
 goldenTags:
-- mysql.port
-- mysql.version
-- mysql.edition
-- mysql.hostname
-- mysql.clusterNodeType
-
+- postgres.host
 configuration:
   entityExpirationTime: DAILY
   alertable: true
@@ -102,9 +96,8 @@ dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
-  # otel receiver
   opentelemetry:
-    template: opentelemetry_dashboard.stg.json
+    template: opentelemetry_dashboard.json
 
 ownership:
   primaryOwner:
