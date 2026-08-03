@@ -41,22 +41,10 @@ lookups:
         type: AWSROUTE53RECORDSET
       - domain: INFRA
         type: AWSRDSPROXY
-      # NR-590130: fold Elasticsearch/OpenSearch into the generic DATABASE candidate so an
-      # APM app relates to its AWSELASTICSEARCHCLUSTER by the SAME host it emits, for ALL
-      # cases — native (search-*.es.amazonaws.com / *.aos.*.on.aws) AND custom/Route53
-      # domains. The prod dedicated rule (APM-APPLICATION-to-INFRA-AWSELASTICSEARCHCLUSTER.yml)
-      # host-regex-gates server.address to the AWS-native hostname, so it breaks on a custom
-      # domain; the host-free staging rule below routes here instead. aws.es.DomainEndpoint is
-      # shipped by ACF (AWSELASTICSEARCHCLUSTER.yaml mapping) and metric streams; aws.DomainEndpoint
-      # is the polling bare key (beyond-backend ClusterState.getMetadata, bare `aws.` prefix, no
-      # service infix); `endpoint` (already present) carries the friendly/Route53 value when
-      # auto-discovery attaches it.
-      - domain: INFRA
-        type: AWSELASTICSEARCHCLUSTER
     tags:
       matchingMode: ANY
       predicates:
-        - tagKeys: ["endpoint", "nr.endpoint", "aws.endpoint", "aws.readerEndpoint", "aws.customEndpoints", "aws.rds.endpoint", "aws.rds.readerEndpoint", "aws.rds.customEndpoints", "aws.rds.proxyEndpoint", "azure.endpoint", "aws.recordName", "aws.recordUrl","azure.failoverGroupDomainName", "aws.es.DomainEndpoint", "aws.DomainEndpoint"]
+        - tagKeys: ["endpoint", "nr.endpoint", "aws.endpoint", "aws.readerEndpoint", "aws.customEndpoints", "aws.rds.endpoint", "aws.rds.readerEndpoint", "aws.rds.customEndpoints", "aws.rds.proxyEndpoint", "azure.endpoint", "aws.recordName", "aws.recordUrl","azure.failoverGroupDomainName"]
           field: endpoint
     onMatch:
       onMultipleMatches: RELATE_ALL
