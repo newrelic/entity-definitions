@@ -1,11 +1,12 @@
 category: AWSHTTPENDPOINT
 # Consolidated candidate for APM apps making HTTP calls to AWS edge/proxy resources
-# (CloudFront, ELB/ALB/NLB, API Gateway). Driven by the metrics-only, host-regex-free
-# synthesis rule APM-APPLICATION-to-AWSHTTPENDPOINT - so every lookup MUST use
-# onMiss: NO_OP (a broad External matcher would otherwise stamp a typed AWS stub for
-# every third-party host). Each lookup matches the emitted host against BOTH the per-type
-# native host tag (from ACF PR #359 / polling / metric-streams) AND `endpoint` (already
-# live; carries Route53/custom-domain friendly names via ACF enrichMappingsWithDnsName).
+# (CloudFront, ELB/ALB/NLB, API Gateway, and interface VPC endpoints / PrivateLink).
+# Driven by the metrics-only, host-regex-free synthesis rule
+# APM-APPLICATION-to-AWSHTTPENDPOINT - so every lookup MUST use onMiss: NO_OP (a broad
+# External matcher would otherwise stamp a typed AWS stub for every third-party host).
+# Each lookup matches the emitted host against BOTH the per-type native host tag (from
+# ACF PR #359 / polling / metric-streams) AND `endpoint` (already live; carries
+# Route53/custom-domain friendly names via ACF enrichMappingsWithDnsName).
 lookups:
   - entityTypes:
       - domain: INFRA
@@ -73,6 +74,32 @@ lookups:
       matchingMode: ANY
       predicates:
         - tagKeys: ["endpoint", "aws.es.DomainEndpoint", "aws.DomainEndpoint"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # NR-590130: interface VPC endpoints (PrivateLink), both AWS-managed-service and customer
+  # "VPC Service" endpoints. With private DNS OFF the app dials the endpoint DNS name over
+  # HTTP, so the NR Java agent records an External call and the metrics-only rule above fires
+  # on the host (native vpce-<id>-<hash>.<svc>.<region>.vpce.amazonaws.com OR a Route53 custom
+  # domain). VERIFIED on the vpce-test-infra rig for both the AWS-managed (SQS) and customer
+  # VPC-Service cases. Routed through this NO_OP candidate rather than a dedicated
+  # regex-gated + CREATE_UNINSTRUMENTED rule so that (a) custom/Route53 domains relate exactly
+  # like the AWS-native host, and (b) an existing-but-untagged VPCE entity is never duplicated
+  # by a stub - it simply waits for the tag. The trade-off vs CREATE_UNINSTRUMENTED: no typed
+  # stub for endpoints in unmonitored accounts (falls through to HTTPSERVICE, same as the
+  # other types here). Match the native DNS name (aws.vpce.dnsName, ACF PR #359 - inert until
+  # published; Cloud Control Properties.DnsEntries[0] is "<zoneId>:<host>", strip the prefix)
+  # OR the friendly value (endpoint, ACF enrichMappingsWithDnsName).
+  - entityTypes:
+      - domain: INFRA
+        type: AWSPRIVATELINKENDPOINT
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.vpce.dnsName"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
