@@ -1,0 +1,81 @@
+domain: EXT
+type: LINKERD
+goldenTags:
+  - k8s.clusterName
+  - k8s.namespaceName
+  - k8s.deploymentName
+
+synthesis:
+  rules:
+    # legacy on-host nri-prometheus (hostname-keyed) — unchanged, staging mirror
+    - ruleName: ext_linkerd_hostname_staging
+      identifier: hostname
+      name: hostname
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: linkerd
+        - attribute: metricName
+          value: "inbound_http_authz_allow_total"
+      tags:
+        ip:
+        newrelic.agentVersion:
+
+    # OTel — per-workload (deployment), environment-agnostic (k8s.* identity; no host.id dependency)
+    - ruleName: ext_linkerd_otel_staging
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.deployment.name
+      encodeIdentifierInGUID: true
+      name: k8s.deployment.name
+      conditions:
+        - attribute: k8s.cluster.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.deployment.name
+          present: true
+        # Linkerd-specific + container-name-independent: the injector sets this pod label on
+        # every meshed pod (it's what the scrape's keep-regex already keys on).
+        - attribute: linkerd_control_plane_ns
+          present: true
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        # ensure the scrape-job service.name (stripped by the collector) never routes this to EXT/SERVICE
+        - attribute: service.name
+          present: false
+
+  tags:
+    k8s.cluster.name:
+      entityTagName: k8s.clusterName
+      ttl: P1D
+    k8s.namespace.name:
+      entityTagName: k8s.namespaceName
+      ttl: P1D
+    k8s.deployment.name:
+      entityTagName: k8s.deploymentName
+      ttl: P1D
+    k8s.pod.name:
+      entityTagName: k8s.podName
+      ttl: P1D
+    k8s.node.name:
+      entityTagName: k8s.nodeName
+      ttl: P1D
+    instrumentation.provider:
+
+dashboardTemplates:
+  newrelic:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"
+  secondaryOwners:
+    - teamName: "K8s Agents"
