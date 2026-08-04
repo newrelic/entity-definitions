@@ -31,6 +31,12 @@ lookups:
     tags:
       matchingMode: ANY
       predicates:
+        # aws.alb.dnsName (ALB, ACF master) and aws.nlb.dnsName (NLB, ACF PR #359) are live.
+        # aws.elb.dnsName (Classic ELB) is a DORMANT placeholder: Classic ELB is not yet
+        # ACF-discovered (no resource-arn-definitions entry) and no metric-stream / polling
+        # source emits it, so this key matches nothing today. It is kept - not dropped - so the
+        # relationship activates automatically once Classic ELB is onboarded to ACF, with no
+        # candidate edit needed then. Documented as intentional.
         - tagKeys: ["endpoint", "aws.elb.dnsName", "aws.alb.dnsName", "aws.nlb.dnsName"]
           field: serverAddress
     onMatch:
@@ -64,9 +70,10 @@ lookups:
   # DATABASE candidate is a dead path for the Java agent; it only fires for agents/SDKs that
   # DO emit an ES Datastore segment, e.g. OTel/Python with ES instrumentation.)
   # That External host resolves here to the AWSELASTICSEARCHCLUSTER entity. Match the native
-  # host from metric-streams (aws.es.DomainEndpoint) OR polling (aws.DomainEndpoint - bare
-  # `aws.` prefix, no service infix, per beyond-backend ClusterState.getMetadata) OR the
-  # friendly Route53 value (endpoint, ACF enrichMappingsWithDnsName). onMiss NO_OP as above.
+  # host tag (aws.es.DomainEndpoint) OR the friendly Route53 value (endpoint, ACF
+  # enrichMappingsWithDnsName). NOTE: ES/OpenSearch is NOT ACF-discovered, so there is no
+  # aws.es.* auto-discovery key - the native tag aws.es.DomainEndpoint is the pre-existing
+  # metric-stream one. onMiss NO_OP as above.
   - entityTypes:
       - domain: INFRA
         type: AWSELASTICSEARCHCLUSTER
