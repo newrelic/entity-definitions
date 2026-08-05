@@ -32,6 +32,8 @@ synthesis:
       encodeIdentifierInGUID: true
       name: k8s.deployment.name
       conditions:
+        - attribute: eventType
+          value: Metric
         - attribute: k8s.cluster.name
           present: true
         - attribute: k8s.namespace.name
@@ -44,9 +46,38 @@ synthesis:
           present: true
         - attribute: instrumentation.provider
           value: opentelemetry
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
         # ensure the scrape-job service.name (stripped by the collector) never routes this to EXT/SERVICE
         - attribute: service.name
           present: false
+
+    # OTel logs — SAME deployment identity as the metric rule above (same compositeIdentifier +
+    # encodeIdentifierInGUID), so the linkerd-proxy container logs resolve to the SAME EXT/LINKERD
+    # entity GUID and attach to its Logs. Collected via the filelog receiver + k8sattributes
+    # (k8s.deployment.name from pod owner refs); gated on the injector-set control-plane-ns label.
+    - ruleName: ext_linkerd_otel_logs_staging
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.deployment.name
+      encodeIdentifierInGUID: true
+      name: k8s.deployment.name
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: k8s.cluster.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.deployment.name
+          present: true
+        - attribute: linkerd_control_plane_ns
+          present: true
+        - attribute: instrumentation.provider
+          value: opentelemetry
 
   tags:
     k8s.cluster.name:
@@ -77,5 +108,3 @@ configuration:
 ownership:
   primaryOwner:
     teamName: "OnHost Agent and Integrations"
-  secondaryOwners:
-    - teamName: "K8s Agents"
