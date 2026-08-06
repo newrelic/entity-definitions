@@ -1,0 +1,31 @@
+domain: INFRA
+type: OCIINTEGRATION
+goldenTags:
+- oci.compartmentId
+- oci.displayName
+- oci.lifecycleState
+- oci.region
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  - ruleName: infra_ociintegration_oci_resourceId
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.integrationinstance.oc1"
+    - attribute: oci.namespace
+      value: "oci_integration"
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
