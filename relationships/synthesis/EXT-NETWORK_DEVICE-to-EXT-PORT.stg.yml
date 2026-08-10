@@ -1,12 +1,12 @@
 relationships:
-  - name: extSwitchContainsPort
+  - name: extPortContainedByDevice
     version: "1"
     origins: [Network Monitoring]
     conditions:
       - attribute: eventType
         anyOf: ["NetworkTopology"]
       - attribute: networkEntityType
-        anyOf: ["SWITCH"]
+        anyOf: ["PORT"]
       - attribute: deviceName
         present: true
       - attribute: port
@@ -15,118 +15,11 @@ relationships:
       expires: PT30M
       relationshipType: CONTAINS
       source:
+        lookupGuid:
+          candidateCategory: NETWORK_DEVICE
+          fields:
+            - field: normalizedName
+              attribute: normalizedDeviceName
+      target:
         extractGuid:
           attribute: entity.guid
-      target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: EXT
-          type:
-            value: PORT
-          identifier:
-            fragments:
-              - attribute: normalizedDeviceName
-              - value: ":"
-              - attribute: port
-            hashAlgorithm: FARM_HASH
-
-  - name: extRouterContainsPort
-    version: "1"
-    origins: [Network Monitoring]
-    conditions:
-      - attribute: eventType
-        anyOf: ["NetworkTopology"]
-      - attribute: networkEntityType
-        anyOf: ["ROUTER"]
-      - attribute: deviceName
-        present: true
-      - attribute: port
-        present: true
-    relationship:
-      expires: PT30M
-      relationshipType: CONTAINS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: EXT
-          type:
-            value: PORT
-          identifier:
-            fragments:
-              - attribute: normalizedDeviceName
-              - value: ":"
-              - attribute: port
-            hashAlgorithm: FARM_HASH
-
-  - name: extAccessPointContainsPort
-    version: "1"
-    origins: [Network Monitoring]
-    conditions:
-      - attribute: eventType
-        anyOf: ["NetworkTopology"]
-      - attribute: networkEntityType
-        anyOf: ["ACCESS_POINT"]
-      - attribute: deviceName
-        present: true
-      - attribute: port
-        present: true
-    relationship:
-      expires: PT30M
-      relationshipType: CONTAINS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: EXT
-          type:
-            value: PORT
-          identifier:
-            fragments:
-              - attribute: normalizedDeviceName
-              - value: ":"
-              - attribute: port
-            hashAlgorithm: FARM_HASH
-
-  - name: extNetworkDeviceContainsPort
-    version: "1"
-    origins: [Network Monitoring]
-    conditions:
-      - attribute: eventType
-        anyOf: ["NetworkTopology"]
-      - attribute: networkEntityType
-        anyOf: ["NETWORK_DEVICE"]
-      - attribute: deviceName
-        present: true
-      - attribute: port
-        present: true
-    relationship:
-      expires: PT30M
-      relationshipType: CONTAINS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: EXT
-          type:
-            value: PORT
-          identifier:
-            fragments:
-              - attribute: normalizedDeviceName
-              - value: ":"
-              - attribute: port
-            hashAlgorithm: FARM_HASH

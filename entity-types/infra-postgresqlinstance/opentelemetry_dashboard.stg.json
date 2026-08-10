@@ -1,0 +1,753 @@
+{
+  "name": "PostgreSQL Monitoring (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "Core Metrics",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### Connections & Sizing\n_Active backends vs max connections, database/table counts, and database size._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Active Backends by Database",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.backends) AS 'Active Backends' FROM Metric FACET postgresql.database.name TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 2,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Max Connections",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.connection.max) AS 'Max Connections' FROM Metric",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 2,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Databases / Tables",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.database.count) AS 'Databases', latest(postgresql.table.count) AS 'Tables' FROM Metric",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Database Size (GB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.db_size)/1073741824 AS 'DB Size (GB)' FROM Metric FACET postgresql.database.name LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### Locks & Concurrency\n_Blocking and contention signals \u2014 check right after connections when investigating a slowdown._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Database Locks by Mode/Type",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.database.locks) AS 'Locks' FROM Metric WHERE metricName = 'postgresql.database.locks' FACET mode, lock_type LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 9,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Deadlocks",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(postgresql.deadlocks) AS 'Deadlocks' FROM Metric FACET postgresql.database.name TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### Throughput\n_Commit vs rollback rate \u2014 baseline traffic and spot anomalies._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Commits vs Rollbacks",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.commits), 1 minute) AS 'Commits/min', rate(sum(postgresql.rollbacks), 1 minute) AS 'Rollbacks/min' FROM Metric FACET postgresql.database.name TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 13,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Rollback Ratio (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT (rate(sum(postgresql.rollbacks), 1 minute) / (rate(sum(postgresql.commits), 1 minute) + rate(sum(postgresql.rollbacks), 1 minute) + 0.001)) * 100 AS 'Rollback %' FROM Metric FACET postgresql.database.name TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### Cache & I/O\n_Buffer cache hit ratio, block reads by source, and temp-file spill._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Block Reads by Cache Source",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT sum(postgresql.blocks_read) AS 'Blocks' FROM Metric WHERE metricName = 'postgresql.blocks_read' FACET source LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 5,
+            "row": 17,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Cache Hit Ratio (heap)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT filter(sum(postgresql.blocks_read), WHERE source = 'heap_hit') / (filter(sum(postgresql.blocks_read), WHERE source = 'heap_hit') + filter(sum(postgresql.blocks_read), WHERE source = 'heap_read')) * 100 AS 'Heap Cache Hit %' FROM Metric WHERE metricName = 'postgresql.blocks_read'",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 17,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Temp Files & Temp I/O (MB/min)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.temp_files), 1 minute) AS 'Temp Files/min', rate(sum(postgresql.temp.io)/1048576, 1 minute) AS 'Temp I/O MB/min' FROM Metric FACET postgresql.database.name TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 20,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### Row Operations\n_Insert/update/delete rates, live vs dead rows, and scan activity._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 21,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Row Operations (ins/upd/del/hot_upd)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.operations), 1 minute) FROM Metric WHERE metricName = 'postgresql.operations' FACET operation TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 21,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Live vs Dead Rows",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.rows) FROM Metric WHERE metricName = 'postgresql.rows' FACET state TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 24,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Sequential Scans/min",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.sequential_scans), 1 minute) AS 'Seq Scans/min' FROM Metric WHERE metricName = 'postgresql.sequential_scans' FACET postgresql.table.name TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 24,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Function Calls/min",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.function.calls), 1 minute) AS 'Calls/min' FROM Metric WHERE metricName = 'postgresql.function.calls' FACET function TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 27,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### Background Writer & Checkpoints\n_Buffer write sources, checkpoint cadence, and duration._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 28,
+            "height": 3,
+            "width": 6
+          },
+          "title": "BGWriter: Buffers Written by Source",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.bgwriter.buffers.writes), 1 minute) FROM Metric WHERE metricName = 'postgresql.bgwriter.buffers.writes' FACET source TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 28,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Checkpoints (Requested vs Scheduled)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.bgwriter.checkpoint.count), 1 minute) FROM Metric WHERE metricName = 'postgresql.bgwriter.checkpoint.count' FACET type TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 31,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Checkpoint Duration (Sync vs Write, ms)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.bgwriter.duration), 1 minute) AS 'ms/min' FROM Metric WHERE metricName = 'postgresql.bgwriter.duration' FACET type TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 31,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Buffers Allocated / Maxwritten Stops",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.bgwriter.buffers.allocated), 1 minute) AS 'Buffers Allocated/min', rate(sum(postgresql.bgwriter.maxwritten), 1 minute) AS 'Maxwritten Stops/min' FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 34,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### Tables & Indexes\n_Top table and index sizes, scan counts, and vacuum activity._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 35,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Table Sizes (Top, GB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.table.size)/1073741824 AS 'Size (GB)' FROM Metric WHERE metricName = 'postgresql.table.size' FACET postgresql.table.name LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 7,
+            "row": 35,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Index Sizes (Top, GB)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.index.size)/1073741824 AS 'Size (GB)' FROM Metric WHERE metricName = 'postgresql.index.size' FACET postgresql.index.name LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 38,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Index Scans (Top)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.index.scans) AS 'Scans' FROM Metric WHERE metricName = 'postgresql.index.scans' FACET postgresql.index.name LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 7,
+            "row": 38,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Manual Vacuum Count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.table.vacuum.count) AS 'Vacuums' FROM Metric WHERE metricName = 'postgresql.table.vacuum.count' FACET postgresql.table.name LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 41,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### WAL & Replication\n_WAL age and replication lag \u2014 requires at least one replica to show data._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 42,
+            "height": 3,
+            "width": 4
+          },
+          "title": "WAL Age (s)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.wal.age) AS 'WAL Age (s)' FROM Metric WHERE metricName = 'postgresql.wal.age' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 42,
+            "height": 3,
+            "width": 4
+          },
+          "title": "WAL Lag / Delay (s)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.wal.lag) AS 'WAL Lag (s)', latest(postgresql.wal.delay) AS 'WAL Delay (s)' FROM Metric FACET replication_client, operation TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 42,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Replication Data Delay (GB)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT latest(postgresql.replication.data_delay)/1073741824 AS 'Data Delay (GB)' FROM Metric WHERE metricName = 'postgresql.replication.data_delay' FACET replication_client TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 45,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "### Conflicts & pgvector\n_Standby recovery conflicts and pgvector search/insert activity._"
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 46,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Query Conflicts",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.query.conflicts), 1 minute) FROM Metric WHERE metricName = 'postgresql.query.conflicts' FACET postgresql.conflict.type TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 7,
+            "row": 46,
+            "height": 3,
+            "width": 6
+          },
+          "title": "pgvector: Search Calls/min by Distance Function",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.vector.search.calls), 1 minute) AS 'Vector Searches/min' FROM Metric WHERE metricName = 'postgresql.vector.search.calls' FACET postgresql.distance.function.name TIMESERIES AUTO LIMIT MAX",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 49,
+            "height": 3,
+            "width": 12
+          },
+          "title": "pgvector: Search & Insert Duration/Rows",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "query": "SELECT rate(sum(postgresql.vector.search.duration), 1 minute) AS 'Search Duration/min (s)', rate(sum(postgresql.vector.search.rows_returned), 1 minute) AS 'Rows Returned/min', rate(sum(postgresql.vector.insert.duration), 1 minute) AS 'Insert Duration/min (s)', rate(sum(postgresql.vector.insert.rows), 1 minute) AS 'Rows Inserted/min' FROM Metric TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
