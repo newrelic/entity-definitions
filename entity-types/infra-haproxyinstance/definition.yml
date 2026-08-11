@@ -1,0 +1,346 @@
+domain: INFRA
+type: HAPROXYINSTANCE
+
+synthesis:
+  rules:
+  # OpenTelemetry synthesis rule (new collector format)
+  # Requires: resourcedetection processor (adds host.id) + haproxyreceiver (adds haproxy.addr)
+  - ruleName: infra_haproxyinstance_otel_new
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - host.id
+        - haproxy.addr
+    name: host.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: haproxy.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: host.id
+        present: true
+      - attribute: haproxy.addr
+        present: true
+      # New collector format (otelcol-contrib v0.80+)
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/haproxyreceiver"
+    tags:
+      # Identity attributes
+      host.name:
+        ttl: P1D
+      haproxy.addr:
+      # HAProxy-specific attributes (natively emitted by haproxyreceiver)
+      haproxy.proxy_name:
+      haproxy.service_name:
+      # Environment attributes (from resourcedetection processor)
+      os.type:
+      host.id:
+        ttl: P1D
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (from resourcedetection with k8s detector)
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      k8s.node.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # OpenTelemetry synthesis rule (old collector format)
+  - ruleName: infra_haproxyinstance_otel_old
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - host.id
+        - haproxy.addr
+    name: host.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: haproxy.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: host.id
+        present: true
+      - attribute: haproxy.addr
+        present: true
+      # Old collector format (otelcol-contrib < v0.80)
+      - attribute: otel.library.name
+        value: "otelcol/haproxyreceiver"
+    tags:
+      # Identity attributes
+      host.name:
+        ttl: P1D
+      haproxy.addr:
+      # HAProxy-specific attributes (natively emitted by haproxyreceiver)
+      haproxy.proxy_name:
+      haproxy.service_name:
+      # Environment attributes (from resourcedetection processor)
+      os.type:
+      host.id:
+        ttl: P1D
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (from resourcedetection with k8s detector)
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      k8s.node.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # Prometheus receiver synthesis rule
+  # For metrics collected via the OTel Collector's prometheusreceiver scraping HAProxy's
+  # built-in /metrics endpoint. The metricstransform processor renames metrics to haproxy.*
+  # and adds haproxy.addr as a resource attribute.
+  - ruleName: infra_haproxyinstance_otel_prometheus
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - host.id
+        - haproxy.addr
+    name: host.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: haproxy.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: host.id
+        present: true
+      - attribute: haproxy.addr
+        present: true
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      host.name:
+        ttl: P1D
+      haproxy.addr:
+      haproxy.proxy_name:
+      haproxy.service_name:
+      os.type:
+      host.id:
+        ttl: P1D
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      k8s.node.name:
+        ttl: P1D
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # Prometheus receiver with old otel.library.name format
+  - ruleName: infra_haproxyinstance_otel_prometheus_old
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - host.id
+        - haproxy.addr
+    name: host.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: haproxy.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: host.id
+        present: true
+      - attribute: haproxy.addr
+        present: true
+      - attribute: otel.library.name
+        value: "otelcol/prometheusreceiver"
+    tags:
+      host.name:
+        ttl: P1D
+      haproxy.addr:
+      haproxy.proxy_name:
+      haproxy.service_name:
+      os.type:
+      host.id:
+        ttl: P1D
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      k8s.node.name:
+        ttl: P1D
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # OpenTelemetry Log synthesis rule
+  # Allows logs forwarded via the OTel Collector's filelog receiver to be associated with
+  # the HAProxy entity. Without this rule, logs only appear on the HOST entity's Logs page.
+  # Requires: resourcedetection processor (adds host.id) + resource processor (adds haproxy.addr)
+  - ruleName: infra_haproxyinstance_otel_logs
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - host.id
+        - haproxy.addr
+    name: host.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: newrelic.source
+        value: 'api.logs.otlp'
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: host.id
+        present: true
+      - attribute: haproxy.addr
+        present: true
+    tags:
+      host.name:
+        ttl: P1D
+      haproxy.addr:
+      host.id:
+        ttl: P1D
+      os.type:
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # Fallback: haproxy.instance.id pattern (new collector format)
+  # For users who explicitly set haproxy.instance.id via a resource processor when host.id is unavailable.
+  # This is a customer-chosen, stable identifier (e.g., "prod-haproxy-east-1").
+  - ruleName: infra_haproxyinstance_otel_custom_id_new
+    identifier: haproxy.instance.id
+    name: haproxy.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: haproxy.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: haproxy.instance.id
+        present: true
+      - attribute: haproxy.addr
+        present: true
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/haproxyreceiver"
+    tags:
+      haproxy.instance.id:
+      haproxy.addr:
+      haproxy.proxy_name:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      haproxy.service_name:
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # Fallback: haproxy.instance.id pattern (old collector format)
+  - ruleName: infra_haproxyinstance_otel_custom_id_old
+    identifier: haproxy.instance.id
+    name: haproxy.instance.id
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: haproxy.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: haproxy.instance.id
+        present: true
+      - attribute: haproxy.addr
+        present: true
+      - attribute: otel.library.name
+        value: "otelcol/haproxyreceiver"
+    tags:
+      haproxy.instance.id:
+      haproxy.addr:
+      haproxy.proxy_name:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      haproxy.service_name:
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+goldenTags:
+- host.id
+- host.name
+- haproxy.addr
+- os.type
+- cloud.provider
+- cloud.region
+- k8s.cluster.name
+- k8s.namespace.name
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"

@@ -1,0 +1,27 @@
+relationships:
+  # NGINXSERVER → OTel backend service (CALLS).
+  - name: nginxServerCallsOtelExtServiceByDeploymentLabelStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.metrics.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: tags.nginx.deployment.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: deploymentName
+              attribute: tags.nginx.deployment.name
+      target:
+        extractGuid:
+          attribute: entity.guid

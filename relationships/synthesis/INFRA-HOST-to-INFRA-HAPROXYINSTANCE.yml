@@ -1,0 +1,41 @@
+relationships:
+  # Host HOSTS HAProxy instance (OpenTelemetry, local scraping)
+  # The haproxyreceiver always scrapes a local HAProxy stats endpoint (127.0.0.1),
+  # so the OTel Collector's host is always the same host running HAProxy.
+  # Requires: resourcedetection processor with system detector (provides host.id).
+  - name: oTelHostHostsHaproxyInstance
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: metricName
+        startsWith: haproxy.
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: host.id
+        present: true
+      - attribute: k8s.pod.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: HAPROXYINSTANCE

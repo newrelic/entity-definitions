@@ -1,20 +1,16 @@
 relationships:
-  - name: apmCallsOtelNginxServer
+  - name: otelExtServiceCallsNginxServerByUpstreamLabelStg
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: eventType
         anyOf: [ "Metric" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.metrics.otlp" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
-      - attribute: nginx.server.endpoint
-        present: true
-      - attribute: nginx.deployment.name
-        present: true
-      - attribute: nginx.display.name
+      - attribute: tags.nginx.upstream.deployment.name
         present: true
     relationship:
       expires: PT75M
@@ -23,16 +19,37 @@ relationships:
         extractGuid:
           attribute: entity.guid
       target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: NGINXSERVER
-          identifier:
-            fragments:
-              - attribute: nginx.deployment.name
-              - value: ":"
-              - attribute: nginx.server.endpoint
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: deploymentName
+              attribute: tags.nginx.upstream.deployment.name
+  - name: otelExtServiceCallsNginxServerByAddressStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: newrelic.source
+        anyOf: ["api.metrics.otlp"]
+      - attribute: entity.type
+        anyOf: ["SERVICE"]
+      - attribute: tags.nginx.upstream.deployment.name
+        present: false
+      - attribute: server.address
+        present: true
+      - attribute: metricName
+        startsWith: "http.client."
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: serverAddress
+              attribute: server.address
