@@ -1,17 +1,3 @@
-# Golden metrics for INFRA-MYSQLNODE.
-#
-# Each metric provides a `newRelic` query (nri-mysql OHI / MysqlSample) and, where a
-# reliable equivalent exists, an `opentelemetry` query (OTel Collector mysqlreceiver,
-# FROM Metric).
-#
-# OTel note: MySQL receiver counters are cumulative & monotonic; NRDB cannot currently
-# apply value functions (rate/derivative) to them cleanly. So OTel golden metrics are
-# limited to gauge-style (non-monotonic) metrics using latest(). Counter-based golden
-# metrics stay newRelic-only; their OTel counterparts live on the dashboard instead.
-#
-# "gated" = the OTel metric is disabled by default in the receiver and must be enabled
-# in the collector config (metrics: <name>: enabled: true) for the query to return data.
-
 queriesPerSecond:
   title: Queries per second
   unit: OPERATIONS_PER_SECOND
@@ -35,6 +21,7 @@ slowQueriesPerMinute:
       eventName: entityName
     # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
     # opentelemetry:
+
 
 connectionsPerSecond:
   title: Connections per second
@@ -60,7 +47,6 @@ queriesQuestions:
 
   unit: OPERATIONS_PER_SECOND
   title: Query questions
-
 threads:
   queries:
     newRelic:
@@ -76,7 +62,6 @@ threads:
   unit: COUNT
   title: Threads connected
 
-# OpenTelemetry-only for now (no OHI query added).
 threadsRunning:
   title: Threads running
   unit: COUNT
@@ -86,7 +71,6 @@ threadsRunning:
       from: Metric
       where: kind = 'running'
 
-# OpenTelemetry-only for now (no OHI query added).
 # gated: mysql.max_used_connections is disabled by default in the receiver.
 maxUsedConnections:
   title: Max used connections
@@ -96,7 +80,6 @@ maxUsedConnections:
       select: latest(mysql.max_used_connections)
       from: Metric
 
-# OpenTelemetry-only for now (no OHI query added).
 bufferPoolDataPages:
   title: Buffer pool data pages
   unit: COUNT
@@ -106,7 +89,6 @@ bufferPoolDataPages:
       from: Metric
       where: kind = 'data'
 
-# OpenTelemetry-only: nri-mysql has no equivalent buffer-pool byte-usage attribute.
 bufferPoolUsageBytes:
   title: Buffer pool usage
   unit: BYTES
@@ -115,7 +97,6 @@ bufferPoolUsageBytes:
       select: latest(mysql.buffer_pool.usage)
       from: Metric
 
-# OpenTelemetry-only: the nri-mysql OHI does not report server uptime in MysqlSample.
 uptime:
   title: Uptime
   unit: SECONDS
