@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "relationship-candidates-schema-v1",
+  "type": "object",
+  "title": "Relationship Candidate schema",
+  "description": "Schema used to verify that a given relationship candidate yaml is valid",
+  "examples": [
+    {
+      "category": "AWSS3BUCKET",
+      "lookups": [
+        {
+          "entityTypes": [
+            "INFRA-AWSS3BUCKET"
+          ],
+          "tags": {
+            "matchingMode": "ANY",
+            "predicates": [
+              {
+                "tagKeys": ["aws.bucketName", "aws.s3.BucketName"],
+                "field": "bucketName"
+              }
+            ]
+          },
+          "onMatch": {
+            "onMultipleMatches": "RELATE_ALL"
+          },
+          "onMiss": {
+            "action": "CREATE_UNINSTRUMENTED",
+            "uninstrumented": {
+              "type": "AWSS3BUCKET"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "required": [
+    "category",
+    "lookups"
+  ],
+  "properties": {
+    "category": {
+      "$ref": "#/definitions/category"
+    },
+    "lookups": {
+      "$ref": "#/definitions/lookups"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "category": {
+      "$id": "#/definitions/category",
+      "type": "string"
+    },
+    "lookups": {
+      "$id": "#/definitions/lookups",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/lookupsItem"
+      }
+    },
+    "lookupsItem": {
+      "$id": "#/definitions/lookupsItem",
+      "type": "object",
+      "properties": {
+        "entityTypes": {
+          "$ref": "#/definitions/entityTypes"
+        },
+        "tags": {
+          "$ref": "#/definitions/tags"
+        },
+        "onMatch": {
+          "$ref": "#/definitions/onMatch"
+        },
+        "onMiss": {
+          "$ref": "#/definitions/onMiss"
+        }
+      },
+      "required": [
+        "entityTypes",
+        "tags",
+        "onMatch",
+        "onMiss"
+      ],
+      "additionalProperties": false
+    },
+    "entityTypes": {
+      "$id": "#/definitions/entityTypes",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]*-[A-Z][A-Z0-9_]*$"
+      }
+    },
+    "tags": {
+      "$id": "#/definitions/tags",
+      "type": "object",
+      "properties": {
+        "matchingMode": {
+          "type": "string",
+          "enum": ["ANY", "ALL", "FIRST"]
+        },
+        "predicates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/tagsPredicate"
+          }
+        }
+      },
+      "required": [
+        "matchingMode",
+        "predicates"
+      ],
+      "additionalProperties": false
+    },
+    "tagsPredicate": {
+      "$id": "#/definitions/tagsPredicate",
+      "type": "object",
+      "properties": {
+        "tagKeys": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "field": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tagKeys",
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "onMatch": {
+      "$id": "#/definitions/onMatch",
+      "type": "object",
+      "properties": {
+        "onMultipleMatches": {
+          "type": "string",
+          "enum": ["RELATE_ALL", "DISCARD_ALL"]
+        }
+      },
+      "required": [
+        "onMultipleMatches"
+      ],
+      "additionalProperties": false
+    },
+    "onMiss": {
+      "$id": "#/definitions/onMiss",
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["CREATE_UNINSTRUMENTED", "NO_OP"]
+        },
+        "uninstrumented": {
+          "$ref": "#/definitions/uninstrumented"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "action": {
+            "const": "CREATE_UNINSTRUMENTED"
+          }
+        }
+      },
+      "then": {
+        "required": ["uninstrumented"]
+      }
+    },
+    "uninstrumented": {
+      "$id": "#/definitions/uninstrumented",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
