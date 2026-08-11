@@ -49,75 +49,64 @@ connectionsPerSecond:
     # opentelemetry:
 
 queriesQuestions:
-  title: Query questions
-  unit: OPERATIONS_PER_SECOND
   queries:
     newRelic:
+      eventId: entityGuid
       select: average(`query.questionsPerSecond`)
       from: MysqlSample
-      eventId: entityGuid
       eventName: entityName
     # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
     # opentelemetry:
 
-threadsConnected:
-  title: Threads connected
-  unit: COUNT
+  unit: OPERATIONS_PER_SECOND
+  title: Query questions
+
+threads:
   queries:
     newRelic:
-      select: latest(net.threadsConnected)
-      from: MysqlSample
       eventId: entityGuid
       eventName: entityName
+      select: latest(`net.threadsConnected`)
+      from: MysqlSample
+    # fixed: the receiver's attribute is `kind`, not the metric mysql.connection.count.
     opentelemetry:
       select: latest(mysql.threads)
       from: Metric
       where: kind = 'connected'
+  unit: COUNT
+  title: Threads connected
 
+# OpenTelemetry-only for now (no OHI query added).
 threadsRunning:
   title: Threads running
   unit: COUNT
   queries:
-    newRelic:
-      select: latest(net.threadsRunning)
-      from: MysqlSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
       select: latest(mysql.threads)
       from: Metric
       where: kind = 'running'
 
+# OpenTelemetry-only for now (no OHI query added).
+# gated: mysql.max_used_connections is disabled by default in the receiver.
 maxUsedConnections:
   title: Max used connections
   unit: COUNT
   queries:
-    newRelic:
-      select: latest(net.maxUsedConnections)
-      from: MysqlSample
-      eventId: entityGuid
-      eventName: entityName
-    # gated: mysql.max_used_connections is disabled by default in the receiver.
     opentelemetry:
       select: latest(mysql.max_used_connections)
       from: Metric
 
+# OpenTelemetry-only for now (no OHI query added).
 bufferPoolDataPages:
   title: Buffer pool data pages
   unit: COUNT
   queries:
-    newRelic:
-      select: latest(db.innodb.bufferPoolPagesData)
-      from: MysqlSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
       select: latest(mysql.buffer_pool.pages)
       from: Metric
       where: kind = 'data'
 
-# OpenTelemetry-only: the nri-mysql OHI does not report an equivalent buffer-pool
-# byte-usage attribute, so no newRelic query is provided.
+# OpenTelemetry-only: nri-mysql has no equivalent buffer-pool byte-usage attribute.
 bufferPoolUsageBytes:
   title: Buffer pool usage
   unit: BYTES
