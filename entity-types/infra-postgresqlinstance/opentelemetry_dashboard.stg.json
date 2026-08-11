@@ -597,7 +597,7 @@
           },
           "title": "",
           "rawConfiguration": {
-            "text": "### WAL & Replication\n_WAL age and replication lag \u2014 requires at least one replica to show data._"
+            "text": "### Recovery Conflicts\n_Queries canceled due to conflicts with recovery on standby servers._"
           }
         },
         {
@@ -608,88 +608,7 @@
             "column": 1,
             "row": 42,
             "height": 3,
-            "width": 4
-          },
-          "title": "WAL Age (s)",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT latest(postgresql.wal.age) AS 'WAL Age (s)' FROM Metric WHERE metricName = 'postgresql.wal.age' TIMESERIES AUTO",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 5,
-            "row": 42,
-            "height": 3,
-            "width": 4
-          },
-          "title": "WAL Lag / Delay (s)",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT latest(postgresql.wal.lag) AS 'WAL Lag (s)', latest(postgresql.wal.delay) AS 'WAL Delay (s)' FROM Metric FACET replication_client, operation TIMESERIES AUTO LIMIT MAX",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 9,
-            "row": 42,
-            "height": 3,
-            "width": 4
-          },
-          "title": "Replication Data Delay (GB)",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT latest(postgresql.replication.data_delay)/1073741824 AS 'Data Delay (GB)' FROM Metric WHERE metricName = 'postgresql.replication.data_delay' FACET replication_client TIMESERIES AUTO LIMIT MAX",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.markdown"
-          },
-          "layout": {
-            "column": 1,
-            "row": 45,
-            "height": 1,
             "width": 12
-          },
-          "title": "",
-          "rawConfiguration": {
-            "text": "### Conflicts & pgvector\n_Standby recovery conflicts and pgvector search/insert activity._"
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 1,
-            "row": 46,
-            "height": 3,
-            "width": 6
           },
           "title": "Query Conflicts",
           "rawConfiguration": {
@@ -699,50 +618,6 @@
             "nrqlQueries": [
               {
                 "query": "SELECT rate(sum(postgresql.query.conflicts), 1 minute) FROM Metric WHERE metricName = 'postgresql.query.conflicts' FACET postgresql.conflict.type TIMESERIES AUTO LIMIT MAX",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 7,
-            "row": 46,
-            "height": 3,
-            "width": 6
-          },
-          "title": "pgvector: Search Calls/min by Distance Function",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT rate(sum(postgresql.vector.search.calls), 1 minute) AS 'Vector Searches/min' FROM Metric WHERE metricName = 'postgresql.vector.search.calls' FACET postgresql.distance.function.name TIMESERIES AUTO LIMIT MAX",
-                "accountId": 0}
-            ]
-          }
-        },
-        {
-          "visualization": {
-            "id": "viz.line"
-          },
-          "layout": {
-            "column": 1,
-            "row": 49,
-            "height": 3,
-            "width": 12
-          },
-          "title": "pgvector: Search & Insert Duration/Rows",
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "query": "SELECT rate(sum(postgresql.vector.search.duration), 1 minute) AS 'Search Duration/min (s)', rate(sum(postgresql.vector.search.rows_returned), 1 minute) AS 'Rows Returned/min', rate(sum(postgresql.vector.insert.duration), 1 minute) AS 'Insert Duration/min (s)', rate(sum(postgresql.vector.insert.rows), 1 minute) AS 'Rows Inserted/min' FROM Metric TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
