@@ -32,6 +32,7 @@ synthesis:
     tags:
       instrumentation.provider:
       kafka.cluster.name:
+      kafka.cluster.id:
       topic:
 
   - ruleName: infra_kafkatopic_otel_jmxscraper_stg
@@ -59,6 +60,7 @@ synthesis:
     tags:
       instrumentation.provider:
       kafka.cluster.name:
+      kafka.cluster.id:
       topic:
 
   - ruleName: infra_kafkatopic_otel_kafkametrics_stg
@@ -86,6 +88,7 @@ synthesis:
     tags:
       instrumentation.provider:
       kafka.cluster.name:
+      kafka.cluster.id:
       topic:
 
   - ruleName: infra_kafkatopic_otel_prometheus_stg
@@ -113,6 +116,7 @@ synthesis:
     tags:
       instrumentation.provider:
       kafka.cluster.name:
+      kafka.cluster.id:
       topic:
 
   # Log-based rule: OTel kafkareceiver logs carry topic, kafka.cluster.name, and producer.service.name.
@@ -147,17 +151,77 @@ synthesis:
       producer.service.name:
         ttl: P1D
 
+  # Data from Kafka integation OHI
+  - ruleName: infra_kafkatopic_entityId
+    identifier: entityId
+    name: entityKey
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        value: KafkaTopicSample
+    prefixedTags:
+      label.:
+        ttl: PT4H
+    tags:
+      integrationName:
+        ttl: P1D
+      integrationVersion:
+        ttl: P1D
+      reportingAgent:
+        ttl: P1D
+
+  # This rule is for GCP Managed Kafka topic metrics from Cloud Monitoring (gcp-polling-v2)
+  - ruleName: infra_kafkatopic_gcp_managedkafka_stg
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - gcp.topic_id
+      - gcp.cluster_id
+    compositeName:
+      fragments:
+      - attribute: gcp.topic_id
+      - value: " ("
+      - attribute: gcp.cluster_id
+      - value: ")"
+    encodeIdentifierInGUID: true
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: gcp
+    - attribute: gcp.resource.type
+      value: managedkafka.googleapis.com/Topic
+    tags:
+      instrumentation.provider:
+      collector.name:
+      gcp.projectId:
+      gcp.projectName:
+      gcp.region:
+      gcp.cluster_id:
+        entityTagName: clusterName
+      gcp.topic_id:
+        entityTagName: topic
 
 goldenTags:
 - clusterName
 - topic
 - kafka.cluster.name
+- gcp.projectId
+- gcp.region
 
 dashboardTemplates:
   newRelic:
     template: newrelic_dashboard.json
   opentelemetry:
     template: opentelemetry_dashboard.json
+  # GCP Managed Kafka
+  gcp:
+    template: gcp_dashboard.stg.json
 
 ownership:
   primaryOwner:

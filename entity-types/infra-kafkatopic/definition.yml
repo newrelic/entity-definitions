@@ -122,6 +122,60 @@ synthesis:
       kafka.cluster.name:
       topic:
 
+  # Data from Kafka integation OHI
+  - ruleName: infra_kafkatopic_entityId
+    identifier: entityId
+    name: entityKey
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        value: KafkaTopicSample
+    prefixedTags:
+      label.:
+        ttl: PT4H
+    tags:
+      integrationName:
+        ttl: P1D
+      integrationVersion:
+        ttl: P1D
+      reportingAgent:
+        ttl: P1D
+
+  - ruleName: infra_kafkatopic_gcp_managedkafka
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - gcp.topic_id
+      - gcp.cluster_id
+    compositeName:
+      fragments:
+      - attribute: gcp.topic_id
+      - value: " ("
+      - attribute: gcp.cluster_id
+      - value: ")"
+    encodeIdentifierInGUID: true
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: gcp
+    - attribute: gcp.resource.type
+      value: managedkafka.googleapis.com/Topic
+    tags:
+      instrumentation.provider:
+      collector.name:
+      gcp.projectId:
+      gcp.projectName:
+      gcp.region:
+      gcp.cluster_id:
+        entityTagName: clusterName
+      gcp.topic_id:
+        entityTagName: topic
 
 goldenTags:
 - clusterName
@@ -129,7 +183,7 @@ goldenTags:
 - kafka.cluster.name
 
 dashboardTemplates:
-  # This should match the entity created from the ohi in the infra pipeline
+  # This should match the entity created from the ohi
   newRelic:
     template: newrelic_dashboard.json
   # otel receiver

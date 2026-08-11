@@ -1,0 +1,46 @@
+relationships:
+  - name: apmApplicationCallsNginxServerByUpstreamLabelStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span", "Transaction" ]
+      - attribute: newrelic.source
+        present: false
+      - attribute: tags.nginx.upstream.deployment.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: deploymentName
+              attribute: tags.nginx.upstream.deployment.name
+  - name: apmApplicationCallsNginxServerByAddressStg
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^External/[^/]+/.*"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: serverAddress
+              capture:
+                attribute: metricName__2
+                regex: "^([^:/]+)"

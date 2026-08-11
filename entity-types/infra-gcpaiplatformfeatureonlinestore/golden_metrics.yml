@@ -7,15 +7,25 @@ request:
       from: GcpVertexAiFeatureOnlineStoreSample
       eventId: entityGuid
       eventName: entityName
+    gcp:
+      select: sum(gcp.aiplatform.featureonlinestore.online_serving.request_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 latencies:
-  title: Latency
+  title: Latency p95 (ms)
   unit: MS
   queries:
     gcpSample:
-      select: average(featureonlinestore.onlineServing.ServingLatencies)
+      select: percentile(featureonlinestore.onlineServing.ServingLatencies, 95)
       from: GcpVertexAiFeatureOnlineStoreSample
       eventId: entityGuid
       eventName: entityName
+    gcp:
+      select: percentile(gcp.aiplatform.featureonlinestore.online_serving.serving_latencies, 95)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 storedBytes:
   title: Stored Bytes
   unit: BYTES
@@ -25,3 +35,35 @@ storedBytes:
       from: GcpVertexAiFeatureOnlineStoreSample
       eventId: entityGuid
       eventName: entityName
+    gcp:
+      select: average(gcp.aiplatform.featureonlinestore.storage.stored_bytes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+servingBytesCount:
+  title: Serving Bytes
+  unit: BYTES
+  queries:
+    gcp:
+      select: sum(gcp.aiplatform.featureonlinestore.online_serving.serving_bytes_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+bigtableCpuLoad:
+  title: Bigtable CPU Load
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: average(gcp.aiplatform.featureonlinestore.storage.bigtable_cpu_load) * 100
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+bigtableNodes:
+  title: Bigtable Nodes
+  unit: COUNT
+  queries:
+    gcp:
+      select: average(gcp.aiplatform.featureonlinestore.storage.bigtable_nodes)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
