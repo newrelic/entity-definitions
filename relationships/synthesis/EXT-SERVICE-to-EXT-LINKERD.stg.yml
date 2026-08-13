@@ -1,19 +1,16 @@
 relationships:
-  # OTel: each Linkerd-meshed APM service OPERATES_IN the (single, cluster-scoped)
-  # EXT:LINKERD entity.  The source APM entity GUID is extracted from the span;
-  # the target EXT:LINKERD GUID is built using the same composite key as the
-  # synthesis rule (k8s.cluster.name + linkerd_control_plane_ns).
-  #
   # Prerequisites:
   #   - k8sattributes/traces processor extracts linkerd_control_plane_ns from the
   #     linkerd.io/control-plane-ns pod label onto every meshed pod's spans.
-  #   - Downward-API MY_POD_IP + otel.resource.attributes fixes k8sattributes so the
-  #     APM entity.guid corresponds to the correct workload, not the collector pod.
-  - name: apmApplicationOperatesInExtLinkerdOtelStg
+  #   - Downward-API MY_POD_IP + otel.resource.attributes ensures entity.guid on
+  #     spans resolves to the correct EXT:SERVICE, not the collector pod.
+  - name: extServiceOperatesInExtLinkerdStg
     version: "1"
     origins:
-      - OpenTelemetry
+      - Distributed Tracing
     conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
       # Pod is Linkerd-meshed (injector sets linkerd.io/control-plane-ns on every meshed pod)
       - attribute: linkerd_control_plane_ns
         present: true
