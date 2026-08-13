@@ -136,12 +136,12 @@
           }
         },
         {
-          "title": "Span Rate",
+          "title": "Request Rate (inbound/outbound)",
           "layout": { "column": 1, "row": 16, "width": 6, "height": 3 },
           "visualization": { "id": "viz.area" },
           "rawConfiguration": {
             "legend": { "enabled": true },
-            "nrqlQueries": [{ "accountId": 0, "query": "SELECT rate(count(*), 1 minute) FROM Span WHERE instrumentation.provider = 'opentelemetry' FACET direction TIMESERIES" }],
+            "nrqlQueries": [{ "accountId": 0, "query": "SELECT rate(sum(inbound_http_requests_total), 1 minute) AS 'inbound', rate(sum(outbound_http_route_request_statuses_total), 1 minute) AS 'outbound' FROM Metric WHERE instrumentation.provider = 'opentelemetry' AND k8s.cluster.name = '{{tags.k8s.clusterName}}' FACET k8s.deployment.name TIMESERIES" }],
             "platformOptions": { "ignoreTimeRange": false },
             "yAxisLeft": { "zero": true }
           }
@@ -152,7 +152,7 @@
           "visualization": { "id": "viz.line" },
           "rawConfiguration": {
             "legend": { "enabled": true },
-            "nrqlQueries": [{ "accountId": 0, "query": "SELECT percentage(count(*), WHERE numeric(http.response.status_code) >= 500) AS 'error %' FROM Span WHERE instrumentation.provider = 'opentelemetry' FACET `linkerd.io/proxy-deployment` TIMESERIES" }],
+            "nrqlQueries": [{ "accountId": 0, "query": "SELECT filter(sum(inbound_http_statuses_total), WHERE classification = 'failure') / sum(inbound_http_statuses_total) * 100 AS 'error %' FROM Metric WHERE instrumentation.provider = 'opentelemetry' AND k8s.cluster.name = '{{tags.k8s.clusterName}}' FACET k8s.deployment.name TIMESERIES" }],
             "platformOptions": { "ignoreTimeRange": false },
             "yAxisLeft": { "zero": true }
           }
@@ -169,12 +169,12 @@
           }
         },
         {
-          "title": "Trace Latency p99",
+          "title": "Request Latency (p50/p95/p99)",
           "layout": { "column": 7, "row": 19, "width": 6, "height": 3 },
           "visualization": { "id": "viz.line" },
           "rawConfiguration": {
             "legend": { "enabled": true },
-            "nrqlQueries": [{ "accountId": 0, "query": "SELECT percentile(duration.ms, 50) AS 'p50', percentile(duration.ms, 95) AS 'p95', percentile(duration.ms, 99) AS 'p99' FROM Span WHERE instrumentation.provider = 'opentelemetry' FACET `linkerd.io/proxy-deployment` TIMESERIES" }],
+            "nrqlQueries": [{ "accountId": 0, "query": "SELECT percentile(inbound_http_request_duration_seconds, 50) * 1000 AS 'p50 ms', percentile(inbound_http_request_duration_seconds, 95) * 1000 AS 'p95 ms', percentile(inbound_http_request_duration_seconds, 99) * 1000 AS 'p99 ms' FROM Metric WHERE instrumentation.provider = 'opentelemetry' AND k8s.cluster.name = '{{tags.k8s.clusterName}}' FACET k8s.deployment.name TIMESERIES" }],
             "platformOptions": { "ignoreTimeRange": false },
             "yAxisLeft": { "zero": true }
           }
@@ -191,12 +191,12 @@
           }
         },
         {
-          "title": "Slowest Endpoints p99",
+          "title": "Latency p99 by Deployment",
           "layout": { "column": 7, "row": 22, "width": 6, "height": 3 },
           "visualization": { "id": "viz.bar" },
           "rawConfiguration": {
             "legend": { "enabled": true },
-            "nrqlQueries": [{ "accountId": 0, "query": "SELECT percentile(duration.ms, 99) FROM Span WHERE instrumentation.provider = 'opentelemetry' FACET name, `linkerd.io/proxy-deployment` LIMIT 10" }],
+            "nrqlQueries": [{ "accountId": 0, "query": "SELECT percentile(inbound_http_request_duration_seconds, 99) * 1000 AS 'p99 ms' FROM Metric WHERE instrumentation.provider = 'opentelemetry' AND k8s.cluster.name = '{{tags.k8s.clusterName}}' FACET k8s.deployment.name LIMIT 10" }],
             "platformOptions": { "ignoreTimeRange": false }
           }
         },
@@ -254,6 +254,15 @@
             "nrqlQueries": [{ "accountId": 0, "query": "SELECT latest(control_destination_balancer_queue_length) AS 'destination', latest(control_identity_balancer_queue_length) AS 'identity', latest(control_policy_balancer_queue_length) AS 'policy', latest(opentelemetry_balancer_queue_length) AS 'otel-exporter' FROM Metric TIMESERIES" }],
             "platformOptions": { "ignoreTimeRange": false },
             "yAxisLeft": { "zero": true }
+          }
+        },
+        {
+          "title": "Meshed Pods",
+          "layout": { "column": 1, "row": 31, "width": 12, "height": 4 },
+          "visualization": { "id": "viz.table" },
+          "rawConfiguration": {
+            "nrqlQueries": [{ "accountId": 0, "query": "SELECT uniqueCount(k8s.pod.name) AS 'Pods' FROM Metric WHERE instrumentation.provider = 'opentelemetry' AND k8s.cluster.name = '{{tags.k8s.clusterName}}' AND metricName = 'up' FACET k8s.namespace.name AS 'Namespace', k8s.deployment.name AS 'Deployment' LIMIT 50" }],
+            "platformOptions": { "ignoreTimeRange": false }
           }
         }
       ]
