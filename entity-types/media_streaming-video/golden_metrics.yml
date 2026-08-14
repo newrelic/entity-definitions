@@ -1,71 +1,46 @@
-rebufferingRatio:
-  title: Video Rebuffering Ratio (%)
-  unit: PERCENTAGE
-  query:
-    select: 100 * filter(sum(timeSinceBufferBegin), WHERE actionName = 'CONTENT_BUFFER_END')/ filter(sum(elapsedTime), WHERE actionName = 'CONTENT_HEARTBEAT')
-    from: VideoAction
-    eventName: entity.guid
-adRebufferingRatio:
-  title: Ad Rebuffering Ratio (%)
-  unit: PERCENTAGE
-  query:
-    select:  100 * filter(sum(timeSinceAdBufferBegin), WHERE actionName = 'AD_BUFFER_END')/ filter(sum(elapsedTime), WHERE actionName = 'AD_HEARTBEAT')
-    from: VideoAdAction
-    eventName: entity.guid
-averageBitrate:
-  title: Average Bitrate (B/s)
-  unit: BITS_PER_SECOND
-  query:
-    select: filter(average(contentBitrate), WHERE contentBitrate > 0 OR contentBitrate IS NOT NULL)
-    from: VideoAction
-    eventName: entity.guid
-adAverageBitrate:
-  title: Ad Average Bitrate (B/s)
-  unit: BITS_PER_SECOND
-  query:
-    select: filter(average(adBitrate), WHERE adBitrate > 0 OR adBitrate IS NOT NULL)
-    from: VideoAdAction
-    eventName: entity.guid
-averageStartTimeS:
-  title: Average Start Time (s)
+videoStartTime:
+  title: Video Start Time (P95)
   unit: MS
   query:
-    select: average(avgStartTime)
-    from: (FROM VideoAction, VideoAdAction SELECT (filter(latest(timeSinceRequested),  WHERE actionName = 'CONTENT_START') -  filter(earliest(timeSinceAdStarted ), where actionName = 'AD_END' and timeSinceStarted = 0 or timeSinceStarted IS NULL)) AS 'avgStartTime' facet viewId LIMIT MAX)
+    select: percentile(startupTime, 95)
+    from: VideoAction
+    where: actionName = 'QOE_AGGREGATE'
     eventName: entity.guid
-adAverageStartTimeS:
-  title: Ad Average Start Time (s)
-  unit: MS
+playbackErrors:
+  title: Playback error rate (%)
+  unit: PERCENTAGE
   query:
-    select: average(timeSinceAdRequested)
-    from: VideoAdAction
-    where: actionName = 'AD_START'
+    select: percentage(uniqueCount(viewId), WHERE hadPlaybackError = true)
+    from: VideoAction
+    where: actionName = 'QOE_AGGREGATE'
+    eventName: entity.guid
+standardQoeHealthIndex:
+  title: Standard QOE Health Index
+  unit: PERCENTAGE
+  query:
+    select: (100 - percentage(uniqueCount(viewId), WHERE startupTime > 4000 OR rebufferingRatio > 40 OR totalRebufferingTime > 18000)) / 100
+    from: VideoAction
+    where: actionName = 'QOE_AGGREGATE'
+    eventName: entity.guid
+cirr:
+  title: Connection Induced Rebuffering Ratio (%)
+  unit: PERCENTAGE
+  query:
+    select: 100 * filter(sum(timeSinceBufferBegin), WHERE actionName = 'CONTENT_BUFFER_END' AND bufferType = 'connection') / filter(sum(elapsedTime), WHERE actionName = 'CONTENT_HEARTBEAT')
+    from: VideoAction
+    eventName: entity.guid
+ebvs:
+  title: Exits Before Video Start (%)
+  unit: PERCENTAGE
+  query:
+    select: (filter(uniqueCount(viewId), WHERE actionName = 'CONTENT_REQUEST') - filter(uniqueCount(viewId), WHERE actionName = 'CONTENT_START')) / filter(uniqueCount(viewId), WHERE actionName = 'CONTENT_REQUEST') * 100
+    from: VideoAction
     eventName: entity.guid
 videoStartFailures:
-  title: Video Start Failures
+  title: Video Start Failures (%)
   unit: PERCENTAGE
   query:
-    select: (filter(count(viewId), WHERE actionName = 'CONENT_ERROR' and contentPlayhead = 0) * 100) / (FROM VideoAction, VideoErrorAction SELECT count(viewId))
-    from: VideoErrorAction
-    eventName: entity.guid
-adStartFailures:
-  title: Ad Start Failures
-  unit: PERCENTAGE
-  query:
-    select: (filter(count(viewId), WHERE actionName = 'AD_ERROR' and adPlayhead = 0 ) * 100) / (FROM VideoAdAction, VideoErrorAction SELECT count(viewId))
-    from: VideoErrorAction
-    eventName: entity.guid
-videoPlaybackFailures:
-  title: Video Playback Failures
-  unit: PERCENTAGE
-  query:
-    select: (filter(count(viewId), WHERE actionName = 'CONTENT_ERROR' and contentPlayhead > 0) * 100) / (FROM VideoAction, VideoErrorAction SELECT count(viewId))
-    from: VideoErrorAction
-    eventName: entity.guid
-adPlaybackFailures:
-  title: Ad Playback Failures
-  unit: PERCENTAGE
-  query:
-    select: (filter(count(viewId), WHERE actionName = 'AD_ERROR' and adPlayhead > 0) * 100) / (FROM VideoAdAction, VideoErrorAction SELECT count(viewId))
-    from: VideoErrorAction
+    select: percentage(uniqueCount(viewId), WHERE hadStartupError = true)
+    from: VideoAction
+    where: actionName = 'QOE_AGGREGATE'
     eventName: entity.guid
