@@ -1,24 +1,80 @@
 relationships:
-  # OTel: each meshed pod CONTAINS its (deployment-level) Linkerd proxy entity.
-  # Source POD guid built from cluster:namespace:pod; target = the metric's own entity.guid
-  # (the EXT/LINKERD entity synthesized per k8s.cluster:namespace:deployment). Mirrors
-  # INFRA-KUBERNETES_POD-to-EXT-ISTIO_SERVICE.stg.yml.
-  - name: k8sPodContainsExtLinkerdOtelStg
+  # EXT:LINKERD (single CP entity) MANAGES each INFRA:KUBERNETES_DEPLOYMENT that is meshed.
+  # Triggered by any proxy metric that has k8s.deployment.name (data-plane pods in app namespaces).
+  # Source = the single Linkerd CP entity (cluster:linkerd_control_plane_ns).
+  # Target = the K8s Deployment entity for the meshed workload.
+  # Excludes CP pods themselves: linkerd_control_plane_component must be ABSENT so that
+  # destination/identity/proxy-injector don't create self-referential MANAGES edges.
+  - name: extLinkerdManagesK8sDeploymentOtelStg
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: otel.library.name
+        anyOf: ["github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"]
+      - attribute: k8s.cluster.name
+        present: true
       - attribute: linkerd_control_plane_ns
         present: true
+      - attribute: k8s.deployment.name
+        present: true
+      # Only fire for data-plane pods (meshed apps) — CP pods are excluded
+      - attribute: linkerd_control_plane_component
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: LINKERD
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: linkerd_control_plane_ns
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_DEPLOYMENT
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.deployment.name
+            hashAlgorithm: FARM_HASH
+
+  # INFRA:KUBERNETES_CLUSTER CONTAINS EXT:LINKERD — navigable from the cluster entity.
+  # Triggered by any CP proxy metric (linkerd_control_plane_component present).
+  - name: k8sClusterContainsExtLinkerdOtelStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
       - attribute: instrumentation.provider
         anyOf: ["opentelemetry"]
       - attribute: k8s.cluster.name
         present: true
-      - attribute: k8s.namespace.name
+      - attribute: linkerd_control_plane_ns
         present: true
-      - attribute: k8s.pod.name
-        present: true
-      - attribute: k8s.deployment.name
+      - attribute: linkerd_control_plane_component
         present: true
     relationship:
       expires: PT75M
@@ -30,15 +86,22 @@ relationships:
           domain:
             value: INFRA
           type:
-            value: KUBERNETES_POD
+            value: KUBERNETESCLUSTER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: LINKERD
           identifier:
             fragments:
               - attribute: k8s.cluster.name
               - value: ":"
-              - attribute: k8s.namespace.name
-              - value: ":"
-              - attribute: k8s.pod.name
+              - attribute: linkerd_control_plane_ns
             hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entity.guid
