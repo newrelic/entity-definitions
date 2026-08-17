@@ -19,6 +19,7 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
 
+  # Tier 1: bootstrapServers match (public/Basic/Standard clusters).
   - entityTypes:
       - domain: INFRA
         type: CONFLUENTCLOUDKAFKATOPIC
@@ -27,6 +28,22 @@ lookups:
       predicates:
         - tagKeys: [ "confluent.clusterBootstrapServers", "bootstrap.servers" ]
           field: bootstrapServers
+        - tagKeys: [ "confluent.kafka.server.metric.topic", "topic" ]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # Tier 2 (final fallback): clusterId match, for private-networked (PrivateLink/PSC) clusters.
+  - entityTypes:
+      - domain: INFRA
+        type: CONFLUENTCLOUDKAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: [ "confluent.clusterId" ]
+          field: clusterId
         - tagKeys: [ "confluent.kafka.server.metric.topic", "topic" ]
           field: topic
     onMatch:
