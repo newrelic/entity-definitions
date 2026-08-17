@@ -3,8 +3,7 @@ lookups:
   # Tier 1: Maximum precision - endpoint + port (exact connection match)
   # Pattern based on MSSQLDBINSTANCE.yml (server.address + server.port)
   - entityTypes:
-      - domain: INFRA
-        type: AWSDOCDBINSTANCE
+      - INFRA-AWSDOCDBINSTANCE
     tags:
       matchingMode: ALL
       predicates:
@@ -19,8 +18,7 @@ lookups:
   # Tier 2: High precision - endpoint only (port-agnostic host match)
   # Fallback when port mismatch but endpoint is correct
   - entityTypes:
-      - domain: INFRA
-        type: AWSDOCDBINSTANCE
+      - INFRA-AWSDOCDBINSTANCE
     tags:
       matchingMode: ALL
       predicates:
@@ -30,11 +28,25 @@ lookups:
       onMultipleMatches: RELATE_ALL
     onMiss:
       action: NO_OP
-  # Tier 3: Guaranteed match - instanceId only (always present across all collection methods)
+  # Tier 3: Cluster identifier match - relates to all instances in the cluster
+  # Used when only the DocDB cluster endpoint is known (e.g. drivers/agents that only
+  # ever see the cluster hostname, not a specific instance endpoint). Matches every
+  # instance belonging to that cluster since the cluster endpoint can route to any of them.
+  - entityTypes:
+      - INFRA-AWSDOCDBINSTANCE
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.rds.dbClusterIdentifier", "aws.dbClusterIdentifier"]
+          field: clusterIdentifier
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+  # Tier 4: Guaranteed match - instanceId only (always present across all collection methods)
   # Final fallback ensuring APM relationships never miss and entities show as instrumented
   - entityTypes:
-      - domain: INFRA
-        type: AWSDOCDBINSTANCE
+      - INFRA-AWSDOCDBINSTANCE
     tags:
       matchingMode: ALL
       predicates:

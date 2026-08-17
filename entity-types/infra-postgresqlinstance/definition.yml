@@ -3,6 +3,62 @@ type: POSTGRESQLINSTANCE
 
 synthesis:
   rules:
+    # opentelemetry (postgresqlreceiver); service.instance.id is host:port, enabled by default
+    - ruleName: infra_postgresqlinstance_service_instance_id
+      identifier: service.instance.id # host:port
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: postgresql.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+      tags:
+        # Environment resource attributes
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+
+    # opentelemetry logs (db.server.top_query / db.server.query_sample);
+    # db.system.name is always present on these log events when enabled.
+    # Using service.instance.id (host:port) to match the metric rule above.
+    - ruleName: infra_postgresqlinstance_otel_logs
+      identifier: service.instance.id # host:port
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: db.system.name
+          value: postgresql
+      tags:
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+
+    # nri-postgresql / PostgresqlInstanceSample
     - ruleName: infra_postgresqlinstance_entityId
       identifier: entityId
       name: entityKey
@@ -25,6 +81,11 @@ synthesis:
         reportingEndpoint:
           ttl: P1D
 
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
 goldenTags:
 - postgres.host
 configuration:
@@ -35,6 +96,8 @@ dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
+  opentelemetry:
+    template: opentelemetry_dashboard.json
 
 ownership:
   primaryOwner:

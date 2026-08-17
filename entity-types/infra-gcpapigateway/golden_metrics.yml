@@ -1,0 +1,18 @@
+requestCount:
+  title: Request Count
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(gcp.apigateway.proxy.request_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+errorRate:
+  title: Error Rate
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: filter(sum(gcp.apigateway.proxy.request_count), WHERE metric.response_code_class IN ('4xx','5xx')) * 100 / sum(gcp.apigateway.proxy.request_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name

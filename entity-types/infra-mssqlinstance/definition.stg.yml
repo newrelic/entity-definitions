@@ -25,27 +25,6 @@ synthesis:
         entityKey:
           ttl: P1D
 
-    - ruleName: infra_mssqlinstance_host_name_metrics
-      identifier: host.name
-      name: host.name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: sqlserver.
-        - attribute: instrumentation.provider
-          value: opentelemetry
-        - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlserverreceiver
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-        instrumentation.provider:
-          entityTagName: instrumentation.provider
-        host.name:
-          entityTagNames: [server.address, endpoint]
-
     - ruleName: infra_mssqlinstance_host_name_metrics_nrfork
       identifier: host.name
       name: host.name
@@ -57,8 +36,8 @@ synthesis:
           prefix: sqlserver.
         - attribute: instrumentation.provider
           value: opentelemetry
-        - attribute: otel.library.name
-          value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nrsqlserverreceiver
+        - attribute: sqlserver.host.name
+          present: false
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
@@ -66,6 +45,31 @@ synthesis:
           entityTagName: instrumentation.provider
         host.name:
           entityTagNames: [server.address, endpoint]
+        otel.library.version:
+          entityTagName: instrumentation.version
+
+    - ruleName: infra_mssqlinstance_host_name_metrics_nrfork_2
+      identifier: service.instance.id
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: sqlserver.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: sqlserver.host.name
+          present: true
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        sqlserver.host.name:
+          entityTagNames: [server.address, endpoint]
+        otel.library.version:
+          entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_host_name_logs
       identifier: host.name
@@ -89,6 +93,54 @@ synthesis:
           entityTagNames: [server.address, endpoint]
         db.namespace:
           entityTagName: database.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+
+    - ruleName: infra_mssqlinstance_host_name_metrics
+      identifier: host.name
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: sqlserver.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlserverreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        host.name:
+          entityTagNames: [server.address, endpoint]
+        db.namespace:
+          entityTagName: database.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+
+    - ruleName: infra_mssqlinstance_service.instance.id_metrics_sqlqueryreceiver
+      identifier: service.instance.id
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: sqlserver.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlqueryreceiver
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        otel.library.version:
+          entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_host_name_logs_nrfork
       identifier: host.name
@@ -103,6 +155,8 @@ synthesis:
           value: opentelemetry
         - attribute: otel.library.name
           value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nrsqlserverreceiver
+        - attribute: sqlserver.host.name
+          present: false
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
@@ -112,101 +166,36 @@ synthesis:
           entityTagNames: [server.address, endpoint]
         db.namespace:
           entityTagName: database.name
+        otel.library.version:
+          entityTagName: instrumentation.version
 
-    - ruleName: infra_mssqlinstance_execution_plan_nrdot
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - server.address
-          - server.port
-      compositeName:
-        fragments:
-          - attribute: server.address
-          - value: ":"
-          - attribute: server.port
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: newrelic.event.type
-          value: SqlServerExecutionPlan
-        - attribute: instrumentation.provider
-          value: opentelemetry
-        - attribute: otel.library.name
-          value: github.com/newrelic/nrdot-collector-components/receiver/sqlserverreceiver
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-        telemetry.sdk.name:
-          entityTagName: instrumentation.provider
-        server.address:
-          entityTagNames: [server.address, endpoint]
-        server.port:
-          entityTagName: server.port
-        sql.version:
-          entityTagName: database.version
-
-    - ruleName: infra_mssqlinstance_query_details_nrdot
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - server.address
-          - server.port
-      compositeName:
-        fragments:
-          - attribute: server.address
-          - value: ":"
-          - attribute: server.port
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: newrelic.event.type
-          value: SqlServerQueryDetails
-        - attribute: instrumentation.provider
-          value: opentelemetry
-        - attribute: otel.library.name
-          value: github.com/newrelic/nrdot-collector-components/receiver/sqlserverreceiver
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-        telemetry.sdk.name:
-          entityTagName: instrumentation.provider
-        server.address:
-          entityTagNames: [server.address, endpoint]
-        server.port:
-          entityTagName: server.port
-        sql.version:
-          entityTagName: database.version
-
-    - ruleName: infra_mssqlinstance_server_address_nrdot
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - server.address
-          - server.port
-      compositeName:
-        fragments:
-          - attribute: server.address
-          - value: ":"
-          - attribute: server.port
+    - ruleName: infra_mssqlinstance_host_name_logs_nrfork_2
+      identifier: service.instance.id
+      name: service.instance.id
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: sqlserver.
+          value: Log
+        - attribute: event.name
+          prefix: db.server.
         - attribute: instrumentation.provider
           value: opentelemetry
         - attribute: otel.library.name
-          value: github.com/newrelic/nrdot-collector-components/receiver/sqlserverreceiver
+          value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nrsqlserverreceiver
+        - attribute: sqlserver.host.name
+          present: true
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
-        telemetry.sdk.name:
+        instrumentation.provider:
           entityTagName: instrumentation.provider
-        server.address:
+        sqlserver.host.name:
           entityTagNames: [server.address, endpoint]
-        server.port:
-          entityTagName: server.port
-        sql.version:
-          entityTagName: database.version
+        db.namespace:
+          entityTagName: database.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+
 
 goldenTags:
   - mssql.host
@@ -216,11 +205,10 @@ configuration:
   alertable: true
 
 dashboardTemplates:
-  # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
   opentelemetry:
-    template: newrelic_otel_sql_dashboard.stg.json
+    template: newrelic_otel_sql_dashboard.json
 
 ownership:
   primaryOwner:

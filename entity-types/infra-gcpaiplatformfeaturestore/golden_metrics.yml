@@ -17,7 +17,7 @@ cpuLoad:
   unit: PERCENTAGE
   queries:
     gcp:
-      select: average(gcp.aiplatform.featurestore.cpu_load)
+      select: average(gcp.aiplatform.featurestore.cpu_load) * 100
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -27,16 +27,16 @@ cpuLoad:
       eventId: entityGuid
       eventName: entityName
 latency:
-  title: Latency
+  title: Latency p95 (ms)
   unit: MS
   queries:
     gcp:
-      select: average(gcp.aiplatform.featurestore.online_serving.latencies)
+      select: percentile(gcp.aiplatform.featurestore.online_serving.latencies, 95)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(featurestore.online_serving.Latencies)
+      select: percentile(featurestore.online_serving.Latencies, 95)
       from: GcpVertexAiFeaturestoreSample
       eventId: entityGuid
       eventName: entityName
