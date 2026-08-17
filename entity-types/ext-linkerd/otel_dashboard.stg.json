@@ -36,7 +36,7 @@
           }
         },
         {
-          "title": "Total Requests per Second",
+          "title": "Requests Served by Proxies",
           "layout": {
             "column": 5,
             "row": 1,
@@ -53,7 +53,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT rate(sum(inbound_http_requests_total), 1 second) AS 'Total requests' FROM Metric TIMESERIES"
+                "query": "SELECT rate(sum(request_total), 1 second) AS 'Requests/sec' FROM Metric WHERE k8s.cluster.name = '{{tags.k8s.clusterName}}' AND linkerd_control_plane_ns IS NOT NULL AND linkerd_control_plane_component IS NULL TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -526,7 +526,7 @@
           "layout": {
             "column": 1,
             "row": 28,
-            "width": 6,
+            "width": 4,
             "height": 3
           },
           "visualization": {
@@ -553,9 +553,9 @@
         {
           "title": "Control Plane Queue Depth",
           "layout": {
-            "column": 7,
+            "column": 5,
             "row": 28,
-            "width": 6,
+            "width": 4,
             "height": 3
           },
           "visualization": {
@@ -638,7 +638,7 @@
           "title": "Meshed Pods",
           "layout": {
             "column": 1,
-            "row": 35,
+            "row": 38,
             "width": 12,
             "height": 4
           },
@@ -654,6 +654,64 @@
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Control Plane Request Rate",
+          "layout": {
+            "column": 9,
+            "row": 28,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(control_request_total), 1 minute) AS 'Req/min' FROM Metric WHERE k8s.cluster.name = '{{tags.k8s.clusterName}}' AND linkerd_control_plane_ns IS NOT NULL FACET k8s.deployment.name TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Route-level Request Rate",
+          "layout": {
+            "column": 1,
+            "row": 35,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(outbound_http_route_request_statuses_total), 1 minute) AS 'Req/min' FROM Metric WHERE k8s.cluster.name = '{{tags.k8s.clusterName}}' AND linkerd_control_plane_component IS NULL AND route_name IS NOT NULL FACET k8s.deployment.name AS 'Service', route_name AS 'Route' TIMESERIES LIMIT 10"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
             }
           }
         }
