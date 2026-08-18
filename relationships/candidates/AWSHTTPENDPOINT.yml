@@ -31,12 +31,13 @@ lookups:
     tags:
       matchingMode: ANY
       predicates:
-        # aws.alb.dnsName (ALB, ACF master) and aws.nlb.dnsName (NLB, ACF PR #359) are live.
-        # aws.elb.dnsName (Classic ELB) is a DORMANT placeholder: Classic ELB is not yet
-        # ACF-discovered (no resource-arn-definitions entry) and no metric-stream / polling
-        # source emits it, so this key matches nothing today. It is kept - not dropped - so the
-        # relationship activates automatically once Classic ELB is onboarded to ACF, with no
-        # candidate edit needed then. Documented as intentional.
+        # aws.alb.dnsName (ALB) and aws.nlb.dnsName (NLB) are live via ACF.
+        # aws.elb.dnsName (Classic ELB) is now live too (NR-590130): AWSELB.yaml emits it from
+        # $.DNSName during CloudControl enrichment. Classic ELB is discovered by beyond-polling-aws'
+        # ClassicLoadBalancerDiscovery (not a CloudFormation resource scan), then ACF enriches it.
+        # All three prefixed keys are ACF-exclusive -- metric-stream / polling emit only the golden
+        # aws.dnsName -- so keying the candidate here gates the APM->INFRA relationship to
+        # auto-discovery: it forms only once ACF has enriched the entity.
         - tagKeys: ["endpoint", "aws.elb.dnsName", "aws.alb.dnsName", "aws.nlb.dnsName"]
           field: serverAddress
     onMatch:
