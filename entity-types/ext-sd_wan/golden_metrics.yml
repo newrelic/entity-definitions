@@ -4,7 +4,7 @@ cpuUtilization:
  queries:
   # Cloudgenix SD-WAN
   kentik/cloudgenix:
-    select: ((rate(average(kentik.snmp.ssCpuRawUser), 1 second) + rate(average(kentik.snmp.ssCpuRawSystem), 1 second) + rate(average(kentik.snmp.ssCpuRawWait), 1 second)) / (rate(average(kentik.snmp.ssCpuRawUser), 1 second) + rate(average(kentik.snmp.ssCpuRawSystem), 1 second) + rate(average(kentik.snmp.ssCpuRawIdle), 1 second) + rate(average(kentik.snmp.ssCpuRawWait), 1 second))) * 100
+    select: 100 * (sum(kentik.snmp.ssCpuRawUser) + sum(kentik.snmp.ssCpuRawSystem) + sum(kentik.snmp.ssCpuRawWait)) / (sum(kentik.snmp.ssCpuRawUser) + sum(kentik.snmp.ssCpuRawSystem) + sum(kentik.snmp.ssCpuRawIdle) + sum(kentik.snmp.ssCpuRawWait))
     from: Metric
     eventId: entity.guid
 
