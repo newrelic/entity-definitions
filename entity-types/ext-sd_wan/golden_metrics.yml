@@ -1,18 +1,18 @@
 cpuUtilization:
-  title: CPU Utilization (%)
-  unit: PERCENTAGE
-  queries:
-    # Cloudgenix SD-WAN
-    kentik/cloudgenix:
-      select: 100 * (rate(sum(kentik.snmp.ssCpuRawUser), 1 second) + rate(sum(kentik.snmp.ssCpuRawSystem), 1 second) + rate(sum(kentik.snmp.ssCpuRawWait), 1 second)) / (rate(sum(kentik.snmp.ssCpuRawUser), 1 second) + rate(sum(kentik.snmp.ssCpuRawSystem), 1 second) + rate(sum(kentik.snmp.ssCpuRawIdle), 1 second) + rate(sum(kentik.snmp.ssCpuRawWait), 1 second))
-      from: Metric
-      eventId: entity.guid
-    # Versa Networks appliances
-    kentik/versa_networks-appliance:
-      select: average(kentik.snmp.hrProcessorLoad)
-      from: Metric
-      where: "provider = 'kentik-sd-wan'"
-      eventId: entity.guid
+ title: CPU Utilization (%)
+ unit: PERCENTAGE
+ queries:
+  # Cloudgenix SD-WAN
+  kentik/cloudgenix:
+    select: ((rate(average(kentik.snmp.ssCpuRawUser), 1 second) + rate(average(kentik.snmp.ssCpuRawSystem), 1 second) + rate(average(kentik.snmp.ssCpuRawWait), 1 second)) / (rate(average(kentik.snmp.ssCpuRawUser), 1 second) + rate(average(kentik.snmp.ssCpuRawSystem), 1 second) + rate(average(kentik.snmp.ssCpuRawIdle), 1 second) + rate(average(kentik.snmp.ssCpuRawWait), 1 second))) * 100
+    from: Metric
+    eventId: entity.guid
+  # Versa Networks appliances
+  kentik/versa_networks-appliance:
+    select: average(kentik.snmp.hrProcessorLoad)
+    from: Metric
+    where: "provider = 'kentik-sd-wan'"
+    eventId: entity.guid
 
 memoryUtilization:
   title: Memory Utilization (%)
