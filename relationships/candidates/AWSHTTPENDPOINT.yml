@@ -9,8 +9,7 @@ category: AWSHTTPENDPOINT
 # Route53/custom-domain friendly names via ACF enrichMappingsWithDnsName).
 lookups:
   - entityTypes:
-      - domain: INFRA
-        type: AWSCLOUDFRONTDISTRIBUTION
+      - INFRA-AWSCLOUDFRONTDISTRIBUTION
     tags:
       matchingMode: ANY
       predicates:
@@ -22,12 +21,9 @@ lookups:
       action: NO_OP
 
   - entityTypes:
-      - domain: INFRA
-        type: AWSELB
-      - domain: INFRA
-        type: AWSALB
-      - domain: INFRA
-        type: AWSNLB
+      - INFRA-AWSELB
+      - INFRA-AWSALB
+      - INFRA-AWSNLB
     tags:
       matchingMode: ANY
       predicates:
@@ -46,8 +42,7 @@ lookups:
       action: NO_OP
 
   - entityTypes:
-      - domain: INFRA
-        type: AWSAPIGATEWAYAPI
+      - INFRA-AWSAPIGATEWAYAPI
     tags:
       matchingMode: ANY
       predicates:
@@ -76,8 +71,7 @@ lookups:
   # aws.es.* auto-discovery key - the native tag aws.es.DomainEndpoint is the pre-existing
   # metric-stream one. onMiss NO_OP as above.
   - entityTypes:
-      - domain: INFRA
-        type: AWSELASTICSEARCHCLUSTER
+      - INFRA-AWSELASTICSEARCHCLUSTER
     tags:
       matchingMode: ANY
       predicates:
@@ -102,12 +96,36 @@ lookups:
   # published; Cloud Control Properties.DnsEntries[0] is "<zoneId>:<host>", strip the prefix)
   # OR the friendly value (endpoint, ACF enrichMappingsWithDnsName).
   - entityTypes:
-      - domain: INFRA
-        type: AWSPRIVATELINKENDPOINT
+      - INFRA-AWSPRIVATELINKENDPOINT
     tags:
       matchingMode: ANY
       predicates:
         - tagKeys: ["endpoint", "aws.vpce.dnsName"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # NR-590130: S3 buckets reached over HTTP. cloud.resource_id is null for S3 (unlike
+  # DynamoDB/SQS), so the match is HOST-based, not ARN-based. Two emitted-host shapes,
+  # BOTH VERIFIED on the rig:
+  #   - direct S3-SDK path -> region-qualified virtual-hosted endpoint
+  #     <bucket>.s3.<region>.amazonaws.com == CloudControl $.RegionalDomainName. Metric
+  #     streams / polling give S3 only name+ARN, so the native host tag
+  #     aws.s3.RegionalDomainName is ACF-exclusive (ACF PR #359 - AWS_S3_BUCKET.yaml maps it
+  #     from $.RegionalDomainName). This gates the direct-path relationship to auto-discovery.
+  #   - Route53 / custom-domain path -> the friendly host the app dialed, already carried by
+  #     the live `endpoint` tag (ACF enrichMappingsWithDnsName).
+  # (The S3 SDK also emits an External/<bucket>/S3/getObject segment on the BARE bucket name;
+  # that is not an HTTP-endpoint tag here and correctly falls through to HTTPSERVICE.)
+  # onMiss NO_OP as above - never stamp a typed S3 stub for an arbitrary External host.
+  - entityTypes:
+      - INFRA-AWSS3BUCKET
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.s3.RegionalDomainName"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
