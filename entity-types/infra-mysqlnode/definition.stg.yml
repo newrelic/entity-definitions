@@ -3,9 +3,9 @@ type: MYSQLNODE
 
 synthesis:
   rules:
-    # opentelemetry - metrics (OTel Collector mysqlreceiver)
-    # Loose matching is intentional: any mysql.* metric from an OTel provider.
-    # The otel.library.name check was deliberately removed upstream, do not re-add it here.
+    # opentelemetry - metrics (OTel Collector mysqlreceiver). Matching is deliberately
+    # loose (any mysql.* metric) — do not re-add an otel.library.name check, it was
+    # removed upstream on purpose.
     - ruleName: infra_mysqlnode_mysql_instance_endpoint
       identifier: mysql.instance.endpoint # server.address:server.port
       name: mysql.instance.endpoint
@@ -27,15 +27,15 @@ synthesis:
           entityTagName: instrumentation.name
         otel.library.version:
           entityTagName: instrumentation.version
-        # server.address/server.port are required by the MYSQLNODE relationship
-        # candidate so native-APM apps (datastore distributed-tracing spans) can link here.
+        # server.address/server.port feed the MYSQLNODE relationship candidate lookup.
         server.address:
           entityTagNames: [server.address, endpoint]
         server.port:
           entityTagName: server.port
 
-    # opentelemetry logs (db.server.top_query / db.server.query_sample);
-    # db.system.name is always present on these log events when enabled and is
+    # opentelemetry logs (db.server.top_query / db.server.query_sample). Matches on
+    # db.system.name=mysql instead of otel.library.name, since that already disambiguates
+    # from other DB receivers (e.g. MSSQL) that also emit db.server.* log events.
     - ruleName: infra_mysqlnode_otel_logs
       identifier: mysql.instance.endpoint
       name: mysql.instance.endpoint

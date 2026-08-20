@@ -1,0 +1,49 @@
+relationships:
+  # EXT:LINKERD (single CP entity) MANAGES each INFRA:KUBERNETES_DEPLOYMENT that is meshed.
+  # Triggered by any proxy metric that has k8s.deployment.name (data-plane pods in app namespaces).
+  # Source = the single Linkerd CP entity (cluster:linkerd_control_plane_ns).
+  # Target = the K8s Deployment entity for the meshed workload.
+  # Excludes CP pods themselves: linkerd_control_plane_component must be ABSENT so that
+  # destination/identity/proxy-injector don't create self-referential MANAGES edges.
+  - name: extLinkerdManagesK8sDeploymentOtelStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: otel.library.name
+        anyOf: ["github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"]
+      - attribute: k8s.cluster.name
+        present: true
+      - attribute: linkerd_control_plane_ns
+        present: true
+      - attribute: k8s.deployment.name
+        present: true
+      # Only fire for data-plane pods (meshed apps) — CP pods are excluded
+      - attribute: linkerd_control_plane_component
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: EXT
+          type:
+            value: LINKERD
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: linkerd_control_plane_ns
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_DEPLOYMENT
