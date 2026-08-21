@@ -26,6 +26,31 @@ goldenTags:
 - cloud.platform
 synthesis:
   rules:
+    # kubeletstats receiver OTel native node data
+    - ruleName: infra_host_composite_3
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.node.name
+      encodeIdentifierInGUID: true
+      name: k8s.node.name
+      conditions:
+        - attribute: metricName
+          prefix: k8s.node.
+        - attribute: k8s.node.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+      tags:
+        k8s.node.name:
+          entityTagNames: [k8s.nodeName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
     # AWS ECS EC2 host via OpenTelemetry awsecscontainermetricsreceiver
     - ruleName: infra_host_otel_ecs_ec2_host_id
       identifier: host.id
@@ -109,7 +134,6 @@ synthesis:
           entityTagName: aws.ecs.launchType
         # Instrumentation
         instrumentation.provider:
-
 
     # opentelemetry host data from opentelemetry-collector
     - ruleName: infra_host_host_id
@@ -499,7 +523,6 @@ synthesis:
         host.name:
         instrumentation.provider:
         process.atp.enabled:
-
 
     # Infrastructure event data via opentelemetry
     - ruleName: infra_host_composite
