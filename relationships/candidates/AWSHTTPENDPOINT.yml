@@ -1,0 +1,133 @@
+category: AWSHTTPENDPOINT
+# Consolidated candidate for APM apps making HTTP calls to AWS edge/proxy resources
+# (CloudFront, ELB/ALB/NLB, API Gateway, and interface VPC endpoints / PrivateLink).
+# Driven by the metrics-only, host-regex-free synthesis rule
+# APM-APPLICATION-to-AWSHTTPENDPOINT - so every lookup MUST use onMiss: NO_OP (a broad
+# External matcher would otherwise stamp a typed AWS stub for every third-party host).
+# Each lookup matches the emitted host against BOTH the per-type native host tag (from
+# ACF PR #359 / polling / metric-streams) AND `endpoint` (already live; carries
+# Route53/custom-domain friendly names via ACF enrichMappingsWithDnsName).
+lookups:
+  - entityTypes:
+      - INFRA-AWSCLOUDFRONTDISTRIBUTION
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.cloudfront.domainName"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  - entityTypes:
+      - INFRA-AWSELB
+      - INFRA-AWSALB
+      - INFRA-AWSNLB
+    tags:
+      matchingMode: ANY
+      predicates:
+        # aws.alb.dnsName (ALB) and aws.nlb.dnsName (NLB) are live via ACF.
+        # aws.elb.dnsName (Classic ELB) is now live too (NR-590130): AWSELB.yaml emits it from
+        # $.DNSName during CloudControl enrichment. Classic ELB is discovered by beyond-polling-aws'
+        # ClassicLoadBalancerDiscovery (not a CloudFormation resource scan), then ACF enriches it.
+        # All three prefixed keys are ACF-exclusive -- metric-stream / polling emit only the golden
+        # aws.dnsName -- so keying the candidate here gates the APM->INFRA relationship to
+        # auto-discovery: it forms only once ACF has enriched the entity.
+        - tagKeys: ["endpoint", "aws.elb.dnsName", "aws.alb.dnsName", "aws.nlb.dnsName"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  - entityTypes:
+      - INFRA-AWSAPIGATEWAYAPI
+    tags:
+      matchingMode: ANY
+      predicates:
+        # host-only (scheme-stripped) key; see ACF/beyond-common notes in README.
+        - tagKeys: ["endpoint", "aws.apigateway.endpoint"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # NR-590130: Elasticsearch / OpenSearch reached over HTTP. The NR Java agent has NO
+  # elasticsearch/opensearch instrumentation module, so BOTH the low-level
+  # elasticsearch-rest-client (org.elasticsearch.client.RestClient) AND the high-level
+  # RestHighLevelClient run their HTTP over Apache HttpAsyncClient, which the agent's
+  # http-async-client-4 module records as an External HTTP call - category=http,
+  # span.kind=client, server.address = host - NOT a Datastore segment. VERIFIED on the rig
+  # for BOTH clients (low-level on the custom Route53 host; high-level pointed at the native
+  # search-*.es.amazonaws.com host): only External spans, ZERO datastore-category spans.
+  # (The pre-existing Datastore rule APM-APPLICATION-to-INFRA-AWSELASTICSEARCHCLUSTER +
+  # DATABASE candidate is a dead path for the Java agent; it only fires for agents/SDKs that
+  # DO emit an ES Datastore segment, e.g. OTel/Python with ES instrumentation.)
+  # That External host resolves here to the AWSELASTICSEARCHCLUSTER entity. Match the native
+  # host tag (aws.es.DomainEndpoint) OR the friendly Route53 value (endpoint, ACF
+  # enrichMappingsWithDnsName). NOTE: ES/OpenSearch is NOT ACF-discovered, so there is no
+  # aws.es.* auto-discovery key - the native tag aws.es.DomainEndpoint is the pre-existing
+  # metric-stream one. onMiss NO_OP as above.
+  - entityTypes:
+      - INFRA-AWSELASTICSEARCHCLUSTER
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.es.DomainEndpoint"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # NR-590130: interface VPC endpoints (PrivateLink), both AWS-managed-service and customer
+  # "VPC Service" endpoints. With private DNS OFF the app dials the endpoint DNS name over
+  # HTTP, so the NR Java agent records an External call and the metrics-only rule above fires
+  # on the host (native vpce-<id>-<hash>.<svc>.<region>.vpce.amazonaws.com OR a Route53 custom
+  # domain). VERIFIED on the vpce-test-infra rig for both the AWS-managed (SQS) and customer
+  # VPC-Service cases. Routed through this NO_OP candidate rather than a dedicated
+  # regex-gated + CREATE_UNINSTRUMENTED rule so that (a) custom/Route53 domains relate exactly
+  # like the AWS-native host, and (b) an existing-but-untagged VPCE entity is never duplicated
+  # by a stub - it simply waits for the tag. The trade-off vs CREATE_UNINSTRUMENTED: no typed
+  # stub for endpoints in unmonitored accounts (falls through to HTTPSERVICE, same as the
+  # other types here). Match the native DNS name (aws.vpce.dnsName, ACF PR #359 - inert until
+  # published; Cloud Control Properties.DnsEntries[0] is "<zoneId>:<host>", strip the prefix)
+  # OR the friendly value (endpoint, ACF enrichMappingsWithDnsName).
+  - entityTypes:
+      - INFRA-AWSPRIVATELINKENDPOINT
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.vpce.dnsName"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # NR-590130: S3 buckets reached over HTTP. cloud.resource_id is null for S3 (unlike
+  # DynamoDB/SQS), so the match is HOST-based, not ARN-based. Two emitted-host shapes,
+  # BOTH VERIFIED on the rig:
+  #   - direct S3-SDK path -> region-qualified virtual-hosted endpoint
+  #     <bucket>.s3.<region>.amazonaws.com == CloudControl $.RegionalDomainName. Metric
+  #     streams / polling give S3 only name+ARN, so the native host tag
+  #     aws.s3.RegionalDomainName is ACF-exclusive (ACF PR #359 - AWS_S3_BUCKET.yaml maps it
+  #     from $.RegionalDomainName). This gates the direct-path relationship to auto-discovery.
+  #   - Route53 / custom-domain path -> the friendly host the app dialed, already carried by
+  #     the live `endpoint` tag (ACF enrichMappingsWithDnsName).
+  # (The S3 SDK also emits an External/<bucket>/S3/getObject segment on the BARE bucket name;
+  # that is not an HTTP-endpoint tag here and correctly falls through to HTTPSERVICE.)
+  # onMiss NO_OP as above - never stamp a typed S3 stub for an arbitrary External host.
+  - entityTypes:
+      - INFRA-AWSS3BUCKET
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["endpoint", "aws.s3.RegionalDomainName"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
