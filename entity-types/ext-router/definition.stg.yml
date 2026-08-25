@@ -37,8 +37,8 @@ synthesis:
       mikrotik.currentfirmware:
         entityTagName: firmware
 
-  - ruleName: ext_router_from_networktopology_event
-    identifier: deviceName
+  - ruleName: ext_router_from_networktopology_event_by_serial
+    identifier: serial
     name: deviceName
     encodeIdentifierInGUID: true
     conditions:
@@ -47,6 +47,8 @@ synthesis:
     - attribute: networkEntityType
       value: ROUTER
     - attribute: deviceName
+      present: true
+    - attribute: serial
       present: true
     tags:
       normalizedDeviceName:
@@ -63,24 +65,39 @@ synthesis:
         entityTagName: vendor
       model:
         entityTagName: model
-      isStack:
-        entityTagName: isStack
-      stackType:
-        entityTagName: stackType
-      stackMemberCount:
-        entityTagName: stackMemberCount
-      stackMemberMac:
-        entityTagName: stackMemberMac
-        multiValue: true
-      stackMemberSerial:
-        entityTagName: stackMemberSerial
-        multiValue: true
-      stackMemberRole:
-        entityTagName: stackMemberRole
-        multiValue: true
-      stackMemberModel:
-        entityTagName: stackMemberModel
-        multiValue: true
+      siteId:
+        entityTagName: siteId
+      siteName:
+        entityTagName: siteName
+
+  - ruleName: ext_router_from_networktopology_event
+    identifier: deviceName
+    name: deviceName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkTopology
+    - attribute: networkEntityType
+      value: ROUTER
+    - attribute: deviceName
+      present: true
+    - attribute: serial
+      present: false
+    tags:
+      normalizedDeviceName:
+        entityTagName: normalizedName
+      observedMac:
+        entityTagName: mac
+      managementIp:
+        entityTagName: managementIp
+      source:
+        entityTagName: source
+      serial:
+        entityTagName: serial
+      vendor:
+        entityTagName: vendor
+      model:
+        entityTagName: model
       siteId:
         entityTagName: siteId
       siteName:

@@ -2,6 +2,49 @@ domain: EXT
 type: PORT
 synthesis:
   rules:
+  - ruleName: ext_port_from_networktopology_event_by_serial
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - serial
+        - port
+    encodeIdentifierInGUID: true
+    compositeName:
+      fragments:
+        - attribute: deviceName
+        - value: ":"
+        - attribute: port
+    conditions:
+    - attribute: eventType
+      value: NetworkTopology
+    - attribute: networkEntityType
+      value: PORT
+    - attribute: deviceName
+      present: true
+    - attribute: port
+      present: true
+    - attribute: serial
+      present: true
+    tags:
+      deviceName:
+        entityTagName: deviceHostname       # owning device name, case-preserved (display/golden tag)
+      normalizedDeviceName:
+        entityTagName: normalizedDeviceHostname   # owning device name, normalized (far-port match tier)
+      observedMac:
+        entityTagName: deviceMac            # owning device's MAC (best-effort)
+      managementIp:
+        entityTagName: deviceManagementIp
+      port:
+        entityTagName: port
+      networkEntityType:
+        entityTagName: deviceType
+      vendor:
+        entityTagName: vendor
+      siteId:
+        entityTagName: siteId
+      siteName:
+        entityTagName: siteName
+
   - ruleName: ext_port_from_networktopology_event
     compositeIdentifier:
       separator: ":"
@@ -23,6 +66,8 @@ synthesis:
       present: true
     - attribute: port
       present: true
+    - attribute: serial
+      present: false
     tags:
       deviceName:
         entityTagName: deviceHostname       # owning device name, case-preserved (display/golden tag)
