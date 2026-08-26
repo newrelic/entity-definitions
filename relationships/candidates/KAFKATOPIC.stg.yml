@@ -1,8 +1,7 @@
 category: KAFKATOPIC
 lookups:
   - entityTypes:
-      - domain: INFRA
-        type: AWSMSKTOPIC
+      - INFRA-AWSMSKTOPIC
     tags:
       matchingMode: ALL
       predicates:
@@ -19,9 +18,9 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
 
+  # Tier 1: bootstrapServers match (public/Basic/Standard clusters).
   - entityTypes:
-      - domain: INFRA
-        type: CONFLUENTCLOUDKAFKATOPIC
+      - INFRA-CONFLUENTCLOUDKAFKATOPIC
     tags:
       matchingMode: ALL
       predicates:
@@ -32,13 +31,27 @@ lookups:
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
+      action: NO_OP
+
+  # Tier 2 (final fallback): clusterId match, for private-networked (PrivateLink/PSC) clusters.
+  - entityTypes:
+      - INFRA-CONFLUENTCLOUDKAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: [ "confluent.clusterId" ]
+          field: clusterId
+        - tagKeys: [ "confluent.kafka.server.metric.topic", "topic" ]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
         type: KAFKATOPIC
 
   - entityTypes:
-      - domain: INFRA
-        type: KAFKATOPIC
+      - INFRA-KAFKATOPIC
     tags:
       matchingMode: ALL
       predicates:
@@ -55,8 +68,7 @@ lookups:
 
   # Match KAFKATOPIC by producer.service.name tag — for consumers that don't carry kafka.cluster.name.
   - entityTypes:
-      - domain: INFRA
-        type: KAFKATOPIC
+      - INFRA-KAFKATOPIC
     tags:
       matchingMode: ALL
       predicates:
@@ -66,3 +78,19 @@ lookups:
       onMultipleMatches: RELATE_ALL
     onMiss:
       action: NO_OP
+
+  # Match KAFKATOPIC by kafka.cluster.id tag — for self-hosted clusters emitting cluster UUID.
+  - entityTypes:
+      - INFRA-KAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["kafka.cluster.id"]
+          field: clusterId
+        - tagKeys: ["topic"]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+

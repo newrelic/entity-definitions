@@ -1,0 +1,25 @@
+relationships:
+  - name: extPortContainedByDevice
+    version: "1"
+    origins: [Network Monitoring]
+    conditions:
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["PORT"]
+      - attribute: deviceName
+        present: true
+      - attribute: port
+        present: true
+    relationship:
+      expires: PT30M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: NETWORK_DEVICE
+          fields:
+            - field: normalizedName
+              attribute: normalizedDeviceName
+      target:
+        extractGuid:
+          attribute: entity.guid

@@ -25,26 +25,6 @@ synthesis:
         entityKey:
           ttl: P1D
 
-    - ruleName: infra_mssqlinstance_host_name_metrics
-      identifier: host.name
-      name: host.name
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: eventType
-          value: Metric
-        - attribute: metricName
-          prefix: sqlserver.
-        - attribute: instrumentation.provider
-          value: opentelemetry
-        - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlserverreceiver
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-        instrumentation.provider:
-          entityTagName: instrumentation.provider
-        host.name:
-          entityTagNames: [server.address, endpoint]
 
     - ruleName: infra_mssqlinstance_host_name_metrics_nrfork
       identifier: host.name
@@ -57,8 +37,6 @@ synthesis:
           prefix: sqlserver.
         - attribute: instrumentation.provider
           value: opentelemetry
-        - attribute: otel.library.name
-          value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nrsqlserverreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
@@ -66,6 +44,8 @@ synthesis:
           entityTagName: instrumentation.provider
         host.name:
           entityTagNames: [server.address, endpoint]
+        otel.library.version:
+          entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_host_name_logs
       identifier: host.name
@@ -89,6 +69,8 @@ synthesis:
           entityTagNames: [server.address, endpoint]
         db.namespace:
           entityTagName: database.name
+        otel.library.version:
+          entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_host_name_logs_nrfork
       identifier: host.name
@@ -112,6 +94,9 @@ synthesis:
           entityTagNames: [server.address, endpoint]
         db.namespace:
           entityTagName: database.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+
 
 goldenTags:
   - mssql.host
@@ -121,7 +106,6 @@ configuration:
   alertable: true
 
 dashboardTemplates:
-  # This should match the entity created from the ohi in the infra pipeline
   newRelic:
     template: newrelic_dashboard.json
   opentelemetry:

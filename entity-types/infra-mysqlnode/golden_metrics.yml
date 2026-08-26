@@ -22,7 +22,7 @@ slowQueriesPerMinute:
     # Currently, we cannot match value functions for OpenTelemetry cumulative metrics.
     # opentelemetry:
 
-  
+
 connectionsPerSecond:
   title: Connections per second
   unit: COUNT
@@ -54,9 +54,53 @@ threads:
       eventName: entityName
       select: latest(`net.threadsConnected`)
       from: MysqlSample
+    # fixed: the receiver's attribute is `kind`, not the metric mysql.connection.count.
     opentelemetry:
-      select: latest(`mysql.connection.count`)
+      select: latest(mysql.threads)
       from: Metric
+      where: kind = 'connected'
   unit: COUNT
   title: Threads connected
 
+threadsRunning:
+  title: Threads running
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(mysql.threads)
+      from: Metric
+      where: kind = 'running'
+
+# gated: mysql.max_used_connections is disabled by default in the receiver.
+maxUsedConnections:
+  title: Max used connections
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(mysql.max_used_connections)
+      from: Metric
+
+bufferPoolDataPages:
+  title: Buffer pool data pages
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(mysql.buffer_pool.pages)
+      from: Metric
+      where: kind = 'data'
+
+bufferPoolUsageBytes:
+  title: Buffer pool usage
+  unit: BYTES
+  queries:
+    opentelemetry:
+      select: latest(mysql.buffer_pool.usage)
+      from: Metric
+
+uptime:
+  title: Uptime
+  unit: SECONDS
+  queries:
+    opentelemetry:
+      select: latest(mysql.uptime)
+      from: Metric
