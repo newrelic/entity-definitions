@@ -18,7 +18,11 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
 
-  # Tier 1: bootstrapServers match (public/Basic/Standard clusters).
+  # bootstrapServers match (public/Basic/Standard clusters). Synthesis now emits this as its
+  # own candidate carrying only bootstrapServers+topic (never clusterId), so this tier is
+  # terminal in practice: the clusterId tier below is structurally skipped for it (missing
+  # field), never reached as a fallback. onMiss must create the uninstrumented placeholder
+  # here directly, matching production's unmodified single-tier behavior.
   - entityTypes:
       - INFRA-CONFLUENTCLOUDKAFKATOPIC
     tags:
@@ -31,9 +35,13 @@ lookups:
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
-      action: NO_OP
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
 
-  # Tier 2 (final fallback): clusterId match, for private-networked (PrivateLink/PSC) clusters.
+  # clusterId match, for private-networked (PrivateLink/PSC) clusters — synthesized as its own
+  # candidate carrying only clusterId+topic (never bootstrapServers), so this tier never
+  # overlaps with the one above.
   - entityTypes:
       - INFRA-CONFLUENTCLOUDKAFKATOPIC
     tags:
