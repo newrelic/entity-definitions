@@ -392,6 +392,35 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
 
+  - ruleName: infra_nginxserver_otel_span
+    # Span-based rule. Spans emitted by ngx_otel_module carry no nginx identity by default, so
+    # they otherwise fall through to the generic EXT-SERVICE catch-all instead of the real
+    # NGINXSERVER entity. When the collector stamps the same nginx.deployment.name +
+    # nginx.server.endpoint identity used by the Metric rules onto the spans, this rule resolves
+    # them to the SAME entity.guid (same compositeIdentifier), so a span and a metric from the
+    # same NGINX process map to one entity.
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - nginx.deployment.name
+        - nginx.server.endpoint
+    name: nginx.display.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Span
+      - attribute: nginx.deployment.name
+        present: true
+      - attribute: nginx.server.endpoint
+        present: true
+      - attribute: nginx.display.name
+        present: true
+      - attribute: instrumentation.provider
+        value: opentelemetry
+    tags:
+      nginx.server.endpoint:
+      nginx.deployment.name:
+
   tags:
     # For OpenTelemetry
     telemetry.sdk.name:

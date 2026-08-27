@@ -74,6 +74,11 @@ relationships:
           fields:
             - field: bootstrapServers
               attribute: metricName__4
+            # Fallback for private-networked clusters, which never match bootstrapServers above.
+            - field: clusterId
+              capture:
+                attribute: metricName__4
+                regex: "^(lkc-[a-zA-Z0-9]+)"
             - field: topic
               attribute: metricName__6
 
@@ -96,6 +101,11 @@ relationships:
           fields:
             - field: bootstrapServers
               attribute: metricName__4
+            # See apmProducesConfluentCloudKafkaTopicStgOverride above.
+            - field: clusterId
+              capture:
+                attribute: metricName__4
+                regex: "^(lkc-[a-zA-Z0-9]+)"
             - field: topic
               attribute: metricName__6
 
@@ -171,14 +181,14 @@ relationships:
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
 
-  # Self-hosted Kafka: NR APM MessageBroker/Kafka/Cluster/{cluster_id}/Topic/{topic}/Produce
+  # Self-hosted Kafka: NR APM MessageBroker/Kafka/Cluster/{cluster_id}/Produce/{topic}
   - name: apmProducesNRKafkaTopicByClusterIdStg
     version: "1"
     origins:
       - APM Metrics
     conditions:
       - attribute: metricName
-        regex: "^MessageBroker/Kafka/Cluster/[^/]+/Topic/[^/]+/Produce$"
+        regex: "^MessageBroker/Kafka/Cluster/[^/]+/Produce/[^/]+$"
     relationship:
       expires: PT75M
       relationshipType: PRODUCES
@@ -194,14 +204,14 @@ relationships:
             - field: topic
               attribute: metricName__6
 
-  # Self-hosted Kafka: NR APM MessageBroker/Kafka/Cluster/{cluster_id}/Topic/{topic}/Consume
+  # Self-hosted Kafka: NR APM MessageBroker/Kafka/Cluster/{cluster_id}/Consume/{topic}
   - name: apmConsumesNRKafkaTopicByClusterIdStg
     version: "1"
     origins:
       - APM Metrics
     conditions:
       - attribute: metricName
-        regex: "^MessageBroker/Kafka/Cluster/[^/]+/Topic/[^/]+/Consume$"
+        regex: "^MessageBroker/Kafka/Cluster/[^/]+/Consume/[^/]+$"
     relationship:
       expires: PT75M
       relationshipType: CONSUMES

@@ -45,19 +45,6 @@ synthesis:
         entityTagName: language
       telemetry.sdk.version:
 
-  - ruleName: ext_service_otel_collector
-    # produces same entity guid as the default rule applying to all non-otelcol telemetry
-    identifier: service.name
-    name: service.name
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: metricName
-        prefix: otelcol # matches both otelcol_ and otelcol.
-    tags:
-      service.name:
-        entityTagName: otel_collector
-        ttl: P1D
-
     # telemetry for gen_ai otel application with user opt-in tag
   - ruleName: ext_service_gen_ai_otel_app
     identifier: service.name
@@ -99,7 +86,54 @@ synthesis:
       telemetry.sdk.version:
       service.namespace:
 
+  # Must be positioned before `ext_service_service_name_3`
+  # Conditions and tags must stay a superset of `ext_service_service_name_3`
+  # to ensure backwards compatibility for the collector AND avoid accidental matches of non-collector telemetry.
+  - ruleName: ext_service_service_name_3_otel_collector
+    identifier: service.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: newrelic.entity.type
+        present: false
+      - attribute: trace_role
+        present: false
+      - attribute: metricName
+        prefix: otelcol
+    tags:
+      service.name:
+        entityTagName: otel_collector
+        ttl: P1D
+      k8s.cluster.name:
+        entityTagName: k8s.clusterName
+        ttl: P1D
+      k8s.deployment.name:
+        entityTagName: k8s.deploymentName
+        ttl: P1D
+      k8s.namespace.name:
+        entityTagName: k8s.namespaceName
+        ttl: P1D
+      telemetry.sdk.language:
+        entityTagName: language
+      telemetry.sdk.version:
+        ttl: P1D
+      service.namespace:
+        ttl: P1D
+      faas.name:
+        ttl: P1D
+      faas.id:
+        ttl: P1D
+      aws.lambda.invoked_arn:
+        ttl: P1D
+      cloud.resource_id:
+        ttl: P1D
+      newrelic.service.type:
+        ttl: P1D
+
     # telemetry from opentelemetry provider
+    # make sure to mirror changes in ext_service_service_name_3_otel_collector, see above
   - ruleName: ext_service_service_name_3
     identifier: service.name
     name: service.name
@@ -409,6 +443,6 @@ configuration:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "OpenTelemetry Community Leadership Team"
   secondaryOwners:
     - teamName: "eBPF"
