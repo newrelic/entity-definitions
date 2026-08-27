@@ -1,0 +1,125 @@
+{
+  "name": "RabbitMQ Queue Metrics (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "RabbitMQ Queue Metrics",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Current Messages Ready",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE state = 'ready' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Current Messages Unacknowledged",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE state = 'unacknowledged' AND instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Published Messages",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.published) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Total Current Messages",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.message.current) WHERE instrumentation.provider = 'opentelemetry' FACET state TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Consumer Count",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.consumer.count) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Queue Health Summary",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.consumer.count) AS 'Consumers', sum(rabbitmq.message.current) AS 'Total Messages' WHERE instrumentation.provider = 'opentelemetry'",
+                "accountId": 0}
+            ],
+            "thresholds": []
+          }
+        }
+      ]
+    }
+  ]
+}

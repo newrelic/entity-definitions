@@ -1,0 +1,39 @@
+domain: INFRA
+type: MEMCACHEDINSTANCE
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+  # Data from Memcached integration OHI
+  - ruleName: infra_memcachedinstance_entityId
+    identifier: entityId
+    name: entityKey
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        value: MemcachedSample
+    prefixedTags:
+      label.:
+        ttl: PT4H
+    tags:
+      integrationName:
+        ttl: P1D
+      integrationVersion:
+        ttl: P1D
+      reportingAgent:
+        ttl: P1D
+      reportingEndpoint:
+        ttl: P1D
+
+dashboardTemplates:
+  # This should match the entity created from the ohi in the infra pipeline
+  newRelic:
+    template: newrelic_dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"

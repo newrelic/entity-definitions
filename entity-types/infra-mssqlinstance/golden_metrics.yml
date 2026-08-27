@@ -7,49 +7,20 @@ connections:
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
-blockedProcesses:
-  title: Blocked processes
-  unit: COUNT
+    opentelemetry:
+      select: average(sqlserver.stats.connections or sqlserver.user.connection.count)
+      from: Metric
+      where: metricName IN ('sqlserver.stats.connections', 'sqlserver.user.connection.count')
+bufferCacheHitRatio:
+  title: Buffer Cache Hit Ratio
+  unit: PERCENTAGE
   queries:
     newRelic:
-      select: max(instance.blockedProcessesCount)
+      select: average(system.bufferPoolHitPercent)
       from: MssqlInstanceSample
       eventId: entityGuid
       eventName: entityName
-waitTimeMs:
-  title: Wait time (ms)
-  unit: MS
-  queries:
-    newRelic:
-      select: average(system.waitTimeInMillisecondsPerSecond)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-availability:
-  queries:
-    newRelic:
-      select: average(activeConnections)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-  unit: COUNT
-  title: Connections
-monitorStatus:
-  queries:
-    newRelic:
-      select: average(`instance.transactionsPerSecond`)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-  unit: OPERATIONS_PER_SECOND
-  title: Transactions
-sessionStatus:
-  queries:
-    newRelic:
-      select: average(`stats.sqlCompilations`)
-      from: MssqlInstanceSample
-      eventId: entityGuid
-      eventName: entityName
-  unit: COUNT
-  title: SQL (re-)compilations
-
+    opentelemetry:
+      select: average(sqlserver.instance.buffer_pool_hit_percent or sqlserver.page.buffer_cache.hit_ratio)
+      from: Metric
+      where: metricName IN ('sqlserver.instance.buffer_pool_hit_percent', 'sqlserver.page.buffer_cache.hit_ratio')

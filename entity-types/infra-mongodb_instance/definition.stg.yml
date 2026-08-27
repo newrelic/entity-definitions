@@ -1,0 +1,198 @@
+domain: INFRA
+type: MONGODB_INSTANCE
+
+synthesis:
+  rules:
+    # Rule 1: MongoDB instances from direct MongoDB receiver metrics
+    - ruleName: infra_mongodb_instance_mongodb_endpoint
+      identifier: mongodb.endpoint
+      name: mongodb.endpoint
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mongodbreceiver"
+      # This filters only metrics coming from mongodbreceiver, given that metrics
+      # could differ between different runtime receivers.
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        telemetry.sdk.name:
+          entityTagName: instrumentation.provider
+
+    # Rule 2: MongoDB instances from APM datastore metrics (Java apps)
+    - ruleName: infra_mongodb_instance_host_name
+      identifier: host.name
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          value: apm.service.datastore.operation.duration
+        - attribute: db.system
+          value: mongodb
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: host.name
+          present: true
+      tags:
+        host.name:
+          entityTagName: mongodb.host
+        db.system:
+          entityTagName: database.system
+        service.name:
+          entityTagName: calling.service
+          
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_oplog_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_2
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_rs_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_3
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_ss_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_4
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_sys_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_5
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_clusterTime_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_6
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_electionParticipantMetrics_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_7
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_electionCandidateMetrics_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_8
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_heartbeatIntervalMillis
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_9
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_members_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_10
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_optimes_
+      tags:
+        mongodb_cluster_name:
+
+    - ruleName: infra_mongodb_instance_mongodb_cluster_name_11
+      identifier: mongodb_cluster_name
+      encodeIdentifierInGUID: true
+      name: mongodb_cluster_name
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mongodb_writeMajorityCount
+      tags:
+        mongodb_cluster_name:
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+    # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"

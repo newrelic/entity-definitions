@@ -1,0 +1,26 @@
+domain: INFRA
+type: AZURELOGANALYTICSWORKSPACE
+goldenTags:
+- azure.regionName
+- azure.subscriptionId
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - ruleName: infra_azureloganalyticsworkspace_azure_resourceId
+    identifier: azure.resourceId
+    name: displayName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: azure.resourceType
+      value: microsoft.operationalinsights/workspaces
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"

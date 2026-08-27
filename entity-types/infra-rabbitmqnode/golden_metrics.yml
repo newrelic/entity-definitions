@@ -3,35 +3,120 @@ totalMemoryUsedInBytes:
   units: BYTES
   queries:
     newRelic:
-      select: average(node.totalMemoryUsedInBytes)
+      select: latest(node.totalMemoryUsedInBytes)
       from: RabbitmqNodeSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(rabbitmq.node.mem_used)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: latest(rabbitmq_process_resident_memory_bytes)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
+
 diskSpaceFreeInBytes:
   title: Disk space free (bytes)
   units: BYTES
   queries:
     newRelic:
-      select: average(node.diskSpaceFreeInBytes)
+      select: latest(node.diskSpaceFreeInBytes)
       from: RabbitmqNodeSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(rabbitmq.node.disk_free)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: latest(rabbitmq_disk_space_available_bytes)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
+
 fileDescriptorsTotalUsed:
   title: File descriptors total used
   unit: COUNT
   queries:
     newRelic:
-      select: average(node.fileDescriptorsTotalUsed)
+      select: latest(node.fileDescriptorsTotalUsed)
       from: RabbitmqNodeSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: latest(rabbitmq.node.fd_used)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: latest(rabbitmq_process_open_fds)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
+
 averageErlangProcessesWaiting:
   title: Average Erlang processes waiting
-  unit: OPERATIONS_PER_SECOND
+  unit: COUNT
   queries:
     newRelic:
       select: average(node.averageErlangProcessesWaiting)
       from: RabbitmqNodeSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(rabbitmq.node.run_queue)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: average(rabbitmq_erlang_scheduler_run_queue)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
+
+memoryAlarm:
+  title: Memory alarm status
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(rabbitmq.node.mem_alarm)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: latest(rabbitmq_alarms_memory_used_watermark)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
+
+diskAlarm:
+  title: Disk alarm status
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: latest(rabbitmq.node.disk_free_alarm)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+    prometheus:
+      select: latest(rabbitmq_alarms_free_disk_space_watermark)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry' AND otel.library.name = 'github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver'
+      eventId: entity.guid
+      eventName: entity.name
 

@@ -8,7 +8,7 @@ relationships:
         # "datastore/instance/redis/$host/$port"
         startsWith: "datastore/instance/redis/"
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         extractGuid:
@@ -25,6 +25,36 @@ relationships:
           identifier:
             fragments:
               - value: "instance:"
+              - attribute: metricName__4 # hostname
+              - value: ":"
+              - attribute: metricName__5 # port
+            hashAlgorithm: FARM_HASH
+
+  - name: apmApplicationCallsInfraRedisInstanceOtel
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "datastore/instance/redis/$host/$port"
+        startsWith: "datastore/instance/redis/"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: REDISINSTANCE
+            valueInGuid: NA
+          identifier:
+            fragments:
               - attribute: metricName__4 # hostname
               - value: ":"
               - attribute: metricName__5 # port

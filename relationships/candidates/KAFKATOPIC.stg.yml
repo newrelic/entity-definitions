@@ -1,0 +1,96 @@
+category: KAFKATOPIC
+lookups:
+  - entityTypes:
+      - INFRA-AWSMSKTOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: [ "aws.clusterName", "aws.kafka.ClusterName" ]
+          field: clusterName
+        - tagKeys: [ "aws.awsRegion", "aws.region" ]
+          field: region
+        - tagKeys: [ "aws.topic", "aws.kafka.Topic" ]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
+
+  # Tier 1: bootstrapServers match (public/Basic/Standard clusters).
+  - entityTypes:
+      - INFRA-CONFLUENTCLOUDKAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: [ "confluent.clusterBootstrapServers", "bootstrap.servers" ]
+          field: bootstrapServers
+        - tagKeys: [ "confluent.kafka.server.metric.topic", "topic" ]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # Tier 2 (final fallback): clusterId match, for private-networked (PrivateLink/PSC) clusters.
+  - entityTypes:
+      - INFRA-CONFLUENTCLOUDKAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: [ "confluent.clusterId" ]
+          field: clusterId
+        - tagKeys: [ "confluent.kafka.server.metric.topic", "topic" ]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
+
+  - entityTypes:
+      - INFRA-KAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["clusterName"]
+          field: clusterName
+        - tagKeys: ["topic"]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
+
+  # Match KAFKATOPIC by producer.service.name tag — for consumers that don't carry kafka.cluster.name.
+  - entityTypes:
+      - INFRA-KAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["producer.service.name"]
+          field: producerServiceName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # Match KAFKATOPIC by kafka.cluster.id tag — for self-hosted clusters emitting cluster UUID.
+  - entityTypes:
+      - INFRA-KAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["kafka.cluster.id"]
+          field: clusterId
+        - tagKeys: ["topic"]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+

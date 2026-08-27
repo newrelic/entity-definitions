@@ -1,13 +1,25 @@
 category: AWSECSCLUSTER
 lookups:
   - entityTypes:
-      - domain: INFRA
-        type: AWSECSCLUSTER
+      - INFRA-AWSECSCLUSTER
     tags:
       matchingMode: ALL
       predicates:
         - tagKeys: ["aws.Arn"]
           field: awsEcsClusterArn
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+
+  # Lookup by cluster name (new task relationship)
+  - entityTypes:
+      - INFRA-AWSECSCLUSTER
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["aws.clusterName"]
+          field: awsEcsClusterName
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:

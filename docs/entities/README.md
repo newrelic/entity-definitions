@@ -168,6 +168,47 @@ synthesis:
 ```
 </details>
 
+**Define the owner of the entity definition**
+
+Once your entity type is ready, you have to define the owners of the entity type. This is mandatory, in case 
+someone wants to contribute to the entity type (raising a pull request) the owners will be notified, they will also be 
+required to review and approve the changes.
+
+There are two types of owners: primary (required, only one allowed) and secondary (optional, multiple allowed). 
+At least one member from each of the owners defined must review and approve any pull request that modifies the 
+entity type in order to go through. In case of disagreements, the primary owner has the final say.
+
+The changes will also have to be reviewed by Entity Platform team members after the owners have approved them. 
+You don't have to include Entity Platform team as owner, unless it owns it.
+
+To define the owners, add the `ownership` section to the `definition.yml` file:
+
+```yaml
+domain: EXT
+type: PIHOLE
+
+synthesis:
+  rules:
+  - identifier: hostname
+    encodeIdentifierInGUID: true
+    name: hostname
+    conditions:
+    - attribute: metricName
+      prefix: pihole_
+  tags:
+     aws.az:
+
+ownership:
+    primary: # This is required
+      teamName: Logging # Team name as it appears in Team Store
+    secondary: # This is optional, removing this section is ok
+        - teamName: Another team
+``` 
+
+Optionally, you could use `NewRelic Community` as the team name for the primary owner, in case this entity type is 
+created by contributors outside New Relic. The objective though, is to have every entity type owned by a specific 
+team.
+
 ## Entity Lifecycle
 
 We now have a new entity type and one rule that creates entities matching telemetry. Next we need to decide on two main properties of the entity: alerts, and the entity's end of life.

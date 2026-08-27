@@ -8,7 +8,8 @@ synthesis:
     newrelic.cloudIntegrations.providerAccountName:
       entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
   rules:
-    - identifier: azure.resourceId
+    - ruleName: infra_azurevirtualnetworks_azure_resourceId
+      identifier: azure.resourceId
       name: displayName
       legacyFeatures:
         overrideGuidType: true
@@ -16,3 +17,20 @@ synthesis:
       conditions:
         - attribute: azure.resourceType
           value: microsoft.network/virtualnetworks
+    - ruleName: infra_azurevirtualnetworks_azure_resourceId_log
+      identifier: targetResourceID
+      name: virtualNetworkName
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+      - attribute: eventType
+        value: Log
+      - attribute: instrumentation.name
+        value: vnet-app
+      - attribute: logging.azure.flow.targetResourceType
+        value: virtualnetworks
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"

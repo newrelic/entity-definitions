@@ -8,7 +8,7 @@ relationships:
         # "datastore/instance/MySQL/$host/$port"
         startsWith: "datastore/instance/MySQL/"
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         extractGuid:
@@ -29,3 +29,30 @@ relationships:
               - value: ":"
               - attribute: metricName__5 # port
             hashAlgorithm: FARM_HASH
+
+  # Always-on native-APM path (no distributed-tracing / sampling dependency):
+  # the datastore timeslice metric "Datastore/instance/MySQL/$host/$port" is emitted for
+  # every monitored MySQL call, so host+port are parsed from the metric-name segments
+  # (metricName__4 / metricName__5) and resolved via the MYSQLNODE candidate. Mirrors
+  # apmApplicationCallsInfraMSSQLInstanceTimeslice.
+  - name: apmApplicationCallsInfraMysqlNodeTimeslice
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^[Dd]atastore/instance/MySQL/[^/]+/[0-9]+"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MYSQLNODE
+          fields:
+            - field: serverAddress
+              attribute: metricName__4
+            - field: serverPort
+              attribute: metricName__5

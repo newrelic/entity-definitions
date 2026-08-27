@@ -2,34 +2,42 @@ cpuUtilizationPercent:
   title: CPU utilization (%)
   unit: PERCENTAGE
   displayAsValue: true
-  query:
-    select: min(100 - cpu.idle)
-    from: '`unixMonitor:Stats`'
-    eventId: entity.guid
+  queries:
+    newRelic:
+      select: min(100 - cpu.idle)
+      from: '`unixMonitor:Stats`'
+      eventId: entity.guid
+      eventName: entity.name
 
 memoryUtilizationPercent:
   title: Memory utilization (%)
   unit: PERCENTAGE
   displayAsValue: true
-  query:
-    select: (sum(memory.used) / sum(memory.total)) * 100
-    from: '`unixMonitor:Stats`'
-    eventId: entity.guid
+  queries:
+    newRelic:
+      select: (sum(memory.used) / sum(memory.total)) * 100
+      from: '`unixMonitor:Stats`'
+      eventId: entity.guid
+      eventName: entity.name
 
 diskUtilizationPercent:
   title: Disk utilization (%)
   unit: PERCENTAGE
   displayAsValue: true
-  query:
-    select: max(percentUsed)
-    from: '`unixMonitor:Disk`'
-    facet: mountedOn 
-    eventId: entity.guid
+  queries:
+    newRelic:
+      select: max(percentUsed)
+      from: '`unixMonitor:Disk`'
+      facet: mountedOn 
+      eventId: entity.guid
+      eventName: entity.name
 
 networkUtilizationBps:
   title: Network throughput (bps)
   unit: BYTES_PER_SECOND
-  query:
-    select: latest(receive.bytes + transmit.bytes)
-    from: '`unixMonitor:NetworkIO`'
-    eventId: entity.guid
+  queries:
+    newRelic:
+      select: latest(receive.bytes + transmit.bytes)
+      from: '`unixMonitor:NetworkIO`'
+      eventId: entity.guid
+      eventName: entity.name

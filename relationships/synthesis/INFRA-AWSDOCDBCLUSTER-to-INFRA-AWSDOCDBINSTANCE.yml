@@ -1,0 +1,28 @@
+relationships:
+  - name: awsDocDbClusterContainsDocDbInstance
+    version: "1"
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["AwsDocDbInstanceSample"]
+      - attribute: entity.type
+        anyOf: ["AWSDOCDBINSTANCE"]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        lookupGuid:
+          candidateCategory: AWSDOCDBCLUSTER
+          fields:
+            - field: awsAccountId
+              attribute: awsAccountId
+            - field: awsRegion
+              attribute: provider.awsRegion
+            - field: awsDbClusterIdentifier
+              attribute: aws.rds.dbClusterIdentifier
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: AWSDOCDBINSTANCE

@@ -1,17 +1,20 @@
 relationships:
-  - name: extServiceCallsInfraKinesisDeliveryStream
+  - name: extServiceCallsAwsFirehose_Explicit
     version: "1"
     origins:
       - Distributed Tracing
+      - OpenTelemetry
     conditions:
       - attribute: eventType
-        anyOf: [ "Span" ]
-      - attribute: instrumentation.provider
-        anyOf: [ "opentelemetry" ]
-      - attribute: rpc.service
-        anyOf: [ "Firehose" ]
+        anyOf: [ "Log", "Span" ]
+      - attribute: newrelic.source 
+        anyOf: [ "api.logs.otlp", "api.traces.otlp" ] 
+      - attribute: entity.type 
+        anyOf: [ "SERVICE" ]
+      - attribute: newrelic.aws_metric_streams.arn
+        regex: "^arn:aws:firehose:([^:]*):([^:]*):deliverystream/([^:]*)"
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         extractGuid:
@@ -21,4 +24,4 @@ relationships:
           candidateCategory: AWSKINESISDELIVERYSTREAM
           fields:
             - field: cloudResourceId
-              attribute: cloud.resource_id
+              attribute: newrelic.aws_metric_streams.arn

@@ -1,0 +1,29 @@
+availability:
+  title: Availability
+  unit: COUNT
+  queries:
+    oci:
+      select: max(oci.oke.node.state)
+      from: Metric
+      where: oci.nodeState = 'FAILED'
+      eventId: entity.guid
+      eventName: entity.name
+failureErrorRate:
+  title: Failure Error Rate
+  unit: COUNT
+  queries:
+    oci:
+      select: rate(average(oci.oke.api.server.response.count), 1 minute)
+      from: Metric
+      where: oci.responseGroup != '2xx'
+      eventId: entity.guid
+      eventName: entity.name
+unschedulablePodsRate:
+  title: Unschedulable Pods Rate
+  unit: COUNT
+  queries:
+    oci:
+      select: max(oci.oke.unschedulable.pods)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name

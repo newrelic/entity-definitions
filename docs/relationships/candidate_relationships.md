@@ -61,8 +61,7 @@ Example:
 category: AWSS3BUCKET
 lookups:
    - entityTypes:
-        - domain: INFRA
-          type: AWSS3BUCKET
+        - INFRA-AWSS3BUCKET
      tags:
         matchingMode: ANY
         predicates:

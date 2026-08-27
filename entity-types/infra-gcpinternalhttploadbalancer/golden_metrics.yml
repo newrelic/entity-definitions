@@ -1,0 +1,56 @@
+backendRequestsRate:
+  title: Backend Requests per second
+  unit: REQUESTS_PER_SECOND
+  queries:
+    gcp:
+      select: rate(sum(gcp.loadbalancing.https.internal.backend_request_count), 1 minute) / 60
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: rate(sum(`https.internal.BackendRequests`), 1 minute) / 60
+      from: GcpInternalHttpLoadBalancerSample
+      eventId: entityGuid
+      eventName: entityName
+backendLatencyMs:
+  title: Backend Latency p95 (ms)
+  unit: MS
+  queries:
+    gcp:
+      select: percentile(gcp.loadbalancing.https.internal.backend_latencies, 95)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: percentile(`https.internal.BackendLatencies`, 95)
+      from: GcpInternalHttpLoadBalancerSample
+      eventId: entityGuid
+      eventName: entityName
+requestsRate:
+  title: Requests per second
+  unit: REQUESTS_PER_SECOND
+  queries:
+    gcp:
+      select: rate(sum(gcp.loadbalancing.https.internal.request_count), 1 minute) / 60
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: rate(sum(`https.internal.Requests`), 1 minute) / 60
+      from: GcpInternalHttpLoadBalancerSample
+      eventId: entityGuid
+      eventName: entityName
+totalLatencyMs:
+  title: Total latency p95 (ms)
+  unit: MS
+  queries:
+    gcp:
+      select: percentile(gcp.loadbalancing.https.internal.total_latencies, 95)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: percentile(`https.internal.TotalLatencies`, 95)
+      from: GcpInternalHttpLoadBalancerSample
+      eventId: entityGuid
+      eventName: entityName

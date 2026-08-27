@@ -8,7 +8,7 @@ relationships:
         # "datastore/instance/MSSQL/$host/$port"
         startsWith: "datastore/instance/MSSQL/"
     relationship:
-      expires: P75M
+      expires: PT75M
       relationshipType: CALLS
       source:
         extractGuid:
@@ -32,3 +32,26 @@ relationships:
                 operations:
                   - operation: toLowerCase
             hashAlgorithm: FARM_HASH
+
+  - name: apmApplicationCallsInfraMSSQLInstanceTimeslice
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^[Dd]atastore/instance/MSSQL/[^/]+/[0-9]+"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MSSQLINSTANCE
+          fields:
+            - field: serverAddress
+              attribute: metricName__4
+            - field: serverPort
+              attribute: metricName__5
+

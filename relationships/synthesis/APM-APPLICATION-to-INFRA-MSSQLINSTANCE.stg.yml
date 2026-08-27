@@ -1,0 +1,34 @@
+relationships:
+  # STAGING ONLY.
+  # APM native agent to INFRA MSSQLINSTANCE, resolved by database host + port.
+  # Native-agent datastore spans emit server.address and server.port describing the
+  # database connection target (DatastoreParameters.getHost()/getPort()), so the
+  # host+port candidate lookup resolves to a single MSSQL instance. This avoids the
+  # host.name-only fan-out where one host running multiple instances relates to all
+  # of them. Mirrors OTEL-APPLICATION-to-INFRA-MSSQLINSTANCE.yml, minus the
+  # OTLP-specific newrelic.source filter, since this targets native APM spans.
+  - name: apmApplicationCallsMssqlInstanceByHostPortStaging
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: db.system
+        anyOf: ["mssql"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MSSQLINSTANCE
+          fields:
+            - field: serverAddress
+              attribute: server.address
+            - field: serverPort
+              attribute: server.port

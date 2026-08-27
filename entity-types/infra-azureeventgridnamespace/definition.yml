@@ -1,0 +1,26 @@
+domain: INFRA
+type: AZUREEVENTGRIDNAMESPACE
+goldenTags:
+- azure.regionName
+- azure.subscriptionId
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+  - ruleName: infra_azureeventgridnamespace_azure_resourceId
+    identifier: azure.resourceId
+    name: displayName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: azure.resourceType
+      value: microsoft.eventgrid/namespaces
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"

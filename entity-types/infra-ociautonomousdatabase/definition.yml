@@ -1,0 +1,35 @@
+domain: INFRA
+type: OCIAUTONOMOUSDATABASE
+goldenTags:
+  - oci.availabilityDomain
+  - oci.availableUpgradeVersions
+  - oci.compartmentId
+  - oci.dbName
+  - oci.displayName
+  - oci.lifecycleState
+  - oci.subscriptionId
+  - oci.dbVersion
+  - oci.infrastructureType
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  - ruleName: infra_ociautonomousdatabase_oci_resourceId
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "OCID1.AUTONOMOUSDATABASE"
+    - attribute: oci.namespace
+      value: "oci_autonomous_database"
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"

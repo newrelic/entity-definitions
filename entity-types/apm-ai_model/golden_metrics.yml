@@ -1,0 +1,119 @@
+throughput:
+  title: Throughput (requests per minute)
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    opentelemetry:
+      select: rate(count(*), 1 minute) AS 'Throughput'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: rate(count(apm.service.transaction.duration), 1 minute) AS 'Throughput'
+      eventName: appName
+
+responseTimeMs:
+  title: Latency (Average response time)
+  unit: MS
+  queries:
+    opentelemetry:
+      select: average(duration.ms) AS 'Latency (ms)'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      # Multiply by 1000 to convert APM seconds to MS
+      select: average(apm.service.transaction.duration) * 1000 AS 'Response time (ms)'
+      eventName: appName
+
+totalTokens:
+  title: Total Tokens (tokens consumed)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(gen_ai.usage.input_tokens) + sum(gen_ai.usage.output_tokens) AS 'Total Tokens'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: sum(apm.service.ai.total_tokens) AS 'Total Tokens'
+      eventName: appName
+
+p95Latency:
+  title: P95 Latency (95th percentile response time)
+  unit: MS
+  queries:
+    opentelemetry:
+      select: percentile(duration.ms, 95) AS 'P95 Latency (ms)'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: percentile(apm.service.transaction.duration, 95) * 1000 AS 'P95 Latency (ms)'
+      eventName: appName
+
+completionRate:
+  title: Completion Rate (% requests completed successfully)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: percentage(count(*), WHERE gen_ai.response.finish_reasons = 'stop') AS 'Completion Rate %'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: percentage(count(*), WHERE apm.service.ai.finish_reason = 'stop') AS 'Completion Rate %'
+      eventName: appName
+
+truncationRate:
+  title: Truncation Rate (% requests truncated by max_tokens)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: percentage(count(*), WHERE gen_ai.response.finish_reasons = 'length') AS 'Truncation Rate %'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: percentage(count(*), WHERE apm.service.ai.finish_reason = 'length') AS 'Truncation Rate %'
+      eventName: appName
+
+toolCallRate:
+  title: Tool Call Rate (% requests that invoked tools)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: percentage(count(*), WHERE gen_ai.response.finish_reasons = 'tool_calls') AS 'Tool Call Rate %'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: percentage(count(*), WHERE apm.service.ai.finish_reason = 'tool_calls') AS 'Tool Call Rate %'
+      eventName: appName
+
+cacheHitRate:
+  title: Cache Hit Rate (prompt caching efficiency)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: sum(gen_ai.usage.cache_read_input_tokens) / sum(gen_ai.usage.input_tokens) * 100 AS 'Cache Hit Rate %'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      eventId: entity.guid
+    apm:
+      select: sum(apm.service.ai.cache_read_tokens) / sum(apm.service.ai.input_tokens) * 100 AS 'Cache Hit Rate %'
+      eventName: appName
+
+modelVersion:
+  title: Model Version (usage by model version)
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: count(*) AS 'Requests'
+      from: Span
+      where: gen_ai.request.model IS NOT NULL
+      facet: gen_ai.response.model
+      eventId: entity.guid
+    apm:
+      select: count(apm.service.transaction.duration) AS 'Requests'
+      facet: apm.service.ai.model
+      eventName: appName

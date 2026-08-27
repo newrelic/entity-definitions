@@ -1,0 +1,47 @@
+throughput:
+  title: Throughput (invocations per minute)
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    opentelemetry:
+      select: rate(count(*), 1 minute) AS 'Throughput'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    newRelic:
+      select: rate(count(*), 1 minute) AS 'Throughput'
+      from: Span
+      where: subcomponent.entity.guid IS NOT NULL
+      eventId: subcomponent.entity.guid
+      eventName: subcomponent.entity.name
+
+responseTimeMs:
+  title: Latency (Average execution time)
+  unit: MS
+  queries:
+    opentelemetry:
+      select: average(duration.ms) AS 'Latency (ms)'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    newRelic:
+      select: average(duration.ms) AS 'Latency (ms)'
+      from: Span
+      where: subcomponent.entity.guid IS NOT NULL
+      eventId: subcomponent.entity.guid
+      eventName: subcomponent.entity.name
+
+errorRate:
+  title: Error Rate (% of failed invocations)
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: filter(count(*), WHERE otel.status_code = 'ERROR') / count(*) * 100 AS 'Error %'
+      from: Span
+      where: gen_ai.tool.name IS NOT NULL
+      eventId: entity.guid
+    newRelic:
+      select: percentage(count(*), WHERE otel.status_code = 'ERROR') AS 'Error %'
+      from: Span
+      where: subcomponent.entity.guid IS NOT NULL
+      eventId: subcomponent.entity.guid
+      eventName: subcomponent.entity.name

@@ -1,0 +1,172 @@
+{
+  "name": "Kafka Cluster Dashboard",
+  "description": "Overview dashboard for Kafka Clusters",
+  "pages": [
+    {
+      "name": "Kafka cluster dashboard",
+      "description": "",
+      "widgets": [
+        {
+          "title": "Active controllers",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KafkaClusterSample SELECT latest(cluster.activeControllerCount) AS 'Active controllers' TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Topic count",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KafkaClusterSample SELECT latest(cluster.globalTopicCount) AS 'Topics' TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Partition count",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KafkaClusterSample SELECT latest(cluster.globalPartitionCount) AS 'Partitions' TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Consumer groups",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KafkaClusterSample SELECT latest(cluster.numGroups) AS 'Groups', latest(cluster.numGroupsStable) AS 'Stable groups', latest(cluster.numGroupsPreparingRebalance) AS 'Rebalancing groups', latest(cluster.numGroupsDead) AS 'Dead groups' TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Offline partitions",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KafkaClusterSample SELECT latest(cluster.offlinePartitionsCount) AS 'Offline partitions' TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Preferred replica imbalance",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KafkaClusterSample SELECT latest(cluster.preferredReplicaImbalanceCount) AS 'Preferred replica imbalance' TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Unclean leader elections",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KafkaClusterSample SELECT latest(cluster.uncleanLeaderElectionsPerSecond) AS 'Unclean leader elections/s' TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Cluster information",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 8,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM KafkaClusterSample SELECT latest(cluster.id) AS 'Cluster ID', latest(clusterName) AS 'Cluster name', latest(host) AS 'Host', latest(operatingSystem) AS 'OS', latest(integrationName) AS 'Integration' LIMIT 1"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

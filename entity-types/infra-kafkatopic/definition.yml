@@ -3,3 +3,193 @@ type: KAFKATOPIC
 configuration:
   entityExpirationTime: DAILY
   alertable: true
+
+synthesis:
+  rules:
+  # This rule is for OTEL contrib jmx kafka receivers metrics
+  - ruleName: infra_kafkatopic_otel_jmxmetrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: topic
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "io.opentelemetry.contrib.jmxmetrics"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+
+        # This rule is for OTEL JMX Kafka receivers with custom JMX configuration metrics
+  - ruleName: infra_kafkatopic_otel_jmxscraper
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: topic
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "io.opentelemetry.jmx"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+
+        # This rule is for OTEL kafkametrics receivers metrics
+  - ruleName: infra_kafkatopic_otel_kafkametrics
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: topic
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+
+        # This rule is for OTEL prometheus receivers metrics
+  - ruleName: infra_kafkatopic_otel_prometheus
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - topic
+      - kafka.cluster.name
+    compositeName:
+      fragments:
+      - attribute: topic
+      - value: " ("
+      - attribute: kafka.cluster.name
+      - value: ")"
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: topic
+      present: true
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver"
+    tags:
+      # Environment resource attributes
+      instrumentation.provider:
+      kafka.cluster.name:
+      topic:
+
+  # Data from Kafka integation OHI
+  - ruleName: infra_kafkatopic_entityId
+    identifier: entityId
+    name: entityKey
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+      - attribute: eventType
+        value: KafkaTopicSample
+    prefixedTags:
+      label.:
+        ttl: PT4H
+    tags:
+      integrationName:
+        ttl: P1D
+      integrationVersion:
+        ttl: P1D
+      reportingAgent:
+        ttl: P1D
+
+  - ruleName: infra_kafkatopic_gcp_managedkafka
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - gcp.topic_id
+      - gcp.cluster_id
+    compositeName:
+      fragments:
+      - attribute: gcp.topic_id
+      - value: " ("
+      - attribute: gcp.cluster_id
+      - value: ")"
+    encodeIdentifierInGUID: true
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
+    conditions:
+    - attribute: eventType
+      value: Metric
+    - attribute: instrumentation.provider
+      value: gcp
+    - attribute: gcp.resource.type
+      value: managedkafka.googleapis.com/Topic
+    tags:
+      instrumentation.provider:
+      collector.name:
+      gcp.projectId:
+      gcp.projectName:
+      gcp.region:
+      gcp.cluster_id:
+        entityTagName: clusterName
+      gcp.topic_id:
+        entityTagName: topic
+
+goldenTags:
+- clusterName
+- topic
+- kafka.cluster.name
+
+dashboardTemplates:
+  # This should match the entity created from the ohi
+  newRelic:
+    template: newrelic_dashboard.json
+  # otel receiver
+  opentelemetry:
+    template: opentelemetry_dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"

@@ -4,7 +4,8 @@ type: SD_WAN
 synthesis:
   rules:
   # SD-WAN devices from Kentik
-  - identifier: device_name
+  - ruleName: ext_sd_wan_device_name
+    identifier: device_name
     name: device_name
     encodeIdentifierInGUID: true
     conditions:
@@ -22,7 +23,8 @@ synthesis:
       tags.:
         ttl: PT4H
   # Secure Access Service Edge (SASE) from Kentik
-  - identifier: device_name
+  - ruleName: ext_sd_wan_device_name_2
+    identifier: device_name
     name: device_name
     encodeIdentifierInGUID: true
     conditions:
@@ -39,6 +41,24 @@ synthesis:
     prefixedTags:
       tags.:
         ttl: PT4H
+  # Default SD-WAN 
+  - ruleName: ext_sd_wan_device_name_3
+    name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: newrelic-sd-wan
+    - attribute: integration_name
+      value: com.newrelic.nri-flex
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
 
 goldenTags:
 - device_ip
@@ -48,3 +68,10 @@ dashboardTemplates:
   # Cloudgenix (default)
   kentik/cloudgenix:
     template: cloudgenix-dashboard.json
+  # Versa Networks appliances
+  kentik/versa_networks-appliance:
+    template: versa-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"

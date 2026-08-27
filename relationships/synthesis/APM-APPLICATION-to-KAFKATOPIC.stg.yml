@@ -1,0 +1,229 @@
+relationships:
+  - name: apmProducesAwsMskTopicStgOverride
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/[^/]*\\.amazonaws\\.com:9[0-9]+/Produce/.*"
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:9[0-9]+"
+            - field: region
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:9[0-9]+"
+            - field: topic
+              attribute: metricName__6
+
+  - name: apmConsumesAwsMskTopicStgOverride
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/[^/]*\\.amazonaws\\.com:9[0-9]+/Consume/.*"
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterName
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.([^\\.]+)\\.[^\\.]+\\.[^\\.]+\\.kafka\\.[^\\.]+\\.amazonaws\\.com:9[0-9]+"
+            - field: region
+              capture:
+                attribute: metricName__4
+                regex: "^[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.[^\\.]+\\.kafka\\.([^\\.]+)\\.amazonaws\\.com:9[0-9]+"
+            - field: topic
+              attribute: metricName__6
+
+  - name: apmProducesConfluentCloudKafkaTopicStgOverride
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/.*.confluent.cloud:9[0-9]+/Produce/.+"
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: bootstrapServers
+              attribute: metricName__4
+            # Fallback for private-networked clusters, which never match bootstrapServers above.
+            - field: clusterId
+              capture:
+                attribute: metricName__4
+                regex: "^(lkc-[a-zA-Z0-9]+)"
+            - field: topic
+              attribute: metricName__6
+
+  - name: apmConsumesConfluentCloudKafkaTopicStgOverride
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/.*.confluent.cloud:9[0-9]+/Consume/.+"
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: bootstrapServers
+              attribute: metricName__4
+            # See apmProducesConfluentCloudKafkaTopicStgOverride above.
+            - field: clusterId
+              capture:
+                attribute: metricName__4
+                regex: "^(lkc-[a-zA-Z0-9]+)"
+            - field: topic
+              attribute: metricName__6
+
+  - name: apmProducesKafkaTopicStgOverride
+    version: "1"
+    origins:
+      - Infrastructure Agent
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "KafkaProducerSample" ]
+      - attribute: integrationName
+        anyOf: [ "com.newrelic.kafka" ]
+      - attribute: clusterName
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entityGuid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - value: "ka-topic:"
+              - attribute: topic
+              - value: ":clustername="
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
+
+  - name: apmConsumesKafkaTopicStgOverride
+    version: "1"
+    origins:
+      - Infrastructure Agent
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "KafkaConsumerSample" ]
+      - attribute: integrationName
+        anyOf: [ "com.newrelic.kafka" ]
+      - attribute: clusterName
+        present: true
+      - attribute: topic
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entityGuid
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKATOPIC
+          identifier:
+            fragments:
+              - value: "ka-topic:"
+              - attribute: topic
+              - value: ":clustername="
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
+
+  # Self-hosted Kafka: NR APM MessageBroker/Kafka/Cluster/{cluster_id}/Produce/{topic}
+  - name: apmProducesNRKafkaTopicByClusterIdStg
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Cluster/[^/]+/Produce/[^/]+$"
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+
+  # Self-hosted Kafka: NR APM MessageBroker/Kafka/Cluster/{cluster_id}/Consume/{topic}
+  - name: apmConsumesNRKafkaTopicByClusterIdStg
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Cluster/[^/]+/Consume/[^/]+$"
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+

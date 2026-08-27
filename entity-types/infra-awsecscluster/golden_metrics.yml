@@ -13,6 +13,12 @@ cpuUsage:
       where: provider='EcsCluster'
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: average(`ecs.task.cpu.utilized`)
+      from: Metric
+      where: instrumentation.provider='opentelemetry' AND cloud.platform='aws_ecs'
+      eventId: entity.guid
+      eventName: entity.name
 memoryUsage:
   title: Memory usage (%)
   unit: PERCENTAGE 
@@ -28,6 +34,12 @@ memoryUsage:
       where: provider='EcsCluster'
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: (sum(`ecs.task.memory.usage`) / sum(`ecs.task.memory.usage.limit`)) * 100
+      from: Metric
+      where: instrumentation.provider='opentelemetry' AND cloud.platform='aws_ecs'
+      eventId: entity.guid
+      eventName: entity.name
 runningTasksCount:
   query:
     eventId: entity.guid

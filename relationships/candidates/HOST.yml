@@ -1,14 +1,13 @@
 category: HOST
 lookups:
   - entityTypes:
-    - domain: INFRA
-      type: HOST
+    - INFRA-HOST
     tags:
       matchingMode: ANY
       predicates:
-        - tagKeys: ["host.id"]
+        - tagKeys: ["host.id", "aws.ec2.host.id"]
           field: cloudProviderId
-        - tagKeys: ["host.id"]
+        - tagKeys: ["host.id", "aws.ec2.host.id"]
           field: host.id
     onMatch:
      onMultipleMatches: RELATE_ALL
@@ -18,8 +17,7 @@ lookups:
         type: HOST
 
   - entityTypes:
-    - domain: INFRA
-      type: HOST
+    - INFRA-HOST
     tags:
       matchingMode: FIRST
       predicates:
@@ -29,6 +27,10 @@ lookups:
           field: hostName
         - tagKeys: ["hostname"]
           field: hostName
+        - tagKeys: ["host.name"]
+          field: hostName
+        - tagKeys: ["host.name"]
+          field: displayName
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
@@ -37,13 +39,25 @@ lookups:
         type: HOST
 
   - entityTypes:
-    - domain: INFRA
-      type: HOST
+    - INFRA-HOST
     tags:
       matchingMode: ANY
       predicates:
         - tagKeys: ["hostname"]
           field: onHostEntityHostname
+    onMatch:
+     onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: HOST
+  - entityTypes:
+    - INFRA-HOST
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["host.id"]
+          field: hostId
     onMatch:
      onMultipleMatches: RELATE_ALL
     onMiss:

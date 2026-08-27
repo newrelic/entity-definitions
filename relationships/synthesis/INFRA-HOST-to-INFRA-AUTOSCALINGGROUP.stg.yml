@@ -1,0 +1,29 @@
+relationships:
+  - name: awsAutoScalingGroupManagesHost
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+    origins:
+      - AWS Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "HOST" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: HOST
+      target:
+        lookupGuid:
+          candidateCategory: AWSAUTOSCALINGGROUP
+          fields:
+            - field: autoScalingGroupName
+              attribute: aws:autoscaling:groupName
