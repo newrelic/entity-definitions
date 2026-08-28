@@ -18,7 +18,7 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
 
-  # Tier 1: bootstrapServers match (public/Basic/Standard clusters).
+  # bootstrapServers match (public/Basic/Standard clusters).
   - entityTypes:
       - INFRA-CONFLUENTCLOUDKAFKATOPIC
     tags:
@@ -31,9 +31,11 @@ lookups:
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
-      action: NO_OP
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
 
-  # Tier 2 (final fallback): clusterId match, for private-networked (PrivateLink/PSC) clusters.
+  # clusterId match, for private-networked (PrivateLink/PSC) clusters.
   - entityTypes:
       - INFRA-CONFLUENTCLOUDKAFKATOPIC
     tags:
