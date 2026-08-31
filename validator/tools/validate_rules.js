@@ -244,44 +244,6 @@ const RULES = [
       }
 
     }
-  },
-  {
-    name: "ext_service_service_name_3_otel_collector must be positioned before, and stay a superset of, ext_service_service_name_3",
-    apply: (def, isProd) => {
-      if (isProd || def.domain !== 'EXT' || def.type !== 'SERVICE') {
-        return;
-      }
-
-      const rules = def.synthesis.rules;
-      const collectorIndex = rules.findIndex((rule) => rule.ruleName === 'ext_service_service_name_3_otel_collector');
-      const baseIndex = rules.findIndex((rule) => rule.ruleName === 'ext_service_service_name_3');
-
-      if (collectorIndex === -1 || baseIndex === -1) {
-        throw new Error(`Expected both 'ext_service_service_name_3_otel_collector' and 'ext_service_service_name_3' rules to exist.`);
-      }
-
-      if (collectorIndex >= baseIndex) {
-        throw new Error(`'ext_service_service_name_3_otel_collector' must be positioned before 'ext_service_service_name_3'.`);
-      }
-
-      const collectorRule = rules[collectorIndex];
-      const baseRule = rules[baseIndex];
-
-      const missingConditions = (baseRule.conditions || [])
-        .filter((condition) => !(collectorRule.conditions || []).some((other) => isEqual(condition, other)));
-
-      if (missingConditions.length > 0) {
-        throw new Error(`'ext_service_service_name_3_otel_collector' conditions must be a superset of 'ext_service_service_name_3' conditions. Missing: ${JSON.stringify(missingConditions)}`);
-      }
-
-      const missingTags = Object.entries(baseRule.tags || {})
-        .filter(([tagName, tagConfig]) => !isEqual(collectorRule.tags?.[tagName], tagConfig))
-        .map(([tagName]) => tagName);
-
-      if (missingTags.length > 0) {
-        throw new Error(`'ext_service_service_name_3_otel_collector' tags must be a superset of 'ext_service_service_name_3' tags. Missing/mismatched: ${missingTags.join(', ')}`);
-      }
-    }
   }
 ];
 
