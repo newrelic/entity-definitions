@@ -100,6 +100,33 @@ synthesis:
       host.name:
         ttl: P1D
 
+  # Distributed Tracing: attach Elasticsearch server spans to the cluster entity.
+  # Elasticsearch's built-in tracer (APMTracer) stamps es.cluster.name = the node's
+  # configured cluster.name on every span it emits. This rule keys on that attribute,
+  # using the same encodeIdentifierInGUID as the metric rules above, so spans and metrics
+  # resolve to the SAME ELASTICSEARCHCLUSTER GUID whenever the values match (they do by
+  # default, since both derive from cluster.name).
+  - ruleName: infra_elasticsearchcluster_otel_span
+    identifier: es.cluster.name
+    name: es.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Span
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "elasticsearch"
+    - attribute: es.cluster.name
+      present: true
+    tags:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      es.cluster.name:
+        ttl: P1D
+      host.name:
+        ttl: P1D
+
   # Data from Elastic search integation OHI
   - ruleName: infra_elasticsearchcluster_entityId
     identifier: entityId
