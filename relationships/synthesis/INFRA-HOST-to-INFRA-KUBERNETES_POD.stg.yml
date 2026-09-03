@@ -1,52 +1,84 @@
 relationships:
   - name: k8sHostHostsPod
+    # reportingAgent is the entityKey of the HOST entity the reporting agent
+    # represents, so the node GUID can be built directly - no candidate lookup.
+    # This holds whichever identity the agent resolved (cloud instance id,
+    # machine-id or hostname fallback), which is why no fullHostname fallback
+    # rule is needed here.
     version: "1"
     origins:
       - Kubernetes Integration
     conditions:
       - attribute: eventType
         anyOf: [ "K8sPodSample" ]
+      # Pending pods are surfaced by the KSM scraper with nodeName="", and their
+      # reportingAgent is the KSM node rather than the pod's node. Skip them.
+      - attribute: nodeName
+        regex: ".+"
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        lookupGuid:
-          candidateCategory: HOST
-          fields:
-            - field: host.name
-              attribute: nodeName
-            - field: cluster.name
-              attribute: clusterName
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_POD
-  - name: otelKsmK8sHostHostsPod
-    # use kube-state-metrics kube_pod_info metric - one row per pod per
-    # scrape (cheaper to match than every system.* metric), and it carries
-    # the pod's own entity.guid directly so the target needs no lookup
+  - name: otelK8sHostHostsPod
+    # use kubeletstats (DaemonSet collector) pod metrics rather than
+    # kube-state-metrics kube_pod_info: kube_pod_info identifies the node only
+    # by k8s.node.name, while the OTel HOST identifier is host.id, so it would
+    # force a candidate lookup. kubeletstats scrapes the local kubelet, so its
+    # host.id is the pod's own node. Both GUIDs are built, no lookup needed.
     version: "1"
     origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        anyOf: [ "kube_pod_info" ]
-      - attribute: k8s.node.name
+        anyOf: [ "k8s.pod.memory.working_set" ]
+      - attribute: host.id
         present: true
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        lookupGuid:
-          candidateCategory: HOST
-          fields:
-            - field: host.name
-              attribute: k8s.node.name
-            - field: cluster.name
-              attribute: k8s.cluster.name
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
       target:
-        extractGuid:
-          attribute: entity.guid
-          entityType:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
             value: KUBERNETES_POD
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+            hashAlgorithm: FARM_HASH
