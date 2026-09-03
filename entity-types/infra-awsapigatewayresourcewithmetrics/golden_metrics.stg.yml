@@ -1,0 +1,45 @@
+requests:
+  title: Requests
+  unit: COUNT
+  queries:
+    aws:
+      select: sum(aws.apigateway.Count.byResourceWithMetrics) + filter(sum(aws.apigateway.Count), WHERE aws.apigateway.Resource IS NOT NULL)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(provider.count.SampleCount)
+      from: ApiGatewaySample
+      where: provider='ApiGatewayResourceWithMetrics'
+      eventId: entityGuid
+      eventName: entityName
+errors4XxAnd5Xx:
+  title: Errors (4xx and 5xx)
+  unit: COUNT
+  queries:
+    aws:
+      select: sum(`aws.apigateway.5XXError.byResourceWithMetrics`) + sum(`aws.apigateway.4XXError.byResourceWithMetrics`) + filter(sum(`aws.apigateway.5XXError`), WHERE aws.apigateway.Resource IS NOT NULL) + filter(sum(`aws.apigateway.4XXError`), WHERE aws.apigateway.Resource IS NOT NULL)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: sum(`provider.5xxError.Sum`) + sum(`provider.4xxError.Sum`)
+      from: ApiGatewaySample
+      where: provider='ApiGatewayResourceWithMetrics'
+      eventId: entityGuid
+      eventName: entityName
+latencyMs:
+  title: Latency (ms)
+  unit: MS
+  queries:
+    aws:
+      select: filter(average(aws.apigateway.Latency), WHERE aws.apigateway.Resource IS NOT NULL) OR average(aws.apigateway.Latency.byResourceWithMetrics)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    awsSample:
+      select: average(provider.latency.Average)
+      from: ApiGatewaySample
+      where: provider='ApiGatewayResourceWithMetrics'
+      eventId: entityGuid
+      eventName: entityName

@@ -105,7 +105,7 @@ relationships:
       - APM Metrics
     conditions:
       - attribute: metricName
-        regex: "^MessageBroker/Kafka/Nodes/.*.confluent.cloud:9[0-9]+/Produce/.+"
+        regex: "^MessageBroker/Kafka/Nodes/(?!lkc-)[^/]*\\.confluent\\.cloud:9[0-9]+/Produce/.+"
     relationship:
       expires: PT75M
       relationshipType: PRODUCES
@@ -127,7 +127,7 @@ relationships:
       - APM Metrics
     conditions:
       - attribute: metricName
-        regex: "^MessageBroker/Kafka/Nodes/.*.confluent.cloud:9[0-9]+/Consume/.+"
+        regex: "^MessageBroker/Kafka/Nodes/(?!lkc-)[^/]*\\.confluent\\.cloud:9[0-9]+/Consume/.+"
     relationship:
       expires: PT75M
       relationshipType: CONSUMES
@@ -140,5 +140,55 @@ relationships:
           fields:
             - field: bootstrapServers
               attribute: metricName__4
+            - field: topic
+              attribute: metricName__6
+
+  # Fallback for private-networked (PrivateLink/PSC) clusters.
+  - name: apmProducesConfluentCloudKafkaTopicPrivateLink
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/lkc-[a-zA-Z0-9]+[^/]*\\.confluent\\.cloud:9[0-9]+/Produce/.+"
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              capture:
+                attribute: metricName__4
+                regex: "^(lkc-[a-zA-Z0-9]+)"
+            - field: topic
+              attribute: metricName__6
+
+  # See apmProducesConfluentCloudKafkaTopicPrivateLink above.
+  - name: apmConsumesConfluentCloudKafkaTopicPrivateLink
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^MessageBroker/Kafka/Nodes/lkc-[a-zA-Z0-9]+[^/]*\\.confluent\\.cloud:9[0-9]+/Consume/.+"
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              capture:
+                attribute: metricName__4
+                regex: "^(lkc-[a-zA-Z0-9]+)"
             - field: topic
               attribute: metricName__6
