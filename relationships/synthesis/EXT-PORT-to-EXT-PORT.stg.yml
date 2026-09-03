@@ -91,3 +91,34 @@ relationships:
               attribute: dstName
             - field: port
               attribute: dstPort
+
+  - name: extPortConnectsToPortByRawPortId
+    version: "1"
+    origins: [Network Monitoring]
+    conditions:
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["PORT"]
+      - attribute: deviceName
+        present: true
+      - attribute: port
+        present: true
+      - attribute: dstPort
+        present: true
+      - attribute: dstName
+        present: true
+    relationship:
+      expires: PT30M
+      relationshipType: CONNECTS_TO
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_PORT
+          fields:
+            - field: normalizedDeviceHostname
+              attribute: dstName
+            - field: portId
+              attribute: dstPort
