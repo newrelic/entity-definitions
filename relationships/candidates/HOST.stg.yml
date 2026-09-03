@@ -1,0 +1,89 @@
+category: HOST
+lookups:
+  - entityTypes:
+    - INFRA-HOST
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["host.id", "aws.ec2.host.id"]
+          field: cloudProviderId
+        - tagKeys: ["host.id", "aws.ec2.host.id"]
+          field: host.id
+    onMatch:
+     onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: HOST
+
+  - entityTypes:
+    - INFRA-HOST
+    tags:
+      matchingMode: FIRST
+      predicates:
+        - tagKeys: ["displayname"]
+          field: displayName
+        - tagKeys: ["fullhostname"]
+          field: hostName
+        - tagKeys: ["hostname"]
+          field: hostName
+        - tagKeys: ["host.name"]
+          field: hostName
+        - tagKeys: ["host.name"]
+          field: displayName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: HOST
+
+  - entityTypes:
+    - INFRA-HOST
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["hostname"]
+          field: onHostEntityHostname
+    onMatch:
+     onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: HOST
+  - entityTypes:
+    - INFRA-HOST
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: ["host.id"]
+          field: hostId
+    onMatch:
+     onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: HOST
+
+  # k8s node candidate for Host/Node<>Pod: require the node hostname AND its
+  # cluster to both agree, instead of falling back to the loose hostname-only
+  # match above. That avoids CREATE_UNINSTRUMENTED firing for every pod on
+  # every miss (this rule matches per-pod, across the whole k8s fleet - the
+  # generic candidate's uninstrumented-host fallback would otherwise inflate
+  # entity/relationship volume, which is the opposite of what NR-609078 wants).
+  # clusterName covers classic Infrastructure-agent hosts (tagged bare
+  # "clusterName"); k8s.clusterName/k8s.cluster.name cover OTel-synthesized
+  # hosts (verified against real telemetry - see PR description).
+  - entityTypes:
+    - INFRA-HOST
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["hostname", "host.name"]
+          field: host.name
+        - tagKeys: ["clusterName", "k8s.clusterName", "k8s.cluster.name"]
+          field: cluster.name
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
