@@ -1,24 +1,44 @@
-userLoggedOn:
-  title: Users logged on
-  unit: COUNT
-  query:
-    select: average(NR.SAP.SYSTEM.USER.LOGON)
-    from: Metric
-    eventId: entity.guid
+availability:
+  title: Availability 
+  unit: PERCENTAGE 
+  queries:
+    SAP:
+      select: 1 - average(NR.SAP.SYSTEM.INSTANCE.AVAILABILITY)
+      from: Metric
+      eventId: entity.guid
+    opentelemetry:
+      select: average(ABAP.System.Heartbeat)
+      from: Metric
+      where: sap.provider = 'hm' AND measure = 'okStatus'
+      eventId: entity.guid
 
 responseTime:
   title: Dialog response time
   unit: SECONDS 
-  query:
-    select: average(NR.SAP.SYSTEM.DIALOG.RESPONSE_TIME)/1000
-    from: Metric
-    eventId: entity.guid
+  queries:
+    SAP:
+      select: average(NR.SAP.SYSTEM.DIALOG.RESPONSE_TIME)
+      from: Metric
+      where: INSTANCE = 'TOTOL'
+      eventId: entity.guid
+    opentelemetry:
+      select: average(ABAP.ResponseTime)/1000
+      from: Metric
+      where: sap.provider = 'hm' AND Tasktype = 'Dialog' AND measure = 'value'
+      eventId: entity.guid
 
 errorCount:
-  title: Error count
+  title: Runtime Error 
   unit: COUNT 
-  query:
-    select: count(*)
-    from: Log
-    where: CATEGORY = 'ABAP Syslog' and level = 'Error' 
-    eventId: entity.guid
+  queries:
+    SAP:
+      select: count(*)
+      from: Log
+      where: CATEGORY = 'ABAP Runtime Error' and level = 'Error'
+      eventId: entity.guid
+    opentelemetry:
+      select: count(*)
+      from: Log
+      where: collector.name = 'nr-sap-connector' AND sap.provider = 'exm.im' AND exception.type = 'ABAP Runtime'
+      eventId: entity.guid
+
