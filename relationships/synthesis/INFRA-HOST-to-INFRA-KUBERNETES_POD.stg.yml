@@ -11,10 +11,11 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: [ "K8sPodSample" ]
-      # Pending pods are surfaced by the KSM scraper with nodeName="", and their
-      # reportingAgent is the KSM node rather than the pod's node. Skip them.
+      # Unscheduled (Pending) pods must not match: they are surfaced by the KSM
+      # scraper, so their reportingAgent is the KSM node rather than the pod's
+      # own node, which would build a HOSTS edge to the wrong host.
       - attribute: nodeName
-        regex: ".+"
+        present: true
     relationship:
       expires: PT75M
       relationshipType: HOSTS
@@ -50,11 +51,9 @@ relationships:
     conditions:
       - attribute: metricName
         anyOf: [ "kube_pod_info" ]
-      # regex rather than `present: true`: 3% of kube_pod_info rows carry
-      # k8s.node.name="" (unscheduled pods), which `present` does not screen
-      # and which would look up the empty string.
+      # unscheduled pods carry no node, so there is nothing to relate them to
       - attribute: k8s.node.name
-        regex: ".+"
+        present: true
     relationship:
       expires: PT75M
       relationshipType: HOSTS
