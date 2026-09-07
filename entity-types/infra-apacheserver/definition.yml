@@ -1,12 +1,109 @@
 domain: INFRA
 type: APACHESERVER
+
+synthesis:
+  rules:
+  # OpenTelemetry synthesis rule - new collector format
+  - ruleName: infra_apacheserver_otel_new
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - apache.server.name
+        - apache.server.port
+    name: apache.server.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: apache.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # New collector format
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/apachereceiver"
+    tags:
+      # Required resource attributes
+      apache.server.name:
+      apache.server.port:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  # OpenTelemetry synthesis rule - old collector format
+  - ruleName: infra_apacheserver_otel_old
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+        - apache.server.name
+        - apache.server.port
+    name: apache.server.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: apache.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      # Old collector format
+      - attribute: otel.library.name
+        value: "otelcol/apachereceiver"
+    tags:
+      # Required resource attributes
+      apache.server.name:
+      apache.server.port:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      # Environment resource attributes
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      # Kubernetes attributes (optional)
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      # OTel attributes
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    # For OpenTelemetry
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
 goldenTags:
-- apache.hostname
-- apache.port
-- apache.version
-# Open Telemetry
 - apache.server.name
 - apache.server.port
+- apache.version
+- host.name
+- host.id
+# Kubernetes attributes
+- k8s.cluster.name
+- k8s.namespace.name
+- k8s.pod.name
 
 configuration:
   entityExpirationTime: DAILY
@@ -18,76 +115,6 @@ dashboardTemplates:
     template: newrelic_dashboard.json
   opentelemetry:
     template: opentelemetry_dashboard.json
-
-synthesis:
-  rules:
-  # Legacy short-form library name
-  - ruleName: infra_apacheserver_composite
-    compositeIdentifier:
-      separator: ":"
-      attributes:
-        - apache.server.name
-        - apache.server.port
-    name: apache.server.name
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: eventType
-        value: Metric
-      - attribute: metricName
-        prefix: apache.
-      - attribute: instrumentation.provider
-        value: opentelemetry
-      # This filters only metrics coming from apache receiver, given that metrics
-      # could deffer between different runtime receivers. 
-      - attribute: otel.library.name
-        value: otelcol/apachereceiver
-    tags:
-      # Environment resource attributes
-      host.type:
-      cloud.provider:
-      cloud.account.id:
-      cloud.region:
-      # OTel attributes
-      otel.library.name:
-        entityTagName: instrumentation.name
-      apache.server.name:
-      apache.server.port:
-
-  # Modern full GitHub-URL library name
-  - ruleName: infra_apacheserver_otel_contrib
-    compositeIdentifier:
-      separator: ":"
-      attributes:
-        - apache.server.name
-        - apache.server.port
-    name: apache.server.name
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: eventType
-        value: Metric
-      - attribute: metricName
-        prefix: apache.
-      - attribute: instrumentation.provider
-        value: opentelemetry
-      # This filters only metrics coming from apache receiver, given that metrics
-      # could deffer between different runtime receivers. 
-      - attribute: otel.library.name
-        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/apachereceiver"
-    tags:
-      # Environment resource attributes
-      host.type:
-      cloud.provider:
-      cloud.account.id:
-      cloud.region:
-      # OTel attributes
-      otel.library.name:
-        entityTagName: instrumentation.name
-      apache.server.name:
-      apache.server.port:
-  tags:
-    # For OpenTelemetry
-    telemetry.sdk.name:
-      entityTagName: instrumentation.provider
 
 ownership:
   primaryOwner:
