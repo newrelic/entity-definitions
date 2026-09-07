@@ -3,10 +3,21 @@ type: POSTGRESQLINSTANCE
 
 synthesis:
   rules:
-    # opentelemetry (postgresqlreceiver); service.instance.id is host:port, enabled by default
+    # opentelemetry (postgresqlreceiver); receiver.nrpostgresql.useOTelSemconv defaults
+    # to enabled now, so service.instance.id is a UUID v5 (unreadable as an entity name)
+    # instead of host:port. Identify/name by server.address:server.port instead, which
+    # is stable and human-readable — only present when useOTelSemconv is enabled.
     - ruleName: infra_postgresqlinstance_service_instance_id
-      identifier: service.instance.id # host:port
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -32,10 +43,18 @@ synthesis:
 
     # opentelemetry logs (db.server.top_query / db.server.query_sample);
     # db.system.name is always present on these log events when enabled.
-    # Using service.instance.id (host:port) to match the metric rule above.
+    # Using server.address:server.port (see metric rule above) to match across signals.
     - ruleName: infra_postgresqlinstance_otel_logs
-      identifier: service.instance.id # host:port
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
