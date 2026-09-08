@@ -1,0 +1,38 @@
+relationships:
+  # INFRA:KUBERNETES_CLUSTER CONTAINS EXT:LINKERD — navigable from the cluster entity.
+  # Triggered by any CP proxy metric (linkerd_control_plane_component present).
+  - name: k8sClusterContainsExtLinkerdOtelStg
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: k8s.cluster.name
+        present: true
+      - attribute: linkerd_control_plane_ns
+        present: true
+      - attribute: linkerd_control_plane_component
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETESCLUSTER
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: LINKERD

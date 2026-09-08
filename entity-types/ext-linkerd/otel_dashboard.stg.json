@@ -62,32 +62,6 @@
           }
         },
         {
-          "title": "Process Uptime (seconds)",
-          "layout": {
-            "column": 9,
-            "row": 1,
-            "width": 4,
-            "height": 3
-          },
-          "visualization": {
-            "id": "viz.area"
-          },
-          "rawConfiguration": {
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT latest(process_uptime_seconds_total) FROM Metric TIMESERIES"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
           "title": "HTTP Traffic Authorization",
           "layout": {
             "column": 1,
@@ -117,7 +91,7 @@
           }
         },
         {
-          "title": "Process CPU (seconds)",
+          "title": "Process CPU (cores)",
           "layout": {
             "column": 7,
             "row": 4,
@@ -134,7 +108,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT latest(process_cpu_seconds_total) FROM Metric TIMESERIES"
+                "query": "SELECT rate(sum(process_cpu_seconds_total), 1 second) AS 'CPU (cores)' FROM Metric WHERE k8s.cluster.name = '{{tags.k8s.clusterName}}' AND linkerd_control_plane_ns IS NOT NULL FACET k8s.deployment.name TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -218,7 +192,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT 100.0 * filter(sum(outbound_http_route_request_statuses_total), WHERE http_status < 500) / sum(outbound_http_route_request_statuses_total) FROM Metric FACET k8s.deployment.name TIMESERIES"
+                "query": "SELECT 100.0 * filter(sum(inbound_http_statuses_total), WHERE status NOT LIKE '5%') / sum(inbound_http_statuses_total) AS 'Success %' FROM Metric WHERE instrumentation.provider = 'opentelemetry' AND k8s.cluster.name = '{{tags.k8s.clusterName}}' AND linkerd_control_plane_component IS NULL FACET k8s.deployment.name TIMESERIES"
               }
             ],
             "platformOptions": {
@@ -335,7 +309,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "SELECT 100.0 * filter(sum(inbound_http_statuses_total), WHERE status NOT LIKE '5%') / sum(inbound_http_statuses_total) AS 'Success %' FROM Metric WHERE instrumentation.provider = 'opentelemetry' AND k8s.cluster.name = '{{tags.k8s.clusterName}}' AND linkerd_control_plane_component IS NULL FACET k8s.deployment.name TIMESERIES"
+                "query": "SELECT 100.0 * filter(sum(inbound_http_statuses_total), WHERE status LIKE '5%') / sum(inbound_http_statuses_total) AS 'Error %' FROM Metric WHERE instrumentation.provider = 'opentelemetry' AND k8s.cluster.name = '{{tags.k8s.clusterName}}' AND linkerd_control_plane_component IS NULL FACET k8s.deployment.name TIMESERIES"
               }
             ],
             "platformOptions": {

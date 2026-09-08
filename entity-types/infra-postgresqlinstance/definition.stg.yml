@@ -3,10 +3,21 @@ type: POSTGRESQLINSTANCE
 
 synthesis:
   rules:
-    # opentelemetry (postgresqlreceiver); service.instance.id is host:port, enabled by default
+    # opentelemetry metrics (postgresqlreceiver / nrpostgresqlreceiver fork). With the
+    # useOTelSemconv gate on, service.instance.id becomes a UUID (unreadable as a name),
+    # so identify/name by server.address:server.port instead — only present when the gate
+    # is on (upstream: opt-in, alpha; fork: default-on, beta).
     - ruleName: infra_postgresqlinstance_service_instance_id
-      identifier: service.instance.id # host:port
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -30,12 +41,19 @@ synthesis:
         server.port:
           entityTagName: server.port
 
-    # opentelemetry logs (db.server.top_query / db.server.query_sample);
-    # db.system.name is always present on these log events when enabled.
-    # Using service.instance.id (host:port) to match the metric rule above.
+    # opentelemetry logs (db.server.top_query / db.server.query_sample). Same
+    # server.address:server.port identity/name as the metric rule above, for consistency.
     - ruleName: infra_postgresqlinstance_otel_logs
-      identifier: service.instance.id # host:port
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
