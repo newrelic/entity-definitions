@@ -1,59 +1,72 @@
 relationships:
   - name: k8sHostHostsPod
+    # reportingAgent is the entityKey of the HOST entity the reporting agent
+    # represents, so the node GUID can be built directly - no candidate lookup.
+    # This holds whichever identity the agent resolved (cloud instance id,
+    # machine-id or hostname fallback), which is why no fullHostname fallback
+    # rule is needed here.
     version: "1"
     origins:
       - Kubernetes Integration
     conditions:
       - attribute: eventType
         anyOf: [ "K8sPodSample" ]
+      # Unscheduled (Pending) pods must not match: they are surfaced by the KSM
+      # scraper, so their reportingAgent is the KSM node rather than the pod's
+      # own node, which would build a HOSTS edge to the wrong host.
+      - attribute: nodeName
+        present: true
     relationship:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: host.guid
-          entityType:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
             value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entityGuid
           entityType:
             value: KUBERNETES_POD
   - name: otelKsmK8sHostHostsPod
-    # use kube-state-metrics system metric
+    # kube-state-metrics kube_pod_info: one row per pod per scrape, and it
+    # carries the pod's own entity.guid so the target needs no lookup. The host
+    # side does need one - kube_pod_info names the node only by k8s.node.name,
+    # while the OTel HOST identifier is host.id, so the host GUID cannot be
+    # built from this datapoint. Cost is bounded: kube_pod_info is ~0.05% of
+    # K8sPodSample volume, so this lookup is immaterial next to the Kubernetes
+    # Integration rule above.
     version: "1"
-    origins: 
+    origins:
       - OpenTelemetry
     conditions:
       - attribute: metricName
-        startsWith: system.
-      - attribute: eventType
-        anyOf: [ "Metric" ]
-      - attribute: newrelic.source
-        anyOf: [ "api.metrics.otlp" ]
-      # if service.name is present, it's a service, not a host
-      - attribute: service.name
-        present: false
-      # if container.id is present, it's a container, not a host
-      - attribute: container.id
-        present: false
-      - attribute: k8s.cluster.name
+        anyOf: [ "kube_pod_info" ]
+      # unscheduled pods carry no node, so there is nothing to relate them to
+      - attribute: k8s.node.name
         present: true
     relationship:
-      expires: PT2H
+      expires: PT75M
       relationshipType: HOSTS
       source:
-        extractGuid:
-          attribute: host.guid
-          entityType:
-            value: HOST
-      target:
         lookupGuid:
-          candidateCategory: KUBERNETES_POD
+          candidateCategory: HOST
           fields:
-            - field: k8s.node.name # node name of host
-              attribute: host.name # node name of pod
-            - field: k8s.namespace.name # namespace of host
-              attribute: k8s.namespace.name # namespace of pod
-            - field: k8s.cluster.name # cluster of host
-              attribute: k8s.cluster.name # cluster of pod
+            - field: host.name
+              attribute: k8s.node.name
+            - field: cluster.name
+              attribute: k8s.cluster.name
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_POD
