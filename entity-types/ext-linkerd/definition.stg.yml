@@ -78,6 +78,33 @@ synthesis:
         - attribute: instrumentation.provider
           value: opentelemetry
 
+    # OTel spans — same composite identifier as the metric/log rules so spans from all control
+    # plane components (destination, identity, proxy-injector) attach to the same single entity.
+    # linkerd_control_plane_component: present: true scopes this to control-plane pods only.
+    - ruleName: ext_linkerd_otel_span_staging
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - linkerd_control_plane_ns
+      encodeIdentifierInGUID: true
+      compositeName:
+        fragments:
+          - attribute: k8s.cluster.name
+          - value: "-"
+          - attribute: linkerd_control_plane_ns
+      conditions:
+        - attribute: eventType
+          value: Span
+        - attribute: k8s.cluster.name
+          present: true
+        - attribute: linkerd_control_plane_ns
+          present: true
+        - attribute: linkerd_control_plane_component
+          present: true
+        - attribute: instrumentation.provider
+          value: opentelemetry
+
   tags:
     k8s.cluster.name:
       entityTagName: k8s.clusterName
