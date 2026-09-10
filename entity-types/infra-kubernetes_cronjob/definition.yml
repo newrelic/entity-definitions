@@ -13,6 +13,36 @@ goldenTags:
   - k8s.namespaceName
 synthesis:
   rules:
+    # k8scluster receiver OTel native cronjob data
+    - ruleName: infra_kubernetes_cronjob_composite_5
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.cronjob.name
+      encodeIdentifierInGUID: true
+      name: k8s.cronjob.name
+      conditions:
+        - attribute: metricName
+          prefix: k8s.cronjob.
+        - attribute: k8s.cronjob.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+      tags:
+        k8s.cronjob.name:
+          entityTagNames: [k8s.cronjobName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
     # kube-state-metrics data via opentelemetry prometheusReceiver
     - ruleName: infra_kubernetes_cronjob_composite
       compositeIdentifier:
@@ -158,6 +188,7 @@ synthesis:
       prefixedTags:
         tags.:
           ttl: P1D
+
     # newrelic integration data via nri-bundle
     - ruleName: infra_kubernetes_cronjob_entityId
       identifier: entityId
