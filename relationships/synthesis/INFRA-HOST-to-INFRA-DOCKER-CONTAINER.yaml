@@ -13,6 +13,11 @@ relationships:
         present: true
       - attribute: metricName
         startsWith: "container."
+      # if k8s.cluster.name is present, this is a k8s node reporting a pod's
+      # container metrics, which is already covered by Pod<>Container (and
+      # Host/Node<>Pod) - keep this rule for non-k8s hosts only
+      - attribute: k8s.cluster.name
+        present: false
     relationship:
       expires: PT75M
       relationshipType: HOSTS
