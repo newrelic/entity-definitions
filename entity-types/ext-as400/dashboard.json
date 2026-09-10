@@ -1,0 +1,252 @@
+{
+  "name": "AS400 Overview",
+  "description": null,
+  "pages": [
+    {
+      "name": "AS400 Overview",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "CPU utilization (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(percentProcessingUnitUsed) FROM `AS400:SystemStatusEvent` FACET entity.name TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Auxiliary storage (ASP) utilization (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(percentSystemASPUsed) FROM `AS400:SystemStatusEvent` FACET entity.name TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Users signed on",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(currentUsersSignedOn) AS 'Users signed on' FROM `AS400:SystemStatusEvent`"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Active jobs vs. batch jobs running",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(numberActiveJobsInSystem) AS 'Active jobs', latest(numberOfBatchJobsRunning) AS 'Batch jobs running' FROM `AS400:SystemStatusEvent` FACET entity.name TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Interactive performance (%)",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(percentCurrentInteractivePerformance) FROM `AS400:SystemStatusEvent` FACET entity.name TIMESERIES"
+              }
+            ],
+            "yAxisLeft": {
+              "max": 100,
+              "min": 0,
+              "zero": true
+            }
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "height": 3,
+            "width": 4
+          },
+          "title": "Job status breakdown",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM `AS400:JobList` FACET jobStatus"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Active jobs",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT jobName, jobUser, jobStatus, jobCPUUsed, jobSubsystem, jobQueue FROM `AS400:JobList` LIMIT 100"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Storage pool utilization",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT poolName, poolSize, currentThreads, maximumActiveThreads, databaseFaults, nondatabaseFaults FROM `AS400:MemoryStatusEvent` LIMIT 100"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Jobs by subsystem",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) FROM `AS400:JobList` FACET jobSubsystem"
+              }
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "height": 3,
+            "width": 6
+          },
+          "title": "Batch job queue backlog",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(numberOfBatchJobsHeldOnQueue) AS 'Held on queue', latest(numberOfBatchJobsWaitingForMessage) AS 'Waiting for message', latest(numberOfBatchJobsWaitingToRunOrAlreadyScheduled) AS 'Waiting to run' FROM `AS400:SystemStatusEvent`"
+              }
+            ],
+            "thresholds": []
+          }
+        }
+      ]
+    }
+  ]
+}
