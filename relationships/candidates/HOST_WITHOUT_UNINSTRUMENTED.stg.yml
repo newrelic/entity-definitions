@@ -1,0 +1,31 @@
+# STG-only candidate: k8s node lookup for the Host/Node<>Pod OTel KSM fallback
+# (INFRA-HOST-to-INFRA-KUBERNETES_POD.stg.yml, otelKsmK8sHostHostsPod). Split out
+# of HOST.stg.yml (NR-609078): the matcher suppresses CREATE_UNINSTRUMENTED for
+# every rule in a category if any rule in that category uses onMiss: NO_OP, so
+# this rule was silently disabling uninstrumented HOST creation for all other
+# HOST candidates too. Isolating it in its own category keeps NO_OP scoped to
+# just this rule while restoring CREATE_UNINSTRUMENTED everywhere else.
+#
+# Requires the node hostname AND its cluster to both agree, instead of falling
+# back to a loose hostname-only match. That avoids CREATE_UNINSTRUMENTED firing
+# for every pod on every miss - this rule matches per-pod, across the whole k8s
+# fleet - the generic HOST candidate's uninstrumented-host fallback would
+# otherwise inflate entity/relationship volume, which is the opposite of what
+# NR-609078 wants. clusterName covers classic Infrastructure-agent hosts (tagged
+# bare "clusterName"); k8s.clusterName/k8s.cluster.name cover OTel-synthesized
+# hosts (verified against real telemetry - see PR description).
+category: HOST_WITHOUT_UNINSTRUMENTED
+lookups:
+  - entityTypes:
+    - INFRA-HOST
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["hostname", "host.name"]
+          field: host.name
+        - tagKeys: ["clusterName", "k8s.clusterName", "k8s.cluster.name"]
+          field: cluster.name
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
