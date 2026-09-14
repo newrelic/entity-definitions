@@ -1,0 +1,40 @@
+relationships:
+  # OpenTelemetry: APM service calls RabbitMQ Exchange
+  # Triggers from OTel-instrumented app spans/metrics
+  - name: otelServiceCallsRabbitmqExchange
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["SERVICE"]
+      - attribute: messaging.system
+        anyOf: ["rabbitmq"]
+      - attribute: messaging.rabbitmq.cluster.name
+        present: true
+      - attribute: messaging.destination.name
+        present: true
+      - attribute: messaging.rabbitmq.vhost.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: RABBITMQEXCHANGE
+          fields:
+            - field: clusterName
+              attribute: messaging.rabbitmq.cluster.name
+            - field: vhost
+              attribute: messaging.rabbitmq.vhost.name
+            - field: exchangeName
+              capture:
+                attribute: messaging.destination.name # it formatted as {exhange}:{routing_key} extracting exchange only 
+                regex: '^([^:]+):.*$'
