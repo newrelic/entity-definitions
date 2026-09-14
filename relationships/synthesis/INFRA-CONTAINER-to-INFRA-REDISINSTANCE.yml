@@ -1,5 +1,5 @@
 relationships:
-  # From K8s container to redis service
+  # From K8s container to redis service - to be deprecated
   - name: ContainerContainsRedisinstance
     version: "1"
     origins:
@@ -9,6 +9,53 @@ relationships:
         anyOf: [ "RedisSample" ]
       - attribute: nr.entityType
         anyOf: ["RedisInstance","REDISINSTANCE"]
+      - attribute: clusterName
+        present: true
+      - attribute: namespace
+        present: true
+      - attribute: podName
+        present: true
+      - attribute: name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: CONTAINER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespace
+              - value: ":"
+              - attribute: podName
+              - value: ":container:"
+              - attribute: name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: REDISINSTANCE
+
+  # From K8s container to redis service
+  - name: ContainerContainsRedisinstanceMigration
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "RedisSample" ]
+      - attribute: entityType
+        anyOf: [ "RedisInstance","REDISINSTANCE" ]
       - attribute: clusterName
         present: true
       - attribute: namespace

@@ -4,7 +4,7 @@ Synthesis is the process of creating entities from telemetry. Given some rules, 
 
 Synthesis rules should be defined in the `definition.yaml` file, under a `synthesis.rules` section.
 
-A rule should define an `identifier` that will be a unique value for that domainType in one user account.
+A rule should define an `identifier` (or alternatively a `compositeIdentifier`) that will be a unique value for that domainType in one user account.
 It should also provide the attribute that defines the `name` (or alternatively a `compositeName`) of the entity.
 Finally a unique `ruleName` should be provided to identify the rule around our telemetry.
 
