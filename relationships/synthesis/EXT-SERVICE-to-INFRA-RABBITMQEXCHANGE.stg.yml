@@ -36,5 +36,9 @@ relationships:
               attribute: messaging.rabbitmq.vhost.name
             - field: exchangeName
               capture:
-                attribute: messaging.destination.name # it formatted as {exhange}:{routing_key} extracting exchange only 
-                regex: '^([^:]+):.*$'
+                # messaging.destination.name is {exchange}:{routing_key} when both are present,
+                # or just the single present part otherwise (usually the exchange, but per OTel
+                # semconv could be the routing key alone if the default exchange is used with an
+                # explicit routing key). We take the first segment.
+                attribute: messaging.destination.name
+                regex: '^([^:]+)(:.*)?$'
