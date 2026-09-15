@@ -13,6 +13,36 @@ goldenTags:
   - k8s.namespaceName
 synthesis:
   rules:
+    # k8scluster receiver OTel native job data
+    - ruleName: infra_kubernetes_job_composite_5
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.job.name
+      encodeIdentifierInGUID: true
+      name: k8s.job.name
+      conditions:
+        - attribute: metricName
+          prefix: k8s.job.
+        - attribute: k8s.job.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+      tags:
+        k8s.job.name:
+          entityTagNames: [k8s.jobName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
     # kube-state-metrics data via opentelemetry prometheusReceiver
     - ruleName: infra_kubernetes_job_composite
       compositeIdentifier:
