@@ -1,0 +1,34 @@
+domain: INFRA
+type: OCIDYNAMICROUTINGGATEWAY
+goldenTags:
+- oci.compartmentId
+- oci.displayName
+- oci.lifecycleState
+- oci.region
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  # DRG metrics are emitted per DRG attachment: dimension resourceId is the DRG
+  # attachment OCID (ocid1.drgattachment), while drgOcid is the DRG itself
+  # (ocid1.drg). The entity represents the DRG, so synthesis keys on oci.drgOcid.
+  # Ref: https://docs.oracle.com/en-us/iaas/Content/Network/Reference/drgmetrics.htm
+  - ruleName: infra_ocidynamicroutinggateway_oci_drgOcid
+    identifier: oci.drgOcid
+    name: oci.drgOcid
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.drgOcid
+      prefix: "ocid1.drg"
+    - attribute: oci.namespace
+      value: "oci_dynamic_routing_gateway"
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"

@@ -1,12 +1,15 @@
 category: AWSMQBROKER
 lookups:
   - entityTypes:
-      - domain: INFRA
-        type: AWSMQBROKER
+      - INFRA-AWSMQBROKER
     tags:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.mq.endpoint"]
+        # NR-590130: `endpoint` is the ACF-exclusive match key (auto-discovery emits the generic
+        # `endpoint` tag with the broker host via enrichMappingsWithDnsName). It gates the
+        # APM->INFRA relationship to auto-discovery. `aws.mq.endpoint` is retained for continuity
+        # (tagKeys is an OR within the predicate; either key resolves the same host value).
+        - tagKeys: ["endpoint", "aws.mq.endpoint"]
           field: endpoint
     onMatch:
       onMultipleMatches: RELATE_ALL

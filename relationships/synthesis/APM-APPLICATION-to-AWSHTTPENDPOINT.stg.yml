@@ -1,0 +1,29 @@
+relationships:
+  # APM app -> AWS HTTP edge/proxy resource (CloudFront, ELB/ALB/NLB, API Gateway,
+  # Elasticsearch/OpenSearch, and interface VPC endpoints / PrivateLink).
+  # Metrics-only + host-regex-free: the External timeslice metric is unsampled (guaranteed
+  # coverage) and its 2nd segment is the host the app actually called - including Route53 /
+  # custom friendly domains, which host-regex-gated rules miss. The candidate
+  # (AWSHTTPENDPOINT) decides whether that host maps to a known AWS entity; unmatched hosts
+  # fall through to the existing EXT-SERVICE/HTTPSERVICE stub (candidate onMiss: NO_OP).
+  - name: apmApplicationCallsAwsHttpEndpointByAddressStg
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^External/[^/]+/.*"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSHTTPENDPOINT
+          fields:
+            - field: serverAddress
+              capture:
+                attribute: metricName__2
+                regex: "^([^:/]+)"

@@ -1,0 +1,85 @@
+domain: EXT
+type: SWITCH
+synthesis:
+  rules:
+  - ruleName: ext_switch_device_name
+    name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-switch
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+
+  - ruleName: ext_switch_from_networktopology_event
+    identifier: identifier
+    name: deviceName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkTopology
+    - attribute: networkEntityType
+      value: SWITCH
+    - attribute: deviceName
+      present: true
+    - attribute: identifier
+      present: true
+    tags:
+      identifier:
+        entityTagName: identifier
+        multiValue: false
+      normalizedDeviceName:
+        entityTagName: normalizedName
+        multiValue: false
+      observedMac:
+        entityTagName: mac
+        multiValue: false
+      managementIp:
+        entityTagName: managementIp
+        multiValue: false
+      source:
+        entityTagName: source
+        multiValue: false
+      serial:
+        entityTagName: serial
+        multiValue: false
+      vendor:
+        entityTagName: vendor
+        multiValue: false
+      model:
+        entityTagName: model
+        multiValue: false
+      siteId:
+        entityTagName: siteId
+        multiValue: false
+      siteName:
+        entityTagName: siteName
+        multiValue: false
+      status:
+        entityTagName: status
+        multiValue: false
+
+goldenTags:
+- device_ip
+- container_service
+- vendor
+- model
+
+## Note - these dashboards are overwritten at the entity-ui layer by custom components built by the NR product team
+dashboardTemplates:
+  # Default
+  default:
+    template: default-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"

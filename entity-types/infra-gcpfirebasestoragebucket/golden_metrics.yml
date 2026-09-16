@@ -1,0 +1,30 @@
+ruleEvaluations:
+  title: Rule evaluations
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(gcp.firebasestorage.rules.evaluation_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+denyRate:
+  title: Deny rate
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: filter(sum(gcp.firebasestorage.rules.evaluation_count), WHERE `metric.result` = 'DENY') * 100 / sum(gcp.firebasestorage.rules.evaluation_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+errorCount:
+  title: Rule evaluation errors
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(gcp.firebasestorage.rules.evaluation_count)
+      from: Metric
+      where: "`metric.result` = 'ERROR'"
+      eventId: entity.guid
+      eventName: entity.name

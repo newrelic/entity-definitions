@@ -1,0 +1,31 @@
+cpuUtilization:
+ title: CPU Utilization (%)
+ unit: PERCENTAGE
+ queries:
+  # Cloudgenix SD-WAN
+  kentik/cloudgenix:
+    select: 100 * (sum(kentik.snmp.ssCpuRawUser) + sum(kentik.snmp.ssCpuRawSystem) + sum(kentik.snmp.ssCpuRawWait)) / (sum(kentik.snmp.ssCpuRawUser) + sum(kentik.snmp.ssCpuRawSystem) + sum(kentik.snmp.ssCpuRawIdle) + sum(kentik.snmp.ssCpuRawWait))
+    from: Metric
+    eventId: entity.guid
+  # Versa Networks appliances
+  kentik/versa_networks-appliance:
+    select: average(kentik.snmp.hrProcessorLoad)
+    from: Metric
+    where: "provider = 'kentik-sd-wan'"
+    eventId: entity.guid
+
+memoryUtilization:
+ title: Memory Utilization (%)
+ unit: PERCENTAGE
+ queries:
+  # Cloudgenix SD-WAN
+  kentik/cloudgenix:
+    select: average(kentik.snmp.MemoryUtilization)
+    from: Metric
+    eventId: entity.guid
+  # Versa Networks appliances
+  kentik/versa_networks-appliance:
+    select: 100 * sum(kentik.snmp.hrStorageUsed) / sum(kentik.snmp.hrStorageSize)
+    from: Metric
+    where: "provider = 'kentik-sd-wan' AND storage_description LIKE 'RAM'"
+    eventId: entity.guid

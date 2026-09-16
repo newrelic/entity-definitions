@@ -1,0 +1,43 @@
+domain: INFRA
+type: OCIFASTCONNECT
+goldenTags:
+- oci.availabilityDomain
+- oci.compartmentId
+- oci.region
+- oci.lifecycleState
+- oci.displayName
+- oci.bandwidthShapeName
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  - ruleName: infra_ocifastconnect_oci_resourceId
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.virtualcircuit"
+    - attribute: oci.namespace
+      value: "oci_fastconnect"
+  - ruleName: infra_ocifastconnect_oci_resourceId_2
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.crossconnectgroup"
+    - attribute: oci.namespace
+      value: "oci_fastconnect"
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"

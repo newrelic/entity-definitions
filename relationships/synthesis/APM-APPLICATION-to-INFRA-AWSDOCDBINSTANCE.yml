@@ -30,6 +30,13 @@ relationships:
             # Extract port from metric name for additional matching when available
             - field: port
               attribute: metricName__5
+            # Extract cluster identifier when the hostname is a DocDB cluster endpoint
+            # (e.g. .NET agent reports the cluster hostname, not an instance hostname:
+            # docdb-sandbox.cluster-xyz.us-west-2.docdb.amazonaws.com -> docdb-sandbox)
+            - field: clusterIdentifier
+              capture:
+                attribute: metricName__4
+                regex: '^([^.]+)\.cluster-[^.]+\..*\.docdb\.amazonaws\.com$'
 
   # Pattern 2: Distributed Tracing - Span with peer.hostname pointing to DocumentDB
   - name: apmApplicationCallsAwsDocDbInstanceFromSpan
@@ -62,3 +69,10 @@ relationships:
             # Also pass port for additional matching when available
             - field: port
               attribute: server.port
+            # Extract cluster identifier when the hostname is a DocDB cluster endpoint
+            # (e.g. .NET agent reports the cluster hostname, not an instance hostname:
+            # docdb-sandbox.cluster-xyz.us-west-2.docdb.amazonaws.com -> docdb-sandbox)
+            - field: clusterIdentifier
+              capture:
+                attribute: peer.hostname
+                regex: '^([^.]+)\.cluster-[^.]+\..*\.docdb\.amazonaws\.com$'

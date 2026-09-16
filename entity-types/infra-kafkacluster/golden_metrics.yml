@@ -42,6 +42,11 @@ partitionCount:
       from: Metric
       where: metricName='kafka.cluster.partition.count' and getField(kafka.cluster.partition.count , 'latest') > 0
       eventId: entity.guid
+    gcp:
+      select: latest(gcp.managedkafka.partitions)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
 
 offlinePartitions:
   title: Offline partitions
@@ -57,3 +62,8 @@ offlinePartitions:
       from: Metric
       where: metricName='kafka.partition.offline'
       eventId: entity.guid
+    gcp:
+      select: max(gcp.managedkafka.offline_partitions)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name

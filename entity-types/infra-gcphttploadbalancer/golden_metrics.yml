@@ -13,16 +13,16 @@ backendRequestsRate:
       eventId: entityGuid
       eventName: entityName
 backendLatencyMs:
-  title: Backend Latency
+  title: Backend Latency p95 (ms)
   unit: MS
   queries:
     gcp:
-      select: average(gcp.loadbalancing.https.backend_latencies) / 1000
+      select: percentile(gcp.loadbalancing.https.backend_latencies, 95)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(`https.BackendLatencies`) / 1000
+      select: percentile(`https.BackendLatencies`, 95)
       from: GcpHttpLoadBalancerSample
       eventId: entityGuid
       eventName: entityName
@@ -41,16 +41,16 @@ requestsRate:
       eventId: entityGuid
       eventName: entityName
 totalLatencyMs:
-  title: Total latency
+  title: Total latency p95 (ms)
   unit: MS
   queries:
     gcp:
-      select: average(gcp.loadbalancing.https.total_latencies) / 1000
+      select: percentile(gcp.loadbalancing.https.total_latencies, 95)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
     gcpSample:
-      select: average(`https.TotalLatencies`) / 1000
+      select: percentile(`https.TotalLatencies`, 95)
       from: GcpHttpLoadBalancerSample
       eventId: entityGuid
       eventName: entityName

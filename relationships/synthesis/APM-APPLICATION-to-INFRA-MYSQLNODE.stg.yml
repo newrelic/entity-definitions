@@ -1,0 +1,63 @@
+relationships:
+  # STAGING ONLY.
+  # APM native agent to INFRA MYSQLNODE, resolved by database host + port.
+  # Native-agent datastore spans emit server.address and server.port describing the
+  # database connection target (DatastoreParameters.getHost()/getPort()), so the
+  # host+port candidate lookup resolves to a single MySQL instance. This avoids the
+  # host.name-only fan-out where one host running multiple instances relates to all
+  # of them. This intentionally targets NATIVE APM spans (Query Comments / query-level
+  # linking is a native-APM-agent feature), so the OTLP-specific newrelic.source filter
+  # is omitted. Mirrors APM-APPLICATION-to-INFRA-MSSQLINSTANCE.stg.yml.
+  - name: apmApplicationCallsMysqlNodeByHostPortStaging
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: db.system
+        anyOf: ["mysql"]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MYSQLNODE
+          fields:
+            - field: serverAddress
+              attribute: server.address
+            - field: serverPort
+              attribute: server.port
+
+  # Always-on native-APM path (no distributed-tracing / sampling dependency):
+  # the datastore timeslice metric "Datastore/instance/MySQL/$host/$port" is emitted for
+  # every monitored MySQL call, so host+port are parsed from the metric-name segments
+  # (metricName__4 / metricName__5) and resolved via the MYSQLNODE candidate. Mirrors
+  # apmApplicationCallsInfraMSSQLInstanceTimeslice. Staging-only because the MYSQLNODE
+  # candidate is currently staging-only.
+  - name: apmApplicationCallsInfraMysqlNodeTimeslice
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^[Dd]atastore/instance/MySQL/[^/]+/[0-9]+"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: MYSQLNODE
+          fields:
+            - field: serverAddress
+              attribute: metricName__4
+            - field: serverPort
+              attribute: metricName__5

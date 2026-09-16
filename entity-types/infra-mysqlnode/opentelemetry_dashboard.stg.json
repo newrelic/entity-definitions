@@ -1,147 +1,426 @@
 {
-  "name": "MysqlSample",
+  "name": "MySQL - OpenTelemetry",
+  "description": "MySQL monitoring for data sent via the OpenTelemetry Collector mysqlreceiver. Widgets titled 'requires enabling' use metrics that are disabled by default in the receiver and must be turned on in the collector configuration.",
   "pages": [
     {
-      "name": "MysqlSample",
+      "name": "Core Metric Details",
+      "description": "Connections, buffer pool health, disk I/O, locking, storage, and query-plan quality for a MySQL instance instrumented with the OpenTelemetry mysqlreceiver.",
       "widgets": [
         {
-          "layout": {
-            "column": 1,
-            "row": 1,
-            "width": 12,
-            "height": 3
-          },
-          "title": "Number of Operations",
-          "visualization": {
-            "id": "viz.area"
-          },
+          "title": "",
+          "layout": { "column": 1, "row": 1, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
           "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(`mysql.operations`) as 'Total Operations' FROM Metric TIMESERIES auto"
-              }
-            ]
+            "text": "### Connections & Throughput\n_Active connections and overall query rate — the batch-requests analog._"
           }
         },
         {
-          "layout": {
-            "column": 1,
-            "row": 4,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Number of Queries Executed",
-          "visualization": {
-            "id": "viz.line"
-          },
+          "title": "Connections",
+          "layout": { "column": 1, "row": 2, "width": 2, "height": 3 },
+          "visualization": { "id": "viz.billboard" },
           "rawConfiguration": {
             "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(mysql.query.count) as 'Queries' FROM Metric  TIMESERIES auto"
-              }
-            ]
+              { "accountId": 0, "query": "FROM Metric SELECT latest(mysql.threads) AS 'Connections' WHERE kind = 'connected'" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
           }
         },
         {
-          "layout": {
-            "column": 7,
-            "row": 4,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Slow queries per minute",
-          "visualization": {
-            "id": "viz.area"
-          },
+          "title": "Connections over time",
+          "layout": { "column": 3, "row": 2, "width": 5, "height": 3 },
+          "visualization": { "id": "viz.line" },
           "rawConfiguration": {
             "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(`mysql.query.slow.count`) as 'Slow queries' FROM Metric  TIMESERIES auto"
-              }
-            ]
+              { "accountId": 0, "query": "FROM Metric SELECT latest(mysql.threads) AS 'connections' WHERE kind = 'connected' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
           }
         },
         {
-          "layout": {
-            "column": 1,
-            "row": 7,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Active connections",
-          "visualization": {
-            "id": "viz.billboard"
-          },
+          "title": "Query throughput (queries / sec) (requires enabling)",
+          "layout": { "column": 8, "row": 2, "width": 5, "height": 3 },
+          "visualization": { "id": "viz.area" },
           "rawConfiguration": {
             "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT latest(mysql.threads) AS 'Active Connections' FROM Metric WHERE kind = 'connected'"
-              }
-            ]
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.query.count), 1 second) AS 'queries/sec' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
           }
         },
         {
-          "layout": {
-            "column": 7,
-            "row": 7,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Max connections",
-          "visualization": {
-            "id": "viz.line"
-          },
+          "title": "",
+          "layout": { "column": 1, "row": 5, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
           "rawConfiguration": {
-            "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT max(`mysql.connection.count`) as 'Max connections' FROM Metric TIMESERIES auto"
-              }
-            ]
+            "text": "### Buffer Pool & Memory\n_InnoDB buffer pool hit ratio, utilization, and memory pressure._"
           }
         },
         {
-          "layout": {
-            "column": 1,
-            "row": 10,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Read and written InnoDB bytes per second",
-          "visualization": {
-            "id": "viz.line"
-          },
+          "title": "Buffer pool read hit ratio (%)",
+          "layout": { "column": 1, "row": 6, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.line" },
           "rawConfiguration": {
             "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(`mysql.buffer_pool.usage`) as 'Total InnoDB Bytes' FROM Metric  TIMESERIES auto"
-              }
-            ]
+              { "accountId": 0, "query": "FROM Metric SELECT (1 - (filter(sum(mysql.buffer_pool.operations), WHERE operation = 'reads') / filter(sum(mysql.buffer_pool.operations), WHERE operation = 'read_requests'))) * 100 AS 'BP read hit %' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
           }
         },
         {
-          "layout": {
-            "column": 7,
-            "row": 10,
-            "width": 6,
-            "height": 3
-          },
-          "title": "Received and sent bytes per second",
-          "visualization": {
-            "id": "viz.area"
-          },
+          "title": "Buffer pool utilization (%)",
+          "layout": { "column": 5, "row": 6, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.line" },
           "rawConfiguration": {
             "nrqlQueries": [
-              {
-                "accountId": 0,
-                "query": "SELECT average(`mysql.client.network.io`) FROM Metric  TIMESERIES auto"
-              }
-            ]
+              { "accountId": 0, "query": "FROM Metric SELECT (sum(mysql.buffer_pool.usage)/sum(`mysql.buffer_pool.limit`))*100 AS 'used %' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Buffer pool waits for free page / sec",
+          "layout": { "column": 9, "row": 6, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.buffer_pool.operations), 1 second) AS 'wait_free/sec' WHERE operation = 'wait_free' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Buffer pool pages by area (kind)",
+          "layout": { "column": 1, "row": 9, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT latest(mysql.buffer_pool.pages) AS 'pages' WHERE kind != 'total' FACET kind TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Buffer pool data pages (clean vs dirty)",
+          "layout": { "column": 7, "row": 9, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT latest(mysql.buffer_pool.data_pages) AS 'pages' FACET status TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "",
+          "layout": { "column": 1, "row": 12, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
+          "rawConfiguration": {
+            "text": "### Disk I/O & Durability\n_Physical read/write operations, redo log, and page-flush activity._"
+          }
+        },
+        {
+          "title": "InnoDB I/O operations / sec",
+          "layout": { "column": 1, "row": 13, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.operations), 1 second) AS 'ops/sec' FACET operation TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Redo log operations / sec",
+          "layout": { "column": 5, "row": 13, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.log_operations), 1 second) AS 'log/sec' FACET operation TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "InnoDB durability writes / sec",
+          "layout": { "column": 9, "row": 13, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.double_writes), 1 second) AS 'double writes/sec', rate(sum(mysql.buffer_pool.page_flushes), 1 second) AS 'page flushes/sec' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "",
+          "layout": { "column": 1, "row": 16, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
+          "rawConfiguration": {
+            "text": "### Concurrency & Locking\n_Active worker threads and table / row lock contention._"
+          }
+        },
+        {
+          "title": "Running threads (active workload)",
+          "layout": { "column": 1, "row": 17, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT latest(mysql.threads) AS 'running' WHERE kind = 'running' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Row lock waits / sec",
+          "layout": { "column": 5, "row": 17, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.row_locks), 1 second) AS 'waits/sec' WHERE kind = 'waits' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Table locks — immediate vs waited / sec",
+          "layout": { "column": 9, "row": 17, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.locks), 1 second) AS 'locks/sec' FACET kind TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Row lock wait time / sec",
+          "layout": { "column": 1, "row": 20, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.row_locks), 1 second) AS 'wait time/sec' WHERE kind = 'time' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "",
+          "layout": { "column": 1, "row": 23, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
+          "rawConfiguration": {
+            "text": "### Storage Size & Health\n_On-disk data size per table and the slow-query rate._"
+          }
+        },
+        {
+          "title": "Data size by table (Mb) (requires enabling)",
+          "layout": { "column": 1, "row": 24, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.bar" },
+          "rawConfiguration": {
+            "colors": { "colorPalette": "consistent" },
+            "facet": { "showOtherSeries": false },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT latest(mysql.table.size)/1024 AS 'Size (Mb)' WHERE kind = 'data' FACET schema, table LIMIT 15" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Slow queries / sec (requires enabling)",
+          "layout": { "column": 7, "row": 24, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.query.slow.count), 1 second) AS 'slow/sec' TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "",
+          "layout": { "column": 1, "row": 27, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
+          "rawConfiguration": {
+            "text": "### Connection Health\n_Connection failures, uptime, and peak connection watermark._"
+          }
+        },
+        {
+          "title": "Uptime (hours)",
+          "layout": { "column": 1, "row": 28, "width": 3, "height": 3 },
+          "visualization": { "id": "viz.billboard" },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT latest(mysql.uptime)/3600 AS 'Uptime (hours)'" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Max used connections (requires enabling)",
+          "layout": { "column": 4, "row": 28, "width": 3, "height": 3 },
+          "visualization": { "id": "viz.billboard" },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT latest(mysql.max_used_connections) AS 'Max used connections'" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Connection errors / sec (requires enabling)",
+          "layout": { "column": 7, "row": 28, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.connection.errors), 1 second) AS 'errors/sec' FACET error TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "",
+          "layout": { "column": 1, "row": 31, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
+          "rawConfiguration": {
+            "text": "### Query Plan Quality\n_Table-scan joins and sort activity — signals a missing index or memory pressure._"
+          }
+        },
+        {
+          "title": "Joins (table scans) / sec (requires enabling)",
+          "layout": { "column": 1, "row": 32, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.joins), 1 second) AS 'joins/sec' FACET kind TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Sorts / sec",
+          "layout": { "column": 7, "row": 32, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.sorts), 1 second) AS 'sorts/sec' FACET kind TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "",
+          "layout": { "column": 1, "row": 35, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
+          "rawConfiguration": {
+            "text": "### Command Mix\n_Breakdown of SQL command types and row-level DML throughput._"
+          }
+        },
+        {
+          "title": "Commands / sec (requires enabling)",
+          "layout": { "column": 1, "row": 36, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.commands), 1 second) AS 'commands/sec' FACET command TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Row operations / sec",
+          "layout": { "column": 7, "row": 36, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.area" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.row_operations), 1 second) AS 'row ops/sec' FACET operation TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "",
+          "layout": { "column": 1, "row": 39, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
+          "rawConfiguration": {
+            "text": "### Temp Resources\n_Temporary table and file creation — a classic missing-index / memory-pressure signal._"
+          }
+        },
+        {
+          "title": "Disk temp tables created / sec",
+          "layout": { "column": 1, "row": 40, "width": 4, "height": 3 },
+          "visualization": { "id": "viz.billboard" },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.tmp_resources), 1 second) AS 'disk tmp tables/sec' WHERE resource = 'disk_tables'" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Temp resources created / sec (by type)",
+          "layout": { "column": 5, "row": 40, "width": 8, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.tmp_resources), 1 second) AS 'created/sec' FACET resource TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "",
+          "layout": { "column": 1, "row": 43, "width": 12, "height": 1 },
+          "visualization": { "id": "viz.markdown" },
+          "rawConfiguration": {
+            "text": "### Cache & Resource Efficiency\n_Table cache hit rate and file/table-definition descriptor churn._"
+          }
+        },
+        {
+          "title": "Table open cache / sec (requires enabling)",
+          "layout": { "column": 1, "row": 44, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.table_open_cache), 1 second) AS 'cache lookups/sec' FACET status TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
+          }
+        },
+        {
+          "title": "Opened resources / sec",
+          "layout": { "column": 7, "row": 44, "width": 6, "height": 3 },
+          "visualization": { "id": "viz.line" },
+          "rawConfiguration": {
+            "facet": { "showOtherSeries": false },
+            "legend": { "enabled": true },
+            "nrqlQueries": [
+              { "accountId": 0, "query": "FROM Metric SELECT rate(sum(mysql.opened_resources), 1 second) AS 'opened/sec' FACET kind TIMESERIES" }
+            ],
+            "platformOptions": { "ignoreTimeRange": false }
           }
         }
       ]

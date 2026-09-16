@@ -1,0 +1,77 @@
+relationships:
+  # OTel (EXT-SERVICE) -> Azure Service Bus namespace. NR-573289.
+  # Namespace-level only: Azure autodiscovery creates one AZURESERVICEBUSNAMESPACE entity per namespace;
+  # there are no per-queue/per-topic entities. Both queue and topic spans carry the same server.address
+  # (the namespace FQDN), so both resolve to the namespace entity. messaging.destination.name (queue/topic)
+  # is not used. Mirrors the APM PRODUCES/CONSUMES split via span.kind, using OTel messaging conventions.
+  - name: extServiceProducesToAzureServiceBusNamespace
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "servicebus" ]
+      - attribute: server.address
+        regex: '^[a-z0-9\-]+\.servicebus\.windows\.net$'
+      - attribute: span.kind
+        anyOf: [ "producer" ]
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURESERVICEBUSNAMESPACE
+          fields:
+            - field: endpoint
+              attribute: server.address
+
+  - name: extServiceConsumesFromAzureServiceBusNamespace
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "servicebus" ]
+      - attribute: server.address
+        regex: '^[a-z0-9\-]+\.servicebus\.windows\.net$'
+      - attribute: span.kind
+        anyOf: [ "consumer" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZURESERVICEBUSNAMESPACE
+          fields:
+            - field: endpoint
+              attribute: server.address

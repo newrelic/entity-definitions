@@ -1,8 +1,7 @@
 category: KAFKATOPIC
 lookups:
   - entityTypes:
-    - domain: INFRA
-      type: AWSMSKTOPIC
+    - INFRA-AWSMSKTOPIC
     tags:
       matchingMode: ALL
       predicates:
@@ -19,15 +18,32 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
   
+  # bootstrapServers match (public/Basic/Standard clusters).
   - entityTypes:
-    - domain: INFRA
-      type: CONFLUENTCLOUDKAFKATOPIC
+    - INFRA-CONFLUENTCLOUDKAFKATOPIC
     tags:
       matchingMode: ALL
       predicates:
         - tagKeys: ["confluent.clusterBootstrapServers", "bootstrap.servers"]
           field: bootstrapServers
         - tagKeys: ["confluent.kafka.server.metric.topic", "topic"]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
+
+  # clusterId match, for private-networked (PrivateLink/PSC) clusters.
+  - entityTypes:
+    - INFRA-CONFLUENTCLOUDKAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["confluent.clusterId"]
+          field: clusterId
+        - tagKeys: ["confluent.kafka.server.metric.topic"]
           field: topic
     onMatch:
       onMultipleMatches: RELATE_ALL

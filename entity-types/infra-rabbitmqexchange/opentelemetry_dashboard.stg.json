@@ -1,0 +1,68 @@
+{
+  "name": "RabbitMQ Exchange Metrics (OpenTelemetry)",
+  "pages": [
+    {
+      "name": "RabbitMQ Exchange Metrics",
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Messages Published In (Rate)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT rate(sum(rabbitmq.exchange.messages.published_in), 1 second) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.line"
+          },
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Messages Published Out (Rate)",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT rate(sum(rabbitmq.exchange.messages.published_out), 1 second) WHERE instrumentation.provider = 'opentelemetry' TIMESERIES AUTO",
+                "accountId": 0}
+            ]
+          }
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "height": 4,
+            "width": 4
+          },
+          "title": "Publish In vs Out",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "query": "FROM Metric SELECT latest(rabbitmq.exchange.messages.published_in) AS 'Published In', latest(rabbitmq.exchange.messages.published_out) AS 'Published Out' WHERE instrumentation.provider = 'opentelemetry'",
+                "accountId": 0}
+            ],
+            "thresholds": []
+          }
+        }
+      ]
+    }
+  ]
+}
