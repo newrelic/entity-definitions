@@ -51,3 +51,29 @@ relationships:
               attribute: metricName__4
             - field: serverPort
               attribute: metricName__5
+
+  # Distributed Tracing rule for NR native APM agents (Java + .NET).
+  # NR native agents emit server.address on DB spans.
+  - name: apmApplicationCallsPostgreSQLInstanceByHostStaging
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: db.system
+        anyOf: ["postgresql", "PostgreSQL"]
+      - attribute: server.address
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: POSTGRESQLINSTANCE
+          fields:
+            - field: serverAddress
+              attribute: server.address

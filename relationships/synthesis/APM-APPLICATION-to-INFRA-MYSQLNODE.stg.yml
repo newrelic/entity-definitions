@@ -13,11 +13,11 @@ relationships:
     origins:
       - Distributed Tracing
     conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
       - attribute: db.system
         anyOf: ["mysql"]
       - attribute: server.address
-        present: true
-      - attribute: server.port
         present: true
     relationship:
       expires: PT75M
@@ -31,8 +31,6 @@ relationships:
           fields:
             - field: serverAddress
               attribute: server.address
-            - field: serverPort
-              attribute: server.port
 
   # Always-on native-APM path (no distributed-tracing / sampling dependency):
   # the datastore timeslice metric "Datastore/instance/MySQL/$host/$port" is emitted for
