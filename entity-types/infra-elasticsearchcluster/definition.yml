@@ -100,6 +100,28 @@ synthesis:
       host.name:
         ttl: P1D
 
+  # Distributed Tracing: attach Elasticsearch's own OTLP server spans to the cluster entity
+  # (same identifier/encoding as the metric rules, so spans and metrics resolve to one GUID).
+  - ruleName: infra_elasticsearchcluster_otel_span
+    identifier: es.cluster.name
+    name: es.cluster.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Span
+    - attribute: instrumentation.provider
+      value: opentelemetry
+    - attribute: otel.library.name
+      value: "elasticsearch"
+    - attribute: es.cluster.name
+      present: true
+    tags:
+      otel.library.name:
+        entityTagName: instrumentation.name
+      es.cluster.name:
+      host.name:
+        ttl: P1D
+
 dashboardTemplates:
   opentelemetry:
     template: opentelemetry_dashboard.json
