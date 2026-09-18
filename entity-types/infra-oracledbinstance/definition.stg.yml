@@ -88,8 +88,32 @@ synthesis:
         server.port:
           entityTagName:  server.port
 
-    
-  
+    # nrsp-pipelines db-event-namespace processor stamps db.server.* log events with a
+    # curated eventType (DbServerTopQuery, DbServerQuerySample, DbServerQueryPlan,
+    # DbServerTopProcedure, DbServerSessionWaitSample) and a `namespace` attribute. The
+    # DbServer prefix is shared across DB engines, so db.system.name disambiguates Oracle.
+    - ruleName: infra_oracledbinstance_db_server_events
+      identifier: host.name
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: db.system.name
+          value: oracle
+      tags:
+        namespace:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+
+
+
 goldenTags: []
 configuration:
   entityExpirationTime: DAILY
