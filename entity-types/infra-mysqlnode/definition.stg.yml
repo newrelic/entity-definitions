@@ -61,6 +61,29 @@ synthesis:
         server.port:
           entityTagName: server.port
 
+    # nrsp-pipelines db-event-namespace processor stamps db.server.* log events with a
+    # curated eventType (DbServerTopQuery, DbServerQuerySample) and a `namespace` attribute. The
+    # DbServer prefix is shared across DB engines, so db.system.name disambiguates MySQL.
+    - ruleName: infra_mysqlnode_db_server_events
+      identifier: mysql.instance.endpoint
+      name: mysql.instance.endpoint
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: db.system.name
+          value: mysql
+      tags:
+        namespace:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+
     # nri-mysql / MysqlSample
     - ruleName: infra_mysqlnode_entityId
       identifier: entityId
