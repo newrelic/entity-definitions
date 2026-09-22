@@ -49,9 +49,20 @@ synthesis:
           entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_host_name_metrics_nrfork_2
-      identifier: service.instance.id
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
       conditions:
         - attribute: eventType
           value: Metric
@@ -124,8 +135,16 @@ synthesis:
           entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_service.instance.id_metrics_sqlqueryreceiver
-      identifier: service.instance.id
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -141,6 +160,10 @@ synthesis:
           entityTagName: instrumentation.name
         instrumentation.provider:
           entityTagName: instrumentation.provider
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
         otel.library.version:
           entityTagName: instrumentation.version
 
@@ -172,9 +195,20 @@ synthesis:
           entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_host_name_logs_nrfork_2
-      identifier: service.instance.id
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
       conditions:
         - attribute: eventType
           value: Log
@@ -226,8 +260,16 @@ synthesis:
           entityTagNames: [server.address, endpoint]
 
     - ruleName: infra_mssqlinstance_db_server_events_2
-      identifier: service.instance.id
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
