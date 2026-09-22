@@ -5,14 +5,17 @@ configuration:
   alertable: true
 synthesis:
   rules:
-    # k8scluster receiver OTel native data
+    # kubeletstats receiver OTel native node data
+    # No k8s.cluster.* metrics exist, so we key off k8s.node.uptime instead.
+    # That metric is excluded from HOST's k8s.node.* matching (see infra-host) to
+    # keep the two entity types mutually exclusive on this metric.
     - ruleName: infra_kubernetescluster_k8s_cluster_name_5
       identifier: k8s.cluster.name
       encodeIdentifierInGUID: true
       name: k8s.cluster.name
       conditions:
         - attribute: metricName
-          prefix: k8s.cluster.
+          value: k8s.node.uptime
         - attribute: k8s.cluster.name
           present: true
       tags:
