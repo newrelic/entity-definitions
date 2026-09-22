@@ -66,8 +66,10 @@ synthesis:
           entityTagName: instrumentation.name
         instrumentation.provider:
           entityTagName: instrumentation.provider
-        sqlserver.host.name:
-          entityTagNames: [server.address, endpoint]
+        server.address:
+          entityTagNames: [server.address]
+        server.port:
+          entityTagName: server.port
         otel.library.version:
           entityTagName: instrumentation.version
 
@@ -189,12 +191,61 @@ synthesis:
           entityTagName: instrumentation.name
         instrumentation.provider:
           entityTagName: instrumentation.provider
-        sqlserver.host.name:
-          entityTagNames: [server.address, endpoint]
+        server.address:
+          entityTagNames: [server.address]
+        server.port:
+          entityTagName: server.port
         db.namespace:
           entityTagName: database.name
         otel.library.version:
           entityTagName: instrumentation.version
+
+    # nrsp-pipelines db-event-namespace processor stamps db.server.* log events with a
+    # curated eventType (DbServerTopQuery, DbServerQuerySample, DbServerQueryPlan,
+    # DbServerTopProcedure) and a `namespace` attribute. The
+    # DbServer prefix is shared across DB engines, so db.system.name disambiguates SQL Server.
+    # Dual-keyed on sqlserver.host.name presence, matching the other mssqlinstance log rules.
+    - ruleName: infra_mssqlinstance_db_server_events
+      identifier: host.name
+      name: host.name
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: db.system.name
+          value: microsoft.sql_server
+        - attribute: sqlserver.host.name
+          present: false
+      tags:
+        namespace:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        host.name:
+          entityTagNames: [server.address, endpoint]
+
+    - ruleName: infra_mssqlinstance_db_server_events_2
+      identifier: service.instance.id
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: db.system.name
+          value: microsoft.sql_server
+        - attribute: sqlserver.host.name
+          present: true
+      tags:
+        namespace:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address]
+        server.port:
+          entityTagName: server.port
 
 
 goldenTags:
