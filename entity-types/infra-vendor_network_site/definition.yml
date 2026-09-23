@@ -1,0 +1,66 @@
+
+domain: INFRA
+type: VENDOR_NETWORK_SITE
+synthesis:
+  rules:
+    - ruleName: infra_vendor_network_site_id
+      name: vendorSiteName
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - vendor
+          - vendorSiteId
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: instrumentation.name
+          value: site_entity
+        - attribute: site
+          present: true
+      tags:
+        vendorSiteId:
+          entityTagName: vendorSiteId
+          multiValue: false
+        vendorSiteName:
+          entityTagName: vendorSiteName
+          multiValue: false
+        vendorOrgId:
+          entityTagName: vendorOrgId
+          multiValue: false
+        vendor:
+          entityTagName: vendor
+          multiValue: false
+        region:
+          entityTagName: region
+          multiValue: false
+        latitude:
+          entityTagName: latitude
+          multiValue: false
+        longitude:
+          entityTagName: longitude
+          multiValue: false
+        timezone:
+          entityTagName: timezone
+          multiValue: false
+        instrumentation.name:
+          entityTagName: instrumentation.name
+          multiValue: false
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+          multiValue: false
+        entity.name:
+          entityTagName: entity.name
+          multiValue: false
+        entity.type:
+          entityTagName: entity.type
+          multiValue: false
+        entity.guid:
+          entityTagName: entity.guid
+          multiValue: false
+      # Add a 1 day ttl on all tags ingested in metric api using tags. prefix
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"
