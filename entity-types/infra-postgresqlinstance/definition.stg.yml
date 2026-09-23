@@ -76,6 +76,38 @@ synthesis:
         server.port:
           entityTagName: server.port
 
+    # nrsp-pipelines db-event-namespace processor stamps db.server.* log events with a
+    # curated eventType (DbServerTopQuery, DbServerQuerySample, DbServerQueryPlan,
+    # DbServerTopProcedure, DbServerSessionWaitSample) and a `namespace` attribute. The
+    # DbServer prefix is shared across DB engines, so db.system.name disambiguates Postgres.
+    - ruleName: infra_postgresqlinstance_db_server_events
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: db.system.name
+          value: postgresql
+      tags:
+        namespace:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+
     # nri-postgresql / PostgresqlInstanceSample
     - ruleName: infra_postgresqlinstance_entityId
       identifier: entityId
