@@ -226,6 +226,29 @@ synthesis:
           entityTagNames: [server.address, endpoint]
 
     - ruleName: infra_mssqlinstance_db_server_events_2
+      identifier: service.instance.id
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: db.system.name
+          value: microsoft.sql_server
+        - attribute: sqlserver.host.name
+          present: true
+      tags:
+        namespace:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address]
+        server.port:
+          entityTagName: server.port
+
+
+    - ruleName: infra_mssqlinstance_db_server_events_3
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -242,7 +265,7 @@ synthesis:
           prefix: DbServer
         - attribute: db.system.name
           value: microsoft.sql_server
-        - attribute: sqlserver.host.name
+        - attribute: sql.host.name
           present: true
       tags:
         namespace:
