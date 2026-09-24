@@ -36,7 +36,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT latest(postgresql.backends) AS 'Active Backends' FROM Metric FACET db.namespace TIMESERIES AUTO LIMIT MAX",
+                "query": "SELECT latest(postgresql.backends) AS 'Active Backends' FROM Metric WHERE metricName = 'postgresql.backends' FACET db.namespace TIMESERIES AUTO LIMIT MAX",
                 "accountId": 0}
             ]
           }
@@ -55,7 +55,7 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT latest(postgresql.connection.max) AS 'Max Connections' FROM Metric",
+                "query": "SELECT latest(postgresql.connection.max) AS 'Max Connections' FROM Metric WHERE metricName = 'postgresql.connection.max'",
                 "accountId": 0}
             ]
           }
@@ -74,7 +74,7 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT latest(postgresql.database.count) AS 'Databases', latest(postgresql.table.count) AS 'Tables' FROM Metric",
+                "query": "SELECT latest(postgresql.database.count) AS 'Databases', latest(postgresql.table.count) AS 'Tables' FROM Metric WHERE metricName IN ('postgresql.database.count', 'postgresql.table.count')",
                 "accountId": 0}
             ]
           }
@@ -93,7 +93,7 @@
           "rawConfiguration": {
             "nrqlQueries": [
               {
-                "query": "SELECT latest(postgresql.db_size)/1073741824 AS 'DB Size (GB)' FROM Metric FACET db.namespace LIMIT MAX",
+                "query": "SELECT latest(postgresql.db_size)/1073741824 AS 'DB Size (GB)' FROM Metric WHERE metricName = 'postgresql.db_size' FACET db.namespace LIMIT MAX",
                 "accountId": 0}
             ]
           }
@@ -149,7 +149,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT sum(postgresql.deadlocks) AS 'Deadlocks' FROM Metric FACET db.namespace TIMESERIES AUTO LIMIT MAX",
+                "query": "SELECT sum(postgresql.deadlocks) AS 'Deadlocks' FROM Metric WHERE metricName = 'postgresql.deadlocks' FACET db.namespace TIMESERIES AUTO LIMIT MAX",
                 "accountId": 0}
             ]
           }
@@ -186,7 +186,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT rate(sum(postgresql.commits), 1 minute) AS 'Commits/min', rate(sum(postgresql.rollbacks), 1 minute) AS 'Rollbacks/min' FROM Metric FACET db.namespace TIMESERIES AUTO LIMIT MAX",
+                "query": "SELECT rate(sum(postgresql.commits), 1 minute) AS 'Commits/min', rate(sum(postgresql.rollbacks), 1 minute) AS 'Rollbacks/min' FROM Metric WHERE metricName IN ('postgresql.commits', 'postgresql.rollbacks') FACET db.namespace TIMESERIES AUTO LIMIT MAX",
                 "accountId": 0}
             ]
           }
@@ -208,7 +208,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT (rate(sum(postgresql.rollbacks), 1 minute) / (rate(sum(postgresql.commits), 1 minute) + rate(sum(postgresql.rollbacks), 1 minute) + 0.001)) * 100 AS 'Rollback %' FROM Metric FACET db.namespace TIMESERIES AUTO LIMIT MAX",
+                "query": "SELECT (rate(sum(postgresql.rollbacks), 1 minute) / (rate(sum(postgresql.commits), 1 minute) + rate(sum(postgresql.rollbacks), 1 minute) + 0.001)) * 100 AS 'Rollback %' FROM Metric WHERE metricName IN ('postgresql.commits', 'postgresql.rollbacks') FACET db.namespace TIMESERIES AUTO LIMIT MAX",
                 "accountId": 0}
             ]
           }
@@ -283,7 +283,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT rate(sum(postgresql.temp_files), 1 minute) AS 'Temp Files/min', rate(sum(postgresql.temp.io)/1048576, 1 minute) AS 'Temp I/O MB/min' FROM Metric FACET db.namespace TIMESERIES AUTO LIMIT MAX",
+                "query": "SELECT rate(sum(postgresql.temp_files), 1 minute) AS 'Temp Files/min', rate(sum(postgresql.temp.io)/1048576, 1 minute) AS 'Temp I/O MB/min' FROM Metric WHERE metricName IN ('postgresql.temp_files', 'postgresql.temp.io') FACET db.namespace TIMESERIES AUTO LIMIT MAX",
                 "accountId": 0}
             ]
           }
@@ -489,7 +489,7 @@
             },
             "nrqlQueries": [
               {
-                "query": "SELECT rate(sum(postgresql.bgwriter.buffers.allocated), 1 minute) AS 'Buffers Allocated/min', rate(sum(postgresql.bgwriter.maxwritten), 1 minute) AS 'Maxwritten Stops/min' FROM Metric TIMESERIES AUTO",
+                "query": "SELECT rate(sum(postgresql.bgwriter.buffers.allocated), 1 minute) AS 'Buffers Allocated/min', rate(sum(postgresql.bgwriter.maxwritten), 1 minute) AS 'Maxwritten Stops/min' FROM Metric WHERE metricName IN ('postgresql.bgwriter.buffers.allocated', 'postgresql.bgwriter.maxwritten') TIMESERIES AUTO",
                 "accountId": 0}
             ]
           }
