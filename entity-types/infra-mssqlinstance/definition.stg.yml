@@ -49,20 +49,9 @@ synthesis:
           entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_host_name_metrics_nrfork_2
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - server.address
-          - server.port
-      compositeName:
-        fragments:
-          - attribute: server.address
-          - value: ":"
-          - attribute: server.port
+      identifier: service.instance.id
+      name: service.instance.id
       encodeIdentifierInGUID: true
-      prefixedTags:
-        label.:
-          ttl: PT4H
       conditions:
         - attribute: eventType
           value: Metric
@@ -135,16 +124,8 @@ synthesis:
           entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_service.instance.id_metrics_sqlqueryreceiver
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - server.address
-          - server.port
-      compositeName:
-        fragments:
-          - attribute: server.address
-          - value: ":"
-          - attribute: server.port
+      identifier: service.instance.id
+      name: service.instance.id
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -191,20 +172,9 @@ synthesis:
           entityTagName: instrumentation.version
 
     - ruleName: infra_mssqlinstance_host_name_logs_nrfork_2
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - server.address
-          - server.port
-      compositeName:
-        fragments:
-          - attribute: server.address
-          - value: ":"
-          - attribute: server.port
+      identifier: service.instance.id
+      name: service.instance.id
       encodeIdentifierInGUID: true
-      prefixedTags:
-        label.:
-          ttl: PT4H
       conditions:
         - attribute: eventType
           value: Log
@@ -284,6 +254,113 @@ synthesis:
           entityTagNames: [server.address]
         server.port:
           entityTagName: server.port
+
+
+    # NR fork receiver with sql.host.name present — uses server.address:server.port as composite identifier
+    - ruleName: infra_mssqlinstance_host_name_metrics_nrfork_sql_host_name
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: sqlserver.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nrsqlserverreceiver
+        - attribute: sql.host.name
+          present: true
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        server.address:
+          entityTagNames: [server.address]
+        server.port:
+          entityTagName: server.port
+        otel.library.version:
+          entityTagName: instrumentation.version
+
+    # NR fork receiver with sql.host.name present — uses server.address:server.port as composite identifier
+    - ruleName: infra_mssqlinstance_host_name_logs_nrfork_sql_host_name
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: event.name
+          prefix: db.server.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/newrelic-forks/opentelemetry-collector-contrib/receiver/nrsqlserverreceiver
+        - attribute: sql.host.name
+          present: true
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        instrumentation.provider:
+          entityTagName: instrumentation.provider
+        server.address:
+          entityTagNames: [server.address]
+        server.port:
+          entityTagName: server.port
+        db.namespace:
+          entityTagName: database.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+
+    # sqlqueryreceiver with composite identifier server.address:server.port
+    - ruleName: infra_mssqlinstance_metrics_sqlqueryreceiver_composite
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: sqlserver.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: otel.library.name
+          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlqueryreceiver
 
 
 goldenTags:
