@@ -54,28 +54,3 @@ relationships:
               attribute: metricName__4
             - field: serverPort
               attribute: metricName__5
-
-  # Distributed Tracing rule for NR native agents which emit server.address on DB spans.
-  - name: apmApplicationCallsMssqlInstanceByHostStaging
-    version: "1"
-    origins:
-      - Distributed Tracing
-    conditions:
-      - attribute: eventType
-        anyOf: ["Span"]
-      - attribute: db.system
-        anyOf: ["mssql", "MSSQL"]
-      - attribute: server.address
-        present: true
-    relationship:
-      expires: PT75M
-      relationshipType: CALLS
-      source:
-        extractGuid:
-          attribute: entity.guid
-      target:
-        lookupGuid:
-          candidateCategory: MSSQLINSTANCE
-          fields:
-            - field: DistributedTracingServerAddress
-              attribute: server.address
