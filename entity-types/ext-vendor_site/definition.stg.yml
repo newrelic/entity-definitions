@@ -1,0 +1,57 @@
+domain: EXT
+type: VENDOR_SITE
+synthesis:
+  rules:
+    - ruleName: ext_vendor_site_id
+      name: vendorSiteName
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - vendor
+          - vendorSiteId
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: NetworkEvent
+        - attribute: site
+          present: true
+      tags:
+        vendorSiteId:
+          entityTagName: vendorSiteId
+          multiValue: false
+        vendorSiteName:
+          entityTagName: vendorSiteName
+          multiValue: false
+        vendorOrgId:
+          entityTagName: vendorOrgId
+          multiValue: false
+        vendor:
+          entityTagName: vendor
+          multiValue: false
+        region:
+          entityTagName: region
+          multiValue: false
+        latitude:
+          entityTagName: latitude
+          multiValue: false
+        longitude:
+          entityTagName: longitude
+          multiValue: false
+        timezone:
+          entityTagName: timezone
+          multiValue: false
+        site:
+          entityTagName: site
+          multiValue: false
+      # Add a 1 day ttl on all tags ingested in metric api using tags. prefix
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+goldenTags:
+- vendor
+- region
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"

@@ -1,0 +1,74 @@
+domain: EXT
+type: SITE
+
+synthesis:
+  rules:
+    # telemetry with SiteID attribute
+    - ruleName: ext_site_id
+      name: SiteID
+      identifier: SiteID
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: SiteID
+
+    - ruleName: ext_site_vendor_id
+      name: vendorSiteName
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - vendor
+          - vendorSiteId
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: NetworkEvent
+        - attribute: site
+          present: true
+      tags:
+        vendorSiteId:
+          entityTagName: vendorSiteId
+          multiValue: false
+        vendorSiteName:
+          entityTagName: vendorSiteName
+          multiValue: false
+        vendorOrgId:
+          entityTagName: vendorOrgId
+          multiValue: false
+        vendor:
+          entityTagName: vendor
+          multiValue: false
+        region:
+          entityTagName: region
+          multiValue: false
+        latitude:
+          entityTagName: latitude
+          multiValue: false
+        longitude:
+          entityTagName: longitude
+          multiValue: false
+        timezone:
+          entityTagName: timezone
+          multiValue: false
+        site:
+          entityTagName: site
+          multiValue: false
+      # Add a 1 day ttl on all tags ingested in metric api using tags. prefix
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+goldenTags:
+- vendor
+- region
+
+dashboardTemplates:
+  newRelic:
+    template: dashboard.json
+
+configuration:
+  entityExpirationTime: EIGHT_DAYS
+  alertable: true
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"
