@@ -1,0 +1,66 @@
+# Covers all four IBM MQ QMID instrumentations: Java/JMS, .NET/XMS, Node.js/MQI, Python/MQI.
+# They all emit the same two attributes below, so one file covers all four.
+# Node.js emits span.kind "client" for some producer spans, which is why "client" is in the
+# PRODUCES bucket alongside "producer".
+relationships:
+  - name: otelServiceProducesIbmmqManager
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "ibmmq" ]
+      - attribute: messaging.ibmmq.queue_manager.id
+        present: true
+      - attribute: span.kind
+        anyOf: [ "producer", "client" ]
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: IBMMQMANAGER
+          fields:
+            - field: queueManagerId
+              attribute: messaging.ibmmq.queue_manager.id
+
+  - name: otelServiceConsumesIbmmqManager
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "ibmmq" ]
+      - attribute: messaging.ibmmq.queue_manager.id
+        present: true
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: IBMMQMANAGER
+          fields:
+            - field: queueManagerId
+              attribute: messaging.ibmmq.queue_manager.id

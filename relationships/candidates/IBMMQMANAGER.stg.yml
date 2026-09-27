@@ -1,0 +1,19 @@
+# qmid (MQCA_Q_MGR_IDENTIFIER) is the only globally unique queue manager identifier; queue
+# manager NAMES collide across hosts. The manager entity's GUID hashes host.id:qmgr, which an
+# APM span has no way to know, so a tag lookup on qmid is the only route from a span to the
+# right manager entity.
+# onMiss is NO_OP rather than CREATE_UNINSTRUMENTED: a stub entity keyed on qmid would just
+# duplicate the real host.id:qmgr entity once its metrics arrive.
+category: IBMMQMANAGER
+lookups:
+  - entityTypes:
+      - INFRA-IBMMQ_MANAGER
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["qmid"]
+          field: queueManagerId
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
