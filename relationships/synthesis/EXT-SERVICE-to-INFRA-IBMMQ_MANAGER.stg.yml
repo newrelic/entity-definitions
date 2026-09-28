@@ -1,9 +1,13 @@
 # Covers all four IBM MQ QMID instrumentations: Java/JMS, .NET/XMS, Node.js/MQI, Python/MQI.
-# They all emit the same two attributes below, so one file covers all four.
-# Node.js emits span.kind "client" for some producer spans, which is why "client" is in the
-# PRODUCES bucket alongside "producer".
+# Direction comes from the messaging operation attribute rather than span.kind, because the
+# Node.js client reports a synchronous receive with span.kind client, which carries no direction.
+# There are two rule pairs because the operation attribute was renamed between semconv
+# generations (messaging.operation -> messaging.operation.type), and a fleet part way through an
+# upgrade can emit either name. The create and settle operations are not matched: no IBM MQ
+# instrumentation emits them and neither implies a direction. Spans without the queue manager id
+# are not matched either, which leaves out the Java synchronous receive span, unenriched upstream.
 relationships:
-  - name: otelServiceProducesIbmmqManager
+  - name: otelServiceProducesIbmmqManager1_25
     version: "1"
     origins:
       - Distributed Tracing
@@ -19,8 +23,8 @@ relationships:
         anyOf: [ "ibmmq" ]
       - attribute: messaging.ibmmq.queue_manager.id
         present: true
-      - attribute: span.kind
-        anyOf: [ "producer", "client" ]
+      - attribute: messaging.operation
+        anyOf: [ "publish" ]
     relationship:
       expires: PT75M
       relationshipType: PRODUCES
@@ -34,7 +38,7 @@ relationships:
             - field: queueManagerId
               attribute: messaging.ibmmq.queue_manager.id
 
-  - name: otelServiceConsumesIbmmqManager
+  - name: otelServiceConsumesIbmmqManager1_25
     version: "1"
     origins:
       - Distributed Tracing
@@ -50,8 +54,70 @@ relationships:
         anyOf: [ "ibmmq" ]
       - attribute: messaging.ibmmq.queue_manager.id
         present: true
-      - attribute: span.kind
-        anyOf: [ "consumer", "server" ]
+      - attribute: messaging.operation
+        anyOf: [ "receive", "process", "deliver" ] # deliver is what the .NET instrumentation emits
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: IBMMQMANAGER
+          fields:
+            - field: queueManagerId
+              attribute: messaging.ibmmq.queue_manager.id
+
+  - name: otelServiceProducesIbmmqManager1_26
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "ibmmq" ]
+      - attribute: messaging.ibmmq.queue_manager.id
+        present: true
+      - attribute: messaging.operation.type
+        anyOf: [ "send", "publish" ] # publish is the deprecated spelling of send
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: IBMMQMANAGER
+          fields:
+            - field: queueManagerId
+              attribute: messaging.ibmmq.queue_manager.id
+
+  - name: otelServiceConsumesIbmmqManager1_26
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "ibmmq" ]
+      - attribute: messaging.ibmmq.queue_manager.id
+        present: true
+      - attribute: messaging.operation.type
+        anyOf: [ "receive", "process", "deliver" ] # deliver is the deprecated spelling of process
     relationship:
       expires: PT75M
       relationshipType: CONSUMES
