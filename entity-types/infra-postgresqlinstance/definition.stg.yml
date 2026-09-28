@@ -55,10 +55,38 @@ synthesis:
         otel.library.version:
           entityTagName: instrumentation.version
 
+    # Fallback for customers still on the CNCF upstream postgresqlreceiver, which doesn't
+    # send server.address/server.port. Uses service.instance.id (host:port) instead.
+    # Matches the same nrsp-pipelines db-event-namespace curated eventType (DbServer*)
+    # as infra_postgresqlinstance_db_server_events below.
+    - ruleName: infra_postgresqlinstance_upstream_db_server_events
+      identifier: service.instance.id # host:port
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: db.system.name
+          value: postgresql
+        - attribute: server.address
+          present: false
+      tags:
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+    
     # opentelemetry metrics (postgresqlreceiver / nrpostgresqlreceiver fork). With the
     # useOTelSemconv gate on, service.instance.id becomes a UUID (unreadable as a name),
     # so identify/name by server.address:server.port instead — only present when the gate
-    # is on (upstream: opt-in, alpha; fork: default-on, beta).
+    # is on (upstream: opt-in, alpha; fork: default-on, beta). All existing nr receiver
+    # customers already emit server.address:server.port as resource attributes.
     - ruleName: infra_postgresqlinstance_service_instance_id
       compositeIdentifier:
         separator: ":"
@@ -211,7 +239,7 @@ dashboardTemplates:
   newRelic:
     template: newrelic_dashboard.json
   opentelemetry:
-    template: opentelemetry_dashboard.stg.json
+    template: opentelemetry_dashboard.json
 
 ownership:
   primaryOwner:
