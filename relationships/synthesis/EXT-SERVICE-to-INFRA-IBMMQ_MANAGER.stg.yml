@@ -1,6 +1,10 @@
 # Covers all four IBM MQ QMID instrumentations: Java/JMS, .NET/XMS, Node.js/MQI, Python/MQI.
 # Direction comes from the messaging operation attribute rather than span.kind, because the
 # Node.js client reports a synchronous receive with span.kind client, which carries no direction.
+# Both sides are restricted to OpenTelemetry. The source span must carry
+# instrumentation.provider opentelemetry, and that value is carried into the lookup so the target
+# can only ever be an OTel synthesized queue manager, never one synthesized by the on host
+# integration.
 # There are two rule pairs because the operation attribute was renamed between semconv
 # generations (messaging.operation -> messaging.operation.type), and a fleet part way through an
 # upgrade can emit either name. The create and settle operations are not matched: no IBM MQ
@@ -17,6 +21,8 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: newrelic.source
         anyOf: [ "api.traces.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
       - attribute: messaging.system
@@ -33,10 +39,12 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: IBMMQMANAGER
+          candidateCategory: IBMMQ_MANAGER
           fields:
             - field: queueManagerId
               attribute: messaging.ibmmq.queue_manager.id
+            - field: instrumentationProvider
+              attribute: instrumentation.provider
 
   - name: otelServiceConsumesIbmmqManager1_25
     version: "1"
@@ -48,6 +56,8 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: newrelic.source
         anyOf: [ "api.traces.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
       - attribute: messaging.system
@@ -64,10 +74,12 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: IBMMQMANAGER
+          candidateCategory: IBMMQ_MANAGER
           fields:
             - field: queueManagerId
               attribute: messaging.ibmmq.queue_manager.id
+            - field: instrumentationProvider
+              attribute: instrumentation.provider
 
   - name: otelServiceProducesIbmmqManager1_26
     version: "1"
@@ -79,6 +91,8 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: newrelic.source
         anyOf: [ "api.traces.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
       - attribute: messaging.system
@@ -95,10 +109,12 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: IBMMQMANAGER
+          candidateCategory: IBMMQ_MANAGER
           fields:
             - field: queueManagerId
               attribute: messaging.ibmmq.queue_manager.id
+            - field: instrumentationProvider
+              attribute: instrumentation.provider
 
   - name: otelServiceConsumesIbmmqManager1_26
     version: "1"
@@ -110,6 +126,8 @@ relationships:
         anyOf: [ "Span" ]
       - attribute: newrelic.source
         anyOf: [ "api.traces.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
       - attribute: entity.type
         anyOf: [ "SERVICE" ]
       - attribute: messaging.system
@@ -126,7 +144,9 @@ relationships:
           attribute: entity.guid
       target:
         lookupGuid:
-          candidateCategory: IBMMQMANAGER
+          candidateCategory: IBMMQ_MANAGER
           fields:
             - field: queueManagerId
               attribute: messaging.ibmmq.queue_manager.id
+            - field: instrumentationProvider
+              attribute: instrumentation.provider

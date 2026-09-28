@@ -4,7 +4,7 @@
 # right manager entity.
 # onMiss is NO_OP rather than CREATE_UNINSTRUMENTED: a stub entity keyed on qmid would just
 # duplicate the real host.id:qmgr entity once its metrics arrive.
-category: IBMMQMANAGER
+category: IBMMQ_MANAGER
 lookups:
   - entityTypes:
       - INFRA-IBMMQ_MANAGER
@@ -13,6 +13,11 @@ lookups:
       predicates:
         - tagKeys: ["qmid"]
           field: queueManagerId
+        # matchingMode ALL, so this is a hard restriction to OTel synthesized queue managers.
+        # The on host integration rules synthesize the same entity type with
+        # instrumentation.provider newRelic and emit no qmid, so they can never match here.
+        - tagKeys: ["instrumentation.provider"]
+          field: instrumentationProvider
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
