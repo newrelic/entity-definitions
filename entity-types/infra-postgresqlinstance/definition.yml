@@ -3,8 +3,9 @@ type: POSTGRESQLINSTANCE
 
 synthesis:
   rules:
-    # opentelemetry (postgresqlreceiver); service.instance.id is host:port, enabled by default
-    - ruleName: infra_postgresqlinstance_service_instance_id
+    # Fallback for customers still on the CNCF upstream postgresqlreceiver, which doesn't
+    # send server.address/server.port. Uses service.instance.id (host:port) instead.
+    - ruleName: infra_postgresqlinstance_upstream_service_instance_id
       identifier: service.instance.id # host:port
       name: service.instance.id
       encodeIdentifierInGUID: true
@@ -15,6 +16,100 @@ synthesis:
           prefix: postgresql.
         - attribute: instrumentation.provider
           value: opentelemetry
+        - attribute: server.address
+          present: false
+      tags:
+        # Environment resource attributes
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+
+    # opentelemetry logs (db.server.top_query / db.server.query_sample);
+    # db.system.name is always present on these log events when enabled.
+    # Using service.instance.id (host:port) to match the metric rule above.
+    - ruleName: infra_postgresqlinstance_upstream_otel_logs
+      identifier: service.instance.id # host:port
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: db.system.name
+          value: postgresql
+        - attribute: server.address
+          present: false
+      tags:
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+
+    # Fallback for customers still on the CNCF upstream postgresqlreceiver, which doesn't
+    # send server.address/server.port. Uses service.instance.id (host:port) instead.
+    # Matches the same nrsp-pipelines db-event-namespace curated eventType (DbServer*)
+    # as infra_postgresqlinstance_db_server_events below.
+    - ruleName: infra_postgresqlinstance_upstream_db_server_events
+      identifier: service.instance.id # host:port
+      name: service.instance.id
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: db.system.name
+          value: postgresql
+        - attribute: server.address
+          present: false
+      tags:
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+    
+    # opentelemetry metrics (postgresqlreceiver / nrpostgresqlreceiver fork). With the
+    # useOTelSemconv gate on, service.instance.id becomes a UUID (unreadable as a name),
+    # so identify/name by server.address:server.port instead — only present when the gate
+    # is on (upstream: opt-in, alpha; fork: default-on, beta). All existing nr receiver
+    # customers already emit server.address:server.port as resource attributes.
+    - ruleName: infra_postgresqlinstance_service_instance_id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: postgresql.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: server.address
+          present: true
+        - attribute: server.port
+          present: true
       tags:
         # Environment resource attributes
         host.type:
@@ -30,12 +125,19 @@ synthesis:
         server.port:
           entityTagName: server.port
 
-    # opentelemetry logs (db.server.top_query / db.server.query_sample);
-    # db.system.name is always present on these log events when enabled.
-    # Using service.instance.id (host:port) to match the metric rule above.
+    # opentelemetry logs (db.server.top_query / db.server.query_sample). Same
+    # server.address:server.port identity/name as the metric rule above, for consistency.
     - ruleName: infra_postgresqlinstance_otel_logs
-      identifier: service.instance.id # host:port
-      name: service.instance.id
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
@@ -44,11 +146,51 @@ synthesis:
           value: opentelemetry
         - attribute: db.system.name
           value: postgresql
+        - attribute: server.address
+          present: true
+        - attribute: server.port
+          present: true
       tags:
         host.type:
         cloud.provider:
         cloud.account.id:
         cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+
+    # nrsp-pipelines db-event-namespace processor stamps db.server.* log events with a
+    # curated eventType (DbServerTopQuery, DbServerQuerySample, DbServerQueryPlan,
+    # DbServerTopProcedure, DbServerSessionWaitSample) and a `namespace` attribute. The
+    # DbServer prefix is shared across DB engines, so db.system.name disambiguates Postgres.
+    - ruleName: infra_postgresqlinstance_db_server_events
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: db.system.name
+          value: postgresql
+        - attribute: server.address
+          present: true
+        - attribute: server.port
+          present: true
+      tags:
+        namespace:
         otel.library.name:
           entityTagName: instrumentation.name
         otel.library.version:
