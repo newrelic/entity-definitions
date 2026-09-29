@@ -1,9 +1,5 @@
-# qmid (MQCA_Q_MGR_IDENTIFIER) is the only globally unique queue manager identifier; queue
-# manager NAMES collide across hosts. The manager entity's GUID hashes host.id:qmgr, which an
-# APM span has no way to know, so a tag lookup on qmid is the only route from a span to the
-# right manager entity.
-# onMiss is NO_OP rather than CREATE_UNINSTRUMENTED: a stub entity keyed on qmid would just
-# duplicate the real host.id:qmgr entity once its metrics arrive.
+# qmid is the only globally unique queue manager identifier; names collide across hosts. The
+# entity GUID hashes host.id:qmgr, which a span cannot know, so a tag lookup is the only route.
 category: IBMMQ_MANAGER
 lookups:
   - entityTypes:
@@ -13,9 +9,6 @@ lookups:
       predicates:
         - tagKeys: ["qmid"]
           field: queueManagerId
-        # matchingMode ALL, so this is a hard restriction to OTel synthesized queue managers.
-        # The on host integration rules synthesize the same entity type with
-        # instrumentation.provider newRelic and emit no qmid, so they can never match here.
         - tagKeys: ["instrumentation.provider"]
           field: instrumentationProvider
     onMatch:
