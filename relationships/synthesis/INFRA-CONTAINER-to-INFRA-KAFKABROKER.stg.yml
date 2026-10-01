@@ -1,5 +1,10 @@
 relationships:
   # Rule 1: NR OnHost Integration K8s container IS Kafka broker (KafkaBrokerSample)
+  # Resolves the container via the existing CONTAINER candidate (already matched on
+  # k8sClusterName/k8sNamespaceName/k8sPodName/k8sContainerName and already consumed by other
+  # relationships, so this is a new consumer of an already-computed index, not a new one) rather
+  # than rebuilding its GUID assuming the same accountId as the broker event - that assumption
+  # breaks whenever the container entity lives in a different account than the broker.
   - name: ContainerContainsKafkaBrokerStg
     version: "1"
     origins:
@@ -21,25 +26,17 @@ relationships:
       expires: PT75M
       relationshipType: HOSTS
       source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: CONTAINER
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - value: "k8s:"
-              - attribute: clusterName
-              - value: ":"
-              - attribute: namespace
-              - value: ":"
-              - attribute: podName
-              - value: ":container:"
-              - attribute: name
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: CONTAINER
+          fields:
+            - field: k8sClusterName
+              attribute: clusterName
+            - field: k8sNamespaceName
+              attribute: namespace
+            - field: k8sPodName
+              attribute: podName
+            - field: k8sContainerName
+              attribute: name
       target:
         extractGuid:
           attribute: entityGuid
