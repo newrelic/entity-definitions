@@ -3,7 +3,11 @@ type: NETWORK_SITE
 synthesis:
   rules:
     - ruleName: ext_network_site_id
-      name: vendorSiteName
+      compositeName:
+        fragments:
+          - attribute: vendor
+          - value: ":"
+          - attribute: vendorSiteName
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -13,7 +17,9 @@ synthesis:
       conditions:
         - attribute: eventType
           value: NetworkEvent
-        - attribute: site
+        - attribute: networkEntityType
+          value: NETWORK_SITE
+        - attribute: vendorSiteId
           present: true
       tags:
         vendorSiteId:
@@ -40,9 +46,6 @@ synthesis:
         timezone:
           entityTagName: timezone
           multiValue: false
-        site:
-          entityTagName: site
-          multiValue: false
       # Add a 1 day ttl on all tags ingested in metric api using tags. prefix
       prefixedTags:
         tags.:
@@ -51,6 +54,7 @@ synthesis:
 goldenTags:
 - vendor
 - region
+- vendorOrgId
 
 ownership:
   primaryOwner:
