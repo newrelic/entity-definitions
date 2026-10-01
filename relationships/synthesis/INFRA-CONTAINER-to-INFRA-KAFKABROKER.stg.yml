@@ -46,6 +46,47 @@ relationships:
           entityType:
             value: KAFKABROKER
 
+  # Rule 1b: same trigger as Rule 1, but resolves the container via the existing CONTAINER
+  # candidate instead of rebuilding its GUID - works cross-account, where Rule 1's buildGuid
+  # (same accountId as the broker) cannot.
+  - name: ContainerContainsKafkaBrokerCandidateStg
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["KafkaBrokerSample"]
+      - attribute: entityType
+        anyOf: ["KafkaBroker", "KAFKABROKER"]
+      - attribute: clusterName
+        present: true
+      - attribute: namespace
+        present: true
+      - attribute: podName
+        present: true
+      - attribute: name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: CONTAINER
+          fields:
+            - field: k8sClusterName
+              attribute: clusterName
+            - field: k8sNamespaceName
+              attribute: namespace
+            - field: k8sPodName
+              attribute: podName
+            - field: k8sContainerName
+              attribute: name
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KAFKABROKER
+
   # Rule 2: OTel Kafka broker (plain Docker) → OTel Container (dockerstats receiver)
   - name: OtelKafkaBrokerToOtelDockerContainerStg
     version: "1"
