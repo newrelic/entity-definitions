@@ -51,22 +51,3 @@ lookups:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
         type: KAFKATOPIC
-
-  # Native (nri-kafka) self-hosted topics, matched by clusterId - this is what
-  # apmProducesNRKafkaTopicByClusterIdStg/apmConsumesNRKafkaTopicByClusterIdStg already expect,
-  # but had no INFRA-KAFKATOPIC lookup to match against until now.
-  - entityTypes:
-    - INFRA-KAFKATOPIC
-    tags:
-      matchingMode: ALL
-      predicates:
-        - tagKeys: ["clusterId"]
-          field: clusterId
-        - tagKeys: ["topic"]
-          field: topic
-    onMatch:
-      onMultipleMatches: RELATE_ALL
-    onMiss:
-      action: CREATE_UNINSTRUMENTED
-      uninstrumented:
-        type: KAFKATOPIC
