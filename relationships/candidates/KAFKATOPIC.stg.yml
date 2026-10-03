@@ -68,6 +68,23 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
 
+  # Native (nri-kafka) clusterId match - its own tag name, not the OTel kafka.cluster.id below.
+  - entityTypes:
+      - INFRA-KAFKATOPIC
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["clusterId"]
+          field: clusterId
+        - tagKeys: ["topic"]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
+
   # Match KAFKATOPIC by producer.service.name tag — for consumers that don't carry kafka.cluster.name.
   - entityTypes:
       - INFRA-KAFKATOPIC
