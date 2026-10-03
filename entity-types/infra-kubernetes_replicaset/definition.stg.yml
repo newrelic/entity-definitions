@@ -1,37 +1,37 @@
-
 domain: INFRA
-type: KUBERNETES_DEPLOYMENT
+type: KUBERNETES_REPLICASET
 configuration:
   entityExpirationTime: DAILY
   alertable: true
 goldenTags:
-- k8s.deploymentName
 - k8s.clusterName
 - k8s.namespaceName
 synthesis:
   rules:
-    # k8scluster receiver OTel native deployment data
-    - ruleName: infra_kubernetes_deployment_composite_5
+    # k8scluster receiver OTel native replicaset data (standalone only)
+    - ruleName: infra_kubernetes_replicaset_composite_3
       compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - k8s.namespace.name
-          - k8s.deployment.name
+          - k8s.replicaset.name
       encodeIdentifierInGUID: true
-      name: k8s.deployment.name
+      name: k8s.replicaset.name
       conditions:
         - attribute: metricName
-          prefix: k8s.deployment.
-        - attribute: k8s.deployment.name
+          prefix: k8s.replicaset.
+        - attribute: k8s.replicaset.name
           present: true
         - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
           present: true
+        - attribute: k8s.deployment.name
+          present: false
       tags:
-        k8s.deployment.name:
-          entityTagNames: [k8s.deploymentName]
+        k8s.replicaset.name:
+          entityTagNames: [k8s.replicasetName]
         k8s.namespace.name:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
@@ -41,26 +41,28 @@ synthesis:
           ttl: P1D
 
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - ruleName: infra_kubernetes_deployment_composite
+    - ruleName: infra_kubernetes_replicaset_composite
       compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - k8s.namespace.name
-          - k8s.deployment.name
+          - k8s.replicaset.name
       encodeIdentifierInGUID: true
-      name: k8s.deployment.name
+      name: k8s.replicaset.name
       conditions:
-        # kube-state-metrics deployment prefix
+        # kube-state-metrics replicaset prefix 
         - attribute: metricName
-          prefix: kube_deployment_
+          prefix: kube_replicaset_
         # identifier attributes
-        - attribute: k8s.deployment.name
+        - attribute: k8s.replicaset.name
           present: true
         - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
           present: true
+        - attribute: k8s.deployment.name
+          present: false  
         # open telemetry
         - attribute: newrelic.source
           value: 'api.metrics.otlp'
@@ -68,8 +70,8 @@ synthesis:
         - attribute: service.name
           present: false
       tags:
-        k8s.deployment.name:
-          entityTagNames: [k8s.deploymentName]
+        k8s.replicaset.name:
+          entityTagNames: [k8s.replicasetName]
         k8s.namespace.name:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
@@ -78,29 +80,32 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
       prefixedTags:
-        label_:
+        tags.:
           ttl: P1D
+
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - ruleName: infra_kubernetes_deployment_composite_2
+    - ruleName: infra_kubernetes_replicaset_composite_2
       compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - k8s.namespace.name
-          - k8s.deployment.name
+          - k8s.replicaset.name
       encodeIdentifierInGUID: true
-      name: k8s.deployment.name
+      name: k8s.replicaset.name
       conditions:
-        # kube-state-metrics deployment prefix
+        # kube-state-metrics replicaset prefix 
         - attribute: metricName
-          prefix: kube_deployment_
+          prefix: kube_replicaset_
         # identifier attributes
-        - attribute: k8s.deployment.name
+        - attribute: k8s.replicaset.name
           present: true
         - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
           present: true
+        - attribute: k8s.deployment.name
+          present: false            
         # open telemetry
         - attribute: newrelic.source
           value: 'api.metrics.otlp'
@@ -110,8 +115,8 @@ synthesis:
         - attribute: newrelic.entity.type
           present: true
       tags:
-        k8s.deployment.name:
-          entityTagNames: [k8s.deploymentName]
+        k8s.replicaset.name:
+          entityTagNames: [k8s.replicasetName]
         k8s.namespace.name:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
@@ -120,11 +125,11 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
       prefixedTags:
-        label_:
+        tags.:
           ttl: P1D
 
     # Infrastructure event data via opentelemetry
-    - ruleName: infra_kubernetes_deployment_composite_3
+    - ruleName: infra_kubernetes_replicatset_composite_events
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -137,7 +142,7 @@ synthesis:
         - attribute: newrelic.event.type
           value: OtlpInfrastructureEvent
         - attribute: k8s.object.kind
-          value: Deployment
+          value: ReplicaSet
         # identifier attributes
         - attribute: k8s.object.name
           present: true
@@ -149,63 +154,25 @@ synthesis:
         - attribute: service.name
           present: false
 
-    # Infrastructure event data via opentelemetry
-    - ruleName: infra_kubernetes_deployment_composite_4
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - k8s.cluster.name
-          - k8s.namespace.name
-          - k8s.object.name
-      encodeIdentifierInGUID: true
-      name: k8s.object.name
-      conditions:
-        - attribute: newrelic.event.type
-          value: OtlpInfrastructureEvent
-        - attribute: k8s.object.kind
-          value: Deployment
-        # identifier attributes
-        - attribute: k8s.object.name
-          present: true
-        - attribute: k8s.namespace.name
-          present: true
-        - attribute: k8s.cluster.name
-          present: true
-        # if newrelic.entity.type is present, it's not a service
-        - attribute: service.name
-          present: true
-        - attribute: newrelic.entity.type
-          present: true
-
     # newrelic integration data via nri-bundle
-    - ruleName: infra_kubernetes_deployment_entityId
+    - ruleName: infra_kubernetes_replicaset_entityId
       identifier: entityId
       name: displayName
       legacyFeatures:
         overrideGuidType: true
         useNonStandardAttributes: true
       conditions:
-        - attribute: eventType
-          value: K8sDeploymentSample
-        - attribute: deploymentName
-          present: true
-        - attribute: podsAvailable
+        - attribute: event_type
+          value: K8sReplicasetSample
+        - attribute: replicasetName
           present: true
       tags:
-        deploymentName:
-          entityTagName: k8s.deploymentName
         clusterName:
           entityTagName: k8s.clusterName
+        replicasetName:
+          entityTagName: k8s.replicasetName
         namespaceName:
           entityTagName: k8s.namespaceName
-        namespace:
-          entityTagName: k8s.namespaceName
-        conditionAvailable:
-          entityTagName: k8s.deployment.conditionAvailable
-        conditionProgressing:
-          entityTagName: k8s.deployment.conditionProgressing
-        conditionReplicaFailure:
-          entityTagName: k8s.deployment.conditionReplicaFailure
         instanceType:
           entityTagName: host.instanceType
         integrationName:
@@ -224,3 +191,4 @@ synthesis:
 ownership:
   primaryOwner:
     teamName: "K8s Agents"
+   

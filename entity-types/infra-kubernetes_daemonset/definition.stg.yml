@@ -1,37 +1,36 @@
-
 domain: INFRA
-type: KUBERNETES_DEPLOYMENT
+type: KUBERNETES_DAEMONSET
 configuration:
   entityExpirationTime: DAILY
   alertable: true
 goldenTags:
-- k8s.deploymentName
+- k8s.daemonsetName
 - k8s.clusterName
 - k8s.namespaceName
 synthesis:
   rules:
-    # k8scluster receiver OTel native deployment data
-    - ruleName: infra_kubernetes_deployment_composite_5
+    # k8scluster receiver OTel native daemonset data
+    - ruleName: infra_kubernetes_daemonset_composite_5
       compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - k8s.namespace.name
-          - k8s.deployment.name
+          - k8s.daemonset.name
       encodeIdentifierInGUID: true
-      name: k8s.deployment.name
+      name: k8s.daemonset.name
       conditions:
         - attribute: metricName
-          prefix: k8s.deployment.
-        - attribute: k8s.deployment.name
+          prefix: k8s.daemonset.
+        - attribute: k8s.daemonset.name
           present: true
         - attribute: k8s.namespace.name
           present: true
         - attribute: k8s.cluster.name
           present: true
       tags:
-        k8s.deployment.name:
-          entityTagNames: [k8s.deploymentName]
+        k8s.daemonset.name:
+          entityTagNames: [k8s.daemonsetName]
         k8s.namespace.name:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
@@ -41,21 +40,21 @@ synthesis:
           ttl: P1D
 
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - ruleName: infra_kubernetes_deployment_composite
+    - ruleName: infra_kubernetes_daemonset_composite
       compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - k8s.namespace.name
-          - k8s.deployment.name
+          - k8s.daemonset.name
       encodeIdentifierInGUID: true
-      name: k8s.deployment.name
+      name: k8s.daemonset.name
       conditions:
-        # kube-state-metrics deployment prefix
+        # kube-state-metrics daemonset prefix
         - attribute: metricName
-          prefix: kube_deployment_
+          prefix: kube_daemonset_
         # identifier attributes
-        - attribute: k8s.deployment.name
+        - attribute: k8s.daemonset.name
           present: true
         - attribute: k8s.namespace.name
           present: true
@@ -68,8 +67,8 @@ synthesis:
         - attribute: service.name
           present: false
       tags:
-        k8s.deployment.name:
-          entityTagNames: [k8s.deploymentName]
+        k8s.daemonset.name:
+          entityTagNames: [k8s.daemonsetName]
         k8s.namespace.name:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
@@ -78,24 +77,25 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
       prefixedTags:
-        label_:
+        tags.:
           ttl: P1D
+
     # kube-state-metrics data via opentelemetry prometheusReceiver
-    - ruleName: infra_kubernetes_deployment_composite_2
+    - ruleName: infra_kubernetes_daemonset_composite_2
       compositeIdentifier:
         separator: ":"
         attributes:
           - k8s.cluster.name
           - k8s.namespace.name
-          - k8s.deployment.name
+          - k8s.daemonset.name
       encodeIdentifierInGUID: true
-      name: k8s.deployment.name
+      name: k8s.daemonset.name
       conditions:
-        # kube-state-metrics deployment prefix
+        # kube-state-metrics daemonset prefix
         - attribute: metricName
-          prefix: kube_deployment_
+          prefix: kube_daemonset_
         # identifier attributes
-        - attribute: k8s.deployment.name
+        - attribute: k8s.daemonset.name
           present: true
         - attribute: k8s.namespace.name
           present: true
@@ -110,8 +110,8 @@ synthesis:
         - attribute: newrelic.entity.type
           present: true
       tags:
-        k8s.deployment.name:
-          entityTagNames: [k8s.deploymentName]
+        k8s.daemonset.name:
+          entityTagNames: [k8s.daemonsetName]
         k8s.namespace.name:
           entityTagNames: [k8s.namespaceName]
         k8s.cluster.name:
@@ -120,11 +120,11 @@ synthesis:
           entityTagNames: [newrelic.chartVersion]
           ttl: P1D
       prefixedTags:
-        label_:
+        tags.:
           ttl: P1D
 
     # Infrastructure event data via opentelemetry
-    - ruleName: infra_kubernetes_deployment_composite_3
+    - ruleName: infra_kubernetes_daemonset_composite_3
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -137,7 +137,7 @@ synthesis:
         - attribute: newrelic.event.type
           value: OtlpInfrastructureEvent
         - attribute: k8s.object.kind
-          value: Deployment
+          value: DaemonSet
         # identifier attributes
         - attribute: k8s.object.name
           present: true
@@ -148,9 +148,12 @@ synthesis:
         # if service.name is present, handle as one
         - attribute: service.name
           present: false
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # Infrastructure event data via opentelemetry
-    - ruleName: infra_kubernetes_deployment_composite_4
+    - ruleName: infra_kubernetes_daemonset_composite_4
       compositeIdentifier:
         separator: ":"
         attributes:
@@ -163,7 +166,7 @@ synthesis:
         - attribute: newrelic.event.type
           value: OtlpInfrastructureEvent
         - attribute: k8s.object.kind
-          value: Deployment
+          value: DaemonSet
         # identifier attributes
         - attribute: k8s.object.name
           present: true
@@ -176,9 +179,12 @@ synthesis:
           present: true
         - attribute: newrelic.entity.type
           present: true
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # newrelic integration data via nri-bundle
-    - ruleName: infra_kubernetes_deployment_entityId
+    - ruleName: infra_kubernetes_daemonset_entityId
       identifier: entityId
       name: displayName
       legacyFeatures:
@@ -186,26 +192,20 @@ synthesis:
         useNonStandardAttributes: true
       conditions:
         - attribute: eventType
-          value: K8sDeploymentSample
-        - attribute: deploymentName
+          value: K8sDaemonsetSample
+        - attribute: daemonsetName
           present: true
         - attribute: podsAvailable
           present: true
       tags:
-        deploymentName:
-          entityTagName: k8s.deploymentName
         clusterName:
           entityTagName: k8s.clusterName
+        daemonsetName:
+          entityTagName: k8s.daemonsetName
         namespaceName:
           entityTagName: k8s.namespaceName
         namespace:
           entityTagName: k8s.namespaceName
-        conditionAvailable:
-          entityTagName: k8s.deployment.conditionAvailable
-        conditionProgressing:
-          entityTagName: k8s.deployment.conditionProgressing
-        conditionReplicaFailure:
-          entityTagName: k8s.deployment.conditionReplicaFailure
         instanceType:
           entityTagName: host.instanceType
         integrationName:
