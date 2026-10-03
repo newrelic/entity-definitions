@@ -69,6 +69,88 @@ relationships:
             - field: port
               attribute: server.port
 
+  # Same target category, no cloud-hostname gate. extServiceCallsRedis1_20/1_23 above only
+  # match AWS ElastiCache endpoints (net.peer.name/server.address regex requires
+  # ".cache.amazonaws.com") -- a self-hosted Redis (e.g. a plain "redis:6379" Service in a
+  # k8s cluster) never matches either one, so it gets no CALLS relationship at all. The REDIS
+  # candidate's own onMiss (relationships/candidates/REDIS.yml) already creates a generic
+  # UNINSTRUMENTED-REDIS placeholder entity for any endpoint that isn't a real managed
+  # instance, so dropping the cloud-hostname condition here is enough to cover self-hosted
+  # Redis too, without duplicating/conflicting with the AWS-specific rules above (a real
+  # ElastiCache endpoint still matches those first; this rule is a superset, not a
+  # replacement).
+  - name: extServiceCallsRedisSelfHosted
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system
+        anyOf: [ "redis" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: REDIS
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: server.port
+
+  # Same as extServiceCallsRedisSelfHosted, keyed off db.system.name instead of db.system.
+  # A collector that renames/overwrites the older db.system attribute for its own display
+  # purposes (confirmed live: New Relic's own APM agents report db.system as a capitalized
+  # display name, "Redis", not the raw semconv value "redis" -- some OTel collector configs
+  # mirror that same convention for Span-detail UI parity) still needs a way to match here;
+  # db.system.name is the newer semconv attribute name, less likely to be repurposed that way.
+  - name: extServiceCallsRedisSelfHostedSemconv
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: db.system.name
+        anyOf: [ "redis" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: server.address
+        present: true
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: REDIS
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: server.port
+
   - name: extServiceCallsRedis_Explicit
     version: "1"
     origins:
