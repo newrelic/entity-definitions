@@ -1,0 +1,17 @@
+# qmid is the only globally unique queue manager identifier; names collide across hosts. The
+# entity GUID hashes host.id:qmgr, which a span cannot know, so a tag lookup is the only route.
+category: IBMMQ_MANAGER
+lookups:
+  - entityTypes:
+      - INFRA-IBMMQ_MANAGER
+    tags:
+      matchingMode: ALL
+      predicates:
+        - tagKeys: ["qmid"]
+          field: queueManagerId
+        - tagKeys: ["instrumentation.provider"]
+          field: instrumentationProvider
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP

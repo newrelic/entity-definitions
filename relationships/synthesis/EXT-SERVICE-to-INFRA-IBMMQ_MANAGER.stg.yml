@@ -1,0 +1,144 @@
+# Direction comes from the messaging operation attribute, not span.kind: one IBM MQ client
+# reports a synchronous receive as span.kind client, which carries no direction.
+# Two rule pairs because semconv renamed the attribute and some of its values, and a fleet part
+# way through an upgrade emits either spelling.
+relationships:
+  - name: otelServiceProducesIbmmqManager1_25
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "ibmmq" ]
+      - attribute: messaging.ibmmq.queue_manager.id
+        present: true
+      - attribute: messaging.operation
+        anyOf: [ "publish" ]
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: IBMMQ_MANAGER
+          fields:
+            - field: queueManagerId
+              attribute: messaging.ibmmq.queue_manager.id
+            - field: instrumentationProvider
+              attribute: instrumentation.provider
+
+  - name: otelServiceConsumesIbmmqManager1_25
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "ibmmq" ]
+      - attribute: messaging.ibmmq.queue_manager.id
+        present: true
+      - attribute: messaging.operation
+        anyOf: [ "receive", "process", "deliver" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: IBMMQ_MANAGER
+          fields:
+            - field: queueManagerId
+              attribute: messaging.ibmmq.queue_manager.id
+            - field: instrumentationProvider
+              attribute: instrumentation.provider
+
+  - name: otelServiceProducesIbmmqManager1_26
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "ibmmq" ]
+      - attribute: messaging.ibmmq.queue_manager.id
+        present: true
+      - attribute: messaging.operation.type
+        anyOf: [ "send", "publish" ]
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: IBMMQ_MANAGER
+          fields:
+            - field: queueManagerId
+              attribute: messaging.ibmmq.queue_manager.id
+            - field: instrumentationProvider
+              attribute: instrumentation.provider
+
+  - name: otelServiceConsumesIbmmqManager1_26
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "opentelemetry" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: messaging.system
+        anyOf: [ "ibmmq" ]
+      - attribute: messaging.ibmmq.queue_manager.id
+        present: true
+      - attribute: messaging.operation.type
+        anyOf: [ "receive", "process", "deliver" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: IBMMQ_MANAGER
+          fields:
+            - field: queueManagerId
+              attribute: messaging.ibmmq.queue_manager.id
+            - field: instrumentationProvider
+              attribute: instrumentation.provider
