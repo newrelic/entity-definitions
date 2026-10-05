@@ -85,19 +85,6 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
 
-  # Match KAFKATOPIC by producer.service.name tag — for consumers that don't carry kafka.cluster.name.
-  - entityTypes:
-      - INFRA-KAFKATOPIC
-    tags:
-      matchingMode: ALL
-      predicates:
-        - tagKeys: ["producer.service.name"]
-          field: producerServiceName
-    onMatch:
-      onMultipleMatches: RELATE_ALL
-    onMiss:
-      action: NO_OP
-
   # Match KAFKATOPIC by kafka.cluster.id tag — for self-hosted clusters emitting cluster UUID.
   - entityTypes:
       - INFRA-KAFKATOPIC
@@ -111,5 +98,7 @@ lookups:
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
-      action: NO_OP
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
 
