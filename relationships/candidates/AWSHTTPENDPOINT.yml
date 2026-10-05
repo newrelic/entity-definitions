@@ -10,10 +10,10 @@ category: AWSHTTPENDPOINT
 lookups:
   - entityTypes:
       - INFRA-AWSCLOUDFRONTDISTRIBUTION
-    tags:
+    attributes:
       matchingMode: ANY
       predicates:
-        - tagKeys: ["endpoint", "aws.cloudfront.domainName"]
+        - attributeKeys: ["tags.endpoint", "tags.aws.cloudfront.domainName"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -24,7 +24,7 @@ lookups:
       - INFRA-AWSELB
       - INFRA-AWSALB
       - INFRA-AWSNLB
-    tags:
+    attributes:
       matchingMode: ANY
       predicates:
         # aws.alb.dnsName (ALB) and aws.nlb.dnsName (NLB) are live via ACF.
@@ -34,7 +34,7 @@ lookups:
         # All three prefixed keys are ACF-exclusive -- metric-stream / polling emit only the golden
         # aws.dnsName -- so keying the candidate here gates the APM->INFRA relationship to
         # auto-discovery: it forms only once ACF has enriched the entity.
-        - tagKeys: ["endpoint", "aws.elb.dnsName", "aws.alb.dnsName", "aws.nlb.dnsName"]
+        - attributeKeys: ["tags.endpoint", "tags.aws.elb.dnsName", "tags.aws.alb.dnsName", "tags.aws.nlb.dnsName"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -43,11 +43,11 @@ lookups:
 
   - entityTypes:
       - INFRA-AWSAPIGATEWAYAPI
-    tags:
+    attributes:
       matchingMode: ANY
       predicates:
         # host-only (scheme-stripped) key; see ACF/beyond-common notes in README.
-        - tagKeys: ["endpoint", "aws.apigateway.endpoint"]
+        - attributeKeys: ["tags.endpoint", "tags.aws.apigateway.endpoint"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -72,10 +72,10 @@ lookups:
   # metric-stream one. onMiss NO_OP as above.
   - entityTypes:
       - INFRA-AWSELASTICSEARCHCLUSTER
-    tags:
+    attributes:
       matchingMode: ANY
       predicates:
-        - tagKeys: ["endpoint", "aws.es.DomainEndpoint"]
+        - attributeKeys: ["tags.endpoint", "tags.aws.es.DomainEndpoint"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -97,10 +97,10 @@ lookups:
   # OR the friendly value (endpoint, ACF enrichMappingsWithDnsName).
   - entityTypes:
       - INFRA-AWSPRIVATELINKENDPOINT
-    tags:
+    attributes:
       matchingMode: ANY
       predicates:
-        - tagKeys: ["endpoint", "aws.vpce.dnsName"]
+        - attributeKeys: ["tags.endpoint", "tags.aws.vpce.dnsName"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -122,10 +122,10 @@ lookups:
   # onMiss NO_OP as above - never stamp a typed S3 stub for an arbitrary External host.
   - entityTypes:
       - INFRA-AWSS3BUCKET
-    tags:
+    attributes:
       matchingMode: ANY
       predicates:
-        - tagKeys: ["endpoint", "aws.s3.RegionalDomainName"]
+        - attributeKeys: ["tags.endpoint", "tags.aws.s3.RegionalDomainName"]
           field: serverAddress
     onMatch:
       onMultipleMatches: RELATE_ALL
