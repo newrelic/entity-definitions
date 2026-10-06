@@ -4,12 +4,12 @@ lookups:
   # Pattern based on MSSQLDBINSTANCE.yml (server.address + server.port)
   - entityTypes:
       - INFRA-AWSDOCDBINSTANCE
-    tags:
+    attributes:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.rds.endpoint", "aws.endpoint"]
+        - attributeKeys: ["tags.aws.rds.endpoint", "tags.aws.endpoint"]
           field: endpoint
-        - tagKeys: ["aws.rds.dbInstancePort", "aws.dbInstancePort"]
+        - attributeKeys: ["tags.aws.rds.dbInstancePort", "tags.aws.dbInstancePort"]
           field: port
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -19,10 +19,10 @@ lookups:
   # Fallback when port mismatch but endpoint is correct
   - entityTypes:
       - INFRA-AWSDOCDBINSTANCE
-    tags:
+    attributes:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.rds.endpoint", "aws.endpoint"]
+        - attributeKeys: ["tags.aws.rds.endpoint", "tags.aws.endpoint"]
           field: endpoint
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -34,10 +34,10 @@ lookups:
   # instance belonging to that cluster since the cluster endpoint can route to any of them.
   - entityTypes:
       - INFRA-AWSDOCDBINSTANCE
-    tags:
+    attributes:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.rds.dbClusterIdentifier", "aws.dbClusterIdentifier"]
+        - attributeKeys: ["tags.aws.rds.dbClusterIdentifier", "tags.aws.dbClusterIdentifier"]
           field: clusterIdentifier
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -47,10 +47,10 @@ lookups:
   # Final fallback ensuring APM relationships never miss and entities show as instrumented
   - entityTypes:
       - INFRA-AWSDOCDBINSTANCE
-    tags:
+    attributes:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["aws.rds.DBInstanceIdentifier", "aws.dbInstanceIdentifier"]
+        - attributeKeys: ["tags.aws.rds.DBInstanceIdentifier", "tags.aws.dbInstanceIdentifier"]
           field: instanceId
     onMatch:
       onMultipleMatches: RELATE_ALL
