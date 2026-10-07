@@ -17,11 +17,13 @@
 
 #### Api Review Board (ARB)
 
-Any pull request with changes to this repository has to be linked with an ARB ticket, which has to be approved before merging.
+Pull requests with changes to this repository might need to be linked with an ARB ticket, which has to be approved before merging.
 
 If you are an external contributor please contact New Relic Support.
 
-If you don't know about the ARB process check [this](https://newrelic.enterprise.slack.com/docs/T02D34WJD/F08AW240NSV)
+What definition changes require ARB and which do not? Guide [here](https://newrelic.atlassian.net/wiki/x/IABlZwE).
+
+If you are new to ARB process also check [this](https://newrelic.enterprise.slack.com/docs/T02D34WJD/F08AW240NSV).
 
 ARB Jira ticket:
 https://new-relic.atlassian.net/browse/NR-XXXX

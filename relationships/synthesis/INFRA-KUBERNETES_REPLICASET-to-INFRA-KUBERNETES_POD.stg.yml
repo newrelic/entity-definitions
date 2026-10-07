@@ -3,16 +3,18 @@ relationships:
     version: "1"
     origins:
       - Kubernetes Integration
-    conditions: 
+    conditions:
       - attribute: eventType
-        anyOf: [ "K8sReplicaSetSample" ]
+        anyOf: [ "K8sPodSample" ]
+      - attribute: createdKind
+        anyOf: [ "ReplicaSet" ]
     relationship:
       expires: PT75M
       relationshipType: MANAGES
       source:
         buildGuid:
           account:
-            lookup: true  
+            lookup: true
           domain:
             value: INFRA
           type:
@@ -20,8 +22,12 @@ relationships:
             valueInGuid: NA
           identifier:
             fragments:
-              - value: "k8s:replicaset:"
-              - attribute: replicasetName
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":replicaset:"
+              - attribute: createdBy
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
@@ -52,7 +58,9 @@ relationships:
           identifier:
             fragments:
               - attribute: k8s.cluster.name
-              - attribute: k8s.namespace.name   
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
               - attribute: k8s.replicaset.name
             hashAlgorithm: FARM_HASH
       target:  

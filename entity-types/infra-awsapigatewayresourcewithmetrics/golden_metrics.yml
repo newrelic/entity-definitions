@@ -3,7 +3,7 @@ requests:
   unit: COUNT
   queries:
     aws:
-      select: sum(aws.apigateway.Count.byResourceWithMetrics)
+      select: sum(aws.apigateway.Count.byResourceWithMetrics) + filter(sum(aws.apigateway.Count), WHERE aws.apigateway.Resource IS NOT NULL)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -18,7 +18,7 @@ errors4XxAnd5Xx:
   unit: COUNT
   queries:
     aws:
-      select: sum(`aws.apigateway.5XXError.byResourceWithMetrics`) + sum(`aws.apigateway.4XXError.byResourceWithMetrics`)
+      select: sum(`aws.apigateway.5XXError.byResourceWithMetrics`) + sum(`aws.apigateway.4XXError.byResourceWithMetrics`) + filter(sum(`aws.apigateway.5XXError`), WHERE aws.apigateway.Resource IS NOT NULL) + filter(sum(`aws.apigateway.4XXError`), WHERE aws.apigateway.Resource IS NOT NULL) AS 'Errors (4xx and 5xx)'
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -33,7 +33,7 @@ latencyMs:
   unit: MS
   queries:
     aws:
-      select: average(aws.apigateway.Latency.byResourceWithMetrics)
+      select: filter(average(aws.apigateway.Latency), WHERE aws.apigateway.Resource IS NOT NULL) OR average(aws.apigateway.Latency.byResourceWithMetrics)
       from: Metric
       eventId: entity.guid
       eventName: entity.name

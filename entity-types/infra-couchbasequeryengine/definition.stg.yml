@@ -1,0 +1,38 @@
+domain: INFRA
+type: COUCHBASEQUERYENGINE
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+synthesis:
+  rules:
+    # OHAI integration
+    - ruleName: infra_couchbasequeryengine_entityId
+      identifier: entityId
+      name: entityKey
+      legacyFeatures:
+        useNonStandardAttributes: true
+        overrideGuidType: true
+      conditions:
+        - attribute: eventType
+          value: CouchbaseQueryEngineSample
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      tags:
+        integrationName:
+          ttl: P1D
+        integrationVersion:
+          ttl: P1D
+        reportingAgent:
+          ttl: P1D
+        reportingEndpoint:
+          ttl: P1D
+
+dashboardTemplates:
+  newRelic:
+    template: newrelic_dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "no owner"

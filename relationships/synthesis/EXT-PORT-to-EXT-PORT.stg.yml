@@ -16,7 +16,7 @@ relationships:
       - attribute: dstMac
         present: true
     relationship:
-      expires: PT30M
+      expires: PT6H
       relationshipType: CONNECTS_TO
       source:
         extractGuid:
@@ -90,4 +90,97 @@ relationships:
             - field: normalizedDeviceHostname
               attribute: dstName
             - field: port
+              attribute: dstPort
+
+  - name: extPortConnectsToPortByRawPortId
+    version: "1"
+    origins: [Network Monitoring]
+    conditions:
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["PORT"]
+      - attribute: deviceName
+        present: true
+      - attribute: port
+        present: true
+      - attribute: dstPort
+        present: true
+      - attribute: dstName
+        present: true
+    relationship:
+      expires: PT30M
+      relationshipType: CONNECTS_TO
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_PORT
+          fields:
+            - field: normalizedDeviceHostname
+              attribute: dstName
+            - field: portId
+              attribute: dstPort
+
+  - name: extPortConnectsToPortByMacAndRawPortId
+    version: "1"
+    origins: [Network Monitoring]
+    conditions:
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["PORT"]
+      - attribute: deviceName
+        present: true
+      - attribute: port
+        present: true
+      - attribute: dstPort
+        present: true
+      - attribute: dstMac
+        present: true
+    relationship:
+      expires: PT6H
+      relationshipType: CONNECTS_TO
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_PORT
+          fields:
+            - field: deviceMac
+              attribute: dstMac
+            - field: portId
+              attribute: dstPort
+
+  - name: extPortConnectsToPortByManagementIpAndRawPortId
+    version: "1"
+    origins: [Network Monitoring]
+    conditions:
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["PORT"]
+      - attribute: deviceName
+        present: true
+      - attribute: port
+        present: true
+      - attribute: dstPort
+        present: true
+      - attribute: dstIp
+        present: true
+    relationship:
+      expires: PT30M
+      relationshipType: CONNECTS_TO
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NETWORK_PORT
+          fields:
+            - field: deviceManagementIp
+              attribute: dstIp
+            - field: portId
               attribute: dstPort
