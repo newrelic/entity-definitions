@@ -1,0 +1,128 @@
+{
+  "name": "GCP HTTP(S) Load Balancer",
+  "description": null,
+  "pages": [
+    {
+      "name": "GCP HTTP(S) Load Balancer",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Backend Requests/s",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(`gcp.loadbalancing.https.backend_request_count`), 1 minute) / 60 AS 'Backend RPS' WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total Requests/s",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT rate(sum(`gcp.loadbalancing.https.request_count`), 1 minute) / 60 AS 'Total RPS' WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Backend Latency (ms)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(`gcp.loadbalancing.https.backend_latencies.p95`) AS 'Backend Latency p95 (ms)' WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total Latency (ms)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(`gcp.loadbalancing.https.total_latencies.p95`) AS 'Total Latency p95 (ms)' WHERE `entity.guid` = '{{entity.guid}}' TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,12 @@ This integration significantly enhances the Observability experience for our use
 
 In the next section, we explain the steps needed to define a new Candidate Relationship.
 
+> [!WARNING]
+> The candidate definition schema has changed from using `tags` to using `attributes`. 
+> Lookups must define `attributes` with `attributeKeys` instead of `tags` with `tagKeys`, 
+> and tag keys must be prefixed with `tags.` (for example, `tagKeys: ["aws.bucketName"]` becomes `attributeKeys: ["tags.aws.bucketName"]`). 
+> The `tags` format has been removed. See [Attributes](#attributes).
+
 # How to create a new Candidate Relationship
 
 To create a new candidate relationship, follow these steps:
@@ -48,12 +54,12 @@ Example:
 category: AWSS3BUCKET
 lookups:
   - entityTypes:
-    tags:
+    attributes:
     onMatch:
     onMiss:
 ```
 
-4. Fill in the required fields for each lookup. For the `AWSS3BUCKET` example, the fields are `entityTypes`, `tags`, `onMatch` and `onMiss`.
+4. Fill in the required fields for each lookup. For the `AWSS3BUCKET` example, the fields are `entityTypes`, `attributes`, `onMatch` and `onMiss`.
 
 Example:
 
@@ -61,12 +67,11 @@ Example:
 category: AWSS3BUCKET
 lookups:
    - entityTypes:
-        - domain: INFRA
-          type: AWSS3BUCKET
-     tags:
+        - INFRA-AWSS3BUCKET
+     attributes:
         matchingMode: ANY
         predicates:
-           - tagKeys: ["aws.bucketName", "aws.s3.BucketName"]
+           - attributeKeys: ["tags.aws.bucketName", "tags.aws.s3.BucketName"]
              field: bucketName
      onMatch:
         onMultipleMatches: RELATE_ALL
@@ -92,13 +97,13 @@ The [next section](#how-to-configure-a-new-candidate-relationship) provides deta
 
 The following table lists the available fields for configuring a new candidate relationship and specifies if they are mandatory or not.
 
-| **Name** | **Type** | **Required** | **Description**                                                     |
-|----------|----------|-------------|---------------------------------------------------------------------|
-| category | String   | Yes         | Represents the generic concept of the entity category.              |
-| lookups  | List     | Yes         | Provides a list of rules for the defined category.                  |
-| tags     | Composed | Yes         | Specifies which of the entity tag keys must match the input fields. |
-| onMatch  | Composed | Yes         | Specifies actions to be executed in case the rule finds a match.    |
-| onMiss   | Composed | Yes         | Specifies actions to be executed in case the rule finds a miss.     |
+| **Name**   | **Type** | **Required** | **Description**                                                           |
+|------------|----------|--------------|---------------------------------------------------------------------------|
+| category   | String   | Yes          | Represents the generic concept of the entity category.                    |
+| lookups    | List     | Yes          | Provides a list of rules for the defined category.                        |
+| attributes | Composed | Yes          | Specifies which of the entity attribute keys must match the input fields. |
+| onMatch    | Composed | Yes          | Specifies actions to be executed in case the rule finds a match.          |
+| onMiss     | Composed | Yes          | Specifies actions to be executed in case the rule finds a miss.           |
 
 ## Category
 
@@ -113,18 +118,21 @@ Lookups define the rules for the category and specify the entity types related t
 These rules are used during the lookup process to inspect only entities on the specified entity types, 
 allowing for a targeted search for a specific entity type.
 
-## Tags
+## Attributes
 
-Tags define which entity tag keys must match the input fields. It is possible to define different matching modes.
+Attributes define which entity attribute keys must match the input fields. It is possible to define different matching modes.
 
-The `tags` field is a composed object with the following subfields:
+`attributeKeys` reference entity attributes by their key (for example `url`). 
+Tags are also entity attributes. To match on a tag, prefix its key with `tags.` (for example `tags.aws.bucketName`). See [Matching on tags](#matching-on-tags).
 
-| **Name**   | **Type** | **Required** | **Description**                                                         |
-|------------|----------|-------------|--------------------------------------------------------------------------|
-| mode       | String   | Yes         | Defines the matching behavior for the specified tags.                    |
-| predicates | Composed | Yes         | Defines the `tagKeys` from the entities to match with the `field` value. |
+The `attributes` field is a composed object with the following subfields:
 
-### (Tags) Mode
+| **Name**     | **Type** | **Required** | **Description**                                                                   |
+|--------------|----------|--------------|-----------------------------------------------------------------------------------|
+| matchingMode | String   | Yes          | Defines the matching behavior for the specified predicates.                       |
+| predicates   | Composed | Yes          | Defines the `attributeKeys` from the entities to match with the `field` value.    |
+
+### (Attributes) Matching mode
 
 * ***ANY***: All entities that match at least one of the defined `predicates` will be considered for a relationship.
 * ***ALL***: Entities must match all the specified `predicates` to be considered for a relationship.
@@ -132,10 +140,26 @@ The `tags` field is a composed object with the following subfields:
 
 Example:
 ```yaml
-     tags:
+     attributes:
         matchingMode: ANY
         predicates:
-           - tagKeys: ["aws.bucketName", "aws.s3.BucketName"]
+           - attributeKeys: ["url", "repositoryUrl"]
+             field: repoUrl
+```
+
+In this case, entities with the attribute keys `url` or `repositoryUrl` will be matched (using their values) 
+with data from the `repoUrl` field.
+
+### Matching on tags
+
+To match on an entity tag, prefix the tag key with `tags.` in `attributeKeys`. 
+For example, the tag `aws.bucketName` is referenced as `tags.aws.bucketName`:
+
+```yaml
+     attributes:
+        matchingMode: ANY
+        predicates:
+           - attributeKeys: ["tags.aws.bucketName", "tags.aws.s3.BucketName"]
              field: bucketName
 ```
 

@@ -12,6 +12,8 @@ relationships:
         present: true
       - attribute: clusterName
         present: true
+      - attribute: podsDesired
+        regex: "^[1-9][0-9]*$"
     relationship:
       expires: PT75M
       relationshipType: CONTAINS
@@ -40,13 +42,19 @@ relationships:
       expires: PT75M
       relationshipType: CONTAINS
       source:
-        lookupGuid:
-          candidateCategory: KUBERNETES_NAMESPACE
-          fields:
-            - field: k8s.clusterName
-              attribute: k8s.cluster.name
-            - field: k8s.namespaceName
-              attribute: k8s.namespace.name
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_NAMESPACE
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+            hashAlgorithm: FARM_HASH
       target:
         extractGuid:
           attribute: entity.guid

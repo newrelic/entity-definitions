@@ -1,0 +1,26 @@
+relationships:
+  # NGINXSERVER → NR APM backend app (CALLS).
+  - name: nginxServerCallsApmApplicationByDeploymentLabelStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - APM Metrics
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span", "Transaction" ]
+      - attribute: newrelic.source
+        present: false
+      - attribute: tags.nginx.deployment.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: deploymentName
+              attribute: tags.nginx.deployment.name
+      target:
+        extractGuid:
+          attribute: entity.guid

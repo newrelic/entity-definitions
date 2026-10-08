@@ -1,0 +1,38 @@
+relationships:
+  - name: extServiceCallsAzureRedisCache
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system.name
+        anyOf: [ "redis" ]
+      - attribute: server.address
+        regex: '^[a-z0-9\-]+\.redis\.cache\.windows\.net$'
+      - attribute: server.port
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZUREREDISCACHE
+          fields:
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: server.port

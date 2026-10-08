@@ -7,6 +7,11 @@ scheduledCheckpoints:
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: sum(postgresql.bgwriter.checkpoint.count) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: type = 'scheduled'
+
 requestedCheckpoints:
   title: Requested checkpoints
   unit: OPERATIONS_PER_SECOND
@@ -16,6 +21,11 @@ requestedCheckpoints:
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
+    opentelemetry:
+      select: sum(postgresql.bgwriter.checkpoint.count) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: type = 'requested'
+
 buffersAllocated:
   title: Buffers allocated
   unit: OPERATIONS_PER_SECOND
@@ -25,4 +35,6 @@ buffersAllocated:
       from: PostgresqlInstanceSample
       eventId: entityGuid
       eventName: entityName
-
+    opentelemetry:
+      select: sum(postgresql.bgwriter.buffers.allocated) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric

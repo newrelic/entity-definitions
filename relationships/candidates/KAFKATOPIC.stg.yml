@@ -1,16 +1,15 @@
 category: KAFKATOPIC
 lookups:
   - entityTypes:
-      - domain: INFRA
-        type: AWSMSKTOPIC
-    tags:
+      - INFRA-AWSMSKTOPIC
+    attributes:
       matchingMode: ALL
       predicates:
-        - tagKeys: [ "aws.clusterName", "aws.kafka.ClusterName" ]
+        - attributeKeys: ["tags.aws.clusterName", "tags.aws.kafka.ClusterName"]
           field: clusterName
-        - tagKeys: [ "aws.awsRegion", "aws.region" ]
+        - attributeKeys: ["tags.aws.awsRegion", "tags.aws.region"]
           field: region
-        - tagKeys: [ "aws.topic", "aws.kafka.Topic" ]
+        - attributeKeys: ["tags.aws.topic", "tags.aws.kafka.Topic"]
           field: topic
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -19,15 +18,32 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
 
+  # bootstrapServers match (public/Basic/Standard clusters).
   - entityTypes:
-      - domain: INFRA
-        type: CONFLUENTCLOUDKAFKATOPIC
-    tags:
+      - INFRA-CONFLUENTCLOUDKAFKATOPIC
+    attributes:
       matchingMode: ALL
       predicates:
-        - tagKeys: [ "confluent.clusterBootstrapServers", "bootstrap.servers" ]
+        - attributeKeys: ["tags.confluent.clusterBootstrapServers", "tags.bootstrap.servers"]
           field: bootstrapServers
-        - tagKeys: [ "confluent.kafka.server.metric.topic", "topic" ]
+        - attributeKeys: ["tags.confluent.kafka.server.metric.topic", "tags.topic"]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
+
+  # clusterId match, for private-networked (PrivateLink/PSC) clusters.
+  - entityTypes:
+      - INFRA-CONFLUENTCLOUDKAFKATOPIC
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.confluent.clusterId"]
+          field: clusterId
+        - attributeKeys: ["tags.confluent.kafka.server.metric.topic"]
           field: topic
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -37,14 +53,13 @@ lookups:
         type: KAFKATOPIC
 
   - entityTypes:
-      - domain: INFRA
-        type: KAFKATOPIC
-    tags:
+      - INFRA-KAFKATOPIC
+    attributes:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["clusterName"]
+        - attributeKeys: ["tags.clusterName"]
           field: clusterName
-        - tagKeys: ["topic"]
+        - attributeKeys: ["tags.topic"]
           field: topic
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -53,16 +68,37 @@ lookups:
       uninstrumented:
         type: KAFKATOPIC
 
-  # Match KAFKATOPIC by producer.service.name tag — for consumers that don't carry kafka.cluster.name.
+  # Native (nri-kafka) clusterId match - its own tag name, not the OTel kafka.cluster.id below.
   - entityTypes:
-      - domain: INFRA
-        type: KAFKATOPIC
-    tags:
+      - INFRA-KAFKATOPIC
+    attributes:
       matchingMode: ALL
       predicates:
-        - tagKeys: ["producer.service.name"]
-          field: producerServiceName
+        - attributeKeys: ["tags.clusterId"]
+          field: clusterId
+        - attributeKeys: ["tags.topic"]
+          field: topic
     onMatch:
       onMultipleMatches: RELATE_ALL
     onMiss:
-      action: NO_OP
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
+
+  # Match KAFKATOPIC by kafka.cluster.id tag — for self-hosted clusters emitting cluster UUID.
+  - entityTypes:
+      - INFRA-KAFKATOPIC
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.kafka.cluster.id"]
+          field: clusterId
+        - attributeKeys: ["tags.topic"]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
+

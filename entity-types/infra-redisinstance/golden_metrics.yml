@@ -7,9 +7,12 @@ keyspaceHitsPerSecond:
       from: RedisSample
       eventId: entityGuid
       eventName: entityName
-    # defaulting to newRelic query for now since we cannot match value functions for OpenTelemetry cumulative metrics.
-    # opentelemetry:
-    #   select: rate(sum(redis.keyspace.hits), 1 second)
+    opentelemetry:
+      select: sum(redis.keyspace.hits) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: metricName = 'redis.keyspace.hits'
+      eventId: entity.guid
+      eventName: entity.name
 keyspaceMissesPerSecond:
   title: Keyspace misses per second
   unit: OPERATIONS_PER_SECOND
@@ -19,9 +22,12 @@ keyspaceMissesPerSecond:
       from: RedisSample
       eventId: entityGuid
       eventName: entityName
-    # defaulting to newRelic query for now since we cannot match value functions for OpenTelemetry cumulative metrics.
-    # opentelemetry:
-    #   select: rate(sum(redis.keyspace.misses), 1 second)
+    opentelemetry:
+      select: sum(redis.keyspace.misses) / sum((endTimestamp - timestamp) / 1000)
+      from: Metric
+      where: metricName = 'redis.keyspace.misses'
+      eventId: entity.guid
+      eventName: entity.name
 connectedClients:
   title: Connected clients
   unit: COUNT
@@ -33,3 +39,7 @@ connectedClients:
       eventName: entityName
     opentelemetry:
       select: average(redis.clients.connected)
+      from: Metric
+      where: metricName = 'redis.clients.connected'
+      eventId: entity.guid
+      eventName: entity.name

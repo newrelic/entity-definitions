@@ -1,0 +1,72 @@
+{
+  "name": "AI Agent Dashboard",
+  "description": "Overview dashboard for AI Agent",
+  "pages": [
+    {
+      "name": "AI Agent dashboard",
+      "description": "",
+      "widgets": [
+        {
+          "title": "Latency (Average execution time)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(newrelic.goldenmetrics.apm.ai_agent.responseTimeMs) AS 'Response Time Ms' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Throughput (invocations per minute)",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(count(newrelic.goldenmetrics.apm.ai_agent.throughput), 1 MINUTES) AS 'Throughput' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Error Rate (% of failed executions)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(newrelic.goldenmetrics.apm.ai_agent.errorRate) AS 'Error %' FROM Metric WHERE entity.guid in ('{{entity.id}}') LIMIT MAX TIMESERIES"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

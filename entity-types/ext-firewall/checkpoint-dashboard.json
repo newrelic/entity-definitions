@@ -49,7 +49,7 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(kentik.snmp.multiProcUsage) AS 'Current CPU Utilization %' WHERE provider = 'kentik-firewall'"
+                "query": "FROM Metric SELECT latest(kentik.snmp.CPU) AS 'Current CPU Utilization %' WHERE provider = 'kentik-firewall'"
               }
             ],
             "thresholds": [
@@ -119,11 +119,13 @@
             "nrqlQueries": [
               {
                 "accountId": 0,
-                "query": "FROM Metric SELECT average(kentik.snmp.multiProcUsage) AS 'Average CPU Usage' WHERE provider = 'kentik-firewall' TIMESERIES 5 minutes"
+                "query": "FROM Metric SELECT min(kentik.snmp.CPU) AS 'Min CPU', max(kentik.snmp.CPU) AS 'Max CPU', average(kentik.snmp.CPU) AS 'Average CPU' WHERE provider = 'kentik-firewall' TIMESERIES 5 minutes"
               }
             ],
             "yAxisLeft": {
-              "zero": true
+              "max": 100,
+              "min": 0,
+              "zero": false
             }
           }
         },
