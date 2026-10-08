@@ -1,0 +1,37 @@
+relationships:
+  - name: oTelHostHostsFlinkTaskManager
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: host.id
+        present: true
+      - attribute: entity.type
+        anyOf: ["FLINKTASKMANAGER"]
+      - attribute: k8s.pod.name
+        present: false
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: host.id
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: FLINKTASKMANAGER

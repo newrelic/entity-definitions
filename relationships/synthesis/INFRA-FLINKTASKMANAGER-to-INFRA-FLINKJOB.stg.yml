@@ -1,0 +1,49 @@
+relationships:
+  - name: oTelFlinkTaskManagerHostsFlinkJob
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: otel.library.name
+        anyOf:
+          - "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/flinkmetricsreceiver"
+          - "otelcol/flink_metricsreceiver"
+      - attribute: flink.taskmanager.id
+        present: true
+      - attribute: flink.job.name
+        present: true
+      - attribute: host.id
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: FLINKTASKMANAGER
+          identifier:
+            fragments:
+              - attribute: "flink.taskmanager.id"
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: FLINKJOB
+          identifier:
+            fragments:
+              - attribute: "host.id"
+              - value: ":"
+              - attribute: "flink.job.name"
+            hashAlgorithm: FARM_HASH
