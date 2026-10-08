@@ -1,0 +1,54 @@
+cpuLoad:
+  title: JVM CPU Load
+  unit: PERCENTAGE
+  queries:
+    opentelemetry:
+      select: average(flink.jvm.cpu.load) * 100
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+heapUsed:
+  title: Heap Memory Used
+  unit: BYTES
+  queries:
+    opentelemetry:
+      select: latest(flink.jvm.memory.heap.used)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+heapMax:
+  title: Heap Memory Max
+  unit: BYTES
+  queries:
+    opentelemetry:
+      select: latest(flink.jvm.memory.heap.max)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+recordsIn:
+  title: Records In (per minute)
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    opentelemetry:
+      select: rate(sum(flink.task.record.count), 1 minute)
+      from: Metric
+      where: record = 'in' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+gcTime:
+  title: GC Collections Time
+  unit: MS
+  queries:
+    opentelemetry:
+      select: sum(flink.jvm.gc.collections.time)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
