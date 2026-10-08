@@ -29,6 +29,10 @@ synthesis:
           prefix: mysql.
         - attribute: instrumentation.provider
           value: opentelemetry
+        - attribute: server.address
+          present: true
+        - attribute: server.port
+          present: true
       tags:
         # Environment resource attributes
         host.type:
@@ -44,6 +48,32 @@ synthesis:
           entityTagNames: [server.address, endpoint]
         server.port:
           entityTagName: server.port
+
+    # Fallback for mysqlreceiver builds that don't emit server.address/server.port
+    # (pre useOTelSemconv). Falls back to the older mysql.instance.endpoint identifier
+    # so those entities keep matching instead of going unsynthesized.
+    - ruleName: infra_mysqlnode_mysql_instance_endpoint_fallback
+      identifier: mysql.instance.endpoint
+      name: mysql.instance.endpoint
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Metric
+        - attribute: metricName
+          prefix: mysql.
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: server.address
+          present: false
+      tags:
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
 
     # opentelemetry logs (db.server.top_query / db.server.query_sample). Matches on
     # db.system.name=mysql instead of otel.library.name, since that already disambiguates
@@ -68,6 +98,10 @@ synthesis:
           value: opentelemetry
         - attribute: db.system.name
           value: mysql
+        - attribute: server.address
+          present: true
+        - attribute: server.port
+          present: true
       tags:
         host.type:
         cloud.provider:
@@ -82,18 +116,56 @@ synthesis:
         server.port:
           entityTagName: server.port
 
+    # Fallback for mysqlreceiver builds that don't emit server.address/server.port
+    # (pre useOTelSemconv), same rationale as the metric fallback above.
+    - ruleName: infra_mysqlnode_otel_logs_fallback
+      identifier: mysql.instance.endpoint
+      name: mysql.instance.endpoint
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: db.system.name
+          value: mysql
+        - attribute: server.address
+          present: false
+      tags:
+        host.type:
+        cloud.provider:
+        cloud.account.id:
+        cloud.region:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+
     # nrsp-pipelines db-event-namespace processor stamps db.server.* log events with a
     # curated eventType (DbServerTopQuery, DbServerQuerySample) and a `namespace` attribute. The
     # DbServer prefix is shared across DB engines, so db.system.name disambiguates MySQL.
+    # Same server.address:server.port identity/name as the metric/log rules above, for consistency.
     - ruleName: infra_mysqlnode_db_server_events
-      identifier: mysql.instance.endpoint
-      name: mysql.instance.endpoint
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
       encodeIdentifierInGUID: true
       conditions:
         - attribute: eventType
           prefix: DbServer
         - attribute: db.system.name
           value: mysql
+        - attribute: server.address
+          present: true
+        - attribute: server.port
+          present: true
       tags:
         namespace:
         otel.library.name:
@@ -104,6 +176,26 @@ synthesis:
           entityTagNames: [server.address, endpoint]
         server.port:
           entityTagName: server.port
+
+    # Fallback for mysqlreceiver builds that don't emit server.address/server.port
+    # (pre useOTelSemconv), same rationale as the metric/log fallbacks above.
+    - ruleName: infra_mysqlnode_db_server_events_fallback
+      identifier: mysql.instance.endpoint
+      name: mysql.instance.endpoint
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: DbServer
+        - attribute: db.system.name
+          value: mysql
+        - attribute: server.address
+          present: false
+      tags:
+        namespace:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
 
     # nri-mysql / MysqlSample
     - ruleName: infra_mysqlnode_entityId
