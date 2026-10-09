@@ -1,0 +1,21 @@
+# STG-only candidate: resolve an INFRA-CONTAINER by its container id, matching the
+# OTel `container.id` attribute against the K8s container's `k8s.containerId` tag.
+#
+# Unlike the shared CONTAINER candidate, this one uses `onMiss: NO_OP`: a lookup that
+# finds no matching container is discarded rather than materializing an
+# UNINSTRUMENTED-CONTAINER placeholder. This is the key safety property that the
+# reverted PR #2940 lacked (it reused CONTAINER, whose onMiss is CREATE_UNINSTRUMENTED).
+category: K8S_CONTAINER_BY_ID
+lookups:
+  - entityTypes:
+      - domain: INFRA
+        type: CONTAINER
+    tags:
+      matchingMode: ANY
+      predicates:
+        - tagKeys: [ "k8s.containerId" ]
+          field: containerId
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
