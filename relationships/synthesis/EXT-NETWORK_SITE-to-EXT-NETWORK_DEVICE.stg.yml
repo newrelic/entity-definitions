@@ -1,0 +1,42 @@
+relationships:
+  - name: extNetworkSiteContainsDevice
+    version: "1"
+    origins: [Network Monitoring]
+    conditions:
+      - attribute: eventType
+        anyOf: ["NetworkTopology"]
+      - attribute: networkEntityType
+        anyOf: ["SWITCH", "ROUTER", "ACCESS_POINT", "NETWORK_DEVICE"]
+      - attribute: vendor
+        present: true
+      - attribute: vendorSiteId
+        present: true
+      - attribute: identifier
+        present: true
+    relationship:
+      expires: PT30M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: NETWORK_SITE
+          identifier:
+            fragments:
+              - attribute: vendor
+              - value: ":"
+              - attribute: vendorSiteId
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            attribute: networkEntityType
+          identifier:
+            fragments:
+              - attribute: identifier
