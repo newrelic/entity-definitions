@@ -2,6 +2,12 @@ checkpointCount:
   title: Checkpoints Completed
   unit: COUNT
   queries:
+    # nri-flink reports a running total, so the window's increase is max - min.
+    newRelic:
+      select: max(job.completedCheckpoints) - min(job.completedCheckpoints)
+      from: FlinkJobSample
+      eventId: entityGuid
+      eventName: entityName
     opentelemetry:
       select: sum(flink.job.checkpoint.count)
       from: Metric
@@ -13,6 +19,11 @@ checkpointFailed:
   title: Checkpoints Failed
   unit: COUNT
   queries:
+    newRelic:
+      select: max(job.failedCheckpoints) - min(job.failedCheckpoints)
+      from: FlinkJobSample
+      eventId: entityGuid
+      eventName: entityName
     opentelemetry:
       select: sum(flink.job.checkpoint.count)
       from: Metric
@@ -24,6 +35,11 @@ lastCheckpointTime:
   title: Last Checkpoint Duration
   unit: MS
   queries:
+    newRelic:
+      select: latest(job.lastCheckpointDurationMilliseconds)
+      from: FlinkJobSample
+      eventId: entityGuid
+      eventName: entityName
     opentelemetry:
       select: latest(flink.job.last_checkpoint.time)
       from: Metric
@@ -35,6 +51,11 @@ restartCount:
   title: Job Restarts
   unit: COUNT
   queries:
+    newRelic:
+      select: latest(job.restarts)
+      from: FlinkJobSample
+      eventId: entityGuid
+      eventName: entityName
     opentelemetry:
       select: latest(flink.job.restart.count)
       from: Metric
@@ -46,6 +67,11 @@ checkpointInProgress:
   title: Checkpoints In Progress
   unit: COUNT
   queries:
+    newRelic:
+      select: latest(job.inProgressCheckpoints)
+      from: FlinkJobSample
+      eventId: entityGuid
+      eventName: entityName
     opentelemetry:
       select: latest(flink.job.checkpoint.in_progress)
       from: Metric
