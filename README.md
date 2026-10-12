@@ -11,6 +11,8 @@ By proposing changes to this repository you can achieve the following:
 - Modify the summary of an entity type
 - Modify the lifecycle of an entity and make them `alertable` (see [Lifecycle](docs/entities/lifecycle.md) for more information about this attribute)
 
+As one example of a source integration added this way: Oracle Cloud Infrastructure (OCI) entity types for API Gateway, Cloud Events, DNS, GoldenGate, Integration, Network Firewall, Queue, and Streaming resources live under `entity-types/infra-oci*`, synthesized from OCI log data as part of the OCI GA rollout.
+
 ## Changelog
 
 All notable changes are defined in the [releases page](https://github.com/newrelic/entity-definitions/releases).
