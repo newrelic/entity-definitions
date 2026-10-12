@@ -2,9 +2,9 @@ checkpointCount:
   title: Checkpoints Completed
   unit: COUNT
   queries:
-    # nri-flink reports a running total, so the window's increase is max - min.
+    # nri-flink reports a running total, so the latest value is the cumulative count.
     newRelic:
-      select: max(job.completedCheckpoints) - min(job.completedCheckpoints)
+      select: latest(job.completedCheckpoints)
       from: FlinkJobSample
       eventId: entityGuid
       eventName: entityName
@@ -20,7 +20,7 @@ checkpointFailed:
   unit: COUNT
   queries:
     newRelic:
-      select: max(job.failedCheckpoints) - min(job.failedCheckpoints)
+      select: latest(job.failedCheckpoints)
       from: FlinkJobSample
       eventId: entityGuid
       eventName: entityName
