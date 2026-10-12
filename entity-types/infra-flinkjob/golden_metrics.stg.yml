@@ -2,12 +2,6 @@ checkpointCount:
   title: Checkpoints Completed
   unit: COUNT
   queries:
-    # nri-flink reports a running total, so the latest value is the cumulative count.
-    newRelic:
-      select: latest(job.completedCheckpoints)
-      from: FlinkJobSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
       select: sum(flink.job.checkpoint.count)
       from: Metric
@@ -19,11 +13,6 @@ checkpointFailed:
   title: Checkpoints Failed
   unit: COUNT
   queries:
-    newRelic:
-      select: latest(job.failedCheckpoints)
-      from: FlinkJobSample
-      eventId: entityGuid
-      eventName: entityName
     opentelemetry:
       select: sum(flink.job.checkpoint.count)
       from: Metric
