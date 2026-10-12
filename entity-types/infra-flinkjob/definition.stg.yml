@@ -1,0 +1,112 @@
+domain: INFRA
+type: FLINKJOB
+
+synthesis:
+  rules:
+  # Composite identifier: host.id scopes the job to the Flink cluster (JobManager host).
+  # host.id is present on all metrics via the resourcedetection processor, so job-scoped
+  # metrics (checkpoints, restarts) synthesize correctly without needing flink.taskmanager.id.
+  - ruleName: infra_flinkjob_otel_contrib
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - host.id
+      - flink.job.name
+    name: flink.job.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: flink.job.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/flinkmetricsreceiver"
+      - attribute: flink.job.name
+        present: true
+      - attribute: host.id
+        present: true
+    tags:
+      flink.job.name:
+        ttl: P1D
+      flink.resource.type:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  - ruleName: infra_flinkjob_otel
+    compositeIdentifier:
+      separator: ":"
+      attributes:
+      - host.id
+      - flink.job.name
+    name: flink.job.name
+    encodeIdentifierInGUID: true
+    conditions:
+      - attribute: eventType
+        value: Metric
+      - attribute: metricName
+        prefix: flink.job.
+      - attribute: instrumentation.provider
+        value: opentelemetry
+      - attribute: otel.library.name
+        value: "otelcol/flink_metricsreceiver"
+      - attribute: flink.job.name
+        present: true
+      - attribute: host.id
+        present: true
+    tags:
+      flink.job.name:
+        ttl: P1D
+      flink.resource.type:
+      host.name:
+        ttl: P1D
+      host.id:
+        ttl: P1D
+      host.type:
+      cloud.provider:
+      cloud.account.id:
+      cloud.region:
+      k8s.cluster.name:
+        ttl: P1D
+      k8s.namespace.name:
+        ttl: P1D
+      k8s.pod.name:
+        ttl: P1D
+      otel.library.name:
+        entityTagName: instrumentation.name
+
+  tags:
+    telemetry.sdk.name:
+      entityTagName: instrumentation.provider
+
+goldenTags:
+  - flink.job.name
+  - flink.resource.type
+  - host.name
+
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+
+dashboardTemplates:
+  opentelemetry:
+    template: opentelemetry_dashboard.stg.json
+
+ownership:
+  primaryOwner:
+    teamName: "OnHost Agent and Integrations"

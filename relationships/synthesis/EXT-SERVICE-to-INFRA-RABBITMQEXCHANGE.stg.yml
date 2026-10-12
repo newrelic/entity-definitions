@@ -1,7 +1,7 @@
 relationships:
-  # OpenTelemetry: APM service calls RabbitMQ Exchange
-  # Triggers from OTel-instrumented app spans/metrics
-  - name: otelServiceCallsRabbitmqExchange
+  # OpenTelemetry: APM service (producer) emits a message to RabbitMQ Exchange
+  # Triggered from OTel-instrumented app spans
+  - name: otelServiceProducesRabbitmqExchange
     version: "1"
     origins:
       - OpenTelemetry
@@ -15,6 +15,8 @@ relationships:
         anyOf: ["SERVICE"]
       - attribute: messaging.system
         anyOf: ["rabbitmq"]
+      - attribute: span.kind
+        anyOf: ["producer"]
       - attribute: messaging.rabbitmq.cluster.name
         present: true
       - attribute: messaging.destination.name
@@ -23,7 +25,7 @@ relationships:
         present: true
     relationship:
       expires: PT75M
-      relationshipType: CALLS
+      relationshipType: PRODUCES
       source:
         extractGuid:
           attribute: entity.guid
@@ -43,3 +45,50 @@ relationships:
                 # explicit routing key). We take the first segment.
                 attribute: messaging.destination.name
                 regex: '^([^:]+)(?::.*)?$'
+
+  # OpenTelemetry: APM service (consumer) reads a message from RabbitMQ Exchange
+  # Triggered from OTel-instrumented app spans
+  - name: otelServiceConsumesRabbitmqExchange
+    version: "1"
+    origins:
+      - OpenTelemetry
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Span"]
+      - attribute: instrumentation.provider
+        anyOf: ["opentelemetry"]
+      - attribute: entity.type
+        anyOf: ["SERVICE"]
+      - attribute: messaging.system
+        anyOf: ["rabbitmq"]
+      - attribute: span.kind
+        anyOf: ["consumer"]
+      - attribute: messaging.rabbitmq.cluster.name
+        present: true
+      - attribute: messaging.destination.name
+        present: true
+      - attribute: messaging.rabbitmq.vhost.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        lookupGuid:
+          candidateCategory: RABBITMQEXCHANGE
+          fields:
+            - field: clusterName
+              attribute: messaging.rabbitmq.cluster.name
+            - field: vhost
+              attribute: messaging.rabbitmq.vhost.name
+            - field: exchangeName
+              capture:
+                # messaging.destination.name is {exchange}:{routing_key} when both are present,
+                # or just the single present part otherwise (usually the exchange, but per OTel
+                # semconv could be the routing key alone if the default exchange is used with an
+                # explicit routing key). We take the first segment.
+                attribute: messaging.destination.name
+                regex: '^([^:]+)(?::.*)?$'
+      target:
+        extractGuid:
+          attribute: entity.guid
