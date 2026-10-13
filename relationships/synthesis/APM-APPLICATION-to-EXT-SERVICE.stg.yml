@@ -1,0 +1,20 @@
+relationships:
+  - name: ApmApplicationISextEbpfService
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        anyOf: ["apm.service.transaction.duration"]
+    relationship:
+      expires: PT24H
+      relationshipType: IS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: EXTEBPFSERVICE
+          fields:
+            - field: service.name
+              attribute: entity.name
