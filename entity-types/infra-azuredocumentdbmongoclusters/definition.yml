@@ -1,8 +1,27 @@
 domain: INFRA
 type: AZUREDOCUMENTDBMONGOCLUSTERS
+goldenTags:
+- azure.regionName
+- azure.subscriptionId
+- azure.type
+- azure.resourceGroupName
 configuration:
   entityExpirationTime: DAILY
-  alertable: false
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+  rules:
+    - ruleName: infra_azuredocumentdbmongoclusters_azure_resourceId
+      identifier: azure.resourceId
+      name: displayName
+      legacyFeatures:
+        overrideGuidType: true
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.documentdb/mongoclusters
 
 ownership:
   primaryOwner:
