@@ -1,0 +1,131 @@
+{
+  "name": "Flink TaskManager (nri-flink)",
+  "pages": [
+    {
+      "name": "Flink TaskManager (nri-flink)",
+      "description": null,
+      "widgets": [
+        {
+          "title": "JVM CPU Load (%)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(jvm.cpuLoad) * 100 AS 'CPU Load %' FROM FlinkTaskManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Heap Memory Used vs Max (bytes)",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(jvm.heapUsedBytes) AS 'Used', latest(jvm.heapMaxBytes) AS 'Max' FROM FlinkTaskManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM Threads",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(jvm.threadCount) AS 'Threads' FROM FlinkTaskManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Managed Memory Used (%)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(taskmanager.managedMemoryUsedBytes) / latest(taskmanager.managedMemoryTotalBytes) * 100 AS 'Managed %' FROM FlinkTaskManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Network Buffers Used (%)",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT (1 - latest(taskmanager.networkAvailableMemorySegments) / latest(taskmanager.networkTotalMemorySegments)) * 100 AS 'Buffers used %' FROM FlinkTaskManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Metaspace and Non-heap (bytes)",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(jvm.metaspaceUsedBytes) AS 'Metaspace', latest(jvm.nonHeapUsedBytes) AS 'Non-heap' FROM FlinkTaskManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
