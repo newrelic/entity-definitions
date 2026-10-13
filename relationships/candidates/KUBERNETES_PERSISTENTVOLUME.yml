@@ -1,0 +1,24 @@
+# NR-604119: resolves AWS storage -> PersistentVolume candidate relationships emitted by
+# aws-configuration-fetcher. The AWS storage binding belongs to the PV (its spec.csi.volumeHandle
+# is the EBS volume / EFS filesystem), so ACF emits the candidate keyed by the PV name:
+#   - EBS: the EBS volume's "CSIVolumeName" tag (= the PV name)
+#   - EFS: the EFS AccessPoint's ClientToken (= the PV name, dynamic provisioning only)
+# Both equal the PV entity's k8s.volumeName tag, which is the join key below. The PVC -> PV edge is
+# synthesized separately by the K8s integration, giving the full PVC -> PV -> EBS/EFS chain.
+#
+# Match is on k8s.volumeName alone (not cluster-scoped) because ACF only carries the volume name on
+# the candidate, not the cluster; dynamically-provisioned PV names are pvc-<uuid> (globally unique),
+# so this is safe.
+category: KUBERNETES_PERSISTENTVOLUME
+lookups:
+  - entityTypes:
+    - INFRA-KUBERNETES_PERSISTENTVOLUME
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.k8s.volumeName"]
+          field: k8s.volumeName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
