@@ -1,0 +1,171 @@
+{
+  "name": "Flink Job (nri-flink)",
+  "pages": [
+    {
+      "name": "Flink Job (nri-flink)",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Uptime (minutes)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(job.uptimeMilliseconds) / 60000 AS 'Uptime (min)' FROM FlinkJobSample"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Restarts",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(job.restarts) AS 'Restarts' FROM FlinkJobSample"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Checkpoints in progress",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(job.inProgressCheckpoints) AS 'In progress' FROM FlinkJobSample"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Failed checkpoints (total)",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(job.failedCheckpoints) AS 'Failed' FROM FlinkJobSample"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Completed checkpoints per minute",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT derivative(job.completedCheckpoints, 1 minute) AS 'Completed/min' FROM FlinkJobSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Last checkpoint duration (ms)",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(job.lastCheckpointDurationMilliseconds) AS 'Duration (ms)' FROM FlinkJobSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Last checkpoint size (bytes)",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(job.lastCheckpointSizeBytes) AS 'Size' FROM FlinkJobSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Runs of this job (job.id)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(job.uptimeMilliseconds) / 60000 AS 'Uptime (min)', latest(job.restarts) AS 'Restarts' FROM FlinkJobSample FACET job.id"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
