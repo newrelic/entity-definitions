@@ -1,0 +1,192 @@
+{
+  "name": "Gemini Enterprise Engine Data Connector",
+  "description": "Dashboard for Gemini Enterprise Engine Data Connector entities (GCP Gemini Enterprise / Discovery Engine).",
+  "pages": [
+    {
+      "name": "Gemini Enterprise Engine Data Connector",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Request Count",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`gcp.discoveryengine.dataconnector.request_count`) AS 'Request Count' FROM Metric WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "offset": 300000
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Error Rate",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(sum(`gcp.discoveryengine.dataconnector.request_count`), WHERE metric.response_code != 'OK') * 100 / sum(`gcp.discoveryengine.dataconnector.request_count`) AS 'Error Rate' FROM Metric WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "offset": 300000
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Request Latency",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`gcp.discoveryengine.dataconnector.request_latencies`) AS 'Request Latency' FROM Metric WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "offset": 300000
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Request Latency (p95)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(`gcp.discoveryengine.dataconnector.request_latencies.p95`) AS 'Request Latency (p95)' FROM Metric WHERE entity.guid = '{{entity.id}}' TIMESERIES AUTO",
+                "offset": 300000
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Requests by Tool",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`gcp.discoveryengine.dataconnector.request_count`) AS 'Requests by Tool' FROM Metric WHERE entity.guid = '{{entity.id}}' FACET metric.tool_id TIMESERIES AUTO",
+                "offset": 300000
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Requests by Response Code",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT sum(`gcp.discoveryengine.dataconnector.request_count`) AS 'Requests by Response Code' FROM Metric WHERE entity.guid = '{{entity.id}}' FACET metric.response_code TIMESERIES AUTO",
+                "offset": 300000
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
