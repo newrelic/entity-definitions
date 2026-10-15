@@ -1,0 +1,69 @@
+checkpointCount:
+  title: Checkpoints Completed
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(flink.job.checkpoint.count)
+      from: Metric
+      where: checkpoint = 'completed' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+checkpointFailed:
+  title: Checkpoints Failed
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(flink.job.checkpoint.count)
+      from: Metric
+      where: checkpoint = 'failed' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+lastCheckpointTime:
+  title: Last Checkpoint Duration
+  unit: MS
+  queries:
+    newRelic:
+      select: latest(job.lastCheckpointDurationMilliseconds)
+      from: FlinkJobSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(flink.job.last_checkpoint.time)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+restartCount:
+  title: Job Restarts
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(job.restarts)
+      from: FlinkJobSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(flink.job.restart.count)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+checkpointInProgress:
+  title: Checkpoints In Progress
+  unit: COUNT
+  queries:
+    newRelic:
+      select: latest(job.inProgressCheckpoints)
+      from: FlinkJobSample
+      eventId: entityGuid
+      eventName: entityName
+    opentelemetry:
+      select: latest(flink.job.checkpoint.in_progress)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name

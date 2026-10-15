@@ -51,3 +51,20 @@ lookups:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
         type: KAFKATOPIC
+
+  # Match KAFKATOPIC by kafka.cluster.id tag - for self-hosted clusters emitting cluster UUID.
+  - entityTypes:
+    - INFRA-KAFKATOPIC
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.kafka.cluster.id"]
+          field: clusterId
+        - attributeKeys: ["tags.topic"]
+          field: topic
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: CREATE_UNINSTRUMENTED
+      uninstrumented:
+        type: KAFKATOPIC
