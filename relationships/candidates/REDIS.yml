@@ -10,11 +10,10 @@ lookups:
       - INFRA-AWSELASTICACHEVALKEYNODE
       - INFRA-AWSELASTICACHEVALKEYSERVERLESS
       - INFRA-GCPMEMORYSTOREINSTANCE
-      - INFRA-REDISINSTANCE
     attributes:
       matchingMode: ANY
       predicates:
-        - attributeKeys: ["tags.endpoint", "tags.aws.elasticache.endpointAddress", "tags.aws.elasticache.configurationEndpointAddress", "tags.aws.elasticache.primaryEndpointAddress", "tags.aws.elasticache.readerEndpointAddress", "tags.gcp.endpoint", "tags.server.address"]
+        - attributeKeys: ["tags.endpoint", "tags.aws.elasticache.endpointAddress", "tags.aws.elasticache.configurationEndpointAddress", "tags.aws.elasticache.primaryEndpointAddress", "tags.aws.elasticache.readerEndpointAddress", "tags.gcp.endpoint"]
           field: endpoint
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -22,3 +21,16 @@ lookups:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
         type: REDIS
+  - entityTypes:
+      - INFRA-REDISINSTANCE
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.server.address"]
+          field: endpoint
+        - attributeKeys: ["tags.server.port"]
+          field: port
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
