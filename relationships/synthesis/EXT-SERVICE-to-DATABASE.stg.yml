@@ -1,0 +1,36 @@
+relationships:
+  - name: extServiceCallsGenericDatabase
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      # eBPF-sourced EXT-SERVICE metrics (mysql/postgresql/mssql-metrics.pxl) now dual-emit
+      # db.system.name + resolved server.address alongside the legacy db.system/remote_addr.
+      - attribute: eventType
+        anyOf: [ "Span", "Metric" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: db.system.name
+        anyOf: [ "postgresql", "mysql", "microsoft.sql_server" ]
+      - attribute: server.address
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: DATABASE
+          fields:
+            - field: endpoint
+              attribute: server.address
