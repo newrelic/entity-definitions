@@ -1,9 +1,12 @@
 relationships:
+  # legacy nri-kubernetes / classic infra-agent Pod entityId format
+  # (k8s:<cluster>:<namespace>:pod:<name> -- matches infra_kubernetes_pod_entityId
+  # in entity-types/infra-kubernetes_pod/definition.yml).
   - name: k8sPodContainsExtService
     version: "1"
     origins:
       - Distributed Tracing
-    conditions: 
+    conditions:
       - attribute: eventType
         anyOf: [ "Span" ]
     relationship:
@@ -12,7 +15,7 @@ relationships:
       source:
         buildGuid:
           account:
-            lookup: true  
+            lookup: true
           domain:
             value: INFRA
           type:
@@ -30,7 +33,53 @@ relationships:
       target:
         buildGuid:
           account:
-            attribute: accountId   
+            attribute: accountId
+          domain:
+            value: EXT
+          type:
+            value: SERVICE
+          identifier:
+            fragments:
+              - attribute: service.name
+            hashAlgorithm: FARM_HASH
+
+  # kube-state-metrics data via opentelemetry prometheusReceiver (mirrors
+  # infra_kubernetes_pod_composite/_2 in entity-types/infra-kubernetes_pod/definition.yml
+  # -- same fields, same order, no "k8s:"/"pod:" literals). Same pattern already used to
+  # split INFRA-KUBERNETES_CONTAINER-to-EXT-SERVICE.yml into nrInfraK8sContainerEXTService /
+  # extInfraK8sContainerEXTService. Without this rule, a Pod entity that only exists via the
+  # OTel composite identifier (no classic on-host integration reporting for it) never matches
+  # the legacy-format hash above, so this CONTAINS relationship silently never resolves.
+  - name: k8sPodContainsExtServiceOtel
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+            hashAlgorithm: FARM_HASH
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
           domain:
             value: EXT
           type:
