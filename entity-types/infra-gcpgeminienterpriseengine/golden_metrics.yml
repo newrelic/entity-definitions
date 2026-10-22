@@ -1,0 +1,49 @@
+requestCount:
+  title: Request Count
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.discoveryengine.engine.request_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+errorRate:
+  title: Error Rate
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: filter(sum(`gcp.discoveryengine.engine.request_count`), WHERE metric.response_code_class IN ('4xx','5xx')) * 100 / sum(`gcp.discoveryengine.engine.request_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+requestLatency:
+  title: Request Latency
+  unit: MS
+  queries:
+    gcp:
+      select: average(`gcp.discoveryengine.engine.request_total_latency`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+timeToFirstToken:
+  title: Time to First Token
+  unit: MS
+  queries:
+    gcp:
+      select: average(`gcp.discoveryengine.engine.time_to_first_token_latency`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+timeToFirstAnswer:
+  title: Time to First Answer
+  unit: MS
+  queries:
+    gcp:
+      select: average(`gcp.discoveryengine.engine.time_to_first_answer_latency`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
