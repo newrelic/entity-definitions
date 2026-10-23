@@ -1,0 +1,32 @@
+cpuUsage:
+  title: CPU usage (%)
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(allocatableCpuCoresUtilization)
+      from: K8sNodeSample
+      facet: clusterName
+      eventObjectId: ENTITY_NAMES
+      eventId: clusterName
+    opentelemetry:
+      select: average(node.cpu.usage.percentage) * 100
+      from: Metric
+      facet: k8s.cluster.name
+      eventObjectId: ENTITY_NAMES
+      eventId: k8s.cluster.name
+memoryUsage:
+  title: Memory usage (%)
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(allocatableMemoryUtilization)
+      from: K8sNodeSample
+      facet: clusterName
+      eventObjectId: ENTITY_NAMES
+      eventId: clusterName
+    opentelemetry:
+      select: average(node.memory.usage.percentage) * 100
+      from: Metric
+      facet: k8s.cluster.name
+      eventObjectId: ENTITY_NAMES
+      eventId: k8s.cluster.name
