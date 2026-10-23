@@ -1,20 +1,32 @@
 checkpointCount:
-  title: Checkpoints Completed
+  title: Checkpoints Completed (total)
   unit: COUNT
   queries:
+    # Both sources report cumulative totals, so both use latest(). The validator rejects
+    # expressions (max - min) and mixed value functions across sources (PR #3304 review).
+    newRelic:
+      select: latest(job.completedCheckpoints)
+      from: FlinkJobSample
+      eventId: entity.guid
+      eventName: entity.name
     opentelemetry:
-      select: sum(flink.job.checkpoint.count)
+      select: latest(flink.job.checkpoint.count)
       from: Metric
       where: checkpoint = 'completed' AND instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
       eventName: entity.name
 
 checkpointFailed:
-  title: Checkpoints Failed
+  title: Checkpoints Failed (total)
   unit: COUNT
   queries:
+    newRelic:
+      select: latest(job.failedCheckpoints)
+      from: FlinkJobSample
+      eventId: entity.guid
+      eventName: entity.name
     opentelemetry:
-      select: sum(flink.job.checkpoint.count)
+      select: latest(flink.job.checkpoint.count)
       from: Metric
       where: checkpoint = 'failed' AND instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
@@ -27,8 +39,8 @@ lastCheckpointTime:
     newRelic:
       select: latest(job.lastCheckpointDurationMilliseconds)
       from: FlinkJobSample
-      eventId: entityGuid
-      eventName: entityName
+      eventId: entity.guid
+      eventName: entity.name
     opentelemetry:
       select: latest(flink.job.last_checkpoint.time)
       from: Metric
@@ -43,8 +55,8 @@ restartCount:
     newRelic:
       select: latest(job.restarts)
       from: FlinkJobSample
-      eventId: entityGuid
-      eventName: entityName
+      eventId: entity.guid
+      eventName: entity.name
     opentelemetry:
       select: latest(flink.job.restart.count)
       from: Metric
@@ -59,10 +71,26 @@ checkpointInProgress:
     newRelic:
       select: latest(job.inProgressCheckpoints)
       from: FlinkJobSample
-      eventId: entityGuid
-      eventName: entityName
+      eventId: entity.guid
+      eventName: entity.name
     opentelemetry:
       select: latest(flink.job.checkpoint.in_progress)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+lastCheckpointSize:
+  title: Last Checkpoint Size
+  unit: BYTES
+  queries:
+    newRelic:
+      select: latest(job.lastCheckpointSizeBytes)
+      from: FlinkJobSample
+      eventId: entity.guid
+      eventName: entity.name
+    opentelemetry:
+      select: latest(flink.job.last_checkpoint.size)
       from: Metric
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
