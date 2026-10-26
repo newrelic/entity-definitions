@@ -284,10 +284,10 @@ synthesis:
         server.port:
           entityTagName: server.port
 
-    # sql_query receiver generic logs (eventType=Log): otel.library.name=sqlqueryreceiver is
-    # shared across DB engines (mysql/postgres/sqlserver/oracle all use the same receiver), so
-    # db.system.name disambiguates Oracle, matching the pattern used for the DbServer-prefixed
-    # rules below and in the other DB instance types.
+    # Generic OTel logs (eventType=Log): db.system.name disambiguates Oracle without needing
+    # an otel.library.name check (any receiver reporting db.system.name=oracle matches, same
+    # as the MYSQLNODE/POSTGRESQLINSTANCE equivalents), matching the pattern used for the
+    # DbServer-prefixed rules below and in the other DB instance types.
     - ruleName: infra_oracledbinstance_logs_sqlqueryreceiver
       compositeIdentifier:
         separator: ":"
@@ -307,8 +307,6 @@ synthesis:
           value: opentelemetry
         - attribute: db.system.name
           value: oracle
-        - attribute: otel.library.name
-          value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlqueryreceiver
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
@@ -338,6 +336,8 @@ synthesis:
       conditions:
         - attribute: eventType
           prefix: Oracledb
+        - attribute: instrumentation.provider
+          value: opentelemetry
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
