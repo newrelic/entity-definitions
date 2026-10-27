@@ -1,0 +1,87 @@
+cpuLoad:
+  title: JVM CPU Load
+  unit: PERCENTAGE
+  queries:
+    newRelic:
+      select: average(jvm.cpuLoad) * 100
+      from: FlinkTaskManagerSample
+      eventId: entity.guid
+      eventName: entity.name
+    opentelemetry:
+      select: average(flink.jvm.cpu.load) * 100
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+heapUsed:
+  title: Heap Memory Used
+  unit: BYTES
+  queries:
+    newRelic:
+      select: latest(jvm.heapUsedBytes)
+      from: FlinkTaskManagerSample
+      eventId: entity.guid
+      eventName: entity.name
+    opentelemetry:
+      select: latest(flink.jvm.memory.heap.used)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+heapMax:
+  title: Heap Memory Max
+  unit: BYTES
+  queries:
+    newRelic:
+      select: latest(jvm.heapMaxBytes)
+      from: FlinkTaskManagerSample
+      eventId: entity.guid
+      eventName: entity.name
+    opentelemetry:
+      select: latest(flink.jvm.memory.heap.max)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+recordsIn:
+  title: Records In (per minute)
+  unit: OPERATIONS_PER_SECOND
+  queries:
+    # Not collected by nri-flink yet (task-level metrics), so OTel only.
+    opentelemetry:
+      select: rate(sum(flink.task.record.count), 1 minute)
+      from: Metric
+      where: record = 'in' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+gcTime:
+  title: GC Collections Time
+  unit: MS
+  queries:
+    # nri-flink does not collect GC metrics yet (planned), so OTel only.
+    opentelemetry:
+      select: sum(flink.jvm.gc.collections.time)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+managedMemoryUsed:
+  title: Managed Memory Used
+  unit: BYTES
+  queries:
+    newRelic:
+      select: latest(taskmanager.managedMemoryUsedBytes)
+      from: FlinkTaskManagerSample
+      eventId: entity.guid
+      eventName: entity.name
+    opentelemetry:
+      select: latest(flink.memory.managed.used)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name

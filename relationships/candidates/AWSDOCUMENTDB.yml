@@ -1,15 +1,20 @@
-category: AWSDOCDBINSTANCE
+category: AWSDOCUMENTDB
+# AWS DocumentDB clusters and instances, following the DATABASE category pattern
+# (which covers both INFRA-AWSRDSDBCLUSTER and INFRA-AWSRDSDBINSTANCE)
 lookups:
   # Tier 1: Maximum precision - endpoint + port (exact connection match)
   # Pattern based on MSSQLDBINSTANCE.yml (server.address + server.port)
+  # Also matches the cluster entity when the app connects through the cluster endpoint,
+  # since DocDB instances do not carry the cluster endpoint tags (cluster port tag is aws.rds.port)
   - entityTypes:
       - INFRA-AWSDOCDBINSTANCE
+      - INFRA-AWSDOCDBCLUSTER
     attributes:
       matchingMode: ALL
       predicates:
         - attributeKeys: ["tags.aws.rds.endpoint", "tags.aws.endpoint"]
           field: endpoint
-        - attributeKeys: ["tags.aws.rds.dbInstancePort", "tags.aws.dbInstancePort"]
+        - attributeKeys: ["tags.aws.rds.dbInstancePort", "tags.aws.dbInstancePort", "tags.aws.rds.port"]
           field: port
     onMatch:
       onMultipleMatches: RELATE_ALL
@@ -19,6 +24,7 @@ lookups:
   # Fallback when port mismatch but endpoint is correct
   - entityTypes:
       - INFRA-AWSDOCDBINSTANCE
+      - INFRA-AWSDOCDBCLUSTER
     attributes:
       matchingMode: ALL
       predicates:
@@ -37,7 +43,7 @@ lookups:
     attributes:
       matchingMode: ALL
       predicates:
-        - attributeKeys: ["tags.aws.rds.dbClusterIdentifier", "tags.aws.dbClusterIdentifier"]
+        - attributeKeys: ["tags.aws.rds.dbClusterIdentifier", "tags.aws.rds.DbClusterIdentifier", "tags.aws.rds.DBClusterIdentifier", "tags.aws.dbClusterIdentifier"]
           field: clusterIdentifier
     onMatch:
       onMultipleMatches: RELATE_ALL
