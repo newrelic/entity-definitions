@@ -1,17 +1,15 @@
 relationships:
   # APM legacy timeslice metric - Datastore/instance/MongoDB/{docdb-hostname}/{port}
-  # Matches when an NR agent instruments MongoDB driver calls against a DocumentDB instance or cluster endpoint.
-  # Hostname suffixes covered:
-  #   .docdb.amazonaws.com             instance and cluster endpoints
-  #   .docdb.amazonaws.com.cn          AWS China regions
+  # Matches when an NR agent instruments MongoDB driver calls against a DocumentDB instance or cluster endpoint
   - name: apmApplicationCallsAwsDocumentDb
     version: "1"
     origins:
       - APM Metrics
     conditions:
       - attribute: metricName
+        # "Datastore/instance/MongoDB/<host>.docdb.amazonaws.com/<port>"
         # Second label allows hyphens so cluster endpoints (<cluster>.cluster-<hash>.<region>...) match
-        regex: "^datastore/instance/mongodb/[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.docdb\\.amazonaws\\.com(?:\\.cn)?/[0-9]+"
+        regex: "^datastore/instance/mongodb/[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.docdb\\.amazonaws\\.com/[0-9]+"
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -26,7 +24,7 @@ relationships:
             - field: instanceId
               capture:
                 attribute: metricName__4
-                regex: '^([^.]+)\..*\.docdb\.amazonaws\.com(?:\.cn)?$'
+                regex: '^([^.]+)\..*\.docdb\.amazonaws\.com$'
             # Pass full hostname as endpoint for tier-based precision matching
             - field: endpoint
               attribute: metricName__4
@@ -39,4 +37,4 @@ relationships:
             - field: clusterIdentifier
               capture:
                 attribute: metricName__4
-                regex: '^([^.]+)\.cluster-[^.]+\..*\.docdb\.amazonaws\.com(?:\.cn)?$'
+                regex: '^([^.]+)\.cluster-[^.]+\..*\.docdb\.amazonaws\.com$'
