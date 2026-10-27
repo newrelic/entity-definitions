@@ -1,0 +1,16 @@
+# qmid is globally unique; queue manager names collide across hosts and the entity GUID is not derivable from a span.
+category: IBMMQ_MANAGER
+lookups:
+  - entityTypes:
+      - INFRA-IBMMQ_MANAGER
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.qmid"]
+          field: queueManagerId
+        - attributeKeys: ["tags.instrumentation.provider"]
+          field: instrumentationProvider
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP

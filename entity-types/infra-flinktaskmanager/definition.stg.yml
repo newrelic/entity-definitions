@@ -78,17 +78,19 @@ synthesis:
         entityTagName: instrumentation.name
 
   # Native: nri-flink with REMOTE_MONITORING=true (one entity per TaskManager)
-  # nri-flink (SDK v3) reports this sample on its own remote entity, so the infra pipeline
-  # already gives every row an entityId; the rule only maps the event type to this entity type.
+  # nri-flink (SDK v3) reports this sample on its own remote entity. These types are new, so the rule
+  # is a standard one (no legacyFeatures): entityKey is unique per cluster and name, and the entity
+  # GUID is hashed from it. Events get entity.guid / entity.name from synthesis.
   - ruleName: infra_flinktaskmanager_nri_flink
-    identifier: entityId
-    name: entityName
-    legacyFeatures:
-      useNonStandardAttributes: true
-      overrideGuidType: true
+    identifier: entityKey
+    name: taskmanager.id
+    encodeIdentifierInGUID: true
     conditions:
       - attribute: eventType
         value: FlinkTaskManagerSample
+      # Only remote-monitoring samples are separate entities; local ones carry the host's entityKey.
+      - attribute: jobmanager.endpoint
+        present: true
     prefixedTags:
       label.:
         ttl: PT4H

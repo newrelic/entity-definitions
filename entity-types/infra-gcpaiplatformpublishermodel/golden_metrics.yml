@@ -1,0 +1,59 @@
+modelInvocations:
+  title: Model Invocations
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.aiplatform.publisher.online_serving.model_invocation_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+errorRate:
+  title: Error Rate
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: filter(sum(`gcp.aiplatform.publisher.online_serving.model_invocation_count`), WHERE metric.response_code NOT LIKE '2%') * 100 / sum(`gcp.aiplatform.publisher.online_serving.model_invocation_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+invocationLatency:
+  title: Invocation Latency
+  unit: MS
+  queries:
+    gcp:
+      select: average(`gcp.aiplatform.publisher.online_serving.model_invocation_latencies`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+invocationLatencyP95:
+  title: Invocation Latency (p95)
+  unit: MS
+  queries:
+    gcp:
+      select: average(`gcp.aiplatform.publisher.online_serving.model_invocation_latencies.p95`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+tokens:
+  title: Tokens
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.aiplatform.publisher.online_serving.token_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+characters:
+  title: Characters
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.aiplatform.publisher.online_serving.character_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
