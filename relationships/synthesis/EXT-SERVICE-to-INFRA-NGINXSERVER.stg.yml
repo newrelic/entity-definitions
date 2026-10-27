@@ -53,3 +53,61 @@ relationships:
           fields:
             - field: serverAddress
               attribute: server.address
+
+  # eBPF-sourced EXT-SERVICE metrics carry instrumentation.provider: newrelic-ebpf instead of
+  # newrelic.source: api.metrics.otlp (eBPF telemetry isn't ingested via the OTLP API), so the
+  # two rules above never match it. Mirrors them, swapping the gating attribute only.
+  - name: ebpfExtServiceCallsNginxServerByUpstreamLabelStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Metric" ]
+      - attribute: instrumentation.provider
+        anyOf: [ "newrelic-ebpf" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: tags.nginx.upstream.deployment.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: deploymentName
+              attribute: tags.nginx.upstream.deployment.name
+  - name: ebpfExtServiceCallsNginxServerByAddressStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.provider
+        anyOf: ["newrelic-ebpf"]
+      - attribute: entity.type
+        anyOf: ["SERVICE"]
+      - attribute: tags.nginx.upstream.deployment.name
+        present: false
+      - attribute: server.address
+        present: true
+      - attribute: metricName
+        startsWith: "http.client."
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: NGINXSERVER
+          fields:
+            - field: serverAddress
+              attribute: server.address

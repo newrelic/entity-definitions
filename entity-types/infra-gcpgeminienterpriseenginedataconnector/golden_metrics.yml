@@ -1,0 +1,39 @@
+requestCount:
+  title: Request Count
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.discoveryengine.dataconnector.request_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+errorRate:
+  title: Error Rate
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: filter(sum(`gcp.discoveryengine.dataconnector.request_count`), WHERE metric.response_code != 'OK') * 100 / sum(`gcp.discoveryengine.dataconnector.request_count`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+requestLatency:
+  title: Request Latency
+  unit: MS
+  queries:
+    gcp:
+      select: average(`gcp.discoveryengine.dataconnector.request_latencies`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+requestLatencyP95:
+  title: Request Latency (p95)
+  unit: MS
+  queries:
+    gcp:
+      select: average(`gcp.discoveryengine.dataconnector.request_latencies.p95`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
