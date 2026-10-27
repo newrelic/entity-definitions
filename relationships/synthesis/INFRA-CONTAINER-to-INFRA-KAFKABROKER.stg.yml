@@ -1,5 +1,6 @@
 relationships:
-  # Rule 1: NR OnHost Integration K8s container IS Kafka broker (KafkaBrokerSample)
+  # Rule 1: NR OnHost Integration K8s container hosts Kafka broker (KafkaBrokerSample)
+  # Uses the CONTAINER candidate instead of rebuilding the GUID, so it works cross-account.
   - name: ContainerContainsKafkaBrokerStg
     version: "1"
     origins:
@@ -7,7 +8,7 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: ["KafkaBrokerSample"]
-      - attribute: nr.entityType
+      - attribute: entityType
         anyOf: ["KafkaBroker", "KAFKABROKER"]
       - attribute: clusterName
         present: true
@@ -19,27 +20,19 @@ relationships:
         present: true
     relationship:
       expires: PT75M
-      relationshipType: IS
+      relationshipType: HOSTS
       source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: CONTAINER
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - value: "k8s:"
-              - attribute: clusterName
-              - value: ":"
-              - attribute: namespace
-              - value: ":"
-              - attribute: podName
-              - value: ":container:"
-              - attribute: name
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: CONTAINER
+          fields:
+            - field: k8sClusterName
+              attribute: clusterName
+            - field: k8sNamespaceName
+              attribute: namespace
+            - field: k8sPodName
+              attribute: podName
+            - field: k8sContainerName
+              attribute: name
       target:
         extractGuid:
           attribute: entityGuid
@@ -64,7 +57,7 @@ relationships:
         present: false
     relationship:
       expires: PT75M
-      relationshipType: IS
+      relationshipType: HOSTS
       source:
         buildGuid:
           account:
@@ -101,7 +94,7 @@ relationships:
         present: false
     relationship:
       expires: PT75M
-      relationshipType: IS
+      relationshipType: HOSTS
       source:
         buildGuid:
           account:
@@ -144,7 +137,7 @@ relationships:
         present: true
     relationship:
       expires: PT75M
-      relationshipType: IS
+      relationshipType: HOSTS
       source:
         buildGuid:
           account:
@@ -191,7 +184,7 @@ relationships:
         present: true
     relationship:
       expires: PT75M
-      relationshipType: IS
+      relationshipType: HOSTS
       source:
         buildGuid:
           account:

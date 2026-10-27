@@ -10,6 +10,37 @@ configuration:
   entityExpirationTime: DAILY
   alertable: true
 
+synthesis:
+  rules:
+    # nri-cassandra / CassandraSample
+    - ruleName: infra_cassandranode_entityId
+      identifier: entityId
+      name: entityName
+      legacyFeatures:
+        useNonStandardAttributes: true
+        overrideGuidType: true
+      prefixedTags:
+        label.:
+          ttl: PT4H
+      conditions:
+        - attribute: eventType
+          value: 'CassandraSample'
+      tags:
+        integrationName:
+          ttl: P1D
+        integrationVersion:
+          ttl: P1D
+        cluster.datacenter:
+          ttl: P1D
+        cluster.name:
+          ttl: P1D
+        cluster.rack:
+          ttl: P1D
+        reportingAgent:
+          ttl: P1D
+        software.version:
+          ttl: P1D
+
 dashboardTemplates:
   # This should match the entity created from the ohi in the infra pipeline
   newRelic:
@@ -17,4 +48,4 @@ dashboardTemplates:
 
 ownership:
   primaryOwner:
-    teamName: "no owner"
+    teamName: "OnHost Agent and Integrations"

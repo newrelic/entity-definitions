@@ -1,23 +1,23 @@
 relationships:
-  - name: kafkaBrokerServesKafkaTopicStgOverride1
+  - name: kafkaBrokerManagesKafkaTopicStgOverride1
     version: "1"
     origins:
       - OnHost Integration
     conditions:
       - attribute: eventType
         anyOf: [ "KafkaBrokerSample" ]
-      - attribute: nr.entityType
+      - attribute: entityType
         anyOf: [ "KAFKABROKER" ]
       - attribute: clusterName
         present: true
     relationship:
       expires: PT75M
-      relationshipType: SERVES
+      relationshipType: MANAGES
       source:
         extractGuid:
           attribute: entityGuid
           entityType:
-            attribute: nr.entityType
+            attribute: entityType
       target:
         buildGuid:
           account:
@@ -27,42 +27,6 @@ relationships:
           type:
             value: KAFKATOPIC
             valueInGuid: NA
-          identifier:
-            fragments:
-              - value: "ka-topic:"
-              - attribute: topic
-              - value: ":clustername="
-              - attribute: clusterName
-            hashAlgorithm: FARM_HASH
-
-# testing purpose
-  - name: kafkaBrokerServesKafkaTopicStgOverride2
-    version: "1"
-    origins:
-      - OnHost Integration
-    conditions:
-      - attribute: eventType
-        anyOf: [ "KafkaBrokerSample" ]
-      - attribute: nr.entityType
-        anyOf: [ "KAFKABROKER" ]
-      - attribute: clusterName
-        present: true
-    relationship:
-      expires: PT75M
-      relationshipType: SERVES
-      source:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            value: KAFKABROKER
-      target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: KAFKATOPIC
           identifier:
             fragments:
               - value: "ka-topic:"
