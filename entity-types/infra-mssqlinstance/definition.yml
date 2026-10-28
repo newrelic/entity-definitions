@@ -373,6 +373,38 @@ synthesis:
         - attribute: otel.library.name
           value: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sqlqueryreceiver
 
+    # sql_query receiver logs and custom events (newrelic.event.type): matched on
+    # db.system.name=microsoft.sql_server. Custom events are still eventType=Log at synthesis time.
+    - ruleName: infra_mssqlinstance_logs_sqlqueryreceiver
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: db.system.name
+          value: microsoft.sql_server
+        - attribute: otel.library.version
+          present: false
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
 
 goldenTags:
   - mssql.host
