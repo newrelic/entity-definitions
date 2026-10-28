@@ -35,41 +35,6 @@ relationships:
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
 
-  - name: kafkaBrokerManagesKafkaTopic2
-    version: "1"
-    origins:
-      - OnHost Integration
-    conditions:
-      - attribute: eventType
-        anyOf: [ "KafkaBrokerSample" ]
-      - attribute: entityType
-        anyOf: [ "KAFKABROKER" ]
-      - attribute: clusterName
-        present: true
-    relationship:
-      expires: PT75M
-      relationshipType: MANAGES
-      source:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            value: KAFKABROKER
-      target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: KAFKATOPIC
-          identifier:
-            fragments:
-              - value: "ka-topic:"
-              - attribute: topic
-              - value: ":clustername="
-              - attribute: clusterName
-            hashAlgorithm: FARM_HASH
-
   - name: otelKafkaBrokerManagesOtelKafkaTopic
     version: "1"
     origins:
