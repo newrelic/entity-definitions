@@ -1,0 +1,93 @@
+relationships:
+  - name: k8sDeploymentManagesPod
+    version: "1"
+    origins: 
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "K8sPodSample" ]
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            lookup: true 
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_DEPLOYMENT
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":deployment:"
+              - attribute: deploymentName
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_POD
+  - name: otelKsmK8sDeploymentManagesPod
+    # use kube-state-metrics kube_deployment_status_condition metric
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_deployment_status_condition" ]
+    relationship:
+      expires: PT2H
+      relationshipType: MANAGES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KUBERNETES_POD
+          fields:
+            - field: k8s.deployment.name # deployment name of deployment
+              attribute: k8s.deployment.name # deployment of pod
+            - field: k8s.namespace.name # namespace of deployment
+              attribute: k8s.namespace.name # namespace of pod
+            - field: k8s.cluster.name # cluster of deployment
+              attribute: k8s.cluster.name # cluster of pod
+  - name: otelSemconvK8sDeploymentManagesPod
+    # semconv k8s.pod.status.phase; owner name is only set on pods the
+    # collector's k8sattributes processor enriched, so the rest stay unlinked
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "k8s.pod.status.phase" ]
+      - attribute: k8s.deployment.name
+        present: true
+    relationship:
+      expires: PT2H
+      relationshipType: MANAGES
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_DEPLOYMENT
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.deployment.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_POD
