@@ -1,0 +1,199 @@
+# Network monitoring entity
+domain: EXT
+type: SD_WAN
+synthesis:
+  rules:
+  # SD-WAN devices from Kentik
+  - ruleName: ext_sd_wan_device_name
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-sd-wan
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # Secure Access Service Edge (SASE) from Kentik
+  - ruleName: ext_sd_wan_device_name_2
+    identifier: device_name
+    name: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: kentik-sase
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+      tags.container_service:
+        entityTagName: container_service
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+  # Default SD-WAN
+  - ruleName: ext_sd_wan_device_name_3
+    name: device_name
+    identifier: device_name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: provider
+      value: newrelic-sd-wan
+    - attribute: integration_name
+      value: com.newrelic.nri-flex
+    tags:
+      src_addr:
+        entityTagName: device_ip
+        multiValue: false
+    # Add a 4 hour ttl on all tags ingested in metric api using tags. prefix
+    prefixedTags:
+      tags.:
+        ttl: PT4H
+
+  - ruleName: ext_sd_wan_from_networktopology_event
+    identifier: identifier
+    name: deviceName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkTopology
+    - attribute: networkEntityType
+      value: SD_WAN
+    - attribute: deviceName
+      present: true
+    - attribute: identifier
+      present: true
+    tags:
+      identifier:
+        entityTagName: identifier
+        multiValue: false
+      normalizedDeviceName:
+        entityTagName: normalizedName
+        multiValue: false
+      observedMac:
+        entityTagName: mac
+        multiValue: false
+      managementIp:
+        entityTagName: managementIp
+        multiValue: false
+      source:
+        entityTagName: source
+        multiValue: false
+      serial:
+        entityTagName: serial
+        multiValue: false
+      vendor:
+        entityTagName: vendor
+        multiValue: false
+      model:
+        entityTagName: model
+        multiValue: false
+      vendorSiteId:
+        entityTagName: vendorSiteId
+        multiValue: false
+      vendorSiteName:
+        entityTagName: vendorSiteName
+        multiValue: false
+      vendorOrgId:
+        entityTagName: vendorOrgId
+        multiValue: false
+      vendorOrgName:
+        entityTagName: vendorOrgName
+        multiValue: false
+      status:
+        entityTagName: status
+        multiValue: false
+      stackId:
+        entityTagName: stackId
+        multiValue: false
+      normalizedStackName:
+        entityTagName: stackName
+        multiValue: false
+
+  - ruleName: ext_sd_wan_from_networkevent_webhook
+    identifier: identifier
+    name: deviceName
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: NetworkEvent
+    - attribute: networkEntityType
+      value: SD_WAN
+    - attribute: deviceName
+      present: true
+    - attribute: identifier
+      present: true
+    - attribute: source
+      value: webhook
+    tags:
+      identifier:
+        entityTagName: identifier
+        multiValue: false
+      normalizedDeviceName:
+        entityTagName: normalizedName
+        multiValue: false
+      observedMac:
+        entityTagName: mac
+        multiValue: false
+      managementIp:
+        entityTagName: managementIp
+        multiValue: false
+      source:
+        entityTagName: source
+        multiValue: false
+      serial:
+        entityTagName: serial
+        multiValue: false
+      vendor:
+        entityTagName: vendor
+        multiValue: false
+      model:
+        entityTagName: model
+        multiValue: false
+      vendorSiteId:
+        entityTagName: vendorSiteId
+        multiValue: false
+      vendorSiteName:
+        entityTagName: vendorSiteName
+        multiValue: false
+      vendorOrgId:
+        entityTagName: vendorOrgId
+        multiValue: false
+      vendorOrgName:
+        entityTagName: vendorOrgName
+        multiValue: false
+      status:
+        entityTagName: status
+        multiValue: false
+      stackId:
+        entityTagName: stackId
+        multiValue: false
+      normalizedStackName:
+        entityTagName: stackName
+        multiValue: false
+
+goldenTags:
+- device_ip
+- container_service
+
+dashboardTemplates:
+  # Cloudgenix (default)
+  kentik/cloudgenix:
+    template: cloudgenix-dashboard.json
+  # Versa Networks appliances
+  kentik/versa_networks-appliance:
+    template: versa-dashboard.json
+
+ownership:
+  primaryOwner:
+    teamName: "Network Monitoring"
