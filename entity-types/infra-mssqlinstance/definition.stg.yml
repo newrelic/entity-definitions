@@ -395,6 +395,8 @@ synthesis:
     # needing an otel.library.name check (any receiver reporting
     # db.system.name=microsoft.sql_server matches), matching the pattern used for the
     # DbServer-prefixed rules above and in the other DB instance types.
+    # Also covers sql_query custom events (newrelic.event.type): synthesis sees them as
+    # eventType=Log before they're retyped, so no separate event-type rule is needed.
     - ruleName: infra_mssqlinstance_logs_sqlqueryreceiver
       compositeIdentifier:
         separator: ":"
@@ -416,37 +418,6 @@ synthesis:
           value: microsoft.sql_server
         - attribute: otel.library.version
           present: false
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-        otel.library.version:
-          entityTagName: instrumentation.version
-        server.address:
-          entityTagNames: [server.address, endpoint]
-        server.port:
-          entityTagName: server.port
-
-    # Curated custom events from sql_query receiver (custom NRDB event types via
-    # newrelic.event.type): "Sqlserver" is a reserved eventType prefix for this purpose —
-    # unlike the shared "DbServer" prefix, it's already SQL Server-specific, so no
-    # db.system.name condition is needed to disambiguate from other DB engines.
-    - ruleName: infra_mssqlinstance_curated_events_sqlqueryreceiver
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - server.address
-          - server.port
-      compositeName:
-        fragments:
-          - attribute: server.address
-          - value: ":"
-          - attribute: server.port
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: eventType
-          prefix: Sqlserver
-        - attribute: instrumentation.provider
-          value: opentelemetry
       tags:
         otel.library.name:
           entityTagName: instrumentation.name

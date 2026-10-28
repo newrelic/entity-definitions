@@ -288,6 +288,8 @@ synthesis:
     # an otel.library.name check (any receiver reporting db.system.name=oracle matches, same
     # as the MYSQLNODE/POSTGRESQLINSTANCE equivalents), matching the pattern used for the
     # DbServer-prefixed rules below and in the other DB instance types.
+    # Also covers sql_query custom events (newrelic.event.type): synthesis sees them as
+    # eventType=Log before they're retyped, so no separate event-type rule is needed.
     - ruleName: infra_oracledbinstance_logs_sqlqueryreceiver
       compositeIdentifier:
         separator: ":"
@@ -307,37 +309,6 @@ synthesis:
           value: opentelemetry
         - attribute: db.system.name
           value: oracle
-      tags:
-        otel.library.name:
-          entityTagName: instrumentation.name
-        otel.library.version:
-          entityTagName: instrumentation.version
-        server.address:
-          entityTagNames: [server.address, endpoint]
-        server.port:
-          entityTagName: server.port
-
-    # Curated custom events from sql_query receiver (custom NRDB event types via
-    # newrelic.event.type): "Oracledb" is a reserved eventType prefix for this purpose —
-    # unlike the shared "DbServer" prefix, it's already Oracle-specific, so no db.system.name
-    # condition is needed to disambiguate from other DB engines.
-    - ruleName: infra_oracledbinstance_curated_events_sqlqueryreceiver
-      compositeIdentifier:
-        separator: ":"
-        attributes:
-          - server.address
-          - server.port
-      compositeName:
-        fragments:
-          - attribute: server.address
-          - value: ":"
-          - attribute: server.port
-      encodeIdentifierInGUID: true
-      conditions:
-        - attribute: eventType
-          prefix: Oracledb
-        - attribute: instrumentation.provider
-          value: opentelemetry
       tags:
         otel.library.name:
           entityTagName: instrumentation.name
