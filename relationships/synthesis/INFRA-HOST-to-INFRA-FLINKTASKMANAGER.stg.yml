@@ -35,3 +35,72 @@ relationships:
           attribute: entity.guid
           entityType:
             value: FLINKTASKMANAGER
+
+  # Host measures TaskManager.
+  # Native (nri-flink, REMOTE_MONITORING=true): the agent host that runs nri-flink measures the
+  # remote Flink TaskManager. Same pattern as hostMonitorsKafkaBrokerProd in INFRA-HOST-to-INFRA-KAFKABROKER
+  # (host GUID rebuilt from reportingAgent, with a fullHostname fallback rule).
+  - name: nriFlinkHostMeasuresTaskManager
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["FlinkTaskManagerSample"]
+      - attribute: entityType
+        anyOf: ["FLINKTASKMANAGER"]
+      - attribute: reportingAgent
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: reportingAgent
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: FLINKTASKMANAGER
+  - name: nriFlinkHostMeasuresTaskManagerRule2
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: ["FlinkTaskManagerSample"]
+      - attribute: entityType
+        anyOf: ["FLINKTASKMANAGER"]
+      - attribute: fullHostname
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MEASURES
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: HOST
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - attribute: fullHostname
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: FLINKTASKMANAGER

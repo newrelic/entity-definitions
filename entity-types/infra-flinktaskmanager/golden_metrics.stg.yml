@@ -5,8 +5,8 @@ cpuLoad:
     newRelic:
       select: average(jvm.cpuLoad) * 100
       from: FlinkTaskManagerSample
-      eventId: entityGuid
-      eventName: entityName
+      eventId: entity.guid
+      eventName: entity.name
     opentelemetry:
       select: average(flink.jvm.cpu.load) * 100
       from: Metric
@@ -21,8 +21,8 @@ heapUsed:
     newRelic:
       select: latest(jvm.heapUsedBytes)
       from: FlinkTaskManagerSample
-      eventId: entityGuid
-      eventName: entityName
+      eventId: entity.guid
+      eventName: entity.name
     opentelemetry:
       select: latest(flink.jvm.memory.heap.used)
       from: Metric
@@ -37,8 +37,8 @@ heapMax:
     newRelic:
       select: latest(jvm.heapMaxBytes)
       from: FlinkTaskManagerSample
-      eventId: entityGuid
-      eventName: entityName
+      eventId: entity.guid
+      eventName: entity.name
     opentelemetry:
       select: latest(flink.jvm.memory.heap.max)
       from: Metric
@@ -65,6 +65,22 @@ gcTime:
     # nri-flink does not collect GC metrics yet (planned), so OTel only.
     opentelemetry:
       select: sum(flink.jvm.gc.collections.time)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+managedMemoryUsed:
+  title: Managed Memory Used
+  unit: BYTES
+  queries:
+    newRelic:
+      select: latest(taskmanager.managedMemoryUsedBytes)
+      from: FlinkTaskManagerSample
+      eventId: entity.guid
+      eventName: entity.name
+    opentelemetry:
+      select: latest(flink.memory.managed.used)
       from: Metric
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid

@@ -197,6 +197,37 @@ synthesis:
         otel.library.version:
           entityTagName: instrumentation.version
 
+    # Curated custom events from sql_query receiver (custom NRDB event types via
+    # newrelic.event.type): "Mysql" is a reserved eventType prefix for this purpose —
+    # unlike the shared "DbServer" prefix, it's already MySQL-specific, so no db.system.name
+    # condition is needed to disambiguate from other DB engines.
+    - ruleName: infra_mysqlnode_curated_events_sqlqueryreceiver
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          prefix: Mysql
+        - attribute: instrumentation.provider
+          value: opentelemetry
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+
     # nri-mysql / MysqlSample
     - ruleName: infra_mysqlnode_entityId
       identifier: entityId
