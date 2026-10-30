@@ -52,6 +52,60 @@ synthesis:
         tags.:
           ttl: P1D
 
+    - ruleName: ext_network_site_from_networkevent_webhook
+      compositeName:
+        fragments:
+          - attribute: vendorSiteName
+          - value: " ("
+          - attribute: vendor
+          - value: ")"
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - vendor
+          - vendorSiteId
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: NetworkEvent
+        - attribute: networkEntityType
+          value: NETWORK_SITE
+        - attribute: vendorSiteId
+          present: true
+        - attribute: identifier
+          present: true
+        - attribute: source
+          value: webhook
+      tags:
+        vendorSiteId:
+          entityTagName: vendorSiteId
+          multiValue: false
+        vendorSiteName:
+          entityTagName: vendorSiteName
+          multiValue: false
+        vendorOrgId:
+          entityTagName: vendorOrgId
+          multiValue: false
+        vendor:
+          entityTagName: vendor
+          multiValue: false
+        region:
+          entityTagName: region
+          multiValue: false
+        latitude:
+          entityTagName: latitude
+          multiValue: false
+        longitude:
+          entityTagName: longitude
+          multiValue: false
+        timezone:
+          entityTagName: timezone
+          multiValue: false
+      # Add a 1 day ttl on all tags ingested in metric api using tags. prefix
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
 goldenTags:
   - vendor
   - region
