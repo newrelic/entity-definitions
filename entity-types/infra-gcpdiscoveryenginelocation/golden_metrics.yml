@@ -1,9 +1,39 @@
+searchRequests:
+  title: Search Requests
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.discoveryengine.quota.search_requests_regional.usage`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+searchRequestsOverQuota:
+  title: Search Requests Over Quota
+  unit: COUNT
+  queries:
+    gcp:
+      select: sum(`gcp.discoveryengine.quota.search_requests_regional.exceeded`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
+searchRequestsLimit:
+  title: Search Requests Limit
+  unit: REQUESTS_PER_MINUTE
+  queries:
+    gcp:
+      select: max(`gcp.discoveryengine.quota.search_requests_regional.limit`)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+
 engines:
   title: Engines
   unit: COUNT
   queries:
     gcp:
-      select: latest(`gcp.discoveryengine.engines_regional`)
+      select: max(`gcp.discoveryengine.quota.engines_regional.usage`)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -13,7 +43,7 @@ dataStores:
   unit: COUNT
   queries:
     gcp:
-      select: latest(`gcp.discoveryengine.data_stores_regional`)
+      select: max(`gcp.discoveryengine.quota.data_stores_regional.usage`)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -23,7 +53,7 @@ documents:
   unit: COUNT
   queries:
     gcp:
-      select: latest(`gcp.discoveryengine.documents_regional`)
+      select: max(`gcp.discoveryengine.quota.documents_regional.usage`)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
@@ -33,27 +63,7 @@ userEvents:
   unit: COUNT
   queries:
     gcp:
-      select: latest(`gcp.discoveryengine.user_events_regional`)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-
-searchRequests:
-  title: Search Requests
-  unit: COUNT
-  queries:
-    gcp:
-      select: sum(`gcp.discoveryengine.search_requests_regional`)
-      from: Metric
-      eventId: entity.guid
-      eventName: entity.name
-
-answerTimeToFirstToken:
-  title: Answer API Time to First Token
-  unit: MS
-  queries:
-    gcp:
-      select: average(`gcp.discoveryengine.conversational_search_service.stream_answer_query.first_token_latencies`)
+      select: max(`gcp.discoveryengine.quota.user_events_regional.usage`)
       from: Metric
       eventId: entity.guid
       eventName: entity.name
