@@ -1,0 +1,26 @@
+domain: INFRA
+type: AZURESTACKHCICLUSTER
+goldenTags:
+  - azure.regionName
+  - azure.subscriptionId
+  - azure.type
+  - azure.resourceGroupName
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  rules:
+    - ruleName: infra_azurestackhcicluster_azure_resourceId
+      identifier: azure.resourceId
+      name: displayName
+      encodeIdentifierInGUID: true
+      tags:
+        newrelic.cloudIntegrations.providerAccountName:
+          entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      conditions:
+        - attribute: azure.resourceType
+          value: microsoft.azurestackhci/clusters
+
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
