@@ -1,0 +1,19 @@
+category: FLINKJOB
+lookups:
+  # Index FLINKJOB entities (native and OTel) by job name + cluster so an application whose
+  # telemetry carries flink.job.name and k8s.cluster.name can relate to the job.
+  # Both are tags on the entity (see infra-flinkjob/definition.stg.yml). Consumed by
+  # OTEL-APPLICATION-to-INFRA-FLINKJOB.stg.yml.
+  - entityTypes:
+      - INFRA-FLINKJOB
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.flink.job.name"]
+          field: jobName
+        - attributeKeys: ["tags.k8s.cluster.name"]
+          field: clusterName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP

@@ -559,3 +559,144 @@ relationships:
             - field: topic
               attribute: topic
 
+  # OTel client -> Confluent Cloud topic by the broker address on the span, same split as the native APM rules.
+
+  - name: extServiceProducesConfluentCloudKafkaTopicStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "producer", "client" ]
+      - attribute: server.address
+        regex: ^(?!lkc-)[^/,]*\.confluent\.cloud:[0-9]+.*
+      - attribute: messaging.destination.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: bootstrapServers
+              capture:
+                attribute: server.address
+                regex: ^([^/,]*\.confluent\.cloud:[0-9]+)
+            - field: topic
+              attribute: messaging.destination.name
+
+  - name: extServiceConsumesConfluentCloudKafkaTopicStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+      - attribute: server.address
+        regex: ^(?!lkc-)[^/,]*\.confluent\.cloud:[0-9]+.*
+      - attribute: messaging.destination.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: bootstrapServers
+              capture:
+                attribute: server.address
+                regex: ^([^/,]*\.confluent\.cloud:[0-9]+)
+            - field: topic
+              attribute: messaging.destination.name
+
+  - name: extServiceProducesConfluentCloudKafkaTopicPrivateLinkStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "producer", "client" ]
+      - attribute: server.address
+        regex: ^lkc-[a-zA-Z0-9]+[^/,]*\.confluent\.cloud:[0-9]+.*
+      - attribute: messaging.destination.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: PRODUCES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              capture:
+                attribute: server.address
+                regex: ^(lkc-[a-zA-Z0-9]+)
+            - field: topic
+              attribute: messaging.destination.name
+
+  - name: extServiceConsumesConfluentCloudKafkaTopicPrivateLinkStg
+    version: "1"
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: newrelic.source
+        anyOf: [ "api.traces.otlp" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: span.kind
+        anyOf: [ "consumer", "server" ]
+      - attribute: server.address
+        regex: ^lkc-[a-zA-Z0-9]+[^/,]*\.confluent\.cloud:[0-9]+.*
+      - attribute: messaging.destination.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONSUMES
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: KAFKATOPIC
+          fields:
+            - field: clusterId
+              capture:
+                attribute: server.address
+                regex: ^(lkc-[a-zA-Z0-9]+)
+            - field: topic
+              attribute: messaging.destination.name

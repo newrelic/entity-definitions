@@ -1,0 +1,131 @@
+{
+  "name": "Flink JobManager (nri-flink)",
+  "pages": [
+    {
+      "name": "Flink JobManager (nri-flink)",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Running jobs",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(jobmanager.runningJobs) AS 'Running jobs' FROM FlinkJobManagerSample"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Registered TaskManagers",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(jobmanager.registeredTaskManagers) AS 'TaskManagers' FROM FlinkJobManagerSample"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Task slots",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(jobmanager.taskSlotsTotal) - latest(jobmanager.taskSlotsAvailable) AS 'Used', latest(jobmanager.taskSlotsTotal) AS 'Total' FROM FlinkJobManagerSample"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Available task slots",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(jobmanager.taskSlotsAvailable) AS 'Available', latest(jobmanager.taskSlotsTotal) AS 'Total' FROM FlinkJobManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM CPU Load (%)",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(jvm.cpuLoad) * 100 AS 'CPU Load %' FROM FlinkJobManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        },
+        {
+          "title": "JVM Memory (bytes)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(jvm.heapUsedBytes) AS 'Heap used', latest(jvm.heapMaxBytes) AS 'Heap max', latest(jvm.nonHeapUsedBytes) AS 'Non-heap', latest(jvm.metaspaceUsedBytes) AS 'Metaspace' FROM FlinkJobManagerSample TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

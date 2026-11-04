@@ -1,0 +1,225 @@
+domain: INFRA
+type: KUBERNETES_STATEFULSET
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+goldenTags:
+- k8s.statefulsetName
+- k8s.clusterName
+- k8s.namespaceName
+synthesis:
+  rules:
+    # k8scluster receiver OTel native statefulset data
+    - ruleName: infra_kubernetes_statefulset_composite_5
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.statefulset.name
+      encodeIdentifierInGUID: true
+      name: k8s.statefulset.name
+      conditions:
+        - attribute: metricName
+          prefix: k8s.statefulset.
+        - attribute: k8s.statefulset.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+      tags:
+        k8s.statefulset.name:
+          entityTagNames: [k8s.statefulsetName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - ruleName: infra_kubernetes_statefulset_composite
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.statefulset.name
+      encodeIdentifierInGUID: true
+      name: k8s.statefulset.name
+      conditions:
+        # kube-state-metrics statefulset prefix
+        - attribute: metricName
+          prefix: kube_statefulset_
+        # identifier attributes
+        - attribute: k8s.statefulset.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if service.name is present, it's a service
+        - attribute: service.name
+          present: false
+      tags:
+        k8s.statefulset.name:
+          entityTagNames: [k8s.statefulsetName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+      prefixedTags:
+        tags.:
+          ttl: P1D
+    # kube-state-metrics data via opentelemetry prometheusReceiver
+    - ruleName: infra_kubernetes_statefulset_composite_2
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.statefulset.name
+      encodeIdentifierInGUID: true
+      name: k8s.statefulset.name
+      conditions:
+        # kube-state-metrics statefulset prefix
+        - attribute: metricName
+          prefix: kube_statefulset_
+        # identifier attributes
+        - attribute: k8s.statefulset.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # open telemetry
+        - attribute: newrelic.source
+          value: 'api.metrics.otlp'
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      tags:
+        k8s.statefulset.name:
+          entityTagNames: [k8s.statefulsetName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+        newrelic.chart.version:
+          entityTagNames: [newrelic.chartVersion]
+          ttl: P1D
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # Infrastructure event data via opentelemetry
+    - ruleName: infra_kubernetes_statefulset_composite_3
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: StatefulSet
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if service.name is present, handle as one
+        - attribute: service.name
+          present: false
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # Infrastructure event data via opentelemetry
+    - ruleName: infra_kubernetes_statefulset_composite_4
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.object.name
+      encodeIdentifierInGUID: true
+      name: k8s.object.name
+      conditions:
+        - attribute: newrelic.event.type
+          value: OtlpInfrastructureEvent
+        - attribute: k8s.object.kind
+          value: StatefulSet
+        # identifier attributes
+        - attribute: k8s.object.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+        # if newrelic.entity.type is present, it's not a service
+        - attribute: service.name
+          present: true
+        - attribute: newrelic.entity.type
+          present: true
+      prefixedTags:
+        tags.:
+          ttl: P1D
+
+    # newrelic integration data via nri-bundle
+    - ruleName: infra_kubernetes_statefulset_entityId
+      identifier: entityId
+      name: displayName
+      legacyFeatures:
+        overrideGuidType: true
+        useNonStandardAttributes: true
+      conditions:
+        - attribute: eventType
+          value: K8sStatefulsetSample
+        - attribute: statefulsetName
+          present: true
+        - attribute: podsDesired
+          present: true
+      tags:
+        clusterName:
+          entityTagName: k8s.clusterName
+        namespaceName:
+          entityTagName: k8s.namespaceName
+        namespace:
+          entityTagName: k8s.namespaceName
+        statefulsetName:
+          entityTagName: k8s.statefulsetName
+        instanceType:
+          entityTagName: host.instanceType
+        integrationName:
+          entityTagName: newrelic.integrationName
+        integrationVersion:
+          entityTagName: newrelic.integrationVersion
+        agentVersion:
+          entityTagName: newrelic.agentVersion
+        awsRegion:
+          entityTagName: aws.region
+        provider.awsRegion:
+          entityTagName: aws.region
+      prefixedTags:
+        label.:
+
+ownership:
+  primaryOwner:
+    teamName: "K8s Agents"
