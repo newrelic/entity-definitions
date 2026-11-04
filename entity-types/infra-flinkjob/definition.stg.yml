@@ -90,10 +90,7 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
 
-  # Native: nri-flink with REMOTE_MONITORING=true (one entity per job name and cluster)
-  # nri-flink (SDK v3) reports this sample on its own remote entity. Same pattern as the Kafka OHI rule:
-  # entityId is the hash the infra agent already put in entityGuid (account|INFRA|NA|<entityId>), and
-  # overrideGuidType swaps NA for the entity type, so relationships can target entityGuid.
+
   - ruleName: infra_flinkjob_nri_flink
     identifier: entityId
     name: job.name
@@ -103,7 +100,6 @@ synthesis:
     conditions:
       - attribute: eventType
         value: FlinkJobSample
-      # Only remote-monitoring samples are separate entities; local ones carry the host's entityKey.
       - attribute: jobmanager.endpoint
         present: true
     prefixedTags:
