@@ -30,3 +30,37 @@ relationships:
           attribute: entity.guid
           entityType:
             attribute: entity.type
+
+  - name: kafkaClusterContainsKafkaBroker
+    version: "1"
+    origins:
+      - OnHost Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "KafkaBrokerSample" ]
+      - attribute: entityType
+        anyOf: [ "KAFKABROKER" ]
+      - attribute: clusterName
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KAFKACLUSTER
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "ka-cluster:"
+              - attribute: clusterName
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            attribute: entityType
