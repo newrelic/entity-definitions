@@ -1,0 +1,98 @@
+relationships:
+  - name: k8sPodContainsContainer
+    version: "1"
+    origins: 
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "K8sContainerSample" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":pod:"
+              - attribute: podName
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: CONTAINER
+  - name: otelKsmK8sPodContainsContainer
+    # use kube-state-metrics kube_pod_container_info metric
+    version: "1"
+    origins: 
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_pod_container_info" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true  
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: CONTAINER
+  - name: otelSemconvK8sPodContainsContainer
+    # semconv k8s.container.ready: one row per container
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "k8s.container.ready" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_POD
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+              - value: ":"
+              - attribute: k8s.pod.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: CONTAINER
