@@ -91,13 +91,15 @@ synthesis:
         entityTagName: instrumentation.name
 
   # Native: nri-flink with REMOTE_MONITORING=true (one entity per job name and cluster)
-  # nri-flink (SDK v3) reports this sample on its own remote entity. These types are new, so the rule
-  # is a standard one (no legacyFeatures): entityKey is unique per cluster and name, and the entity
-  # GUID is hashed from it. Events get entity.guid / entity.name from synthesis.
+  # nri-flink (SDK v3) reports this sample on its own remote entity. Same pattern as the Kafka OHI rule:
+  # entityId is the hash the infra agent already put in entityGuid (account|INFRA|NA|<entityId>), and
+  # overrideGuidType swaps NA for the entity type, so relationships can target entityGuid.
   - ruleName: infra_flinkjob_nri_flink
-    identifier: entityKey
+    identifier: entityId
     name: job.name
-    encodeIdentifierInGUID: true
+    legacyFeatures:
+      useNonStandardAttributes: true
+      overrideGuidType: true
     conditions:
       - attribute: eventType
         value: FlinkJobSample
