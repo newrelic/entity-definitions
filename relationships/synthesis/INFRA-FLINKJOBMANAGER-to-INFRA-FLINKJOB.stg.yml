@@ -1,9 +1,11 @@
 relationships:
   # JobManager manages Job
-  # Native (nri-flink, REMOTE_MONITORING=true). The sample's own entity is the target (entity.guid).
+  # Native (nri-flink, REMOTE_MONITORING=true). The sample's own entity is the target (entityGuid: with overrideGuidType the entity GUID is the row's
+  # entityGuid with the type segment swapped from NA).
   # The source JobManager GUID is rebuilt from its entity key "flink-jobmanager:<host:port>"
   # (jobmanager.endpoint, added by nri-flink to every remote sample), hashed with FARM_HASH.
-  # UNVERIFIED: assumes the standard-rule GUID hash for the JobManager equals FARM_HASH of that key.
+  # UNVERIFIED: assumes the JobManager entityId equals FARM_HASH of that key. Not reproduced with go-farm
+  # (an ordinary Host's entityId does not match FARM_HASH(entityKey) either), so confirm the recipe with Entity Platform.
   - name: nriFlinkJobManagerManagesJob
     version: "1"
     origins:
@@ -33,6 +35,6 @@ relationships:
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
           entityType:
             value: FLINKJOB
