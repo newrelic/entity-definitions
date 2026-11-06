@@ -60,3 +60,33 @@ relationships:
           attribute: entity.guid
           entityType:
             value: KUBERNETES_REPLICASET
+  - name: otelSemconvK8sNamespaceContainsReplicaset
+    # semconv k8s.replicaset.available: one row per replicaset
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "k8s.replicaset.available" ]
+    relationship:
+      expires: PT75M
+      relationshipType: CONTAINS
+      source:
+        buildGuid:
+          account:
+            lookup: true
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_NAMESPACE
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: k8s.namespace.name
+            hashAlgorithm: FARM_HASH
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_REPLICASET
