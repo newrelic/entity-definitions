@@ -43,3 +43,20 @@ lookups:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
         type: DATABASE
+  - entityTypes:
+      - INFRA-MYSQLNODE
+      - INFRA-POSTGRESQLINSTANCE
+      - INFRA-MSSQLINSTANCE
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.host.name"]
+          field: host
+        - attributeKeys: ["tags.server.address"]
+          field: endpoint
+        - attributeKeys: ["tags.server.port"]
+          field: port
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP

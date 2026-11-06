@@ -15,6 +15,10 @@ lookups:
       action: CREATE_UNINSTRUMENTED
       uninstrumented:
         type: DATABASE
+  # host.name-only, no address/port disambiguation. Dormant until infra-mssqlinstance's
+  # host.name tag ships (see definition.stg.yml); DISCARD_ALL (not RELATE_ALL) because a host
+  # running multiple named MSSQL instances would otherwise fan out CALLS to all of them. Must
+  # be promoted to MSSQLDBINSTANCE.yml together with the host.name tag change.
   - entityTypes:
       - INFRA-MSSQLINSTANCE
     attributes:
@@ -23,6 +27,6 @@ lookups:
         - attributeKeys: ["tags.host.name"]
           field: hostName
     onMatch:
-      onMultipleMatches: RELATE_ALL
+      onMultipleMatches: DISCARD_ALL
     onMiss:
       action: NO_OP
