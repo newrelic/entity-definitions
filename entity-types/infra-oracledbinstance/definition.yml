@@ -285,6 +285,37 @@ synthesis:
         server.port:
           entityTagName: server.port
 
+    # sql_query receiver logs and custom events (newrelic.event.type): matched on
+    # db.system.name=oracle. Custom events are still eventType=Log at synthesis time.
+    - ruleName: infra_oracledbinstance_logs_sqlqueryreceiver
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - server.address
+          - server.port
+      compositeName:
+        fragments:
+          - attribute: server.address
+          - value: ":"
+          - attribute: server.port
+      encodeIdentifierInGUID: true
+      conditions:
+        - attribute: eventType
+          value: Log
+        - attribute: instrumentation.provider
+          value: opentelemetry
+        - attribute: db.system.name
+          value: oracle
+      tags:
+        otel.library.name:
+          entityTagName: instrumentation.name
+        otel.library.version:
+          entityTagName: instrumentation.version
+        server.address:
+          entityTagNames: [server.address, endpoint]
+        server.port:
+          entityTagName: server.port
+
 goldenTags: []
 configuration:
   entityExpirationTime: DAILY
