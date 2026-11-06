@@ -3,6 +3,9 @@ relationships:
   # Native (nri-flink, REMOTE_MONITORING=true): the agent host that runs nri-flink measures the
   # remote Flink JobManager. Same pattern as hostMonitorsKafkaBrokerProd in INFRA-HOST-to-INFRA-KAFKABROKER
   # (host GUID rebuilt from reportingAgent, with a fullHostname fallback rule).
+  # Infra samples carry no entityType attribute, so the rules match on eventType.
+  # UNVERIFIED: FARM_HASH(reportingAgent) has not been shown to equal the host entityId in staging; confirm
+  # against a working Kafka/Redis host edge before relying on these rules.
   - name: nriFlinkHostMeasuresJobManager
     version: "1"
     origins:
@@ -10,8 +13,6 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: ["FlinkJobManagerSample"]
-      - attribute: entityType
-        anyOf: ["FLINKJOBMANAGER"]
       - attribute: reportingAgent
         present: true
     relationship:
@@ -32,7 +33,7 @@ relationships:
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
           entityType:
             value: FLINKJOBMANAGER
   - name: nriFlinkHostMeasuresJobManagerRule2
@@ -42,8 +43,6 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: ["FlinkJobManagerSample"]
-      - attribute: entityType
-        anyOf: ["FLINKJOBMANAGER"]
       - attribute: fullHostname
         present: true
     relationship:
@@ -64,6 +63,6 @@ relationships:
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
           entityType:
             value: FLINKJOBMANAGER

@@ -2,12 +2,14 @@ relationships:
   - name: kafkaClusterContainsKafkaBrokerStgOverride1
     version: "1"
     origins:
-      - Infrastructure Agent
+      - OnHost Integration
     conditions:
-      - attribute: event_type
+      - attribute: eventType
         anyOf: [ "KafkaBrokerSample" ]
       - attribute: entityType
-        anyOf: [ "KafkaBroker" ]
+        anyOf: [ "KAFKABROKER" ]
+      - attribute: clusterName
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CONTAINS
@@ -19,8 +21,10 @@ relationships:
             value: INFRA
           type:
             value: KAFKACLUSTER
+            valueInGuid: NA
           identifier:
             fragments:
+              - value: "ka-cluster:"
               - attribute: clusterName
             hashAlgorithm: FARM_HASH
       target:
