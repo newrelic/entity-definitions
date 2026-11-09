@@ -54,3 +54,26 @@ relationships:
               attribute: metricName__4
             - field: serverPort
               attribute: metricName__5
+
+  # APM → MSSQLINSTANCE edge based on APM service GUID injected into SQL query
+  # comments by the APM agent (nr_service_guid). The nrsqlserverreceiver surfaces
+  # this on db.server.query_sample / db.server.top_query events, which lets us
+  # stitch APM to the DB without relying on server.address / server.port matching.
+  - name: apmApplicationCallsInfraMSSQLInstanceViaQueryComment
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: db.system.name
+        value: microsoft.sql_server
+      - attribute: db.query.comment_tags.nr_service_guid
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: db.query.comment_tags.nr_service_guid
+      target:
+        extractGuid:
+          attribute: entity.guid
