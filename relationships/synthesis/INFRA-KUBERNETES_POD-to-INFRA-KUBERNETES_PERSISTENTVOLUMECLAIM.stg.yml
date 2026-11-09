@@ -2,7 +2,9 @@ relationships:
   # Kubernetes Integration (nri-kubernetes) path. K8sVolumeSample carries podName and pvcName, but its
   # entityGuid is the VOLUME's guid, not the PVC's, so both ends are built from the entity keys instead:
   #   Pod: k8s:<cluster>:<ns>:pod:<pod>   PVC: k8s:<cluster>:<ns>:PersistentVolumeClaim:<pvc>
-  # K8sVolumeSample has no account attribute, so each side needs an account lookup.
+  # Only the Pod source uses account lookup: K8sVolumeSample's keyset has no account attribute. The PVC target
+  # pins to the datapoint's accountId (a relationship rule may not use lookup on both sides): in staging,
+  # Pods and PVCs of a cluster are always in the same account as its K8sVolumeSample rows.
   - name: K8sPodConsumesPersistentVolumeClaim
     version: "1"
     origins:
@@ -42,7 +44,7 @@ relationships:
       target:
         buildGuid:
           account:
-            lookup: true
+            attribute: accountId
           domain:
             value: INFRA
           type:
