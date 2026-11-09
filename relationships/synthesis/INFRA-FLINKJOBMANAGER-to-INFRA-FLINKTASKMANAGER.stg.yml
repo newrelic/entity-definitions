@@ -1,9 +1,11 @@
 relationships:
   # JobManager manages TaskManager
-  # Native (nri-flink, REMOTE_MONITORING=true). The sample's own entity is the target (entity.guid).
+  # Native (nri-flink, REMOTE_MONITORING=true). The sample's own entity is the target (entityGuid: with
+  # overrideGuidType the entity GUID is the row's entityGuid, account|INFRA|NA|<entityId>).
   # The source JobManager GUID is rebuilt from its entity key "flink-jobmanager:<host:port>"
-  # (jobmanager.endpoint, added by nri-flink to every remote sample), hashed with FARM_HASH.
-  # UNVERIFIED: assumes the standard-rule GUID hash for the JobManager equals FARM_HASH of that key.
+  # (jobmanager.endpoint, added by nri-flink to every remote sample), hashed with FARM_HASH. The JobManager
+  # entityId is FARM_HASH of that key (verified in staging) and its GUID type segment is NA (valueInGuid).
+  # Infra samples carry no entityType attribute, so the rule matches on eventType.
   - name: nriFlinkJobManagerManagesTaskManager
     version: "1"
     origins:
@@ -11,8 +13,6 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: ["FlinkTaskManagerSample"]
-      - attribute: entityType
-        anyOf: ["FLINKTASKMANAGER"]
       - attribute: jobmanager.endpoint
         present: true
     relationship:
@@ -26,6 +26,7 @@ relationships:
             value: INFRA
           type:
             value: FLINKJOBMANAGER
+            valueInGuid: NA
           identifier:
             fragments:
               - value: "flink-jobmanager:"
@@ -33,6 +34,6 @@ relationships:
             hashAlgorithm: FARM_HASH
       target:
         extractGuid:
-          attribute: entity.guid
+          attribute: entityGuid
           entityType:
             value: FLINKTASKMANAGER
