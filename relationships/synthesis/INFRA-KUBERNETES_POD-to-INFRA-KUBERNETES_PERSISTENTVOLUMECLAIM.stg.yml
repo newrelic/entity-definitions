@@ -1,7 +1,8 @@
 relationships:
-  # This rule relates a Pod to a PersistentVolumeClaim by joining K8sVolumeSample (for podName, pvcName, etc.)
-  # with K8sPersistentVolumeClaimSample (for PVC entity construction). The synthesis engine must support
-  # cross-sample field extraction by matching on pvcName, namespaceName, and clusterName.
+  # NR-agent (nri-kubernetes) path. K8sVolumeSample carries podName + pvcName, but its entityGuid is the
+  # volume's own guid -- NOT the PVC's -- so the PVC is resolved by a candidate lookup on
+  # (clusterName, namespaceName, pvcName). (The previous extractGuid(entityGuid) grabbed the volume guid,
+  # so the relationship never synthesized.)
   - name: K8sPodConsumesPersistentVolumeClaim
     version: "1"
     origins:
@@ -38,10 +39,15 @@ relationships:
               - attribute: podName
             hashAlgorithm: FARM_HASH
       target:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            value: KUBERNETES_PERSISTENTVOLUMECLAIM
+        lookupGuid:
+          candidateCategory: KUBERNETES_PERSISTENTVOLUMECLAIM
+          fields:
+            - field: k8s.cluster.name
+              attribute: clusterName
+            - field: k8s.namespace.name
+              attribute: namespaceName
+            - field: k8s.pvc.name
+              attribute: pvcName
   - name: otelKsmK8sPodConsumesPersistentVolumeClaim
     # kube-state-metrics kube_pod_spec_volumes_persistentvolumeclaims_info: one
     # row per pod per PVC volume. It is pod-centric, so its entity.guid is the
