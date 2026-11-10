@@ -26,3 +26,41 @@ lookups:
       onMultipleMatches: RELATE_ALL
     onMiss:
       action: NO_OP
+  # Fallback tier for CNAME / AG listener aliases (hostname only).
+  # The MSSQLINSTANCE entity accumulates DNS aliases on tags.alias (populated
+  # via the aliases resource attribute emitted by the NRDOT collector). When
+  # APM reports server.address as a CNAME instead of the physical hostname,
+  # the strict server.address+server.port tier misses — this tier catches it
+  # by matching the APM-reported address against any value in tags.alias.
+  # Handles the JDE-style case where multiple CNAMEs fan into one instance
+  # and the Always On case where the APM port (listener port) differs from
+  # the instance port.
+  - entityTypes:
+      - INFRA-MSSQLINSTANCE
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.alias"]
+          field: serverAddress
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+  # Strict tier for host/port-qualified aliases.
+  # Entries in tags.alias that follow the "host/port" format are matched
+  # against APM's captured host/port combination (endpointWithPort field,
+  # from Datastore/instance/MSSQL/<host>/<port> metric name). Lets operators
+  # mix hostname-only entries (loose match, any port) and host/port entries
+  # (strict match) in the same tags.alias array. Each entry only aligns with
+  # its own tier's field format, so no cross-matching occurs.
+  - entityTypes:
+      - INFRA-MSSQLINSTANCE
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.alias"]
+          field: endpointWithPort
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
