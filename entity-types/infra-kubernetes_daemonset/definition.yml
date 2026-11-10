@@ -9,6 +9,35 @@ goldenTags:
 - k8s.namespaceName
 synthesis:
   rules:
+    # k8scluster receiver OTel native daemonset data
+    - ruleName: infra_kubernetes_daemonset_composite_5
+      compositeIdentifier:
+        separator: ":"
+        attributes:
+          - k8s.cluster.name
+          - k8s.namespace.name
+          - k8s.daemonset.name
+      encodeIdentifierInGUID: true
+      name: k8s.daemonset.name
+      conditions:
+        - attribute: metricName
+          prefix: k8s.daemonset.
+        - attribute: k8s.daemonset.name
+          present: true
+        - attribute: k8s.namespace.name
+          present: true
+        - attribute: k8s.cluster.name
+          present: true
+      tags:
+        k8s.daemonset.name:
+          entityTagNames: [k8s.daemonsetName]
+        k8s.namespace.name:
+          entityTagNames: [k8s.namespaceName]
+        k8s.cluster.name:
+          entityTagNames: [k8s.clusterName]
+      prefixedTags:
+        tags.:
+          ttl: P1D
 
     # kube-state-metrics data via opentelemetry prometheusReceiver
     - ruleName: infra_kubernetes_daemonset_composite
@@ -122,7 +151,6 @@ synthesis:
       prefixedTags:
         tags.:
           ttl: P1D
-
 
     # Infrastructure event data via opentelemetry
     - ruleName: infra_kubernetes_daemonset_composite_4
