@@ -1,0 +1,30 @@
+category: KUBERNETES_PERSISTENTVOLUMECLAIM
+lookups:
+  - entityTypes:
+    - INFRA-KUBERNETES_PERSISTENTVOLUMECLAIM
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.k8s.persistentvolumeclaim.volumeName"]
+          field: k8s.persistentvolumeclaim.volumeName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
+  # [STG] Pod -> PVC lookup by (cluster, namespace, pvc name). Both nri-kubernetes (legacy INFRA|NA guid)
+  # and OTel KSM PVC entities carry these tags, so one predicate serves both Pod->PVC synthesis rules.
+  - entityTypes:
+    - INFRA-KUBERNETES_PERSISTENTVOLUMECLAIM
+    attributes:
+      matchingMode: ALL
+      predicates:
+        - attributeKeys: ["tags.k8s.clusterName"]
+          field: k8s.cluster.name
+        - attributeKeys: ["tags.k8s.namespaceName"]
+          field: k8s.namespace.name
+        - attributeKeys: ["tags.k8s.pvcName"]
+          field: k8s.pvc.name
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP

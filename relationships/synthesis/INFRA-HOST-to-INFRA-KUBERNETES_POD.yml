@@ -70,3 +70,32 @@ relationships:
           attribute: entity.guid
           entityType:
             value: KUBERNETES_POD
+  - name: otelSemconvK8sHostHostsPod
+    # semconv k8s.pod.status.phase: one low-volume row per pod, with the pod's
+    # entity.guid. Host side is a lookup because the OTel HOST id is host.id,
+    # not k8s.node.name. Same candidate and cost reasoning as otelKsmK8sHostHostsPod.
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "k8s.pod.status.phase" ]
+      # unscheduled pods carry no node, so there is nothing to relate them to
+      - attribute: k8s.node.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: HOSTS
+      source:
+        lookupGuid:
+          candidateCategory: HOST_WITHOUT_UNINSTRUMENTED
+          fields:
+            - field: host.name
+              attribute: k8s.node.name
+            - field: cluster.name
+              attribute: k8s.cluster.name
+      target:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_POD

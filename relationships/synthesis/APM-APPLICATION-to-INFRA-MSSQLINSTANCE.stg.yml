@@ -38,8 +38,10 @@ relationships:
     origins:
       - APM Metrics
     conditions:
+      # Matches both numeric ports and the literal "default" (emitted by APM
+      # when the client didn't specify a port or hit the default instance).
       - attribute: metricName
-        regex: "^[Dd]atastore/instance/MSSQL/[^/]+/[0-9]+"
+        regex: "^[Dd]atastore/instance/MSSQL/[^/;]*/.*"
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -54,3 +56,35 @@ relationships:
               attribute: metricName__4
             - field: serverPort
               attribute: metricName__5
+            # Combined host/port captured from the metric name
+            # (Datastore/instance/MSSQL/<host>/<port-or-default>). Feeds the
+            # tags.alias host/port tier of the MSSQLINSTANCE candidate lookup,
+            # which lets operators declare strict host/port aliases alongside
+            # hostname-only aliases in the same tags.alias array.
+            - field: endpointWithPort
+              capture:
+                attribute: metricName
+                regex: '^[Dd]atastore/instance/MSSQL/([^/;]*/.*)'
+
+  # APM → MSSQLINSTANCE edge based on APM service GUID injected into SQL query
+  # comments by the APM agent (nr_service_guid). The nrsqlserverreceiver surfaces
+  # this on db.server.query_sample / db.server.top_query events, which lets us
+  # stitch APM to the DB without relying on server.address / server.port matching.
+  - name: apmApplicationCallsInfraMSSQLInstanceViaQueryComment
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: db.system.name
+        anyOf: ["microsoft.sql_server"]
+      - attribute: db.query.comment_tags.nr_service_guid
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: db.query.comment_tags.nr_service_guid
+      target:
+        extractGuid:
+          attribute: entity.guid
