@@ -1,5 +1,5 @@
 relationships:
-  - name: apmCallsOtelRedisInstance
+  - name: extServiceCallsRedisInstance
     version: "1"
     origins:
       - OpenTelemetry
@@ -34,7 +34,7 @@ relationships:
               - attribute: redis.instance.id
             hashAlgorithm: FARM_HASH
 
-  - name: apmCallsOtelRedisInstance2
+  - name: extServiceCallsRedisInstance2
     version: "1"
     origins:
       - OpenTelemetry
@@ -59,16 +59,12 @@ relationships:
         extractGuid:
           attribute: entity.guid
       target:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: REDISINSTANCE
-          identifier:
-            fragments:
-              - attribute: server.address
-              - value: ":"
-              - attribute: server.port
-            hashAlgorithm: FARM_HASH
+        lookupGuid:
+          candidateCategory: REDIS
+          fields:
+            - field: host
+              attribute: host.name
+            - field: endpoint
+              attribute: server.address
+            - field: port
+              attribute: server.port
