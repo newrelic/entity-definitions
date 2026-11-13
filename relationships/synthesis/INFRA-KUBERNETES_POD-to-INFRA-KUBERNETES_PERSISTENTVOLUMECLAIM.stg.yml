@@ -24,11 +24,15 @@ relationships:
       source:
         buildGuid:
           account:
-            lookup: true
+            # Pinned to the datapoint account: a lookup searches the whole trusted account and is discarded
+            # when the Pod GUID exists in 2+ accounts (mirrored telemetry). The target is a lookupGuid.
+            attribute: accountId
           domain:
             value: INFRA
           type:
             value: KUBERNETES_POD
+            # nri-kubernetes Pods have legacy INFRA|NA|... guids (overrideGuidType), so build with NA.
+            valueInGuid: NA
           identifier:
             fragments:
               - value: "k8s:"
