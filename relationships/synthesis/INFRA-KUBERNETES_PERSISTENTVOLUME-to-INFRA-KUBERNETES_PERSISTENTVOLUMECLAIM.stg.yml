@@ -1,40 +1,10 @@
 relationships:
-  # [STG] The built side pins the account to the datapoint's accountId instead of `lookup: true`.
+  # [STG] The OTel rule's built side pins the account to the datapoint's accountId instead of `lookup: true`.
   # A lookup searches the whole trusted account and drops the edge when the GUID exists in 2+ accounts
   # (mirrored telemetry, e.g. cluster test-odd-wire in accounts 754495 and 1).
-  - name: k8sPersistentVolumeManagesPersistentVolumeClaim
-    version: "1"
-    origins: 
-      - Kubernetes Integration
-    conditions:
-      - attribute: eventType
-        anyOf: [ "K8sPersistentVolumeClaimSample" ]
-      - attribute: statusPhase
-        anyOf: [ "Bound" ]
-    relationship:
-      expires: PT75M
-      relationshipType: MANAGES
-      source:
-        buildGuid:
-          account:
-            attribute: accountId
-          domain:
-            value: INFRA
-          type:
-            value: KUBERNETES_PERSISTENTVOLUME
-            valueInGuid: NA
-          identifier:
-            fragments:
-              - value: "k8s:"
-              - attribute: clusterName
-              - value: ":PersistentVolume:"
-              - attribute: volumeName
-            hashAlgorithm: FARM_HASH
-      target:
-        extractGuid:
-          attribute: entityGuid
-          entityType:
-            value: KUBERNETES_PERSISTENTVOLUMECLAIM
+  # [STG] The nri PV -> PVC rule is removed: the PVC -> PV nri rule (INFRA-KUBERNETES_PERSISTENTVOLUMECLAIM-to-
+  # INFRA-KUBERNETES_PERSISTENTVOLUME) already covers the pair, and it matches the design doc (PVC manages PV).
+  # The OTel PV -> PVC rule stays because the OTel PVC -> PV rule currently produces no edges.
   - name: otelKsmK8sPersistentVolumeManagesPersistentVolumeClaim
     # use kube-state-metrics kube_job_owner metric
     version: "1"
