@@ -1,0 +1,69 @@
+relationships:
+  # [STG] The built side pins the account to the datapoint's accountId instead of `lookup: true`.
+  # A lookup searches the whole trusted account and drops the edge when the GUID exists in 2+ accounts
+  # (mirrored telemetry, e.g. cluster test-odd-wire in accounts 754495 and 1).
+  - name: k8sPersistentVolumeClaimManagesPersistentVolume
+    version: "1"
+    origins:
+      - Kubernetes Integration
+    conditions:
+      - attribute: eventType
+        anyOf: [ "K8sPersistentVolumeClaimSample" ]
+      - attribute: volumeName
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        extractGuid:
+          attribute: entityGuid
+          entityType:
+            value: KUBERNETES_PERSISTENTVOLUMECLAIM
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_PERSISTENTVOLUME
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":PersistentVolume:"
+              - attribute: volumeName
+            hashAlgorithm: FARM_HASH
+  - name: otelKsmK8sPersistentVolumeClaimManagesPersistentVolume
+    # use kube-state-metrics kube_persistentvolumeclaim_info metric
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: metricName
+        anyOf: [ "kube_persistentvolumeclaim_info" ]
+      - attribute: volumename
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: MANAGES
+      source:
+        extractGuid:
+          attribute: entity.guid
+          entityType:
+            value: KUBERNETES_PERSISTENTVOLUMECLAIM
+      target:
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_PERSISTENTVOLUME
+          identifier:
+            fragments:
+              - attribute: k8s.cluster.name
+              - value: ":"
+              - attribute: volumename
+            hashAlgorithm: FARM_HASH
