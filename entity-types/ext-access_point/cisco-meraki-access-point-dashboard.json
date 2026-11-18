@@ -1,0 +1,91 @@
+{
+  "name": "Cisco Meraki Access Point",
+  "description": null,
+  "pages": [
+    {
+      "name": "Cisco Meraki Access Point",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Device Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "billboardSettings": {
+              "link": {
+                "title": "Device Information"
+              },
+              "visual": {
+                "alignment": "stacked",
+                "display": "auto"
+              }
+            },
+            "chartStyles": {
+              "lineInterpolation": "linear"
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(tags.vendor) AS 'Vendor', latest(tags.managementIp) AS 'IP', latest(tags.mac) AS 'MAC', latest(tags.model) AS 'Model', latest(tags.vendorSiteName) AS 'Site Name', latest(tags.vendorOrgName) AS 'Organization Name', latest(tags.status) AS 'Status' FROM Entity WHERE id ='{{entity.id}}' AND tags.vendor = 'meraki'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Alert Feed",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 9,
+            "height": 5
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "format": "%b %d, %Y, %X",
+                "name": "Time",
+                "type": "custom"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "hiddenColumns": [
+              {
+                "columnName": "timestamp"
+              }
+            ],
+            "logs": {
+              "levelColumn": "Severity"
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT lastSeen AS 'Time', severity, type FROM NetworkEvent WHERE entity.guid = '{{entity.id}}' AND vendor = 'meraki' LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
