@@ -34,32 +34,6 @@ relationships:
               - attribute: service.name
             hashAlgorithm: FARM_HASH
 
-  - name: extEbpfClientCallsExtEbpfServerFromServerSpan
-    version: "1"
-    origins:
-      - Distributed Tracing
-    conditions:
-      - attribute: eventType
-        anyOf: ["Span"]
-      - attribute: trace_role
-        anyOf: ["server"]
-      - attribute: instrumentation.name
-        anyOf: ["nr_ebpf"]
-    relationship:
-      expires: PT75M
-      relationshipType: CALLS
-      source:
-        lookupGuid:
-          candidateCategory: EXTEBPFCLIENT
-          fields:
-            - field: ip
-              attribute: remote_addr
-            - field: hostname
-              attribute: remote.host.name
-      target:
-        extractGuid:
-          attribute: entity.guid
-
   - name: extEbpfClientCallsExtEbpfServerFromClientSpan
     version: "1"
     origins:
@@ -67,10 +41,14 @@ relationships:
     conditions:
       - attribute: eventType
         anyOf: ["Span"]
-      - attribute: trace_role
-        anyOf: ["client"]
       - attribute: instrumentation.name
         anyOf: ["nr_ebpf"]
+      - attribute: trace_role
+        anyOf: ["client"]
+      - attribute: remote_endpoint
+        present: true
+      - attribute: remote.host.name
+        present: true
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -81,10 +59,40 @@ relationships:
         lookupGuid:
           candidateCategory: EXTEBPFSERVER
           fields:
-            - field: ip
-              attribute: remote_addr
-            - field: port
-              attribute: remote_port
+            - field: local_endpoint
+              attribute: remote_endpoint
+            - field: hostname
+              attribute: remote.host.name
+
+  - name: extEbpfClientCallsExtEbpfServerFromClientMetric
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["Metric"]
+      - attribute: instrumentation.name
+        anyOf: ["nr_ebpf"]
+      - attribute: trace_role
+        anyOf: ["client"]
+      - attribute: metricName
+        startsWith: "ebpf.tcp"
+      - attribute: remote_endpoint
+        present: true
+      - attribute: remote.host.name
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: EXTEBPFSERVER
+          fields:
+            - field: local_endpoint
+              attribute: remote_endpoint
             - field: hostname
               attribute: remote.host.name
 
