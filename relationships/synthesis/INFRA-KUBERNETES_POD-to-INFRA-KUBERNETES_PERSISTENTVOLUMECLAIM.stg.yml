@@ -1,8 +1,11 @@
 relationships:
   # NR-agent (nri-kubernetes) path. K8sVolumeSample carries podName + pvcName, but its entityGuid is the
-  # volume's own guid -- NOT the PVC's -- so the PVC is resolved by a candidate lookup on
-  # (clusterName, namespaceName, pvcName). (The previous extractGuid(entityGuid) grabbed the volume guid,
-  # so the relationship never synthesized.)
+  # volume's own guid -- NOT the Pod's or PVC's -- so neither side can be extracted. Both GUIDs are built from
+  # the datapoint instead. A buildGuid side cannot be combined with a lookupGuid side (not supported by
+  # synthesis), so no lookups are used and the account is pinned to the datapoint's accountId on both sides.
+  # nri entities have legacy INFRA|NA|... guids (overrideGuidType) whose hash is FARM_HASH of the entityName:
+  #   Pod: k8s:<cluster>:<namespace>:pod:<podName>
+  #   PVC: k8s:<cluster>:<namespace>:PersistentVolumeClaim:<pvcName>
   - name: K8sPodConsumesPersistentVolumeClaim
     version: "1"
     origins:
@@ -25,7 +28,7 @@ relationships:
         buildGuid:
           account:
             # Pinned to the datapoint account: a lookup searches the whole trusted account and is discarded
-            # when the Pod GUID exists in 2+ accounts (mirrored telemetry). The target is a lookupGuid.
+            # when the GUID exists in 2+ accounts (mirrored telemetry).
             attribute: accountId
           domain:
             value: INFRA
@@ -43,15 +46,23 @@ relationships:
               - attribute: podName
             hashAlgorithm: FARM_HASH
       target:
-        lookupGuid:
-          candidateCategory: KUBERNETES_PERSISTENTVOLUMECLAIM
-          fields:
-            - field: k8s.cluster.name
-              attribute: clusterName
-            - field: k8s.namespace.name
-              attribute: namespaceName
-            - field: k8s.pvc.name
-              attribute: pvcName
+        buildGuid:
+          account:
+            attribute: accountId
+          domain:
+            value: INFRA
+          type:
+            value: KUBERNETES_PERSISTENTVOLUMECLAIM
+            valueInGuid: NA
+          identifier:
+            fragments:
+              - value: "k8s:"
+              - attribute: clusterName
+              - value: ":"
+              - attribute: namespaceName
+              - value: ":PersistentVolumeClaim:"
+              - attribute: pvcName
+            hashAlgorithm: FARM_HASH
   - name: otelKsmK8sPodConsumesPersistentVolumeClaim
     # kube-state-metrics kube_pod_spec_volumes_persistentvolumeclaims_info: one
     # row per pod per PVC volume. It is pod-centric, so its entity.guid is the
