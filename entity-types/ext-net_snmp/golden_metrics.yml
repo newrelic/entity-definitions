@@ -2,6 +2,11 @@ cpuUtilization:
   title: CPU Load
   unit: PERCENTAGE
   queries:
+    # VMware ESX
+    kentik/esx:
+      select: average(kentik.snmp.hrProcessorLoad)
+      from: Metric
+      where: "provider = 'kentik-esx'"
     # Kentik profiles (default)
     kentik:
       select: average(kentik.snmp.hrProcessorLoad)
@@ -12,6 +17,11 @@ memoryUtilization:
   title: Memory utilization (%)
   unit: PERCENTAGE
   queries:
+    # VMware ESX
+    kentik/esx:
+      select: sum(kentik.snmp.hrStorageUsed) * 100 / sum(kentik.snmp.hrStorageSize)
+      from: Metric
+      where: "provider = 'kentik-esx' AND storage_type = 'Ram'"
     # Kentik profiles (default)
     kentik:
       select: average(kentik.snmp.MemoryUtilization)
