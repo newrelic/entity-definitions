@@ -19,3 +19,29 @@ relationships:
           fields:
             - field: endpoint
               attribute: metricName__4
+
+  # APM → DB edge via the APM service GUID injected into SQL query comments
+  # (nr_service_guid). The nrsp-db-pipeline maps raw OTel db.server.* log events to
+  # curated event types (DbServerQuerySample, DbServerTopQuery) and extracts
+  # db.query.comment_tags.nr_service_guid, stitching APM to the DB without relying on
+  # server.address / server.port matching. Covers MSSQL, PostgreSQL, MySQL, and Oracle.
+  - name: apmApplicationCallsDatabaseViaQueryComment
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["DbServerQuerySample", "DbServerTopQuery"]
+      - attribute: db.system.name
+        anyOf: ["microsoft.sql_server", "postgresql", "mysql", "oracle"]
+      - attribute: db.query.comment_tags.nr_service_guid
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: db.query.comment_tags.nr_service_guid
+      target:
+        extractGuid:
+          attribute: entity.guid
