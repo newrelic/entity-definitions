@@ -1,0 +1,32 @@
+relationships:
+  # NR-650871: APM app -> Azure Key Vault. Agents record Key Vault SDK calls as HTTP
+  # externals, so the External timeslice metric (unsampled) carries the vault host in its
+  # 2nd segment: External/<vault>.vault.azure.net/...
+  - name: apmApplicationCallsAzureKeyVaultVault
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: '^External/[a-zA-Z0-9\-]+\.vault\.(?:azure\.net|azure\.cn|usgovcloudapi\.net)(?::[0-9]+)?/.*$'
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZUREKEYVAULTVAULT_BY_NAME
+          fields:
+            - field: vaultName
+              capture:
+                attribute: metricName__2
+                regex: '^([a-zA-Z0-9\-]+)\.vault\.(?:azure\.net|azure\.cn|usgovcloudapi\.net)(?::[0-9]+)?$'
