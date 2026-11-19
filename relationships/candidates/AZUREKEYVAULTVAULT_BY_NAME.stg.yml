@@ -1,0 +1,21 @@
+category: AZUREKEYVAULTVAULT_BY_NAME
+# NR-650871: resolves a Key Vault from the hostname an app called (<vault>.vault.azure.net).
+# Apps reach Key Vault over plain HTTPS, so spans and External metrics carry only the host,
+# never the Azure resource id that the AZUREKEYVAULTVAULT candidate requires. Without this,
+# those calls fall through to an UNINSTRUMENTED-HTTPSERVICE stub that duplicates the vault.
+# The host's first label is the vault name, which is unique per cloud (it is a DNS name), so
+# it is matched against the vault's azure.resourceName tag.
+# onMiss NO_OP: an unmatched host (vault not monitored) keeps today's HTTPSERVICE behavior
+# instead of gaining a second, typed stub.
+lookups:
+  - entityTypes:
+      - INFRA-AZUREKEYVAULTVAULT
+    attributes:
+      matchingMode: ANY
+      predicates:
+        - attributeKeys: ["tags.azure.resourceName"]
+          field: vaultName
+    onMatch:
+      onMultipleMatches: RELATE_ALL
+    onMiss:
+      action: NO_OP
