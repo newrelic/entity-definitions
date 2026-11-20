@@ -1,0 +1,46 @@
+relationships:
+  - name: apmCallsGenericDatabase
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      # Datastore/instance/JDBC/db.example.com/3306
+      - attribute: metricName
+        regex: "^datastore/instance/(?:mysql|postgres|mssql|oracle|mariadb|jdbc)/[^/;]*/.*"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: DATABASE
+          fields:
+            - field: endpoint
+              attribute: metricName__4
+
+  # APM → MSSQLINSTANCE edge based on APM service GUID injected into SQL query
+  # comments by the APM agent (nr_service_guid). The nrsqlserverreceiver surfaces
+  # this on db.server.query_sample / db.server.top_query events, which lets us
+  # stitch APM to the DB without relying on server.address / server.port matching.
+  - name: apmApplicationCallsInfraMSSQLInstanceViaQueryComment
+    version: "1"
+    origins:
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: ["DbServerQuerySample", "DbServerTopQuery"]
+      - attribute: db.system.name
+        anyOf: ["microsoft.sql_server"]
+      - attribute: db.query.comment_tags.nr_service_guid
+        present: true
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: db.query.comment_tags.nr_service_guid
+      target:
+        extractGuid:
+          attribute: entity.guid
