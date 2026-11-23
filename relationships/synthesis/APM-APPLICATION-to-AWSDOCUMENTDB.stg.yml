@@ -1,0 +1,84 @@
+relationships:
+  # APM legacy timeslice metric - Datastore/instance/MongoDB/{docdb-hostname}/{port}
+  # Matches when an NR agent instruments MongoDB driver calls against a DocumentDB instance or cluster endpoint
+  - name: apmApplicationCallsAwsDocumentDb
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        # "Datastore/instance/MongoDB/<host>.docdb.amazonaws.com/<port>"
+        # Second label allows hyphens so cluster endpoints (<cluster>.cluster-<hash>.<region>...) match
+        regex: "^datastore/instance/mongodb/[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.docdb\\.amazonaws\\.com/[0-9]+"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDOCUMENTDB
+          fields:
+            # Extract instance identifier from hostname (e.g., my-docdb-instance-1.cluster-xyz.us-east-1.docdb.amazonaws.com -> my-docdb-instance-1)
+            - field: instanceId
+              capture:
+                attribute: metricName__4
+                regex: '^([^.]+)\..*\.docdb\.amazonaws\.com$'
+            # Pass full hostname as endpoint for tier-based precision matching
+            - field: endpoint
+              attribute: metricName__4
+            # Extract port from metric name for additional matching when available
+            - field: port
+              attribute: metricName__5
+            # Extract cluster identifier when the hostname is a DocDB cluster endpoint
+            # (e.g. .NET agent reports the cluster hostname, not an instance hostname:
+            # docdb-sandbox.cluster-xyz.us-west-2.docdb.amazonaws.com -> docdb-sandbox)
+            - field: clusterIdentifier
+              capture:
+                attribute: metricName__4
+                regex: '^([^.]+)\.cluster-[^.]+\..*\.docdb\.amazonaws\.com$'
+
+  # APM legacy timeslice metric for DocDB INSTANCE endpoints:
+  #   Datastore/instance/MongoDB/<instance>.<hash>.<region>.docdb.amazonaws.com/<port>
+  # The second label has no hyphen, unlike cluster endpoints (cluster-<hash>, cluster-ro-<hash>).
+  # This is a separate rule from apmApplicationCallsAwsDocumentDb on purpose: when any `capture`
+  # field's regex doesn't match, the relationship engine drops the whole relationship, and that
+  # rule's clusterIdentifier capture only matches cluster endpoints. Every capture below must
+  # match every hostname this rule's condition accepts.
+  - name: apmApplicationCallsAwsDocumentDbInstance
+    version: "1"
+    origins:
+      - APM Metrics
+    conditions:
+      - attribute: metricName
+        regex: "^datastore/instance/mongodb/[a-zA-Z0-9-]+\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9-]+\\.docdb\\.amazonaws\\.com/[0-9]+"
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AWSDOCUMENTDB
+          fields:
+            # my-docdb-instance-1.xyz.us-east-1.docdb.amazonaws.com -> my-docdb-instance-1
+            - field: instanceId
+              capture:
+                attribute: metricName__4
+                regex: '^([^.]+)\..*\.docdb\.amazonaws\.com$'
+            - field: endpoint
+              attribute: metricName__4
+            - field: port
+              attribute: metricName__5
+            # Matched against the instance entity's displayName (the instance identifier)
+            - field: instanceName
+              capture:
+                attribute: metricName__4
+                regex: '^([^.]+)\.[a-zA-Z0-9]+\.[a-zA-Z0-9-]+\.docdb\.amazonaws\.com$'
+            # my-docdb-instance-1.xyz.us-east-1.docdb.amazonaws.com -> us-east-1
+            - field: region
+              capture:
+                attribute: metricName__4
+                regex: '^[^.]+\.[a-zA-Z0-9]+\.([a-zA-Z0-9-]+)\.docdb\.amazonaws\.com$'
