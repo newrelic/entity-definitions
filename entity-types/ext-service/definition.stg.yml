@@ -422,6 +422,44 @@ synthesis:
         ttl: PT4H
       service.name:
 
+    # telemetry from NR eBPF agent LOGS with instrumentation.provider newrelic-ebpf. trace_role is not required for logs.
+    # Same entity as ext_service_composite_ebpf_default (same compositeIdentifier, type and tags) but without the
+    # `service.name` condition. service.name is already mandatory because it is part of the compositeIdentifier,
+    # and consumers that skip EXT-SERVICE rules with a bare `service.name` condition as "too broad" (EIS-109),
+    # e.g. the logs pipeline (log-parser-consumer), would otherwise drop the rule and never synthesize the entity.
+  - ruleName: ext_service_composite_ebpf_logs
+    compositeIdentifier:
+        separator: ":"
+        attributes:
+          - service.name
+          - instrumentation.name
+    name: service.name
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: eventType
+      value: Log
+    - attribute: instrumentation.provider
+      value: newrelic-ebpf
+    - attribute: instrumentation.name
+      value: nr_ebpf
+    tags:
+      k8s.cluster.name:
+        entityTagName: k8s.clusterName
+        ttl: P1D
+      k8s.namespace.name:
+        entityTagName: k8s.namespaceName
+        ttl: P1D
+      deployment.name:
+        ttl: P1D
+      k8s.deployment.name:
+        entityTagName: k8s.deploymentName
+        ttl: P1D
+      telemetry.sdk.language:
+        entityTagName: language
+      host.name:
+        ttl: PT4H
+      service.name:
+
     # IMPORTANT:
     # This rule matches on any telemetry with service.name
     # which is too broad for some telemetry sources, resulting
