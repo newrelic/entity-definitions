@@ -35,8 +35,10 @@ relationships:
     origins:
       - APM Metrics
     conditions:
+      # Matches both numeric ports and the literal "default" (emitted by APM
+      # when the client didn't specify a port or hit the default instance).
       - attribute: metricName
-        regex: "^[Dd]atastore/instance/Postgres/[^/]+/[0-9]+"
+        regex: "^[Dd]atastore/instance/Postgres/[^/;]*/.*"
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -51,3 +53,7 @@ relationships:
               attribute: metricName__4
             - field: serverPort
               attribute: metricName__5
+            - field: endpointWithPort
+              capture:
+                attribute: metricName
+                regex: '^[Dd]atastore/instance/Postgres/([^/;]*/.*)'
