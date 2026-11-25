@@ -2,19 +2,11 @@ checkpointCount:
   title: Checkpoints Completed (total)
   unit: COUNT
   queries:
-    # Both sources report cumulative totals, so both use latest(). The validator rejects
-    # expressions (max - min) and mixed value functions across sources (PR #3304 review).
     newRelic:
       select: latest(job.completedCheckpoints)
       from: FlinkJobSample
       eventId: entityGuid
       eventName: entityName
-    opentelemetry:
-      select: latest(flink.job.checkpoint.count)
-      from: Metric
-      where: checkpoint = 'completed' AND instrumentation.provider = 'opentelemetry'
-      eventId: entity.guid
-      eventName: entity.name
 
 checkpointFailed:
   title: Checkpoints Failed (total)
@@ -25,12 +17,6 @@ checkpointFailed:
       from: FlinkJobSample
       eventId: entityGuid
       eventName: entityName
-    opentelemetry:
-      select: latest(flink.job.checkpoint.count)
-      from: Metric
-      where: checkpoint = 'failed' AND instrumentation.provider = 'opentelemetry'
-      eventId: entity.guid
-      eventName: entity.name
 
 lastCheckpointTime:
   title: Last Checkpoint Duration
@@ -57,12 +43,6 @@ restartCount:
       from: FlinkJobSample
       eventId: entityGuid
       eventName: entityName
-    opentelemetry:
-      select: latest(flink.job.restart.count)
-      from: Metric
-      where: instrumentation.provider = 'opentelemetry'
-      eventId: entity.guid
-      eventName: entity.name
 
 checkpointInProgress:
   title: Checkpoints In Progress
@@ -91,6 +71,40 @@ lastCheckpointSize:
       eventName: entityName
     opentelemetry:
       select: latest(flink.job.last_checkpoint.size)
+      from: Metric
+      where: instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+# OTel counters are per-interval deltas, so these sum() over the time range.
+checkpointCountOtel:
+  title: Checkpoints Completed
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(flink.job.checkpoint.count)
+      from: Metric
+      where: checkpoint = 'completed' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+checkpointFailedOtel:
+  title: Checkpoints Failed
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(flink.job.checkpoint.count)
+      from: Metric
+      where: checkpoint = 'failed' AND instrumentation.provider = 'opentelemetry'
+      eventId: entity.guid
+      eventName: entity.name
+
+restartCountOtel:
+  title: Job Restarts
+  unit: COUNT
+  queries:
+    opentelemetry:
+      select: sum(flink.job.restart.count)
       from: Metric
       where: instrumentation.provider = 'opentelemetry'
       eventId: entity.guid
