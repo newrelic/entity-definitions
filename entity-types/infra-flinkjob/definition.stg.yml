@@ -48,48 +48,6 @@ synthesis:
       otel.library.name:
         entityTagName: instrumentation.name
 
-  - ruleName: infra_flinkjob_otel
-    compositeIdentifier:
-      separator: ":"
-      attributes:
-      - host.id
-      - flink.job.name
-    name: flink.job.name
-    encodeIdentifierInGUID: true
-    conditions:
-      - attribute: eventType
-        value: Metric
-      - attribute: metricName
-        prefix: flink.job.
-      - attribute: instrumentation.provider
-        value: opentelemetry
-      - attribute: otel.library.name
-        value: "otelcol/flink_metricsreceiver"
-      - attribute: flink.job.name
-        present: true
-      - attribute: host.id
-        present: true
-    tags:
-      flink.job.name:
-        ttl: P1D
-      flink.resource.type:
-      host.name:
-        ttl: P1D
-      host.id:
-        ttl: P1D
-      host.type:
-      cloud.provider:
-      cloud.account.id:
-      cloud.region:
-      k8s.cluster.name:
-        ttl: P1D
-      k8s.namespace.name:
-        ttl: P1D
-      k8s.pod.name:
-        ttl: P1D
-      otel.library.name:
-        entityTagName: instrumentation.name
-
   # Native: nri-flink with REMOTE_MONITORING=true (one entity per job name and cluster)
   # nri-flink (SDK v3) reports this sample on its own remote entity. entityId is the hash the infra agent
   # already put in entityGuid (account|INFRA|NA|<entityId>). overrideGuidType keeps the GUID type segment as the
