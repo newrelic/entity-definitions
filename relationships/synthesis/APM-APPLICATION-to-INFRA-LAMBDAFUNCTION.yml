@@ -1,4 +1,5 @@
 relationships:
+  # Owned by: Cloud Monitoring Platform
   - name: apmCallsLambdafunction
     version: "1"
     entitlements:
@@ -14,7 +15,7 @@ relationships:
       - attribute: cloud.platform
         anyOf: [ "aws_lambda"]
       - attribute: cloud.resource_id
-        regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
+        regex: "^arn:aws(?:-us-gov)?:lambda:([^:]*):([0-9]*):function:([^:]*)$"
     relationship:
       expires: PT75M
       relationshipType: CALLS
@@ -28,6 +29,7 @@ relationships:
             - field: awsLambdaArn
               attribute: cloud.resource_id
 
+  # Owned by: Cloud Monitoring Platform
   - name: awsLambdaFunctionIsAPM
     version: "1"
     origins:
@@ -36,7 +38,7 @@ relationships:
       - attribute: eventType
         anyOf: [ "Span" ]
       - attribute: aws.lambda.arn
-        regex: "^arn:aws:lambda:([^:]*):([0-9]*):function:([^:]*)$"
+        regex: "^arn:aws(?:-us-gov)?:lambda:([^:]*):([0-9]*):function:([^:]*)$"
     relationship:
       expires: PT75M
       relationshipType: IS
