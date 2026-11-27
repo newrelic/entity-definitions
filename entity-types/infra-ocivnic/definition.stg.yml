@@ -1,0 +1,30 @@
+domain: INFRA
+type: OCIVNIC
+goldenTags:
+  - oci.compartmentId
+  - oci.region
+configuration:
+  entityExpirationTime: DAILY
+  alertable: true
+synthesis:
+  tags:
+    newrelic.cloudIntegrations.providerAccountName:
+      entityTagNames: [newrelic.cloudIntegrations.providerAccountName, providerAccountName]
+      multiValue: false
+  rules:
+  - ruleName: infra_ocivnic_oci_resourceId
+    identifier: oci.resourceId
+    name: oci.resourceName
+    legacyFeatures:
+      overrideGuidType: true
+    encodeIdentifierInGUID: true
+    conditions:
+    - attribute: oci.resourceId
+      prefix: "ocid1.vnic"
+    # NOTE: name resolves from oci.resourceName, which beyond-polling-oci decorates
+    # onto the metric once entityType is dropped from register (see NR-651924).
+    - attribute: oci.namespace
+      value: "oci_vcn"
+ownership:
+  primaryOwner:
+    teamName: "Cloud Monitoring Platform"
