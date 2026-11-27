@@ -1,0 +1,36 @@
+relationships:
+  # NR-650871: OTel / DT service -> Azure Key Vault, from client spans whose server.address
+  # is the vault host (<vault>.vault.azure.net).
+  - name: extServiceCallsAzureKeyVaultVault
+    version: "1"
+    entitlements:
+      matching: anyOf
+      values:
+        - auto_discovery_entities_ccu
+        - auto_discovery_entities_ccu_discount_usage
+        - azure_auto_discovery
+        - azure_auto_discovery_discount_usage
+    origins:
+      - Distributed Tracing
+      - OpenTelemetry
+    conditions:
+      - attribute: eventType
+        anyOf: [ "Span" ]
+      - attribute: entity.type
+        anyOf: [ "SERVICE" ]
+      - attribute: server.address
+        regex: '^[a-zA-Z0-9\-]+\.vault\.(?:azure\.net|azure\.cn|usgovcloudapi\.net)$'
+    relationship:
+      expires: PT75M
+      relationshipType: CALLS
+      source:
+        extractGuid:
+          attribute: entity.guid
+      target:
+        lookupGuid:
+          candidateCategory: AZUREKEYVAULTVAULT
+          fields:
+            - field: vaultName
+              capture:
+                attribute: server.address
+                regex: '^([a-zA-Z0-9\-]+)\.vault\.(?:azure\.net|azure\.cn|usgovcloudapi\.net)$'
